@@ -21,19 +21,22 @@ def outputDir
 def outputDirWin64
 def outputDirMacOS
 
+def poiSrc = 'poi-4.1.2'
+def poiMod = 'poi-4_1_2'
+
 def poiJars = [
-    'poi-4.1.2/poi-4.1.2.jar',
-    'poi-4.1.2/poi-ooxml-4.1.2.jar',
-    'poi-4.1.2/poi-ooxml-schemas-4.1.2.jar',
-    'poi-4.1.2/lib/commons-codec-1.13.jar',
-    'poi-4.1.2/lib/commons-collections4-4.4.jar',
-    'poi-4.1.2/lib/commons-compress-1.19.jar',
-    'poi-4.1.2/lib/commons-math3-3.6.1.jar',
-    'poi-4.1.2/lib/SparseBitSet-1.2.jar',
-    'poi-4.1.2/ooxml-lib/xmlbeans-3.1.0.jar'
+    'poi-4.1.2.jar',
+    'poi-ooxml-4.1.2.jar',
+    'poi-ooxml-schemas-4.1.2.jar',
+    'lib/commons-codec-1.13.jar',
+    'lib/commons-collections4-4.4.jar',
+    'lib/commons-compress-1.19.jar',
+    'lib/commons-math3-3.6.1.jar',
+    'lib/SparseBitSet-1.2.jar',
+    'ooxml-lib/xmlbeans-3.1.0.jar'
 ]
 
-def poiFiles = poiJars + ['poi-4.1.2/LICENSE', 'poi-4.1.2/NOTICE']
+def poiLicenses = ['LICENSE', 'NOTICE']
 
 def requiredMods = '' \
     + 'java.base,' \
@@ -81,9 +84,9 @@ task composeForWin64(dependsOn: setup) {
         
         // 外部ライブラリのコピー
         copy {
-            from project['myprop.userlib']
-            into outputDirWin64.resolve('lib')
-            include poiFiles
+            from project['myprop.userlib'] + "/${poiSrc}"
+            into outputDirWin64.resolve("lib/${poiSrc}")
+            include poiJars
         }
         
         // 最小構成JREの作成
@@ -92,7 +95,7 @@ task composeForWin64(dependsOn: setup) {
                     '--compress=2',
                     '--module-path', "${project['myprop.jre.mod.win64']};${project['myprop.jfx.mod.win64']}",
                     '--add-modules', requiredMods,
-                    '--output', outputDirWin64.resolve('jre-min-win64')
+                    '--output', outputDirWin64.resolve('jre-min')
         }
         
         // .exeファイルの作成
@@ -108,6 +111,20 @@ task composeForWin64(dependsOn: setup) {
                     '-c', '(c) 2020 nmby',
                     '-j', targetJar,
                     '-o', outputDirWin64.resolve('方眼Diff.exe')
+        }
+        
+        // ライセンスファイルのコピーと削除
+        copy {
+            from project['myprop.userlib'] + "/${poiSrc}"
+            into outputDirWin64.resolve("Legal/${poiSrc}")
+            include poiLicenses
+        }
+        copy {
+            from outputDirWin64.resolve('jre-min/legal')
+            into outputDirWin64.resolve('Legal/jre-min')
+        }
+        delete {
+            delete outputDirWin64.resolve('jre-min/legal')
         }
     }
 }
@@ -132,14 +149,14 @@ task composeForMacOS(dependsOn: setup) {
         
         // 静的リソースとjarファイルのコピー
         copy {
-            from projectDir
-            into outputDirMacOS
-            include 'README.md', 'LICENSE'
-        }
-        copy {
             from baseDir.resolve('resources/方眼Diff.app')
             into outputDirMacOS.resolve('方眼Diff.app')
             exclude '**/.gitkeep'
+        }
+        copy {
+            from projectDir
+            into outputDirMacOS.resolve('方眼Diff.app/Contents/Resources')
+            include 'README.md', 'LICENSE'
         }
         copy {
             from baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs')
@@ -149,9 +166,9 @@ task composeForMacOS(dependsOn: setup) {
         
         // 外部ライブラリのコピー
         copy {
-            from project['myprop.userlib']
-            into outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/lib')
-            include poiFiles
+            from project['myprop.userlib'] + "/${poiSrc}"
+            into outputDirMacOS.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
+            include poiJars
         }
         
         // 最小構成JREの作成
@@ -161,6 +178,20 @@ task composeForMacOS(dependsOn: setup) {
                     '--module-path', "${project['myprop.jre.mod.macos']};${project['myprop.jfx.mod.macos']}",
                     '--add-modules', requiredMods,
                     '--output', outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+        }
+        
+        // ライセンスファイルのコピーと削除
+        copy {
+            from project['myprop.userlib'] + "/${poiSrc}"
+            into outputDirMacOS.resolve("方眼Diff.app/Contents/Resources/Legal/${poiSrc}")
+            include poiLicenses
+        }
+        copy {
+            from outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min/legal')
+            into outputDirMacOS.resolve('方眼Diff.app/Contents/Resources/Legal/jre-min')
+        }
+        delete {
+            delete outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min/legal')
         }
     }
 }
