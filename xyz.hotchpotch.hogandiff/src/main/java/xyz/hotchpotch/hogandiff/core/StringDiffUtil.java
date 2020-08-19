@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.core;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -58,7 +59,7 @@ public class StringDiffUtil {
         List<Pair<Integer>> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
         
         return (int) pairs.stream()
-                .filter(p -> !p.isPaired())
+                .filter(Predicate.not(Pair::isPaired))
                 .count();
     }
     

@@ -124,7 +124,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                     ? StreamSupport.stream(sheet.spliterator(), true)
                             .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
                             .map(converter::apply)
-                            .filter(cell -> cell != null)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toCollection(HashSet::new))
                     : new HashSet<>();
             
