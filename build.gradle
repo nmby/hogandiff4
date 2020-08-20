@@ -92,8 +92,10 @@ task composeForWin64(dependsOn: setup) {
         // 最小構成JREの作成
         exec {
             commandLine project['myprop.cmd.jlink'],
+                    '--no-header-files',
+                    '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.win64']};${project['myprop.jfx.mod.win64']}",
+                    '--module-path', "${project['myprop.jre.mod.win64']}${project['myprop.common.pathseparator']}${project['myprop.jfx.mod.win64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDirWin64.resolve('jre-min')
         }
@@ -174,8 +176,10 @@ task composeForMacOS(dependsOn: setup) {
         // 最小構成JREの作成
         exec {
             commandLine project['myprop.cmd.jlink'],
+                    '--no-header-files',
+                    '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.macos']};${project['myprop.jfx.mod.macos']}",
+                    '--module-path', "${project['myprop.jre.mod.macos']}${project['myprop.common.pathseparator']}${project['myprop.jfx.mod.macos']}",
                     '--add-modules', requiredMods,
                     '--output', outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
         }

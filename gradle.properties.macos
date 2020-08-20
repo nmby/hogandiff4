@@ -11,3 +11,5 @@ myprop.jre.mod.macos=~/Documents/UserLibs/jdk-14.0.2+12-mac-x64/Contents/Home/jm
 myprop.jfx.mod.win64=~/Documents/UserLibs/javafx-jmods-14.0.2.1-win-x64
 myprop.jfx.mod.macos=~/Documents/UserLibs/javafx-jmods-14.0.2.1-mac-x64
 myprop.jfx.lib.win64=~/Documents/UserLibs/javafx-sdk-14.0.2.1-win-x64/lib
+
+myprop.common.pathseparator=:
