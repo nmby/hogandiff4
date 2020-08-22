@@ -135,6 +135,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
                     '--license-file', baseDir.resolve('LICENSE'),
                     '--win-dir-chooser',
                     '--win-menu',
+                    '--win-per-user-install',
                     '--win-shortcut',
                     // TODO: --name 等に全角文字を含められるようにする。
                     // --description, --name, --win-menu-group に全角文字が含まれると、
