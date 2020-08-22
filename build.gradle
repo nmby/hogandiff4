@@ -12,7 +12,8 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.7.5'
+// TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
+final def version = '1.0.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -48,8 +49,9 @@ final def requiredMods = '' \
     + 'jdk.charsets,' \
     + 'jdk.zipfs'
 
+// executable on [Win64, MacOS]
 task pickUpJars {
-    group 'distribution_on_win64'
+    group 'distribution_common'
     
     doLast {
         copy {
@@ -64,8 +66,9 @@ task pickUpJars {
     }
 }
 
+// executable on [Win64, MacOS]
 task jlinkForWin64 {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
     
     doLast {
         exec {
@@ -84,8 +87,9 @@ task jlinkForWin64 {
     }
 }
 
+// executable on [Win64, MacOS]
 task jlinkForMacOS {
-    group 'distribution_on_win64'
+    group 'distribution_macos'
     
     doLast {
         exec {
@@ -104,8 +108,9 @@ task jlinkForMacOS {
     }
 }
 
+// executable on [Win64]
 task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
     
     doLast {
         exec {
@@ -147,8 +152,44 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
     }
 }
 
+// executable on [MacOS]
+task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
+    group 'distribution_macos'
+    
+    doLast {
+        exec {
+            // java14現在、jpackageはincubatorの位置づけである。
+            // TODO: jpackageの仕様に変更が無いか確認する。
+            commandLine project['myprop.cmd.jpackage'],
+                    '--type', 'pkg',
+                    '--app-version', version,
+                    '--copyright', '(c) 2018-2020 nmby',
+                    '--description', 'Excelファイル比較ツール',
+                    '--name', '方眼Diff',
+                    '--dest', outputDir,
+                    '--vendor', 'nmby',
+                    '--verbose',
+                    '--runtime-image', outputDir.resolve('tmp/jre-min-macos'),
+                    '--icon', baseDir.resolve('resources/hogandiff.icns'),
+                    '--input', outputDir.resolve("tmp/jars"),
+                    '--java-options', '-Xms256m',
+                    '--java-options', '-Xmx1024m',
+                    '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
+                    '--mac-package-identifier', 'xyz.hotchpotch.hogandiff',
+                    '--mac-package-name', '方眼Diff',
+                    '--mac-sign',
+                    '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
+                    // TODO: LICENSEファイルの内容を最新化する。
+                    //      ・同梱物のライセンスも本ファイル内に記載する
+                    //      ・発行年、更新年
+                    '--license-file', baseDir.resolve('LICENSE')
+        }
+    }
+}
+
+// executable on [Win64]
 task exewrapForWin64 {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
     
     doLast {
         exec {
@@ -167,8 +208,9 @@ task exewrapForWin64 {
     }
 }
 
+// executable on [Win64, MacOS]
 task gatherFilesForWin64(dependsOn: jlinkForWin64) {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
     
     doLast {
         copy {
@@ -193,8 +235,9 @@ task gatherFilesForWin64(dependsOn: jlinkForWin64) {
     }
 }
 
+// executable on [Win64, MacOS]
 task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
-    group 'distribution_on_win64'
+    group 'distribution_macos'
     
     doLast {
         copy {
@@ -224,8 +267,9 @@ task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
     }
 }
 
+// executable on [Win64]
 task zipForWin64(type: Zip, dependsOn: [exewrapForWin64, gatherFilesForWin64]) {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
     
     metadataCharset='UTF-8'
     baseName = "hogandiff-${version}-win64"
@@ -234,8 +278,9 @@ task zipForWin64(type: Zip, dependsOn: [exewrapForWin64, gatherFilesForWin64]) {
     into outputDirWin64.getFileName().toString()
 }
 
+// executable on [Win64, MacOS]
 task zipForMacOS(type: Zip, dependsOn: gatherFilesForMacOS) {
-    group 'distribution_on_win64'
+    group 'distribution_macos'
     
     metadataCharset='UTF-8'
     baseName = "hogandiff-${version}-macos"
@@ -244,34 +289,39 @@ task zipForMacOS(type: Zip, dependsOn: gatherFilesForMacOS) {
     into outputDirMacOS.getFileName().toString()
 }
 
+// executable on [Win64]
 task allForWin64(dependsOn: /* jpackageForWin64 */ zipForWin64) {
-    group 'distribution_on_win64'
+    group 'distribution_win64'
 }
 
+// executable on [Win64, MacOS]
 task allForMacOS(dependsOn: /* jpackageForMacOS */ zipForMacOS) {
-    group 'distribution_on_win64'
+    group 'distribution_macos'
 }
 
+// executable on [Win64]
 task all(dependsOn: [allForWin64, allForMacOS]) {
-    group 'distribution_on_win64'
+    group 'distribution_common'
 }
 
+// executable on [Win64, MacOS]
 task checkDependencies {
-    group 'test_on_win64'
+    group 'test'
     
     doLast {
         Path poiDir = Path.of(project['myprop.userlib']).resolve(poi)
         String poiMods = ''
         poiJars.each {
-            poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ';'
+            poiMods += poiDir.resolve(it).toString().replace('\\', '/') \
+                        + "${project['myprop.common.pathseparator']}"
         }
         
         exec {
             commandLine project['myprop.cmd.jdeps'],
                     '--module-path', "${project['myprop.jre.mod.win64']}" \
-                                    + ";" \
+                                    + "${project['myprop.common.pathseparator']}" \
                                     + "${project['myprop.jfx.lib.win64']}" \
-                                    + ";" \
+                                    + "${project['myprop.common.pathseparator']}" \
                                     + "${poiMods}",
                     '-s', targetJar
         }
