@@ -295,7 +295,7 @@ task allForWin64(dependsOn: /* jpackageForWin64 */ zipForWin64) {
 }
 
 // executable on [Win64, MacOS]
-task allForMacOS(dependsOn: /* jpackageForMacOS */ zipForMacOS) {
+task allForMacOS(dependsOn: jpackageForMacOS /* zipForMacOS */) {
     group 'distribution_macos'
 }
 
