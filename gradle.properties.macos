@@ -3,6 +3,7 @@ org.gradle.java.home=/Applications/Eclipse_2020-06.app/Contents/java/14/Home
 
 myprop.cmd.jlink=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jlink
 myprop.cmd.jdeps=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jdeps
+myprop.cmd.jpackage=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jpackage
 myprop.cmd.exewrap=
 
 myprop.userlib=~/Documents/UserLibs
