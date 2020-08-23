@@ -129,14 +129,12 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
                     '--java-options', '-Xms256m',
                     '--java-options', '-Xmx1024m',
                     '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
-                    // TODO: LICENSEファイルの内容を最新化する。
-                    //      ・同梱物のライセンスも本ファイル内に記載する
-                    //      ・発行年、更新年
                     '--license-file', baseDir.resolve('LICENSE'),
                     '--win-dir-chooser',
                     '--win-menu',
                     '--win-per-user-install',
                     '--win-shortcut',
+                    '--temp', outputDir.resolve("tmp/jpackage-win64"),
                     // TODO: --name 等に全角文字を含められるようにする。
                     // --description, --name, --win-menu-group に全角文字が含まれると、
                     // WiX Toolset v3.11 の light.exe 実行で下記中間ファイルに
@@ -180,10 +178,8 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
                     '--mac-package-name', '方眼Diff',
                     '--mac-sign',
                     '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
-                    // TODO: LICENSEファイルの内容を最新化する。
-                    //      ・同梱物のライセンスも本ファイル内に記載する
-                    //      ・発行年、更新年
-                    '--license-file', baseDir.resolve('LICENSE')
+                    '--license-file', baseDir.resolve('LICENSE'),
+                    '--temp', outputDir.resolve("tmp/jpackage-macos")
         }
     }
 }
