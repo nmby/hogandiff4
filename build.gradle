@@ -212,7 +212,7 @@ task gatherFilesForWin64(dependsOn: jlinkForWin64) {
     doLast {
         copy {
             from baseDir
-            include 'README.md', 'LICENSE'
+            include 'README.md', 'LICENSE', 'NOTICE'
             into outputDirWin64
         }
         copy {
@@ -244,7 +244,7 @@ task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
         }
         copy {
             from baseDir
-            include 'README.md', 'LICENSE'
+            include 'README.md', 'LICENSE', 'NOTICE'
             into outputDirMacOS.resolve('方眼Diff.app/Contents/Resources')
         }
         copy {
