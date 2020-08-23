@@ -9,6 +9,7 @@
 - 誰でも簡単かつ直感的に利用できます。
 - 行や列の挿入や削除によるギャップを自動で検出できます。
 - 通常のデスクトップアプリケーションとしての利用に加えて、TortoiseGitなどのバージョン管理ツールと組み合わせて利用することもできます。
+- Windows(64bit)とmacOSに対応しています。
 
 出来ること：
 
@@ -29,14 +30,16 @@
 
 ## インストール方法
 
+### Windowsの場合
+
 方眼Diffはお使いのPCのレジストリを更新しません。ダウンロードしたzipファイルを解凍してお好きな場所に配置するだけで利用できます。
 
-1. 「hogandiff-x.x.x-zzz.zip」ファイルをダウンロードしてお好きな場所に保存します。
+1. 「hogandiff-x.x.x-win64.zip」ファイルをダウンロードしてお好きな場所に保存します。
 2. ダウンロードしたzipファイルを解凍ツールを利用して解凍します。下記のようなフォルダ階層に展開されます。
-3. 解凍された「方眼Diff-x.x.x-zzz」フォルダを丸ごとお好きな場所に配置してお使いください。
+3. 解凍された「方眼Diff-x.x.x-win64」フォルダを丸ごとお好きな場所に配置してお使いください。
 
 ```
-方眼Diff-x.x.x-zzz\
+方眼Diff-x.x.x-win64\
   ├─ jre-min\
   │   └─ (多数のファイル群)
   ├─ lib\
@@ -44,16 +47,30 @@
   ├─ 方眼Diff.exe
   ├─ 方眼Diff.exe.vmoptions
   ├─ LICENSE
+  ├─ NOTICE
   └─ README.md
 ```
 
 「方眼Diff.exe」が方眼Diffの本体です。これをダブルクリックして利用します。「方眼Diff.exe」のショートカットをデスクトップなどに作成しておくと便利でしょう。
 
-ただし、「方眼Diff-x.x.x-zzz」フォルダの内容はそのままでご利用ください。「方眼Diff.exe」だけを別の場所に取り出すと正常に動作しませんのでご注意ください。
+ただし、「方眼Diff-x.x.x-win64」フォルダの内容はそのままでご利用ください。「方眼Diff.exe」だけを別の場所に取り出すと正常に動作しませんのでご注意ください。
+
+### macOSの場合
+
+1. 「方眼Diff-x.x.x.pkg」ファイルをダウンロードしてお好きな場所に保存します。
+2. ダウンロードしたpkgファイルをダブルクリックしてインストーラを立ち上げます。
+3. インストーラの指示に従って操作を行い、インストールを完了させます。
+4. 方眼Diffが「/Applications」ディレクトリにインストールされますので、通常のアプリケーションと同様の方法で起動してお使いください。
 
 ## アンインストール方法
 
-「方眼Diff-x.x.x-zzz」フォルダを丸ごと削除してください。
+### Windowsの場合
+
+「方眼Diff-x.x.x-win64」フォルダを丸ごと削除してください。
+
+### macOSの場合
+
+「/Applications」ディレクトリにある「方眼Diff」を削除してください。
 
 ## 使い方
 
@@ -74,20 +91,21 @@
 
 ## ライセンス
 
-「方眼Diff.exe」は nmby の著作物であり、MITライセンスのもと提供しています。  
-詳細はこのファイル（README.md）と同じフォルダに格納されている LICENSE ファイルをご参照ください。
+「方眼Diff」は nmby の著作物であり、MITライセンスのもと提供しています。  
+詳細はこのファイル（README.md）と同じフォルダに格納されている
+LICENSE, NOTICE 両ファイルをご参照ください。
 
-このファイル（README.md）と同じフォルダに格納されている「jre-min」、「lib」両サブフォルダには以下の第三者著作物が含まれており、それらのライセンス許諾に従って nmby が再頒布しています。
+「方眼Diff」には以下の第三者著作物が含まれており、それらのライセンス許諾に従って nmby が再頒布しています。
 
 - AdoptOpenJDKバイナリ
     - GPL v2 with Classpath Exception ライセンスにより提供されています。
-    - 詳細は[AdoptOpenJDKのWebサイト](https://adoptopenjdk.net/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」フォルダ内の関連ファイルをご参照ください。
+    - 詳細はLICENSE, NOTICE両ファイルおよび[AdoptOpenJDKのWebサイト](https://adoptopenjdk.net/)をご参照ください。
 - OpenJFX
     - GPL v2 with Classpath Exception ライセンスにより提供されています。
-    - 詳細は[OpenJFXのWebサイト](https://openjfx.io/)および「方眼Diff-x.x.x-zzz\jre-min\legal\」フォルダ内の関連ファイルをご参照ください。
+    - 詳細はLICENSE, NOTICE両ファイルおよび[OpenJFXのWebサイト](https://openjfx.io/)をご参照ください。
 - Apache POI
     - Apache License, Version 2.0 ライセンスにより提供されています。
-    - 詳細は[Apache POIのWebサイト](https://poi.apache.org/)および「方眼Diff-x.x.x-zzz\lib\poi-x.x.x\」フォルダ内の関連ファイルをご参照ください。
+    - 詳細はLICENSE, NOTICE両ファイルおよび[Apache POIのWebサイト](https://poi.apache.org/)をご参照ください。
 
 あなたが方眼Diffを利用する場合は以上の全てのライセンスに従う必要があります。
 
@@ -95,4 +113,3 @@
 
 e-mail  : nmby@hotchpotch.xyz  
 website : https://hogandiff.hotchpotch.xyz/
-
