@@ -36,7 +36,7 @@ final def poiJars = [
     'lib/SparseBitSet-1.2.jar',
     'ooxml-lib/xmlbeans-3.1.0.jar'
 ]
-final def poiFiles = ['LICENSE', 'NOTICE']+ poiJars
+final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
 final def requiredMods = '' \
     + 'java.base,' \
@@ -176,6 +176,7 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
                     '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
                     '--mac-package-identifier', 'xyz.hotchpotch.hogandiff',
                     '--mac-package-name', '方眼Diff',
+                    // TODO: gatekeeperにブロックされる問題を解消する
                     '--mac-sign',
                     '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
                     '--license-file', baseDir.resolve('LICENSE'),
@@ -292,7 +293,7 @@ task allForWin64(dependsOn: /* jpackageForWin64 */ zipForWin64) {
 }
 
 // executable on [Win64, MacOS]
-task allForMacOS(dependsOn: jpackageForMacOS /* zipForMacOS */) {
+task allForMacOS(dependsOn: /* jpackageForMacOS */ zipForMacOS) {
     group 'distribution_macos'
 }
 
