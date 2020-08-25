@@ -3,13 +3,16 @@ org.gradle.java.home=/Applications/Eclipse_2020-06.app/Contents/java/14/Home
 
 myprop.cmd.jlink=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jlink
 myprop.cmd.jdeps=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jdeps
+//myprop.cmd.jpackage=/Applications/Eclipse_2020-06.app/Contents/java/14/Home/bin/jpackage
+myprop.cmd.jpackage=/Users/Shared/UserLibs/jdk-15.jdk/Contents/Home/bin/jpackage
 myprop.cmd.exewrap=
 
-myprop.userlib=~/Documents/UserLibs
-myprop.jre.mod.win64=~/Documents/UserLibs/jdk-14.0.2+12-win-x64/jmods
-myprop.jre.mod.macos=~/Documents/UserLibs/jdk-14.0.2+12-mac-x64/Contents/Home/jmods
-myprop.jfx.mod.win64=~/Documents/UserLibs/javafx-jmods-14.0.2.1-win-x64
-myprop.jfx.mod.macos=~/Documents/UserLibs/javafx-jmods-14.0.2.1-mac-x64
-myprop.jfx.lib.win64=~/Documents/UserLibs/javafx-sdk-14.0.2.1-win-x64/lib
+myprop.userlib=/Users/Shared/UserLibs
+myprop.jre.mod.win64=/Users/Shared/UserLibs/jdk-14.0.2+12-win-x64/jmods
+myprop.jre.mod.macos=/Users/Shared/UserLibs/jdk-14.0.2+12-mac-x64/Contents/Home/jmods
+myprop.jfx.mod.win64=/Users/Shared/UserLibs/javafx-jmods-14.0.2.1-win-x64
+myprop.jfx.mod.macos=/Users/Shared/UserLibs/javafx-jmods-14.0.2.1-mac-x64
+myprop.jfx.lib.win64=/Users/Shared/UserLibs/javafx-sdk-14.0.2.1-win-x64/lib
+myprop.jfx.lib.macos=/Users/Shared/UserLibs/javafx-sdk-14.0.2.1-mac-x64/lib
 
 myprop.common.pathseparator=:

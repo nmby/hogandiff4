@@ -3,6 +3,7 @@ org.gradle.java.home=C:/pleiades_202006/java/14
 
 myprop.cmd.jlink=C:/pleiades_202006/java/14/bin/jlink
 myprop.cmd.jdeps=C:/pleiades_202006/java/14/bin/jdeps
+myprop.cmd.jpackage=C:/pleiades_202006/java/14/bin/jpackage
 myprop.cmd.exewrap=C:/Program Files/exewrap1.6.2/x64/exewrap.exe
 
 myprop.userlib=C:/UserLibs
