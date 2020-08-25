@@ -129,7 +129,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
                     '--java-options', '-Xms256m',
                     '--java-options', '-Xmx1024m',
                     '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
-                    '--license-file', baseDir.resolve('LICENSE'),
+                    '--license-file', baseDir.resolve('LICENSE.txt'),
                     '--win-dir-chooser',
                     '--win-menu',
                     '--win-per-user-install',
@@ -179,7 +179,7 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
                     // TODO: gatekeeperにブロックされる問題を解消する
                     '--mac-sign',
                     '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
-                    '--license-file', baseDir.resolve('LICENSE'),
+                    '--license-file', baseDir.resolve('LICENSE.txt'),
                     '--temp', outputDir.resolve("tmp/jpackage-macos")
         }
     }
@@ -213,7 +213,7 @@ task gatherFilesForWin64(dependsOn: jlinkForWin64) {
     doLast {
         copy {
             from baseDir
-            include 'README.md', 'LICENSE', 'NOTICE'
+            include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
             into outputDirWin64
         }
         copy {
@@ -245,7 +245,7 @@ task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
         }
         copy {
             from baseDir
-            include 'README.md', 'LICENSE', 'NOTICE'
+            include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
             into outputDirMacOS.resolve('方眼Diff.app/Contents/Resources')
         }
         copy {
