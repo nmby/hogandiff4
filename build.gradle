@@ -52,7 +52,7 @@ final def requiredMods = '' \
 // executable on [Win64, MacOS]
 task pickUpJars {
     group 'distribution_common'
-    
+
     doLast {
         copy {
             from project['myprop.userlib'] +"/${poi}"
@@ -69,7 +69,7 @@ task pickUpJars {
 // executable on [Win64, MacOS]
 task jlinkForWin64 {
     group 'distribution_win64'
-    
+
     doLast {
         exec {
             commandLine project['myprop.cmd.jlink'],
@@ -90,7 +90,7 @@ task jlinkForWin64 {
 // executable on [Win64, MacOS]
 task jlinkForMacOS {
     group 'distribution_macos'
-    
+
     doLast {
         exec {
             commandLine project['myprop.cmd.jlink'],
@@ -111,7 +111,7 @@ task jlinkForMacOS {
 // executable on [Win64]
 task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
     group 'distribution_win64'
-    
+
     doLast {
         exec {
             // java14現在、jpackageはincubatorの位置づけである。
@@ -154,7 +154,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
 // executable on [MacOS]
 task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
     group 'distribution_macos'
-    
+
     doLast {
         exec {
             // java14現在、jpackageはincubatorの位置づけである。
@@ -188,12 +188,12 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
 // executable on [Win64]
 task exewrapForWin64 {
     group 'distribution_win64'
-    
+
     doLast {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '14',
+                    '-t', '15',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
@@ -209,7 +209,7 @@ task exewrapForWin64 {
 // executable on [Win64, MacOS]
 task gatherFilesForWin64(dependsOn: jlinkForWin64) {
     group 'distribution_win64'
-    
+
     doLast {
         copy {
             from baseDir
@@ -236,7 +236,7 @@ task gatherFilesForWin64(dependsOn: jlinkForWin64) {
 // executable on [Win64, MacOS]
 task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
     group 'distribution_macos'
-    
+
     doLast {
         copy {
             from baseDir.resolve('resources/方眼Diff.app')
@@ -268,7 +268,7 @@ task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
 // executable on [Win64]
 task zipForWin64(type: Zip, dependsOn: [exewrapForWin64, gatherFilesForWin64]) {
     group 'distribution_win64'
-    
+
     metadataCharset='UTF-8'
     baseName = "hogandiff-${version}-win64"
     destinationDir = file(outputDir)
@@ -279,7 +279,7 @@ task zipForWin64(type: Zip, dependsOn: [exewrapForWin64, gatherFilesForWin64]) {
 // executable on [Win64, MacOS]
 task zipForMacOS(type: Zip, dependsOn: gatherFilesForMacOS) {
     group 'distribution_macos'
-    
+
     metadataCharset='UTF-8'
     baseName = "hogandiff-${version}-macos"
     destinationDir = file(outputDir)
@@ -305,7 +305,7 @@ task all(dependsOn: [allForWin64, allForMacOS]) {
 // executable on [Win64, MacOS]
 task checkDependencies {
     group 'test'
-    
+
     doLast {
         Path poiDir = Path.of(project['myprop.userlib']).resolve(poi)
         String poiMods = ''
@@ -313,7 +313,7 @@ task checkDependencies {
             poiMods += poiDir.resolve(it).toString().replace('\\', '/') \
                         + "${project['myprop.common.pathseparator']}"
         }
-        
+
         exec {
             commandLine project['myprop.cmd.jdeps'],
                     '--module-path', "${project['myprop.jre.mod.win64']}" \

@@ -1,16 +1,16 @@
 
-org.gradle.java.home=C:/pleiades_202006/java/14
+org.gradle.java.home=C:/pleiades_202009/java/15
 
-myprop.cmd.jlink=C:/pleiades_202006/java/14/bin/jlink
-myprop.cmd.jdeps=C:/pleiades_202006/java/14/bin/jdeps
-myprop.cmd.jpackage=C:/pleiades_202006/java/14/bin/jpackage
+myprop.cmd.jlink=C:/pleiades_202009/java/15/bin/jlink
+myprop.cmd.jdeps=C:/pleiades_202009/java/15/bin/jdeps
+myprop.cmd.jpackage=C:/pleiades_202009/java/15/bin/jpackage
 myprop.cmd.exewrap=C:/Program Files/exewrap1.6.2/x64/exewrap.exe
 
 myprop.userlib=C:/UserLibs
-myprop.jre.mod.win64=C:/UserLibs/jdk-14.0.2+12-win-x64/jmods
-myprop.jre.mod.macos=C:/UserLibs/jdk-14.0.2+12-mac-x64/Contents/Home/jmods
-myprop.jfx.mod.win64=C:/UserLibs/javafx-jmods-14.0.2.1-win-x64
-myprop.jfx.mod.macos=C:/UserLibs/javafx-jmods-14.0.2.1-mac-x64
-myprop.jfx.lib.win64=C:/UserLibs/javafx-sdk-14.0.2.1-win-x64/lib
+myprop.jre.mod.win64=C:/UserLibs/jdk-15+36-win-x64/jmods
+myprop.jre.mod.macos=C:/UserLibs/jdk-15+36-mac-x64/Contents/Home/jmods
+myprop.jfx.mod.win64=C:/UserLibs/javafx-jmods-15-win-x64
+myprop.jfx.mod.macos=C:/UserLibs/javafx-jmods-15-mac-x64
+myprop.jfx.lib.win64=C:/UserLibs/javafx-sdk-15-win-x64/lib
 
 myprop.common.pathseparator=;
