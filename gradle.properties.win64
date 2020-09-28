@@ -4,7 +4,7 @@ org.gradle.java.home=C:/pleiades_202009/java/15
 myprop.cmd.jlink=C:/pleiades_202009/java/15/bin/jlink
 myprop.cmd.jdeps=C:/pleiades_202009/java/15/bin/jdeps
 myprop.cmd.jpackage=C:/pleiades_202009/java/15/bin/jpackage
-myprop.cmd.exewrap=C:/Program Files/exewrap1.6.2/x64/exewrap.exe
+myprop.cmd.exewrap=C:/Program Files/exewrap1.6.4/x64/exewrap.exe
 
 myprop.userlib=C:/UserLibs
 myprop.jre.mod.win64=C:/UserLibs/jdk-15+36-win-x64/jmods
