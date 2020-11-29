@@ -389,6 +389,6 @@ public class SComparatorImpl implements SComparator {
                                 cell1 != null ? cell1 : CellReplica.empty(row1, column1),
                                 cell2 != null ? cell2 : CellReplica.empty(row2, column2));
             });
-        }).filter(p -> p != null).collect(Collectors.toList());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

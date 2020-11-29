@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javafx.concurrent.Task;
@@ -250,7 +251,7 @@ public class AppTask extends Task<Void> {
             }
             
             List<Pair<String>> unpairedPairs = pairs.stream()
-                    .filter(p -> !p.isPaired())
+                    .filter(Predicate.not(Pair::isPaired))
                     .collect(Collectors.toList());
             for (Pair<String> pair : unpairedPairs) {
                 results.put(pair, Optional.empty());

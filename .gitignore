@@ -34,3 +34,4 @@ build
 !/products/*
 .DS_Store
 
+gradle.properties
