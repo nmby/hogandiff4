@@ -28,14 +28,22 @@ public class AppArgsParser {
             + "方眼Diff.exe bookPath1 bookPath2 <OPTIONS>" + BR
             + BR
             + "<OPTIONS>" + BR
-            + "    --consider-row-gaps=[true|false]     : default value is true" + BR
-            + "    --consider-column-gaps=[true|false]  : default value is false" + BR
-            + "    --compare-cell-contents=[true|false] : default value is true" + BR
-            + "    --compare-cell-comments=[true|false] : default value is true" + BR
-            + "    --compare-on-formulas=[true|false]   : default value is false" + BR
-            + "    --show-painted-sheets=[true|false]   : default value is true" + BR
-            + "    --show-result-text=[true|false]      : default value is true" + BR
-            + "    --exit-when-finished=[true|false]    : default value is false" + BR
+            + "    --consider-row-gaps=[true|false]     : default value is "
+            + SettingKeys.CONSIDER_ROW_GAPS.defaultValueSupplier().get() + BR
+            + "    --consider-column-gaps=[true|false]  : default value is "
+            + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
+            + "    --compare-cell-contents=[true|false] : default value is "
+            + SettingKeys.COMPARE_CELL_CONTENTS.defaultValueSupplier().get() + BR
+            + "    --compare-cell-comments=[true|false] : default value is "
+            + SettingKeys.COMPARE_CELL_COMMENTS.defaultValueSupplier().get() + BR
+            + "    --compare-on-formulas=[true|false]   : default value is "
+            + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
+            + "    --show-painted-sheets=[true|false]   : default value is "
+            + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR
+            + "    --show-result-text=[true|false]      : default value is "
+            + SettingKeys.SHOW_RESULT_TEXT.defaultValueSupplier().get() + BR
+            + "    --exit-when-finished=[true|false]    : default value is "
+            + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
