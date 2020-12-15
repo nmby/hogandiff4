@@ -350,10 +350,58 @@ public class SResult {
     }
     
     /**
+     * この比較結果における差分の有無を返します。<br>
+     * 
+     * @return 差分ありの場合は {@code true}
+     */
+    public boolean hasDiff() {
+        return !redundantRows.a().isEmpty()
+                || !redundantRows.b().isEmpty()
+                || !redundantColumns.a().isEmpty()
+                || !redundantColumns.b().isEmpty()
+                || !diffCells.isEmpty();
+    }
+    
+    /**
+     * 比較結果の差分サマリを返します。<br>
+     * 
+     * @return 比較結果の差分サマリ
+     */
+    public String getDiffSummary() {
+        if (!hasDiff()) {
+            return "（差分なし）";
+        }
+        
+        int rows = redundantRows.a().size() + redundantRows.b().size();
+        int cols = redundantColumns.a().size() + redundantColumns.b().size();
+        int cells = diffCells.size();
+        
+        StringBuilder str = new StringBuilder();
+        if (0 < rows) {
+            str.append("余剰行" + rows);
+        }
+        if (0 < cols) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append("余剰列" + cols);
+        }
+        if (0 < cells) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append("差分セル" + cells);
+        }
+        
+        return str.toString();
+    }
+    
+    /**
      * 比較結果のサマリを返します。<br>
      * 
      * @return 比較結果のサマリ
      */
+    @Deprecated
     public String getSummary() {
         StringBuilder str = new StringBuilder();
         

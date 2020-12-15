@@ -105,11 +105,34 @@ public class BResult {
         }).collect(Collectors.joining(BR));
     }
     
+    public String getDiffSummary() {
+        String diffSummary = sheetPairs.stream()
+                .filter(Pair::isPaired)
+                .filter(pair -> results.get(pair).get().hasDiff())
+                .map(pair -> {
+                    
+                    StringBuilder str = new StringBuilder();
+                    SResult sResult = results.get(pair).get();
+                    
+                    str.append(String.format("  - [%s] vs [%s]   %s",
+                            pair.a(),
+                            pair.b(),
+                            sResult.getDiffSummary()))
+                            .append(BR);
+                    
+                    return str;
+                    
+                }).collect(Collectors.joining());
+        
+        return diffSummary.isEmpty() ? "（差分なし）" + BR : diffSummary;
+    }
+    
     /**
      * 比較結果のサマリを返します。<br>
      * 
      * @return 比較結果のサマリ
      */
+    @Deprecated
     public String getSummary() {
         return getText(SResult::getSummary);
     }
@@ -135,8 +158,8 @@ public class BResult {
         }
         
         str.append(BR);
-        str.append("■サマリ -------------------------------------------------------").append(BR);
-        str.append(getSummary()).append(BR);
+        str.append("■差分サマリ ---------------------------------------------------").append(BR);
+        str.append(getDiffSummary()).append(BR);
         str.append("■詳細 ---------------------------------------------------------").append(BR);
         str.append(getDetail());
         
