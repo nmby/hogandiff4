@@ -428,10 +428,58 @@ public class SResult {
     }
     
     /**
+     * 比較結果の差分詳細を返します。<br>
+     * 
+     * @return 比較結果の差分詳細
+     */
+    public String getDiffDetail() {
+        if (!hasDiff()) {
+            return "（差分なし）";
+        }
+        
+        StringBuilder str = new StringBuilder();
+        
+        if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
+            for (Side side : Side.values()) {
+                List<Integer> rows = redundantRows.get(side);
+                if (!rows.isEmpty()) {
+                    str.append(String.format("シート%s上の余剰行 : ", side)).append(BR);
+                    rows.forEach(row -> str.append("    行").append(row + 1).append(BR));
+                }
+            }
+            str.append(BR);
+        }
+        if (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty()) {
+            for (Side side : Side.values()) {
+                List<Integer> cols = redundantColumns.get(side);
+                if (!cols.isEmpty()) {
+                    str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
+                    cols.forEach(column -> str
+                            .append("    ")
+                            .append(CellReplica.columnIdxToStr(column))
+                            .append("列").append(BR));
+                }
+            }
+            str.append(BR);
+        }
+        if (!diffCells.isEmpty()) {
+            str.append("差分セル : ");
+            diffCells.forEach(pair -> {
+                str.append(BR);
+                str.append("    ").append(pair.a()).append(BR);
+                str.append("    ").append(pair.b()).append(BR);
+            });
+        }
+        
+        return str.toString();
+    }
+    
+    /**
      * 比較結果の詳細を返します。<br>
      * 
      * @return 比較結果の詳細
      */
+    @Deprecated
     public String getDetail() {
         StringBuilder str = new StringBuilder();
         
