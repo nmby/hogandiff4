@@ -443,8 +443,10 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     throw new AssertionError("FORMULA");
                 
                 case STRING:
-                    // STRING の場合は後続の STRING レコードがあるはず
-                    throw new AssertionError("STRING");
+                    // 利用者からのレポートによると、このパスに入る場合があるらしい。
+                    // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
+                    // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
+                    return null;
                 
                 default:
                     throw new AssertionError("unknown cell type: " + type);

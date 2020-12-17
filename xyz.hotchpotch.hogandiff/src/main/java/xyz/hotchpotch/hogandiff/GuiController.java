@@ -355,49 +355,47 @@ public class GuiController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        settings.keySet().forEach(key -> {
-            if (key == SettingKeys.CURR_MENU) {
-                radioCompareBooks.setSelected(settings.get(key) == AppMenu.COMPARE_BOOKS);
-                
-            } else if (key == SettingKeys.CURR_BOOK_PATH1) {
-                bookPath1.setValue((Path) settings.get(key));
-                prevSelectedBookPath = (Path) settings.get(key);
-                
-            } else if (key == SettingKeys.CURR_BOOK_PATH2) {
-                bookPath2.setValue((Path) settings.get(key));
-                prevSelectedBookPath = (Path) settings.get(key);
-                
-            } else if (key == SettingKeys.CURR_SHEET_NAME1) {
-                choiceSheetName1.setValue((String) settings.get(key));
-                
-            } else if (key == SettingKeys.CURR_SHEET_NAME2) {
-                choiceSheetName2.setValue((String) settings.get(key));
-                
-            } else if (key == SettingKeys.CONSIDER_ROW_GAPS) {
-                checkConsiderRowGaps.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.CONSIDER_COLUMN_GAPS) {
-                checkConsiderColumnGaps.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.COMPARE_CELL_CONTENTS) {
-                checkCompareCellContents.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.COMPARE_CELL_COMMENTS) {
-                checkCompareCellComments.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.COMPARE_ON_FORMULA_STRING) {
-                radioCompareOnFormula.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.SHOW_PAINTED_SHEETS) {
-                checkShowPaintedSheets.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.SHOW_RESULT_TEXT) {
-                checkShowResultText.setSelected((boolean) settings.get(key));
-                
-            } else if (key == SettingKeys.EXIT_WHEN_FINISHED) {
-                checkExitWhenFinished.setSelected((boolean) settings.get(key));
-            }
-        });
+        if (settings.containsKey(SettingKeys.CURR_MENU)) {
+            radioCompareBooks.setSelected(settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
+        }
+        if (settings.containsKey(SettingKeys.CURR_BOOK_PATH1)) {
+            bookPath1.setValue(settings.get(SettingKeys.CURR_BOOK_PATH1));
+            prevSelectedBookPath = settings.get(SettingKeys.CURR_BOOK_PATH1);
+        }
+        if (settings.containsKey(SettingKeys.CURR_BOOK_PATH2)) {
+            bookPath2.setValue(settings.get(SettingKeys.CURR_BOOK_PATH2));
+            prevSelectedBookPath = settings.get(SettingKeys.CURR_BOOK_PATH2);
+        }
+        if (settings.containsKey(SettingKeys.CURR_SHEET_NAME1)) {
+            choiceSheetName1.setValue(settings.get(SettingKeys.CURR_SHEET_NAME1));
+        }
+        if (settings.containsKey(SettingKeys.CURR_SHEET_NAME2)) {
+            choiceSheetName2.setValue(settings.get(SettingKeys.CURR_SHEET_NAME2));
+        }
+        if (settings.containsKey(SettingKeys.CONSIDER_ROW_GAPS)) {
+            checkConsiderRowGaps.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
+        }
+        if (settings.containsKey(SettingKeys.CONSIDER_COLUMN_GAPS)) {
+            checkConsiderColumnGaps.setSelected(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS));
+        }
+        if (settings.containsKey(SettingKeys.COMPARE_CELL_CONTENTS)) {
+            checkCompareCellContents.setSelected(settings.get(SettingKeys.COMPARE_CELL_CONTENTS));
+        }
+        if (settings.containsKey(SettingKeys.COMPARE_CELL_COMMENTS)) {
+            checkCompareCellComments.setSelected(settings.get(SettingKeys.COMPARE_CELL_COMMENTS));
+        }
+        if (settings.containsKey(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
+            radioCompareOnFormula.setSelected(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING));
+        }
+        if (settings.containsKey(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            checkShowPaintedSheets.setSelected(settings.get(SettingKeys.SHOW_PAINTED_SHEETS));
+        }
+        if (settings.containsKey(SettingKeys.SHOW_RESULT_TEXT)) {
+            checkShowResultText.setSelected(settings.get(SettingKeys.SHOW_RESULT_TEXT));
+        }
+        if (settings.containsKey(SettingKeys.EXIT_WHEN_FINISHED)) {
+            checkExitWhenFinished.setSelected(settings.get(SettingKeys.EXIT_WHEN_FINISHED));
+        }
     }
     
     private ObservableList<String> getSheetNames(Path bookPath) {

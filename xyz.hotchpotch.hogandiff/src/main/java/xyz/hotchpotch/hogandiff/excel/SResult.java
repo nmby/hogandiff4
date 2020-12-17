@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -350,62 +349,80 @@ public class SResult {
     }
     
     /**
-     * 比較結果のサマリを返します。<br>
+     * この比較結果における差分の有無を返します。<br>
      * 
-     * @return 比較結果のサマリ
+     * @return 差分ありの場合は {@code true}
      */
-    public String getSummary() {
-        StringBuilder str = new StringBuilder();
+    public boolean hasDiff() {
+        return !redundantRows.a().isEmpty()
+                || !redundantRows.b().isEmpty()
+                || !redundantColumns.a().isEmpty()
+                || !redundantColumns.b().isEmpty()
+                || !diffCells.isEmpty();
+    }
+    
+    /**
+     * 比較結果の差分サマリを返します。<br>
+     * 
+     * @return 比較結果の差分サマリ
+     */
+    public String getDiffSummary() {
+        if (!hasDiff()) {
+            return "(差分なし)";
+        }
         
-        if (considerRowGaps) {
-            str.append(String.format(
-                    "余剰行 : シートA - %s, シートB - %s",
-                    redundantRows.a().isEmpty() ? "(なし)" : redundantRows.a().size() + "行",
-                    redundantRows.b().isEmpty() ? "(なし)" : redundantRows.b().size() + "行"))
-                    .append(BR);
+        int rows = redundantRows.a().size() + redundantRows.b().size();
+        int cols = redundantColumns.a().size() + redundantColumns.b().size();
+        int cells = diffCells.size();
+        
+        StringBuilder str = new StringBuilder();
+        if (0 < rows) {
+            str.append("余剰行").append(rows);
         }
-        if (considerColumnGaps) {
-            str.append(String.format(
-                    "余剰列 : シートA - %s, シートB - %s",
-                    redundantColumns.a().isEmpty() ? "(なし)" : redundantColumns.a().size() + "列",
-                    redundantColumns.b().isEmpty() ? "(なし)" : redundantColumns.b().size() + "列"))
-                    .append(BR);
+        if (0 < cols) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append("余剰列").append(cols);
         }
-        str.append(String.format(
-                "差分セル : %s",
-                diffCells.isEmpty() ? "(なし)" : "各シート" + diffCells.size() + "セル"))
-                .append(BR);
+        if (0 < cells) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append("差分セル").append(cells);
+        }
         
         return str.toString();
     }
     
     /**
-     * 比較結果の詳細を返します。<br>
+     * 比較結果の差分詳細を返します。<br>
      * 
-     * @return 比較結果の詳細
+     * @return 比較結果の差分詳細
      */
-    public String getDetail() {
+    public String getDiffDetail() {
+        if (!hasDiff()) {
+            return "(差分なし)";
+        }
+        
         StringBuilder str = new StringBuilder();
         
-        if (considerRowGaps) {
+        if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
             for (Side side : Side.values()) {
-                str.append(String.format("シート%s上の余剰行 : ", side)).append(BR);
-                if (redundantRows.get(side).isEmpty()) {
-                    str.append("    (なし)").append(BR);
-                } else {
-                    redundantRows.get(side).forEach(
-                            row -> str.append("    行").append(row + 1).append(BR));
+                List<Integer> rows = redundantRows.get(side);
+                if (!rows.isEmpty()) {
+                    str.append(String.format("シート%s上の余剰行 : ", side)).append(BR);
+                    rows.forEach(row -> str.append("    行").append(row + 1).append(BR));
                 }
             }
             str.append(BR);
         }
-        if (considerColumnGaps) {
+        if (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty()) {
             for (Side side : Side.values()) {
-                str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
-                if (redundantColumns.get(side).isEmpty()) {
-                    str.append("    (なし)").append(BR);
-                } else {
-                    redundantColumns.get(side).forEach(column -> str
+                List<Integer> cols = redundantColumns.get(side);
+                if (!cols.isEmpty()) {
+                    str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
+                    cols.forEach(column -> str
                             .append("    ")
                             .append(CellReplica.columnIdxToStr(column))
                             .append("列").append(BR));
@@ -413,19 +430,13 @@ public class SResult {
             }
             str.append(BR);
         }
-        str.append("差分セル : ");
-        if (diffCells.isEmpty()) {
-            str.append(BR).append("    (なし)").append(BR);
-        } else {
-            Iterator<Pair<CellReplica>> itr = diffCells.iterator();
-            while (itr.hasNext()) {
-                Pair<CellReplica> pair = itr.next();
-                CellReplica cell1 = pair.a();
-                CellReplica cell2 = pair.b();
+        if (!diffCells.isEmpty()) {
+            str.append("差分セル : ");
+            diffCells.forEach(pair -> {
                 str.append(BR);
-                str.append("    ").append(cell1).append(BR);
-                str.append("    ").append(cell2).append(BR);
-            }
+                str.append("    ").append(pair.a()).append(BR);
+                str.append("    ").append(pair.b()).append(BR);
+            });
         }
         
         return str.toString();
@@ -433,7 +444,7 @@ public class SResult {
     
     @Override
     public String toString() {
-        return getDetail();
+        return getDiffDetail();
     }
     
     /**
