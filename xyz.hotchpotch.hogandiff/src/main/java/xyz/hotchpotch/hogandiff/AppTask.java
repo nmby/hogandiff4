@@ -41,12 +41,6 @@ public class AppTask extends Task<Void> {
     private static final String BR = System.lineSeparator();
     private static final int PROGRESS_MAX = 100;
     
-    private static String sheetNamePair(Pair<String> pair) {
-        return String.format("  - %s vs %s\n",
-                pair.isPresentA() ? "[" + pair.a() + "]" : "(なし)",
-                pair.isPresentB() ? "[" + pair.b() + "]" : "(なし)");
-    }
-    
     /**
      * 新しいタスクを生成して返します。<br>
      * 
@@ -156,7 +150,7 @@ public class AppTask extends Task<Void> {
             workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                     .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
             str.append(String.format(
-                    "作業用フォルダを作成しています...\n  - %s\n\n", workDir));
+                    "作業用フォルダを作成しています...\n    - %s\n\n", workDir));
             updateMessage(str.toString());
             
             workDir = Files.createDirectories(workDir);
@@ -186,8 +180,11 @@ public class AppTask extends Task<Void> {
                 updateMessage(str.toString());
                 
                 pairs = menu.getSheetNamePairs(settings, factory);
-                pairs.forEach(p -> str.append(sheetNamePair(p)));
-                str.append("\n");
+                for (int i = 0; i < pairs.size(); i++) {
+                    Pair<String> pair = pairs.get(i);
+                    str.append(BResult.formatSheetNamesPair(i, pair)).append(BR);
+                }
+                str.append(BR);
                 
                 updateMessage(str.toString());
                 
@@ -224,20 +221,20 @@ public class AppTask extends Task<Void> {
                     ? loader1
                     : factory.sheetLoader(settings, bookPath2);
             SComparator comparator = factory.comparator(settings);
-            
             Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
-            List<Pair<String>> pairedPairs = pairs.stream()
-                    .filter(Pair::isPaired)
-                    .collect(Collectors.toList());
             
+            str.append("シートを比較しています...").append(BR);
+            updateMessage(str.toString());
             int total = progressAfter - progressBefore;
-            int i = 0;
-            for (Pair<String> pair : pairedPairs) {
-                i++;
-                
-                str.append(String.format(
-                        "シートを比較しています(%d/%d)...\n%s",
-                        i, pairedPairs.size(), sheetNamePair(pair)));
+            int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
+            int num = 0;
+            
+            for (int i = 0; i < pairs.size(); i++) {
+                Pair<String> pair = pairs.get(i);
+                if (!pair.isPaired()) {
+                    continue;
+                }
+                str.append(BResult.formatSheetNamesPair(i, pair));
                 updateMessage(str.toString());
                 
                 Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
@@ -245,10 +242,13 @@ public class AppTask extends Task<Void> {
                 SResult result = comparator.compare(cells1, cells2);
                 results.put(pair, Optional.of(result));
                 
-                str.append(result.getSummary().indent(8)).append(BR);
+                str.append("  -  ").append(result.getDiffSummary()).append(BR);
                 updateMessage(str.toString());
-                updateProgress(progressBefore + total * i / pairedPairs.size(), PROGRESS_MAX);
+                
+                num++;
+                updateProgress(progressBefore + total * num / numTotalPairs, PROGRESS_MAX);
             }
+            str.append(BR);
             
             List<Pair<String>> unpairedPairs = pairs.stream()
                     .filter(Predicate.not(Pair::isPaired))
@@ -282,7 +282,7 @@ public class AppTask extends Task<Void> {
             textPath = workDir.resolve("result.txt");
             
             str.append(String.format(
-                    "比較結果テキストを保存して表示しています...\n  - %s\n\n", textPath));
+                    "比較結果テキストを保存して表示しています...\n    - %s\n\n", textPath));
             updateMessage(str.toString());
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
@@ -334,7 +334,7 @@ public class AppTask extends Task<Void> {
             Path src = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst = workDir.resolve(src.getFileName());
             BookPainter painter = factory.painter(settings, dst);
-            str.append(String.format("  - %s\n\n", dst));
+            str.append(String.format("    - %s\n\n", dst));
             updateMessage(str.toString());
             
             Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
@@ -366,22 +366,21 @@ public class AppTask extends Task<Void> {
             updateProgress(progressBefore, PROGRESS_MAX);
             int progressTotal = progressAfter - progressBefore;
             
-            str.append("Excelブックに比較結果の色を付けて保存しています(1/2)...\n");
+            str.append("Excelブックに比較結果の色を付けて保存しています...\n");
             updateMessage(str.toString());
+            
             Path src1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst1 = workDir.resolve("【A】" + src1.getFileName());
             BookPainter painter1 = factory.painter(settings, dst1);
-            str.append(String.format("  - %s\n\n", dst1));
+            str.append(String.format("    - %s\n", dst1));
             updateMessage(str.toString());
             painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
             updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
             
-            str.append("Excelブックに比較結果の色を付けて保存しています(2/2)...\n");
-            updateMessage(str.toString());
             Path src2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             Path dst2 = workDir.resolve("【B】" + src2.getFileName());
             BookPainter painter2 = factory.painter(settings, dst2);
-            str.append(String.format("  - %s\n\n", dst2));
+            str.append(String.format("    - %s\n\n", dst2));
             updateMessage(str.toString());
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
