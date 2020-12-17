@@ -24,6 +24,27 @@ public class BResult {
     private static final String BR = System.lineSeparator();
     
     /**
+     * シート名ペアをユーザー表示用に整形して返します。<br>
+     * 
+     * @param idx シート名ペアのインデックス。{@code idx + 1} が番号として表示されます。
+     * @param pair シート名ペア
+     * @return シート名ペアの整形済み文字列
+     * @throws NullPointerException {@code pair} が {@code null} の場合
+     * @throws IndexOutOfBoundsException {@code idx} が {@code 0} 未満の場合
+     */
+    public static String formatSheetNamesPair(int idx, Pair<String> pair) {
+        if (idx < 0) {
+            throw new IndexOutOfBoundsException(idx);
+        }
+        Objects.requireNonNull(pair, "pair");
+        
+        return String.format("    %d) %s vs %s",
+                idx + 1,
+                pair.isPresentA() ? "A[" + pair.a() + "]" : "(比較相手なし)",
+                pair.isPresentB() ? "B[" + pair.b() + "]" : "(比較相手なし)");
+    }
+    
+    /**
      * Excelブック同士の比較結果を生成して返します。<br>
      * 
      * @param bookPath1 比較対象Excelブックのパス1
@@ -87,22 +108,23 @@ public class BResult {
                         entry -> entry.getValue().map(s -> s.getPiece(side))));
     }
     
-    private String getText(Function<SResult, String> func) {
+    private String getDiffText(Function<SResult, String> diffDescriptor) {
+        StringBuilder str = new StringBuilder();
         
-        return sheetPairs.stream().map(pair -> {
+        for (int i = 0; i < sheetPairs.size(); i++) {
+            Pair<String> pair = sheetPairs.get(i);
+            Optional<SResult> sResult = results.get(pair);
             
-            StringBuilder str = new StringBuilder();
-            str.append(String.format("  - %s vs %s",
-                    pair.isPresentA() ? "[" + pair.a() + "]" : "(なし)",
-                    pair.isPresentB() ? "[" + pair.b() + "]" : "(なし)"))
-                    .append(BR);
-            
-            if (pair.isPaired()) {
-                str.append(func.apply(results.get(pair).get()).indent(8));
+            if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
+                continue;
             }
-            return str;
             
-        }).collect(Collectors.joining(BR));
+            str.append(formatSheetNamesPair(i, pair));
+            str.append(diffDescriptor.apply(sResult.get()));
+            str.append(BR);
+        }
+        
+        return str.isEmpty() ? "    (差分なし)" + BR : str.toString();
     }
     
     /**
@@ -111,25 +133,7 @@ public class BResult {
      * @return 比較結果の差分サマリ
      */
     public String getDiffSummary() {
-        StringBuilder str = new StringBuilder();
-        
-        for (int i = 0; i < sheetPairs.size(); i++) {
-            Pair<String> pair = sheetPairs.get(i);
-            SResult sResult = results.get(pair).get();
-            
-            if (!pair.isPaired() || !sResult.hasDiff()) {
-                continue;
-            }
-            
-            str.append(String.format("    %d) [%s] vs [%s]   %s",
-                    i + 1,
-                    pair.a(),
-                    pair.b(),
-                    sResult.getDiffSummary()))
-                    .append(BR);
-        }
-        
-        return str.isEmpty() ? "    (差分なし)" + BR : str.toString();
+        return getDiffText(sResult -> "  -  " + sResult.getDiffSummary());
     }
     
     /**
@@ -138,46 +142,7 @@ public class BResult {
      * @return 比較結果の差分詳細
      */
     public String getDiffDetail() {
-        StringBuilder str = new StringBuilder();
-        
-        for (int i = 0; i < sheetPairs.size(); i++) {
-            Pair<String> pair = sheetPairs.get(i);
-            SResult sResult = results.get(pair).get();
-            
-            if (!pair.isPaired() || !sResult.hasDiff()) {
-                continue;
-            }
-            
-            str.append(String.format("    %d) [%s] vs [%s]",
-                    i + 1,
-                    pair.a(),
-                    pair.b()))
-                    .append(BR);
-            str.append(sResult.getDiffDetail().indent(8))
-                    .append(BR);
-        }
-        
-        return str.isEmpty() ? "    (差分なし)" + BR : str.toString();
-    }
-    
-    /**
-     * 比較結果のサマリを返します。<br>
-     * 
-     * @return 比較結果のサマリ
-     */
-    @Deprecated
-    public String getSummary() {
-        return getText(SResult::getSummary);
-    }
-    
-    /**
-     * 比較結果の詳細を返します。<br>
-     * 
-     * @return 比較結果の詳細
-     */
-    @Deprecated
-    public String getDetail() {
-        return getText(SResult::getDetail);
+        return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8));
     }
     
     @Override
@@ -193,11 +158,7 @@ public class BResult {
         
         for (int i = 0; i < sheetPairs.size(); i++) {
             Pair<String> pair = sheetPairs.get(i);
-            str.append(String.format("    %d) %s vs %s",
-                    i + 1,
-                    pair.isPresentA() ? "[" + pair.a() + "]" : "(比較相手なし)",
-                    pair.isPresentB() ? "[" + pair.b() + "]" : "(比較相手なし)"))
-                    .append(BR);
+            str.append(formatSheetNamesPair(i, pair)).append(BR);
         }
         
         str.append(BR);
