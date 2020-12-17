@@ -226,7 +226,7 @@ public class AppTask extends Task<Void> {
             str.append("シートを比較しています...").append(BR);
             updateMessage(str.toString());
             int total = progressAfter - progressBefore;
-            int numDiffPairs = (int) pairs.stream().filter(Pair::isPaired).count();
+            int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
             int num = 0;
             
             for (int i = 0; i < pairs.size(); i++) {
@@ -246,7 +246,7 @@ public class AppTask extends Task<Void> {
                 updateMessage(str.toString());
                 
                 num++;
-                updateProgress(progressBefore + total * num / numDiffPairs, PROGRESS_MAX);
+                updateProgress(progressBefore + total * num / numTotalPairs, PROGRESS_MAX);
             }
             str.append(BR);
             
