@@ -193,7 +193,7 @@ task exewrapForWin64 {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '15',
+                    '-t', '16',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
