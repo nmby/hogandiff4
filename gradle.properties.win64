@@ -1,9 +1,9 @@
 
-org.gradle.java.home=C:/pleiades_202012/java/15
+org.gradle.java.home=C:/pleiades_202103/java/15
 
-myprop.cmd.jlink=C:/pleiades_202012/java/15/bin/jlink
-myprop.cmd.jdeps=C:/pleiades_202012/java/15/bin/jdeps
-myprop.cmd.jpackage=C:/pleiades_202012/java/15/bin/jpackage
+myprop.cmd.jlink=C:/pleiades_202103/java/15/bin/jlink
+myprop.cmd.jdeps=C:/pleiades_202103/java/15/bin/jdeps
+myprop.cmd.jpackage=C:/pleiades_202103/java/15/bin/jpackage
 myprop.cmd.exewrap=C:/Program Files/exewrap1.6.4/x64/exewrap.exe
 
 myprop.userlib=C:/UserLibs
