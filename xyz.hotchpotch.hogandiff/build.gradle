@@ -30,7 +30,7 @@ tasks.withType(JavaCompile) {
 }
 
 javafx {
-    version = "15"
+    version = "16"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 

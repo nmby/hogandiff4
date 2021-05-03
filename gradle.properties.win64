@@ -9,8 +9,8 @@ myprop.cmd.exewrap=C:/Program Files/exewrap1.6.4/x64/exewrap.exe
 myprop.userlib=C:/UserLibs
 myprop.jre.mod.win64=C:/UserLibs/jdk-16.0.1+9-win-x64/jmods
 myprop.jre.mod.macos=C:/UserLibs/jdk-16.0.1+9-mac-x64/Contents/Home/jmods
-myprop.jfx.mod.win64=C:/UserLibs/javafx-jmods-15.0.1-win-x64
-myprop.jfx.mod.macos=C:/UserLibs/javafx-jmods-15.0.1-mac-x64
-myprop.jfx.lib.win64=C:/UserLibs/javafx-sdk-15.0.1-win-x64/lib
+myprop.jfx.mod.win64=C:/UserLibs/javafx-jmods-16-win-x64
+myprop.jfx.mod.macos=C:/UserLibs/javafx-jmods-16-mac-x64
+myprop.jfx.lib.win64=C:/UserLibs/javafx-sdk-16-win-x64/lib
 
 myprop.common.pathseparator=;
