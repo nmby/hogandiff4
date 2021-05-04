@@ -47,15 +47,15 @@ public abstract class BufferingReader implements XMLEventReader {
     }
     
     /**
-     * {@link #hasNext()}, {@link #peek()}, {@link #nextEvent()}, {@link #next()} が
-     * 初めて呼ばれた際に実行されます。<br>
-     * 但し、このリーダーの状態が変わらない間に上記メソッドが再び呼ばれた場合は、
+     * このリーダーの現在の状態で {@link #hasNext()}, {@link #peek()}, {@link #nextEvent()}, {@link #next()}
+     * が初めて呼ばれた際に実行されます。<br>
+     * このリーダーの状態が変わらない間に上記メソッドが再び呼ばれた場合は、
      * このメソッドは実行されません。<br>
      * <br>
      * このメソッドの実装者は、ソースリーダー {@link #source} の次のイベントを調べ、
      * 次のいずれかの措置をとることができます。<br>
      * <br>
-     * <strong>A) ソースリーダーの次のイベントをそのまま利用したい場合</strong><br>
+     * <strong>A) ソースリーダーの次のイベントをこのリーダーの次のイベントとしてそのまま利用したい場合</strong><br>
      * 何もせずにこのメソッドの処理を終えます。
      * こうすることにより、ソースリーダーの次のイベントがそのまま
      * このリーダーの次のイベントとなります。<br>
@@ -64,7 +64,7 @@ public abstract class BufferingReader implements XMLEventReader {
      * 必要な要素が現れるまで、ソースリーダーを空読みします。<br>
      * <br>
      * <strong>C) ソースリーダーの次のイベントの前に別のイベントを追加したい場合</strong><br>
-     * {@link #buffer} にイベントを追加します。
+     * {@link #buffer} に自身で生成したイベントを追加します。
      * 加えて、ソースリーダーの次のイベントを取り出し、{@link #buffer} の末尾に追加します
      * （これを怠ると無限ループに陥るため注意してください）。<br>
      * こうすることにより、まず {@link #buffer} 内のイベントが消費され、
@@ -96,8 +96,9 @@ public abstract class BufferingReader implements XMLEventReader {
     /**
      * {@inheritDoc}
      * <br>
-     * この実装は、{@link #buffer} が空でない場合はその先頭のイベントを、
-     * {@link #buffer} が空であり {@link #source} が空でない場合はその次のイベントを返します。<br>
+     * この実装は、{@link #buffer} が空でない場合は {@link #buffer} の先頭のイベントを、
+     * {@link #buffer} が空であり {@link #source} が空でない場合は
+     * {@link #source} の先頭のイベントを返します。<br>
      * どちらも空の場合は {@code null} を返します。<br>
      */
     @Override
@@ -114,8 +115,9 @@ public abstract class BufferingReader implements XMLEventReader {
     /**
      * {@inheritDoc}
      * <br>
-     * この実装は、{@link #buffer} が空でない場合はその先頭のイベントを、
-     * {@link #buffer} が空であり {@link #source} が空でない場合はその次のイベントを返します。<br>
+     * この実装は、{@link #buffer} が空でない場合は {@link #buffer} の先頭のイベントを、
+     * {@link #buffer} が空であり {@link #source} が空でない場合は
+     * {@link #source} の先頭のイベントを返します。<br>
      * どちらも空の場合は例外をスローします。<br>
      * 
      * @throws NoSuchElementException 次の要素が存在しない場合
