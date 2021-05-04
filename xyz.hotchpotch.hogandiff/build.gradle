@@ -13,24 +13,24 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:4.1.2'
     implementation 'org.apache.poi:poi-ooxml-schemas:4.1.2'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.7.1'
 }
 
 test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = "15"
-targetCompatibility = "15"
+sourceCompatibility = "16"
+targetCompatibility = "16"
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 javafx {
-    version = "15"
+    version = "16"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
