@@ -72,8 +72,11 @@ public class AppMain extends Application {
             properties.store(w, null);
         } catch (Exception e) {
             e.printStackTrace();
-            new Alert(AlertType.ERROR, "設定の保存に失敗しました。", ButtonType.OK)
-                    .showAndWait();
+            new Alert(
+                    AlertType.ERROR,
+                    "設定の保存に失敗しました。\n" + APP_PROP_PATH,
+                    ButtonType.OK)
+                            .showAndWait();
         }
     }
     
