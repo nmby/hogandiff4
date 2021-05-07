@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.stax;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
@@ -328,11 +327,6 @@ public class XSSFBookPainterWithStax implements BookPainter {
             dst.toFile().setWritable(true, false);
             
         } catch (Exception e) {
-            try {
-                Files.deleteIfExists(dst);
-            } catch (IOException e1) {
-                e.addSuppressed(e1);
-            }
             throw new ExcelHandlingException(String.format(
                     "Excelファイルのコピーに失敗しました：%s -> %s", src, dst), e);
         }

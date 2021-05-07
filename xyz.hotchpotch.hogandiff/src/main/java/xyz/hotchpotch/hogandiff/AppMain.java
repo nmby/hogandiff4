@@ -29,7 +29,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.7.7";
+    private static final String VERSION = "v0.7.8";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -72,8 +72,11 @@ public class AppMain extends Application {
             properties.store(w, null);
         } catch (Exception e) {
             e.printStackTrace();
-            new Alert(AlertType.ERROR, "設定の保存に失敗しました。", ButtonType.OK)
-                    .showAndWait();
+            new Alert(
+                    AlertType.ERROR,
+                    "設定の保存に失敗しました。\n" + APP_PROP_PATH,
+                    ButtonType.OK)
+                            .showAndWait();
         }
     }
     

@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
@@ -109,6 +111,16 @@ public class CombinedBookPainter implements BookPainter {
             } catch (Exception e) {
                 e.printStackTrace();
                 failed.addSuppressed(e);
+            }
+            
+            // painterの処理に失敗し、かつ後続painterがある場合は、
+            // 保存先ファイルを削除しておく。
+            if (itr.hasNext()) {
+                try {
+                    Files.deleteIfExists(dstBookPath);
+                } catch (IOException e) {
+                    failed.addSuppressed(e);
+                }
             }
         }
         throw failed;

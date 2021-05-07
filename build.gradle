@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.7.7'
+final def version = '0.7.8'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -119,7 +119,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'msi',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2020 nmby',
+                    '--copyright', '(c) 2018-2021 nmby',
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
@@ -162,7 +162,7 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'pkg',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2020 nmby',
+                    '--copyright', '(c) 2018-2021 nmby',
                     '--description', 'Excelファイル比較ツール',
                     '--name', '方眼Diff',
                     '--dest', outputDir,
@@ -193,13 +193,13 @@ task exewrapForWin64 {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '15',
+                    '-t', '16',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
-                    '-c', '(c) 2018-2020 nmby',
+                    '-c', '(c) 2018-2021 nmby',
                     '-j', targetJar,
                     '-o', outputDirWin64.resolve('方眼Diff.exe')
         }

@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -159,11 +158,6 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             dstBookPath.toFile().setWritable(true, false);
             
         } catch (Exception e) {
-            try {
-                Files.deleteIfExists(dstBookPath);
-            } catch (IOException e1) {
-                e.addSuppressed(e1);
-            }
             throw new ExcelHandlingException(String.format(
                     "Excelファイルのコピーに失敗しました：%s -> %s",
                     srcBookPath, dstBookPath), e);
