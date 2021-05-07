@@ -155,8 +155,7 @@ public class Pair<T> {
     
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Pair) {
-            Pair<?> other = (Pair<?>) o;
+        if (o instanceof Pair other) {
             return a.equals(other.a) && b.equals(other.b);
         }
         return false;

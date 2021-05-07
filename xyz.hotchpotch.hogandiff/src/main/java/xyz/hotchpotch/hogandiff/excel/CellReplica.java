@@ -289,8 +289,7 @@ public class CellReplica {
      */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof CellReplica) {
-            CellReplica other = (CellReplica) o;
+        if (o instanceof CellReplica other) {
             return row == other.row()
                     && column == other.column()
                     && attrEquals(other);

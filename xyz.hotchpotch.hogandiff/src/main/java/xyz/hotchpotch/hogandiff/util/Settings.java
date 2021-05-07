@@ -358,8 +358,7 @@ public class Settings {
     
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Settings) {
-            Settings other = (Settings) o;
+        if (o instanceof Settings other) {
             return map.equals(other.map);
         }
         return false;

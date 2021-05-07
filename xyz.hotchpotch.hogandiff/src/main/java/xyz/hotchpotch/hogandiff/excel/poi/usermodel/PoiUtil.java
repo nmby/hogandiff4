@@ -159,9 +159,8 @@ public class PoiUtil {
                 return EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
             }
             
-        } else if (sheet instanceof HSSFSheet) {
+        } else if (sheet instanceof HSSFSheet hSheet) {
             
-            HSSFSheet hSheet = (HSSFSheet) sheet;
             try {
                 if (hSheet.getDialog()) {
                     // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
@@ -191,10 +190,10 @@ public class PoiUtil {
     public static void clearAllColors(Workbook book) {
         Objects.requireNonNull(book, "book");
         
-        if (book instanceof XSSFWorkbook) {
-            clearAllColors((XSSFWorkbook) book);
-        } else if (book instanceof HSSFWorkbook) {
-            clearAllColors((HSSFWorkbook) book);
+        if (book instanceof XSSFWorkbook xBook) {
+            clearAllColors(xBook);
+        } else if (book instanceof HSSFWorkbook hBook) {
+            clearAllColors(hBook);
         } else {
             throw new AssertionError("unknown book type: " + book.getClass().getName());
         }
@@ -505,14 +504,12 @@ public class PoiUtil {
         addresses.forEach(addr -> {
             Comment c = comments.get(addr);
             
-            if (c instanceof XSSFComment) {
-                XSSFComment comment = (XSSFComment) c;
+            if (c instanceof XSSFComment comment) {
                 // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
                 comment.setVisible(true);
                 // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
                 
-            } else if (c instanceof HSSFComment) {
-                HSSFComment comment = (HSSFComment) c;
+            } else if (c instanceof HSSFComment comment) {
                 comment.setVisible(true);
                 comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
                 
@@ -537,11 +534,11 @@ public class PoiUtil {
         Objects.requireNonNull(sheet, "sheet");
         Objects.requireNonNull(color, "color");
         
-        if (sheet instanceof XSSFSheet) {
+        if (sheet instanceof XSSFSheet xSheet) {
             // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
-            ((XSSFSheet) sheet).setTabColor(new XSSFColor(color));
+            xSheet.setTabColor(new XSSFColor(color));
             
-        } else if (sheet instanceof HSSFSheet) {
+        } else if (sheet instanceof HSSFSheet hSheet) {
             // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
         }
     }
