@@ -76,7 +76,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB) {
+    public List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
@@ -93,7 +96,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         return pairs;
     }
     
-    private ComeFrom[][] calcBestDirections(List<? extends T> listA, List<? extends T> listB) {
+    private ComeFrom[][] calcBestDirections(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         assert listA != null;
         assert listB != null;
         assert listA != listB;

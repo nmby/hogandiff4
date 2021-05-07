@@ -132,7 +132,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB) {
+    public List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
@@ -148,7 +151,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         Stream<Cost> gapCostsB = IntStream.range(0, listB.size()).parallel()
                 .mapToObj(j -> new Cost(null, j, gapEvaluator.applyAsInt(listB.get(j))));
         Stream<Cost> diffCosts = IntStream.range(0, listA.size()).parallel()
-                .mapToObj(Integer::valueOf)
+                .boxed()
                 .flatMap(i -> IntStream.range(0, listB.size()).parallel()
                         .mapToObj(j -> new Cost(i, j, diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
         
