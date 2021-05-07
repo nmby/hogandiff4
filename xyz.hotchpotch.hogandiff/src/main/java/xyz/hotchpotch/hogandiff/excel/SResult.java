@@ -224,24 +224,24 @@ public class SResult {
                 ? List.of()
                 : List.copyOf(diffCells.stream()
                         .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
-                        .collect(Collectors.toList()));
+                        .toList());
         this.diffCellComments = !compareCellComments
                 ? List.of()
                 : List.copyOf(diffCells.stream()
                         .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
                         .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
-                        .collect(Collectors.toList()));
+                        .toList());
         this.redundantCellComments = !compareCellComments
                 ? Pair.of(List.of(), List.of())
                 : Pair.of(
                         List.copyOf(diffCells.stream()
                                 .filter(p -> p.a().getComment() != null && p.b().getComment() == null)
                                 .map(Pair::a)
-                                .collect(Collectors.toList())),
+                                .toList()),
                         List.copyOf(diffCells.stream()
                                 .filter(p -> p.a().getComment() == null && p.b().getComment() != null)
                                 .map(Pair::b)
-                                .collect(Collectors.toList())));
+                                .toList()));
     }
     
     /**
@@ -343,8 +343,8 @@ public class SResult {
         return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
-                diffCellContents.stream().map(p -> p.get(side)).collect(Collectors.toList()),
-                diffCellComments.stream().map(p -> p.get(side)).collect(Collectors.toList()),
+                diffCellContents.stream().map(p -> p.get(side)).toList(),
+                diffCellComments.stream().map(p -> p.get(side)).toList(),
                 redundantCellComments.get(side));
     }
     

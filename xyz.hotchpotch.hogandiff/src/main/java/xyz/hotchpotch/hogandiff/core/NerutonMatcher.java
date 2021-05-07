@@ -139,7 +139,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> Pair.of(n, n))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         
         // まず、全ての組み合わせのコストを計算する。

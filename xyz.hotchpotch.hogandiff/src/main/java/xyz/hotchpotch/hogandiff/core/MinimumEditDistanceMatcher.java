@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -84,7 +83,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> Pair.of(n, n))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         
         ComeFrom[][] bestDirections = calcBestDirections(listA, listB);

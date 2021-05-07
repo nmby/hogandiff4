@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.core;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -38,6 +37,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
                 .mapToObj(n -> Pair.ofNullable(
                         n < listA.size() ? n : null,
                         n < listB.size() ? n : null))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

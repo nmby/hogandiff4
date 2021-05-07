@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.poi.ss.usermodel.Sheet;
@@ -89,7 +88,7 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             return StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
-                    .collect(Collectors.toList());
+                    .toList();
             
         } catch (Exception e) {
             throw new ExcelHandlingException("処理に失敗しました：" + bookPath, e);
