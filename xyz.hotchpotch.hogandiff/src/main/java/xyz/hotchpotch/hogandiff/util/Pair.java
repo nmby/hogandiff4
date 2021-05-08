@@ -11,7 +11,7 @@ import java.util.function.Function;
  * @param <T> 要素の型
  * @author nmby
  */
-public class Pair<T> {
+public record Pair<T>(T a, T b) {
     
     // [static members] ********************************************************
     
@@ -145,27 +145,6 @@ public class Pair<T> {
     
     // [instance members] ******************************************************
     
-    private final T a;
-    private final T b;
-    
-    private Pair(T a, T b) {
-        this.a = a;
-        this.b = b;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Pair<?> other) {
-            return Objects.equals(a, other.a) && Objects.equals(b, other.b);
-        }
-        return false;
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(a, b);
-    }
-    
     @Override
     public String toString() {
         return String.format("(%s, %s)", a, b);
@@ -177,6 +156,7 @@ public class Pair<T> {
      * @return 要素a
      * @throws NoSuchElementException 要素aが無い場合
      */
+    @Override
     public T a() {
         if (a == null) {
             throw new NoSuchElementException();
@@ -190,6 +170,7 @@ public class Pair<T> {
      * @return 要素b
      * @throws NoSuchElementException 要素bが無い場合
      */
+    @Override
     public T b() {
         if (b == null) {
             throw new NoSuchElementException();
