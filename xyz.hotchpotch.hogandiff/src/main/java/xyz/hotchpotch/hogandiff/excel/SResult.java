@@ -24,37 +24,33 @@ public class SResult {
      *
      * @author nmby
      */
-    public static class Piece {
+    public static record Piece(
+            List<Integer> redundantRows,
+            List<Integer> redundantColumns,
+            List<CellReplica> diffCellContents,
+            List<CellReplica> diffCellComments,
+            List<CellReplica> redundantCellComments) {
         
         // [static members] ----------------------------------------------------
         
         // [instance members] --------------------------------------------------
         
-        private final List<Integer> redundantRows;
-        private final List<Integer> redundantColumns;
-        private final List<CellReplica> diffCellContents;
-        private final List<CellReplica> diffCellComments;
-        private final List<CellReplica> redundantCellComments;
-        
-        private Piece(
-                List<Integer> redundantRows,
-                List<Integer> redundantColumns,
-                List<CellReplica> diffCellContents,
-                List<CellReplica> diffCellComments,
-                List<CellReplica> redundantCellComments) {
-            
-            assert redundantRows != null;
-            assert redundantColumns != null;
-            assert diffCellContents != null;
-            assert diffCellComments != null;
-            assert redundantCellComments != null;
+        // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
+        // 本来はコンストラクタを公開する必要がない。ぐぬぬ
+        // recordを使う欲の方が上回ったのでコンストラクタを公開しちゃう。ぐぬぬ
+        public Piece {
+            Objects.requireNonNull(redundantRows, "redundantRows");
+            Objects.requireNonNull(redundantColumns, "redundantColumns");
+            Objects.requireNonNull(diffCellContents, "diffCellContents");
+            Objects.requireNonNull(diffCellComments, "diffCellComments");
+            Objects.requireNonNull(redundantCellComments, "redundantCellComments");
             
             // 一応防御的コピーしておく。
-            this.redundantRows = List.copyOf(redundantRows);
-            this.redundantColumns = List.copyOf(redundantColumns);
-            this.diffCellContents = List.copyOf(diffCellContents);
-            this.diffCellComments = List.copyOf(diffCellComments);
-            this.redundantCellComments = List.copyOf(redundantCellComments);
+            redundantRows = List.copyOf(redundantRows);
+            redundantColumns = List.copyOf(redundantColumns);
+            diffCellContents = List.copyOf(diffCellContents);
+            diffCellComments = List.copyOf(diffCellComments);
+            redundantCellComments = List.copyOf(redundantCellComments);
         }
         
         /**
@@ -68,51 +64,6 @@ public class SResult {
                     || !diffCellContents.isEmpty()
                     || !diffCellComments.isEmpty()
                     || !redundantCellComments.isEmpty();
-        }
-        
-        /**
-         * 余剰行のインデックスを返します。<br>
-         * 
-         * @return 余剰行のインデックス
-         */
-        public List<Integer> redundantRows() {
-            return redundantRows;
-        }
-        
-        /**
-         * 余剰列のインデックスを返します。<br>
-         * 
-         * @return 余剰列のインデックス
-         */
-        public List<Integer> redundantColumns() {
-            return redundantColumns;
-        }
-        
-        /**
-         * セル内容の異なるセルを返します。<br>
-         * 
-         * @return セル内容の異なるセル
-         */
-        public List<CellReplica> diffCellContents() {
-            return diffCellContents;
-        }
-        
-        /**
-         * セルコメントの異なるセルを返します。<br>
-         * 
-         * @return セルコメントの異なるセル
-         */
-        public List<CellReplica> diffCellComments() {
-            return diffCellComments;
-        }
-        
-        /**
-         * 余剰セルコメントのセルを返します。<br>
-         * 
-         * @return 余剰セルコメントのセル
-         */
-        public List<CellReplica> redundantCellComments() {
-            return redundantCellComments;
         }
     }
     

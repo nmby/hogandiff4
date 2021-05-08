@@ -28,24 +28,18 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * 
      * @author nmby
      */
-    private static class Cost implements Comparable<Cost> {
+    // java16で正式導入されたRecordを使ってみる。
+    private static record Cost(Integer idxA, Integer idxB, int cost)
+            implements Comparable<Cost> {
         
         // [static members] ----------------------------------------------------
         
         // [instance members] --------------------------------------------------
         
-        private final Integer idxA;
-        private final Integer idxB;
-        private final int cost;
-        
-        private Cost(Integer idxA, Integer idxB, int cost) {
+        private Cost {
             assert idxA != null || idxB != null;
             assert idxA == null || 0 <= idxA;
             assert idxB == null || 0 <= idxB;
-            
-            this.idxA = idxA;
-            this.idxB = idxB;
-            this.cost = cost;
         }
         
         private boolean isPaired() {

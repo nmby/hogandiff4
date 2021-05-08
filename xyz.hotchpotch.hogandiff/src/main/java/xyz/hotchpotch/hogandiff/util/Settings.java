@@ -28,7 +28,15 @@ public class Settings {
      * @param <T> 設定値の型
      * @author nmby
      */
-    public static class Key<T> {
+    // java16で正式導入されたRecordを使ってみる。
+    // 外形的にはこのクラスがRecordであることは全く問題がないが、
+    // 思想的?にはRecordじゃない気もするけど、まぁ試しに使ってみる。
+    public static record Key<T> (
+            String name,
+            Supplier<? extends T> defaultValueSupplier,
+            Function<? super T, String> encoder,
+            Function<String, ? extends T> decoder,
+            boolean storable) {
         
         // [static members] ----------------------------------------------------
         
@@ -46,6 +54,7 @@ public class Settings {
          *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
          *          のいずれかが {@code null} の場合
          */
+        @Deprecated
         public static <T> Key<T> defineAs(
                 String name,
                 Supplier<? extends T> defaultValueSupplier,
@@ -63,74 +72,26 @@ public class Settings {
         
         // [instance members] --------------------------------------------------
         
-        private final String name;
-        private final Supplier<? extends T> defaultValueSupplier;
-        private final Function<? super T, String> encoder;
-        private final Function<String, ? extends T> decoder;
-        private final boolean storable;
-        
-        private Key(
-                String name,
-                Supplier<? extends T> defaultValueSupplier,
-                Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder,
-                boolean storable) {
-            
-            assert name != null;
-            assert defaultValueSupplier != null;
-            assert encoder != null;
-            assert decoder != null;
-            
-            this.name = name;
-            this.defaultValueSupplier = defaultValueSupplier;
-            this.encoder = encoder;
-            this.decoder = decoder;
-            this.storable = storable;
-        }
-        
         /**
-         * この設定項目の名前を返します。<br>
+         * 新しい設定項目を定義します。<br>
          * 
-         * @return この設定項目の名前
+         * @param name 設定項目の名前
+         * @param defaultValueSupplier 設定項目のデフォルト値のサプライヤ
+         * @param encoder 設定値を文字列に変換するエンコーダー
+         * @param decoder 文字列を設定値に変換するエンコーダー
+         * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
+         * @throws NullPointerException
+         *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
+         *          のいずれかが {@code null} の場合
          */
-        public String name() {
-            return name;
-        }
-        
-        /**
-         * この設定項目のデフォルト値のサプライヤを返します。<br>
-         * 
-         * @return この設定項目のデフォルト値のサプライヤ
-         */
-        public Supplier<? extends T> defaultValueSupplier() {
-            return defaultValueSupplier;
-        }
-        
-        /**
-         * この設定項目の値を文字列に変換するエンコーダーを返します。<br>
-         * 
-         * @return この設定項目の値を文字列に変換するエンコーダー
-         */
-        public Function<? super T, String> encoder() {
-            return encoder;
-        }
-        
-        /**
-         * 文字列をこの設定項目の値に変換するデコーダーを返します。<br>
-         * 
-         * @return 文字列をこの設定項目の値に変換するデコーダー
-         */
-        public Function<String, ? extends T> decoder() {
-            return decoder;
-        }
-        
-        /**
-         * この設定項目の値がプロパティファイルへの保存対象かを返します。<br>
-         * 
-         * @return この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
-         */
-        public boolean storable() {
-            return storable;
+        // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
+        // 本来はコンストラクタを公開する必要がない。ぐぬぬ
+        // recordを使う欲の方が上回ったのでコンストラクタを公開しちゃう。ぐぬぬ
+        public Key {
+            Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
+            Objects.requireNonNull(encoder, "encoder");
+            Objects.requireNonNull(decoder, "decoder");
         }
     }
     
