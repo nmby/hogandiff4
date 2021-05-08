@@ -388,7 +388,12 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     String comment = comments.remove(noteRec.getShapeId());
                     
                     if (cells.containsKey(address)) {
-                        cells.get(address).setComment(comment);
+                        CellReplica original = cells.get(address);
+                        cells.put(address, CellReplica.of(
+                                original.row(),
+                                original.column(),
+                                original.content(),
+                                comment));
                     } else {
                         cells.put(address, CellReplica.of(address, "", comment));
                     }

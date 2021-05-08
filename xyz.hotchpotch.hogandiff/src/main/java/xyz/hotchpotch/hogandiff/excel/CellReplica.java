@@ -213,7 +213,7 @@ public class CellReplica {
      * 
      * @return セル内容
      */
-    public String getContent() {
+    public String content() {
         return content;
     }
     
@@ -223,6 +223,7 @@ public class CellReplica {
      * @param content セル内容
      * @throws NullPointerException {@code content} が {@code null} の場合
      */
+    @Deprecated
     public void setContent(String content) {
         Objects.requireNonNull(content, "content");
         
@@ -236,7 +237,7 @@ public class CellReplica {
      * 
      * @return セルコメント
      */
-    public String getComment() {
+    public String comment() {
         return comment;
     }
     
@@ -245,6 +246,7 @@ public class CellReplica {
      * 
      * @param comment セルコメント
      */
+    @Deprecated
     public void setComment(String comment) {
         this.comment = comment;
     }

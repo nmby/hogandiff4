@@ -174,23 +174,23 @@ public class SResult {
         this.diffCellContents = !compareCellContents
                 ? List.of()
                 : List.copyOf(diffCells.stream()
-                        .filter(p -> !Objects.equals(p.a().getContent(), p.b().getContent()))
+                        .filter(p -> !Objects.equals(p.a().content(), p.b().content()))
                         .toList());
         this.diffCellComments = !compareCellComments
                 ? List.of()
                 : List.copyOf(diffCells.stream()
-                        .filter(p -> p.a().getComment() != null && p.b().getComment() != null)
-                        .filter(p -> !Objects.equals(p.a().getComment(), p.b().getComment()))
+                        .filter(p -> p.a().comment() != null && p.b().comment() != null)
+                        .filter(p -> !Objects.equals(p.a().comment(), p.b().comment()))
                         .toList());
         this.redundantCellComments = !compareCellComments
                 ? Pair.of(List.of(), List.of())
                 : Pair.of(
                         List.copyOf(diffCells.stream()
-                                .filter(p -> p.a().getComment() != null && p.b().getComment() == null)
+                                .filter(p -> p.a().comment() != null && p.b().comment() == null)
                                 .map(Pair::a)
                                 .toList()),
                         List.copyOf(diffCells.stream()
-                                .filter(p -> p.a().getComment() == null && p.b().getComment() != null)
+                                .filter(p -> p.a().comment() == null && p.b().comment() != null)
                                 .map(Pair::b)
                                 .toList()));
     }
