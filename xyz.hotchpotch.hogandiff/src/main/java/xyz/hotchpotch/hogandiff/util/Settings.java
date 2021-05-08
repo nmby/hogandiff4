@@ -40,36 +40,6 @@ public class Settings {
         
         // [static members] ----------------------------------------------------
         
-        /**
-         * 新しい設定項目を定義します。<br>
-         * 
-         * @param <T> 設定値の型
-         * @param name 設定項目の名前
-         * @param defaultValueSupplier 設定項目のデフォルト値のサプライヤ
-         * @param encoder 設定値を文字列に変換するエンコーダー
-         * @param decoder 文字列を設定値に変換するエンコーダー
-         * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
-         * @return 新しい設定項目
-         * @throws NullPointerException
-         *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
-         *          のいずれかが {@code null} の場合
-         */
-        @Deprecated
-        public static <T> Key<T> defineAs(
-                String name,
-                Supplier<? extends T> defaultValueSupplier,
-                Function<? super T, String> encoder,
-                Function<String, ? extends T> decoder,
-                boolean storable) {
-            
-            Objects.requireNonNull(name, "name");
-            Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
-            Objects.requireNonNull(encoder, "encoder");
-            Objects.requireNonNull(decoder, "decoder");
-            
-            return new Key<>(name, defaultValueSupplier, encoder, decoder, storable);
-        }
-        
         // [instance members] --------------------------------------------------
         
         /**
@@ -84,9 +54,6 @@ public class Settings {
          *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
          *          のいずれかが {@code null} の場合
          */
-        // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
-        // 本来はコンストラクタを公開する必要がない。ぐぬぬ
-        // recordを使う欲の方が上回ったのでコンストラクタを公開しちゃう。ぐぬぬ
         public Key {
             Objects.requireNonNull(name, "name");
             Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
