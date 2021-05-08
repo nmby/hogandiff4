@@ -115,10 +115,8 @@ public class SResult {
                 considerColumnGaps,
                 compareCellContents,
                 compareCellComments,
-                redundantRows1,
-                redundantRows2,
-                redundantColumns1,
-                redundantColumns2,
+                Pair.of(redundantRows1, redundantRows2),
+                Pair.of(redundantColumns1, redundantColumns2),
                 diffCells);
     }
     
@@ -140,22 +138,15 @@ public class SResult {
             boolean considerColumnGaps,
             boolean compareCellContents,
             boolean compareCellComments,
-            List<Integer> redundantRows1,
-            List<Integer> redundantRows2,
-            List<Integer> redundantColumns1,
-            List<Integer> redundantColumns2,
+            Pair<List<Integer>> redundantRows,
+            Pair<List<Integer>> redundantColumns,
             List<Pair<CellReplica>> diffCells) {
         
-        assert redundantRows1 != null;
-        assert redundantRows2 != null;
-        assert redundantColumns1 != null;
-        assert redundantColumns2 != null;
-        assert diffCells != null;
+        assert redundantRows != null;
+        assert redundantColumns != null;
         
-        assert considerRowGaps || redundantRows1.isEmpty();
-        assert considerRowGaps || redundantRows2.isEmpty();
-        assert considerColumnGaps || redundantColumns1.isEmpty();
-        assert considerColumnGaps || redundantColumns2.isEmpty();
+        assert considerRowGaps ? redundantRows.isPaired() : redundantRows.isEmpty();
+        assert considerColumnGaps ? redundantColumns.isPaired() : redundantColumns.isEmpty();
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
@@ -163,12 +154,20 @@ public class SResult {
         this.compareCellComments = compareCellComments;
         
         // 一応、防御的コピーしておく。
-        this.redundantRows = Pair.of(
-                List.copyOf(redundantRows1),
-                List.copyOf(redundantRows2));
-        this.redundantColumns = Pair.of(
-                List.copyOf(redundantColumns1),
-                List.copyOf(redundantColumns2));
+        if (redundantRows.isPaired()) {
+            this.redundantRows = Pair.of(
+                    List.copyOf(redundantRows.a()),
+                    List.copyOf(redundantRows.b()));
+        } else {
+            this.redundantRows = Pair.empty();
+        }
+        if (redundantColumns.isPaired()) {
+            this.redundantColumns = Pair.of(
+                    List.copyOf(redundantColumns.a()),
+                    List.copyOf(redundantColumns.b()));
+        } else {
+            this.redundantColumns = Pair.empty();
+        }
         this.diffCells = List.copyOf(diffCells);
         
         this.diffCellContents = !compareCellContents
@@ -256,6 +255,7 @@ public class SResult {
      * 
      * @return セル内容の異なるセル
      */
+    @Deprecated
     public List<Pair<CellReplica>> diffCellContents() {
         // 不変なのでこのまま返しちゃって問題ない。
         return diffCellContents;
@@ -266,6 +266,7 @@ public class SResult {
      * 
      * @return セルコメントの異なるセル
      */
+    @Deprecated
     public List<Pair<CellReplica>> diffCellComments() {
         // 不変なのでこのまま返しちゃって問題ない。
         return diffCellComments;
@@ -276,6 +277,7 @@ public class SResult {
      * 
      * @return 余剰セルコメントのセル
      */
+    @Deprecated
     public Pair<List<CellReplica>> redundantCellComments() {
         // 不変なのでこのまま返しちゃって問題ない。
         return redundantCellComments;
