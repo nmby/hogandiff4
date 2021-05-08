@@ -13,7 +13,14 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class SResult {
+public record SResult(
+        boolean considerRowGaps,
+        boolean considerColumnGaps,
+        boolean compareCellContents,
+        boolean compareCellComments,
+        Pair<List<Integer>> redundantRows,
+        Pair<List<Integer>> redundantColumns,
+        List<Pair<CellReplica>> diffCells) {
     
     // [static members] ********************************************************
     
@@ -67,6 +74,8 @@ public class SResult {
         }
     }
     
+    // [instance members] ******************************************************
+    
     /**
      * Excelシート同士の比較結果を生成します。<br>
      * 
@@ -74,213 +83,44 @@ public class SResult {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
      * @param compareCellContents 比較においてセル内容を比較したか
      * @param compareCellComments 比較においてセルコメントを比較したか
-     * @param redundantRows1 シート1における余剰行
-     * @param redundantRows2 シート2における余剰行
-     * @param redundantColumns1 シート1における余剰列
-     * @param redundantColumns2 シート2における余剰列
+     * @param redundantRows 各シートにおける余剰行
+     * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
      * @return Excelシート同士の比較結果
      * @throws NullPointerException
-     *              {@code redundantRows1}, {@code redundantRows2},
-     *              {@code redundantColumns1}, {@code redundantColumns2},
-     *              {@code diffCells} のいずれかが {@code null} の場合
+     *              {@code redundantRows}, {@code redundantColumns}, {@code diffCells}
+     *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public static SResult of(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean compareCellContents,
-            boolean compareCellComments,
-            List<Integer> redundantRows1,
-            List<Integer> redundantRows2,
-            List<Integer> redundantColumns1,
-            List<Integer> redundantColumns2,
-            List<Pair<CellReplica>> diffCells) {
-        
-        Objects.requireNonNull(redundantRows1, "redundantRows1");
-        Objects.requireNonNull(redundantRows2, "redundantRows2");
-        Objects.requireNonNull(redundantColumns1, "redundantColumns1");
-        Objects.requireNonNull(redundantColumns2, "redundantColumns2");
+    public SResult {
+        Objects.requireNonNull(redundantRows, "redundantRows");
+        Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
-        if (!considerRowGaps && (!redundantRows1.isEmpty() || !redundantRows2.isEmpty())) {
+        
+        if (!redundantRows.isPaired() || !redundantColumns.isPaired()) {
+            throw new IllegalArgumentException("illegal result");
+        }
+        
+        if (!considerRowGaps && (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty())) {
             throw new IllegalArgumentException("illegal row result");
         }
-        if (!considerColumnGaps && (!redundantColumns1.isEmpty() || !redundantColumns2.isEmpty())) {
+        if (!considerColumnGaps && (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty())) {
             throw new IllegalArgumentException("illegal column result");
         }
         
-        return new SResult(
-                considerRowGaps,
-                considerColumnGaps,
-                compareCellContents,
-                compareCellComments,
-                Pair.of(redundantRows1, redundantRows2),
-                Pair.of(redundantColumns1, redundantColumns2),
-                diffCells);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final boolean considerRowGaps;
-    private final boolean considerColumnGaps;
-    private final boolean compareCellContents;
-    private final boolean compareCellComments;
-    private final Pair<List<Integer>> redundantRows;
-    private final Pair<List<Integer>> redundantColumns;
-    private final List<Pair<CellReplica>> diffCells;
-    private final List<Pair<CellReplica>> diffCellContents;
-    private final List<Pair<CellReplica>> diffCellComments;
-    private final Pair<List<CellReplica>> redundantCellComments;
-    
-    private SResult(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean compareCellContents,
-            boolean compareCellComments,
-            Pair<List<Integer>> redundantRows,
-            Pair<List<Integer>> redundantColumns,
-            List<Pair<CellReplica>> diffCells) {
-        
-        assert redundantRows != null;
-        assert redundantColumns != null;
-        
-        assert considerRowGaps ? redundantRows.isPaired() : redundantRows.isEmpty();
-        assert considerColumnGaps ? redundantColumns.isPaired() : redundantColumns.isEmpty();
-        
-        this.considerRowGaps = considerRowGaps;
-        this.considerColumnGaps = considerColumnGaps;
-        this.compareCellContents = compareCellContents;
-        this.compareCellComments = compareCellComments;
-        
         // 一応、防御的コピーしておく。
         if (redundantRows.isPaired()) {
-            this.redundantRows = Pair.of(
+            redundantRows = Pair.of(
                     List.copyOf(redundantRows.a()),
                     List.copyOf(redundantRows.b()));
-        } else {
-            this.redundantRows = Pair.empty();
         }
         if (redundantColumns.isPaired()) {
-            this.redundantColumns = Pair.of(
+            redundantColumns = Pair.of(
                     List.copyOf(redundantColumns.a()),
                     List.copyOf(redundantColumns.b()));
-        } else {
-            this.redundantColumns = Pair.empty();
         }
-        this.diffCells = List.copyOf(diffCells);
-        
-        this.diffCellContents = !compareCellContents
-                ? List.of()
-                : List.copyOf(diffCells.stream()
-                        .filter(p -> !Objects.equals(p.a().content(), p.b().content()))
-                        .toList());
-        this.diffCellComments = !compareCellComments
-                ? List.of()
-                : List.copyOf(diffCells.stream()
-                        .filter(p -> p.a().comment() != null && p.b().comment() != null)
-                        .filter(p -> !Objects.equals(p.a().comment(), p.b().comment()))
-                        .toList());
-        this.redundantCellComments = !compareCellComments
-                ? Pair.of(List.of(), List.of())
-                : Pair.of(
-                        List.copyOf(diffCells.stream()
-                                .filter(p -> p.a().comment() != null && p.b().comment() == null)
-                                .map(Pair::a)
-                                .toList()),
-                        List.copyOf(diffCells.stream()
-                                .filter(p -> p.a().comment() == null && p.b().comment() != null)
-                                .map(Pair::b)
-                                .toList()));
-    }
-    
-    /**
-     * この比較において行の余剰／欠損が考慮されたかを返します。<br>
-     * 
-     * @return この比較において行の余剰／欠損が考慮された場合は {@code true}
-     */
-    public boolean considerRowGaps() {
-        return considerRowGaps;
-    }
-    
-    /**
-     * この比較において列の余剰／欠損が考慮されたかを返します。<br>
-     * 
-     * @return この比較において列の余剰／欠損が考慮された場合は {@code true}
-     */
-    public boolean considerColumnGaps() {
-        return considerColumnGaps;
-    }
-    
-    /**
-     * この比較においてセル内容が比較されたかを返します。<br>
-     * 
-     * @return この比較においてセル内容が比較された場合は {@code true}
-     */
-    public boolean compareCellContents() {
-        return compareCellContents;
-    }
-    
-    /**
-     * この比較においてセルコメントが比較されたかを返します。<br>
-     * 
-     * @return この比較においてセルコメントが比較された場合は {@code true}
-     */
-    public boolean compareCellComments() {
-        return compareCellComments;
-    }
-    
-    /**
-     * 余剰行のインデックスを返します。<br>
-     * 
-     * @return 余剰行のインデックス
-     */
-    public Pair<List<Integer>> reundantRows() {
-        // 不変なのでこのまま返しちゃって問題ない。
-        return redundantRows;
-    }
-    
-    /**
-     * 余剰列のインデックスを返します。<br>
-     * 
-     * @return 余剰列のインデックス
-     */
-    public Pair<List<Integer>> reundantColumns() {
-        // 不変なのでこのまま返しちゃって問題ない。
-        return redundantColumns;
-    }
-    
-    /**
-     * セル内容の異なるセルを返します。<br>
-     * 
-     * @return セル内容の異なるセル
-     */
-    @Deprecated
-    public List<Pair<CellReplica>> diffCellContents() {
-        // 不変なのでこのまま返しちゃって問題ない。
-        return diffCellContents;
-    }
-    
-    /**
-     * セルコメントの異なるセルを返します。<br>
-     * 
-     * @return セルコメントの異なるセル
-     */
-    @Deprecated
-    public List<Pair<CellReplica>> diffCellComments() {
-        // 不変なのでこのまま返しちゃって問題ない。
-        return diffCellComments;
-    }
-    
-    /**
-     * 余剰セルコメントのセルを返します。<br>
-     * 
-     * @return 余剰セルコメントのセル
-     */
-    @Deprecated
-    public Pair<List<CellReplica>> redundantCellComments() {
-        // 不変なのでこのまま返しちゃって問題ない。
-        return redundantCellComments;
+        diffCells = List.copyOf(diffCells);
     }
     
     /**
@@ -293,12 +133,35 @@ public class SResult {
     public Piece getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
+        List<CellReplica> diffCellContents = !compareCellContents
+                ? List.of()
+                : diffCells.stream()
+                        .filter(p -> !Objects.equals(p.a().content(), p.b().content()))
+                        .map(p -> p.get(side))
+                        .toList();
+        
+        List<CellReplica> diffCellComments = !compareCellComments
+                ? List.of()
+                : diffCells.stream()
+                        .filter(p -> p.a().comment() != null && p.b().comment() != null)
+                        .filter(p -> !Objects.equals(p.a().comment(), p.b().comment()))
+                        .map(p -> p.get(side))
+                        .toList();
+        
+        List<CellReplica> redundantCellComments = !compareCellComments
+                ? List.of()
+                : diffCells.stream()
+                        .filter(p -> p.get(side).comment() != null)
+                        .filter(p -> p.get(side.opposite()).comment() == null)
+                        .map(p -> p.get(side))
+                        .toList();
+        
         return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
-                diffCellContents.stream().map(p -> p.get(side)).toList(),
-                diffCellComments.stream().map(p -> p.get(side)).toList(),
-                redundantCellComments.get(side));
+                diffCellContents,
+                diffCellComments,
+                redundantCellComments);
     }
     
     /**

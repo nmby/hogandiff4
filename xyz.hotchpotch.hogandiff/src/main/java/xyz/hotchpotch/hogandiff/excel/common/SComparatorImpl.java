@@ -306,15 +306,13 @@ public class SComparatorImpl implements SComparator {
         
         if (cells1 == cells2) {
             if (cells1.isEmpty()) {
-                return SResult.of(
+                return new SResult(
                         considerRowGaps,
                         considerColumnGaps,
                         compareCellContents,
                         compareCellComments,
-                        List.of(),
-                        List.of(),
-                        List.of(),
-                        List.of(),
+                        Pair.of(List.of(), List.of()),
+                        Pair.of(List.of(), List.of()),
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
@@ -340,15 +338,13 @@ public class SComparatorImpl implements SComparator {
         List<Pair<CellReplica>> diffCells = extractDiffs(
                 cells1, cells2, rowPairs, columnPairs);
         
-        return SResult.of(
+        return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
                 compareCellContents,
                 compareCellComments,
-                redundantRows1,
-                redundantRows2,
-                redundantColumns1,
-                redundantColumns2,
+                Pair.of(redundantRows1, redundantRows2),
+                Pair.of(redundantColumns1, redundantColumns2),
                 diffCells);
     }
     
