@@ -71,7 +71,7 @@ public class SComparatorImpl implements SComparator {
             Pair<Integer> range = range(cells1, cells2, verticality);
             return IntStream.rangeClosed(range.a(), range.b())
                     .mapToObj(n -> Pair.of(n, n))
-                    .collect(Collectors.toList());
+                    .toList();
         };
     }
     
@@ -107,7 +107,7 @@ public class SComparatorImpl implements SComparator {
             
             return matcher.makePairs(cellsList1, cellsList2).stream()
                     .map(p -> p.map(i -> i + start))
-                    .collect(Collectors.toList());
+                    .toList();
         };
     }
     
@@ -193,7 +193,7 @@ public class SComparatorImpl implements SComparator {
                         return List.<CellReplica> of();
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
     
     private static Pair<Integer> range(
@@ -306,15 +306,13 @@ public class SComparatorImpl implements SComparator {
         
         if (cells1 == cells2) {
             if (cells1.isEmpty()) {
-                return SResult.of(
+                return new SResult(
                         considerRowGaps,
                         considerColumnGaps,
                         compareCellContents,
                         compareCellComments,
-                        List.of(),
-                        List.of(),
-                        List.of(),
-                        List.of(),
+                        Pair.of(List.of(), List.of()),
+                        Pair.of(List.of(), List.of()),
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
@@ -326,29 +324,27 @@ public class SComparatorImpl implements SComparator {
         
         // 余剰行の収集
         List<Integer> redundantRows1 = rowPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).collect(Collectors.toList());
+                .filter(Pair::isOnlyA).map(Pair::a).toList();
         List<Integer> redundantRows2 = rowPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).collect(Collectors.toList());
+                .filter(Pair::isOnlyB).map(Pair::b).toList();
         
         // 余剰列の収集
         List<Integer> redundantColumns1 = columnPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).collect(Collectors.toList());
+                .filter(Pair::isOnlyA).map(Pair::a).toList();
         List<Integer> redundantColumns2 = columnPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).collect(Collectors.toList());
+                .filter(Pair::isOnlyB).map(Pair::b).toList();
         
         // 差分セルの収集
         List<Pair<CellReplica>> diffCells = extractDiffs(
                 cells1, cells2, rowPairs, columnPairs);
         
-        return SResult.of(
+        return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
                 compareCellContents,
                 compareCellComments,
-                redundantRows1,
-                redundantRows2,
-                redundantColumns1,
-                redundantColumns2,
+                Pair.of(redundantRows1, redundantRows2),
+                Pair.of(redundantColumns1, redundantColumns2),
                 diffCells);
     }
     
@@ -389,6 +385,6 @@ public class SComparatorImpl implements SComparator {
                                 cell1 != null ? cell1 : CellReplica.empty(row1, column1),
                                 cell2 != null ? cell2 : CellReplica.empty(row2, column2));
             });
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }).filter(Objects::nonNull).toList();
     }
 }

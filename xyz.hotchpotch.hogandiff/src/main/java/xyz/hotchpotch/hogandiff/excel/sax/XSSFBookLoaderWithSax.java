@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
@@ -80,7 +79,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
             return sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
                     .map(SheetInfo::name)
-                    .collect(Collectors.toList());
+                    .toList();
             
         } catch (Exception e) {
             throw new ExcelHandlingException("処理に失敗しました：" + bookPath, e);

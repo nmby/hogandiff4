@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.core;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -54,8 +53,8 @@ public class StringDiffUtil {
         
         // 一般ケース
         // サロゲートペアの扱いは、・・・まぁ、これで良いでしょ
-        List<Integer> codePoints1 = str1.codePoints().boxed().collect(Collectors.toList());
-        List<Integer> codePoints2 = str2.codePoints().boxed().collect(Collectors.toList());
+        List<Integer> codePoints1 = str1.codePoints().boxed().toList();
+        List<Integer> codePoints2 = str2.codePoints().boxed().toList();
         List<Pair<Integer>> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
         
         return (int) pairs.stream()

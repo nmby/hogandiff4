@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.core;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -30,7 +29,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB) {
+    public List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
@@ -38,6 +40,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
                 .mapToObj(n -> Pair.ofNullable(
                         n < listA.size() ? n : null,
                         n < listB.size() ? n : null))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

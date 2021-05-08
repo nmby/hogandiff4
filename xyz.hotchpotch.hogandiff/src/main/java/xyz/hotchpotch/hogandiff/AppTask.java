@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BResult;
@@ -252,7 +251,7 @@ public class AppTask extends Task<Void> {
             
             List<Pair<String>> unpairedPairs = pairs.stream()
                     .filter(Predicate.not(Pair::isPaired))
-                    .collect(Collectors.toList());
+                    .toList();
             for (Pair<String> pair : unpairedPairs) {
                 results.put(pair, Optional.empty());
             }

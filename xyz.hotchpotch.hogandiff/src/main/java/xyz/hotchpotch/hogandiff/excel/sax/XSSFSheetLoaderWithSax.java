@@ -230,7 +230,13 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         public void endElement(String uri, String localName, String qName) {
             if ("comment".equals(qName)) {
                 if (cellsMap.containsKey(address)) {
-                    cellsMap.get(address).setComment(comment.toString());
+                    CellReplica original = cellsMap.get(address);
+                    cells.remove(original);
+                    cells.add(CellReplica.of(
+                            original.row(),
+                            original.column(),
+                            original.content(),
+                            comment.toString()));
                 } else {
                     cells.add(CellReplica.of(address, "", comment.toString()));
                 }

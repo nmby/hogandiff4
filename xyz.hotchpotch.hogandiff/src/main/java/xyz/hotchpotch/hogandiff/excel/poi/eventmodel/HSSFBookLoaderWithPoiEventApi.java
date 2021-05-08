@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
 import org.apache.poi.hssf.eventusermodel.HSSFListener;
@@ -124,7 +123,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
             return sheets.stream()
                     .filter(s -> s.possibleTypes.stream().anyMatch(targetTypes::contains))
                     .map(s -> s.sheetName)
-                    .collect(Collectors.toList());
+                    .toList();
         }
     }
     

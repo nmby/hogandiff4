@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -77,14 +76,17 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB) {
+    public List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> Pair.of(n, n))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         
         ComeFrom[][] bestDirections = calcBestDirections(listA, listB);
@@ -94,7 +96,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         return pairs;
     }
     
-    private ComeFrom[][] calcBestDirections(List<? extends T> listA, List<? extends T> listB) {
+    private ComeFrom[][] calcBestDirections(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         assert listA != null;
         assert listB != null;
         assert listA != listB;

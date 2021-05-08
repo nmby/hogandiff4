@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
@@ -63,7 +62,7 @@ public enum AppMenu {
                     .map(p -> Pair.ofNullable(
                             p.isPresentA() ? sheetNames1.get(p.a()) : null,
                             p.isPresentB() ? sheetNames2.get(p.b()) : null))
-                    .collect(Collectors.toList());
+                    .toList();
         }
     },
     
