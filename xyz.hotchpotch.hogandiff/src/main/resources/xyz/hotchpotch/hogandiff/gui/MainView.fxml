@@ -17,7 +17,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import xyz.hotchpotch.hogandiff.gui.TargetBookSheetController?>
 
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="430.0" prefWidth="500.0" styleClass="root" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.hotchpotch.hogandiff.gui.MainController">
    <children>
@@ -33,8 +32,8 @@
       </HBox>
       <VBox fx:id="paneSelectTargets" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
          <children>
-            <TargetBookSheetController fx:id="targetBookSheet1" styleClass="paneTarget" />
-            <TargetBookSheetController fx:id="targetBookSheet2" styleClass="paneTarget" />
+            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetController fx:id="targetBookSheet1" styleClass="paneTarget" />
+            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetController fx:id="targetBookSheet2" styleClass="paneTarget" />
          </children>
          <VBox.margin>
             <Insets bottom="5.0" top="5.0" />
