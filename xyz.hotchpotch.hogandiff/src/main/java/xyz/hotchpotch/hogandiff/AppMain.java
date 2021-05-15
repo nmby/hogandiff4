@@ -17,6 +17,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -84,18 +85,18 @@ public class AppMain extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GuiView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/MainView.fxml"));
         Parent root = loader.load();
-        String cssPath = getClass().getResource("application.css").toExternalForm();
+        String cssPath = getClass().getResource("gui/application.css").toExternalForm();
         root.getStylesheets().add(cssPath.replace(" ", "%20"));
-        Image icon = new Image(getClass().getResourceAsStream("favicon.png"));
+        Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("方眼Diff  -  " + VERSION);
         primaryStage.setScene(new Scene(root, 500, 450));
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(450);
         
-        GuiController controller = loader.getController();
+        MainController controller = loader.getController();
         Settings settings = arrangeSettings();
         controller.applySettings(settings);
         

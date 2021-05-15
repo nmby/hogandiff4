@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff;
+package xyz.hotchpotch.hogandiff.gui;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -44,6 +44,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppTask;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -54,7 +58,7 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
  *
  * @author nmby
  */
-public class GuiController {
+public class MainController {
     
     // [static members] ********************************************************
     
