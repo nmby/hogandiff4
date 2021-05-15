@@ -1,12 +1,10 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.awt.Desktop;
-import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -20,10 +18,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -32,23 +26,15 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
-import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppTask;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
@@ -79,28 +65,10 @@ public class MainController {
     private Pane paneSelectTargets;
     
     @FXML
-    private TextField textBookPath1;
+    private TargetBookSheetController targetBookSheet1;
     
     @FXML
-    private TextField textBookPath2;
-    
-    @FXML
-    private Button buttonBookPath1;
-    
-    @FXML
-    private Button buttonBookPath2;
-    
-    @FXML
-    private Label labelSheetName1;
-    
-    @FXML
-    private Label labelSheetName2;
-    
-    @FXML
-    private ChoiceBox<String> choiceSheetName1;
-    
-    @FXML
-    private ChoiceBox<String> choiceSheetName2;
+    private TargetBookSheetController targetBookSheet2;
     
     // 設定エリア ---------------------------
     
@@ -168,17 +136,12 @@ public class MainController {
     // その他プロパティ --------------------------
     
     private Property<AppMenu> menu = new SimpleObjectProperty<>();
-    private Property<Path> bookPath1 = new SimpleObjectProperty<>();
-    private Property<Path> bookPath2 = new SimpleObjectProperty<>();
-    private StringProperty sheetName1 = new SimpleStringProperty();
-    private StringProperty sheetName2 = new SimpleStringProperty();
     private BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     private BooleanProperty isReady = new SimpleBooleanProperty(false);
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     // その他メンバ --------------------------
     
-    private Path prevSelectedBookPath;
     private Factory factory;
     
     /**
@@ -197,10 +160,19 @@ public class MainController {
         factory = Factory.of();
         
         initProperties();
-        initTargetSelectionArea();
         initSettingsArea();
         initExecutionArea();
         initUtilArea();
+        
+        targetBookSheet1.init(
+                factory,
+                "A",
+                radioCompareBooks.selectedProperty());
+        
+        targetBookSheet2.init(
+                factory,
+                "B",
+                radioCompareBooks.selectedProperty());
     }
     
     private void initProperties() {
@@ -211,58 +183,13 @@ public class MainController {
                         : AppMenu.COMPARE_SHEETS,
                 radioCompareBooks.selectedProperty()));
         
-        // シート名選択プルダウンの選択内容を反映させる。
-        sheetName1.bind(choiceSheetName1.valueProperty());
-        sheetName2.bind(choiceSheetName2.valueProperty());
-        
         // 各種コントローラの設定状況に応じて「実行」可能な状態か否かを反映させる。
-        isReady.bind(Bindings.createBooleanBinding(
-                () -> bookPath1.getValue() != null
-                        && bookPath2.getValue() != null
-                        && (menu.getValue() == AppMenu.COMPARE_BOOKS
-                                || (sheetName1.getValue() != null && sheetName2.getValue() != null)),
-                menu, bookPath1, bookPath2, sheetName1, sheetName2));
+        isReady.bind(targetBookSheet1.isReadyProperty().and(targetBookSheet2.isReadyProperty()));
         
         // 以下のプロパティについては、バインディングで値を反映させるのではなく
         // 相手方のイベントハンドラで値を設定する。
-        //      ・bookPath1, bookPath2
-        //      ・prevSelectedBookPath
         //      ・hasSettingsChanged
         //      ・isRunning
-    }
-    
-    private void initTargetSelectionArea() {
-        // 比較メニューの選択に応じて有効／無効を切り替える。
-        labelSheetName1.disableProperty().bind(radioCompareSheets.selectedProperty().not());
-        labelSheetName2.disableProperty().bind(radioCompareSheets.selectedProperty().not());
-        choiceSheetName1.disableProperty().bind(radioCompareSheets.selectedProperty().not());
-        choiceSheetName2.disableProperty().bind(radioCompareSheets.selectedProperty().not());
-        
-        // ファイルの指定内容に応じてブックパス表示を切り替える。
-        textBookPath1.textProperty().bind(Bindings.createStringBinding(
-                () -> bookPath1.getValue() == null ? "" : bookPath1.getValue().toString(),
-                bookPath1));
-        textBookPath2.textProperty().bind(Bindings.createStringBinding(
-                () -> bookPath2.getValue() == null ? "" : bookPath2.getValue().toString(),
-                bookPath2));
-        
-        // ファイルの指定内容に応じてシート名選択プルダウンの選択肢を切り替える。
-        choiceSheetName1.itemsProperty().bind(Bindings.createObjectBinding(
-                () -> getSheetNames(bookPath1.getValue()),
-                bookPath1));
-        choiceSheetName2.itemsProperty().bind(Bindings.createObjectBinding(
-                () -> getSheetNames(bookPath2.getValue()),
-                bookPath2));
-        
-        // ファイル選択ボタンのイベントハンドラを登録する。
-        buttonBookPath1.setOnAction(event -> bookPath1.setValue(selectBook(bookPath1.getValue())));
-        buttonBookPath2.setOnAction(event -> bookPath2.setValue(selectBook(bookPath2.getValue())));
-        
-        // ファイルパス表示テキストのドラッグ＆ドロップイベントハンドラを登録する。
-        textBookPath1.setOnDragOver(this::onDragOver);
-        textBookPath2.setOnDragOver(this::onDragOver);
-        textBookPath1.setOnDragDropped(event -> onDragDropped(event, bookPath1));
-        textBookPath2.setOnDragDropped(event -> onDragDropped(event, bookPath2));
     }
     
     private void initSettingsArea() {
@@ -363,18 +290,18 @@ public class MainController {
             radioCompareBooks.setSelected(settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
         }
         if (settings.containsKey(SettingKeys.CURR_BOOK_PATH1)) {
-            bookPath1.setValue(settings.get(SettingKeys.CURR_BOOK_PATH1));
-            prevSelectedBookPath = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            targetBookSheet1.validateAndSetTarget(
+                    settings.get(SettingKeys.CURR_BOOK_PATH1),
+                    settings.containsKey(SettingKeys.CURR_SHEET_NAME1)
+                            ? settings.get(SettingKeys.CURR_SHEET_NAME1)
+                            : null);
         }
         if (settings.containsKey(SettingKeys.CURR_BOOK_PATH2)) {
-            bookPath2.setValue(settings.get(SettingKeys.CURR_BOOK_PATH2));
-            prevSelectedBookPath = settings.get(SettingKeys.CURR_BOOK_PATH2);
-        }
-        if (settings.containsKey(SettingKeys.CURR_SHEET_NAME1)) {
-            choiceSheetName1.setValue(settings.get(SettingKeys.CURR_SHEET_NAME1));
-        }
-        if (settings.containsKey(SettingKeys.CURR_SHEET_NAME2)) {
-            choiceSheetName2.setValue(settings.get(SettingKeys.CURR_SHEET_NAME2));
+            targetBookSheet2.validateAndSetTarget(
+                    settings.get(SettingKeys.CURR_BOOK_PATH2),
+                    settings.containsKey(SettingKeys.CURR_SHEET_NAME2)
+                            ? settings.get(SettingKeys.CURR_SHEET_NAME2)
+                            : null);
         }
         if (settings.containsKey(SettingKeys.CONSIDER_ROW_GAPS)) {
             checkConsiderRowGaps.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
@@ -402,75 +329,26 @@ public class MainController {
         }
     }
     
-    private ObservableList<String> getSheetNames(Path bookPath) {
-        if (bookPath == null) {
-            return FXCollections.emptyObservableList();
-        }
-        try {
-            BookLoader loader = factory.bookLoader(bookPath);
-            List<String> sheetNames = loader.loadSheetNames(bookPath);
-            return FXCollections.observableList(sheetNames);
-        } catch (Exception e) {
-            return FXCollections.emptyObservableList();
-        }
-    }
-    
-    private Path selectBook(Path current) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("比較対象ブックの選択");
-        
-        if (current != null) {
-            chooser.setInitialDirectory(current.toFile().getParentFile());
-            chooser.setInitialFileName(current.toFile().getName());
-        } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
-        }
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "Excel ブック", "*.xls", "*.xlsx", "*.xlsm"));
-        
-        File selected = chooser.showOpenDialog(paneSelectTargets.getScene().getWindow());
-        
-        return selected != null
-                ? (prevSelectedBookPath = selected.toPath())
-                : current;
-    }
-    
-    private void onDragOver(DragEvent event) {
-        if (event.getDragboard().hasFiles()) {
-            event.acceptTransferModes(TransferMode.LINK);
-        }
-        event.consume();
-    }
-    
-    private void onDragDropped(DragEvent event, Property<Path> target) {
-        Dragboard db = event.getDragboard();
-        if (db.hasFiles()) {
-            Path dropped = db.getFiles().get(0).toPath();
-            if (!Files.isDirectory(dropped)) {
-                target.setValue(dropped);
-                prevSelectedBookPath = dropped;
-            }
-        }
-        event.setDropCompleted(db.hasFiles());
-        event.consume();
-    }
-    
     private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
-        if (bookPath1.getValue() != null) {
-            builder.set(SettingKeys.CURR_BOOK_PATH1, bookPath1.getValue());
+        Path bookPath1 = targetBookSheet1.bookPathProperty().getValue();
+        Path bookPath2 = targetBookSheet2.bookPathProperty().getValue();
+        if (bookPath1 != null) {
+            builder.set(SettingKeys.CURR_BOOK_PATH1, bookPath1);
         }
-        if (bookPath2.getValue() != null) {
-            builder.set(SettingKeys.CURR_BOOK_PATH2, bookPath2.getValue());
+        if (bookPath2 != null) {
+            builder.set(SettingKeys.CURR_BOOK_PATH2, bookPath2);
         }
         if (menu.getValue() == AppMenu.COMPARE_SHEETS) {
-            if (sheetName1.getValue() != null) {
-                builder.set(SettingKeys.CURR_SHEET_NAME1, sheetName1.getValue());
+            String sheetName1 = targetBookSheet1.sheetNameProperty().getValue();
+            String sheetName2 = targetBookSheet2.sheetNameProperty().getValue();
+            if (sheetName1 != null) {
+                builder.set(SettingKeys.CURR_SHEET_NAME1, sheetName1);
             }
-            if (sheetName2.getValue() != null) {
-                builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2.getValue());
+            if (sheetName2 != null) {
+                builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2);
             }
         }
         builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());

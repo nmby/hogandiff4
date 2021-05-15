@@ -10,6 +10,10 @@ import java.util.Objects;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -36,6 +40,8 @@ public class TargetBookSheetController extends GridPane {
     
     // [static members] ********************************************************
     
+    private static Path prevSelectedBookPath;
+    
     // [instance members] ******************************************************
     
     @FXML
@@ -57,6 +63,7 @@ public class TargetBookSheetController extends GridPane {
     
     private Property<Path> bookPath = new SimpleObjectProperty<>();
     private StringProperty sheetName = new SimpleStringProperty();
+    private BooleanProperty isReady = new SimpleBooleanProperty();
     
     public TargetBookSheetController() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetBookSheetView.fxml"));
@@ -86,14 +93,22 @@ public class TargetBookSheetController extends GridPane {
                 () -> textBookPath.getText().isEmpty() ? null : Path.of(textBookPath.getText()),
                 textBookPath.textProperty()));
         sheetName.bind(choiceSheetName.valueProperty());
+        isReady.bind(Bindings.createBooleanBinding(
+                () -> bookPath.getValue() != null
+                        && (sheetName.getValue() != null || isCompareBooks.getValue()),
+                bookPath, sheetName, isCompareBooks));
     }
     
-    public Property<Path> bookPathProperty() {
+    public ReadOnlyProperty<Path> bookPathProperty() {
         return bookPath;
     }
     
-    public StringProperty sheetNameProperty() {
+    public ReadOnlyStringProperty sheetNameProperty() {
         return sheetName;
+    }
+    
+    public ReadOnlyBooleanProperty isReadyProperty() {
+        return isReady;
     }
     
     private void onDragOver(DragEvent event) {
@@ -108,7 +123,7 @@ public class TargetBookSheetController extends GridPane {
         if (db.hasFiles()) {
             Path dropped = db.getFiles().get(0).toPath();
             if (!Files.isDirectory(dropped)) {
-                validateAndSetBookPath(dropped);
+                validateAndSetTarget(dropped, null);
             }
         }
         event.setDropCompleted(db.hasFiles());
@@ -119,23 +134,25 @@ public class TargetBookSheetController extends GridPane {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("比較対象ブックの選択");
         
-        Path current = Path.of(textBookPath.getText());
-        
-        if (current != null) {
-            chooser.setInitialDirectory(current.toFile().getParentFile());
-            chooser.setInitialFileName(current.toFile().getName());
+        if (bookPath.getValue() != null) {
+            chooser.setInitialDirectory(bookPath.getValue().toFile().getParentFile());
+            chooser.setInitialFileName(bookPath.getValue().toFile().getName());
+            
+        } else if (prevSelectedBookPath != null) {
+            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
         }
+        
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
                 "Excel ブック", "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
         
         if (selected != null) {
-            validateAndSetBookPath(selected.toPath());
+            validateAndSetTarget(selected.toPath(), null);
         }
     }
     
-    private void validateAndSetBookPath(Path newBookPath) {
+    public void validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
             textBookPath.setText("");
             choiceSheetName.setItems(FXCollections.emptyObservableList());
@@ -148,6 +165,7 @@ public class TargetBookSheetController extends GridPane {
             
             textBookPath.setText(newBookPath.toString());
             choiceSheetName.setItems(FXCollections.observableList(sheetNames));
+            prevSelectedBookPath = newBookPath;
             
         } catch (Exception e) {
             textBookPath.setText("");
@@ -155,6 +173,22 @@ public class TargetBookSheetController extends GridPane {
             new Alert(
                     AlertType.ERROR,
                     "ファイルを読み込めません：\n" + newBookPath,
+                    ButtonType.OK)
+                            .showAndWait();
+            return;
+        }
+        
+        if (sheetName == null) {
+            choiceSheetName.setValue(null);
+            
+        } else if (choiceSheetName.getItems().contains(sheetName)) {
+            choiceSheetName.setValue(sheetName);
+            
+        } else {
+            choiceSheetName.setValue(null);
+            new Alert(
+                    AlertType.ERROR,
+                    "シートが見つかりません：\n" + sheetName,
                     ButtonType.OK)
                             .showAndWait();
         }
