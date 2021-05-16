@@ -19,7 +19,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -68,31 +67,7 @@ public class MainController {
     private Pane paneSettings;
     
     @FXML
-    private CheckBox checkConsiderRowGaps;
-    
-    @FXML
-    private CheckBox checkConsiderColumnGaps;
-    
-    @FXML
-    private CheckBox checkCompareCellContents;
-    
-    @FXML
-    private RadioButton radioCompareOnValue;
-    
-    @FXML
-    private RadioButton radioCompareOnFormula;
-    
-    @FXML
-    private CheckBox checkCompareCellComments;
-    
-    @FXML
-    private CheckBox checkShowPaintedSheets;
-    
-    @FXML
-    private CheckBox checkShowResultText;
-    
-    @FXML
-    private CheckBox checkExitWhenFinished;
+    private OptionsController paneOptions;
     
     @FXML
     private Button buttonSaveSettings;
@@ -119,7 +94,6 @@ public class MainController {
     // その他プロパティ --------------------------
     
     private Property<AppMenu> menu = new SimpleObjectProperty<>();
-    private BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     private BooleanProperty isReady = new SimpleBooleanProperty(false);
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
@@ -156,6 +130,7 @@ public class MainController {
                 "B",
                 radioCompareBooks.selectedProperty());
         
+        paneOptions.init();
         paneUtil.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
     }
     
@@ -177,30 +152,17 @@ public class MainController {
     }
     
     private void initSettingsArea() {
-        // 各種設定を変更した場合は、それをプロパティに反映させる。
-        checkConsiderRowGaps.setOnAction(event -> hasSettingsChanged.set(true));
-        checkConsiderColumnGaps.setOnAction(event -> hasSettingsChanged.set(true));
-        checkCompareCellContents.setOnAction(event -> hasSettingsChanged.set(true));
-        radioCompareOnValue.setOnAction(event -> hasSettingsChanged.set(true));
-        radioCompareOnFormula.setOnAction(event -> hasSettingsChanged.set(true));
-        checkCompareCellComments.setOnAction(event -> hasSettingsChanged.set(true));
-        checkShowPaintedSheets.setOnAction(event -> hasSettingsChanged.set(true));
-        checkShowResultText.setOnAction(event -> hasSettingsChanged.set(true));
-        checkExitWhenFinished.setOnAction(event -> hasSettingsChanged.set(true));
-        
-        // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
-        radioCompareOnValue.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
-        radioCompareOnFormula.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
-        buttonSaveSettings.disableProperty().bind(hasSettingsChanged.not());
+        buttonSaveSettings.disableProperty().bind(
+                paneOptions.hasSettingsChangedProperty().not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         buttonSaveSettings.setOnAction(event -> {
             Settings settings = gatherSettings();
             Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
-            hasSettingsChanged.set(false);
+            paneOptions.hasSettingsChangedProperty().set(false);
         });
     }
     
@@ -247,30 +209,8 @@ public class MainController {
                             ? settings.get(SettingKeys.CURR_SHEET_NAME2)
                             : null);
         }
-        if (settings.containsKey(SettingKeys.CONSIDER_ROW_GAPS)) {
-            checkConsiderRowGaps.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
-        }
-        if (settings.containsKey(SettingKeys.CONSIDER_COLUMN_GAPS)) {
-            checkConsiderColumnGaps.setSelected(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            checkCompareCellContents.setSelected(settings.get(SettingKeys.COMPARE_CELL_CONTENTS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            checkCompareCellComments.setSelected(settings.get(SettingKeys.COMPARE_CELL_COMMENTS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
-            radioCompareOnFormula.setSelected(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING));
-        }
-        if (settings.containsKey(SettingKeys.SHOW_PAINTED_SHEETS)) {
-            checkShowPaintedSheets.setSelected(settings.get(SettingKeys.SHOW_PAINTED_SHEETS));
-        }
-        if (settings.containsKey(SettingKeys.SHOW_RESULT_TEXT)) {
-            checkShowResultText.setSelected(settings.get(SettingKeys.SHOW_RESULT_TEXT));
-        }
-        if (settings.containsKey(SettingKeys.EXIT_WHEN_FINISHED)) {
-            checkExitWhenFinished.setSelected(settings.get(SettingKeys.EXIT_WHEN_FINISHED));
-        }
+        
+        paneOptions.applySettings(settings);
     }
     
     private Settings gatherSettings() {
@@ -295,14 +235,6 @@ public class MainController {
                 builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2);
             }
         }
-        builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
-        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
-        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
-        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
-        builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
-        builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
         builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
@@ -312,6 +244,8 @@ public class MainController {
         builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
         builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
         builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        
+        paneOptions.gatherSettings(builder);
         
         return builder.build();
     }
