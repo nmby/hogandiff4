@@ -84,6 +84,7 @@ public class CombinedBookLoader implements BookLoader {
                 return loader.loadSheetNames(bookPath);
                 
             } catch (PasswordHandlingException e) {
+                e.printStackTrace();
                 suppressed.forEach(e::addSuppressed);
                 throw e;
                 
