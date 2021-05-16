@@ -36,6 +36,7 @@ import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -209,6 +210,16 @@ public class TargetBookSheetParts extends GridPane {
             bookPathTextField.setText(newBookPath.toString());
             sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));
             prevSelectedBookPath = newBookPath;
+            
+        } catch (PasswordHandlingException e) {
+            bookPathTextField.setText("");
+            sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
+            new Alert(
+                    AlertType.ERROR,
+                    "パスワード付きファイルには対応していません：\n" + newBookPath,
+                    ButtonType.OK)
+                            .showAndWait();
+            return;
             
         } catch (Exception e) {
             bookPathTextField.setText("");

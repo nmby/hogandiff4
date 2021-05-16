@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -73,18 +75,26 @@ public class CombinedBookLoader implements BookLoader {
         Objects.requireNonNull(bookPath, "bookPath");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：" + bookPath);
-        
+        List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<BookLoader>> itr = suppliers.iterator();
+        
         while (itr.hasNext()) {
             try {
                 BookLoader loader = itr.next().get();
                 return loader.loadSheetNames(bookPath);
+                
+            } catch (PasswordHandlingException e) {
+                suppressed.forEach(e::addSuppressed);
+                throw e;
+                
             } catch (Exception e) {
                 e.printStackTrace();
-                failed.addSuppressed(e);
+                suppressed.add(e);
             }
         }
+        
+        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：" + bookPath);
+        suppressed.forEach(failed::addSuppressed);
         throw failed;
     }
 }
