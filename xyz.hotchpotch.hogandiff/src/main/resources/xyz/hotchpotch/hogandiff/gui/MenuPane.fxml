@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root fx:id="paneSelectMenu" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <RadioButton fx:id="radioCompareBooks" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="ブック内の全シートを比較する" HBox.hgrow="NEVER">
+         <toggleGroup>
+            <ToggleGroup fx:id="compareBookOrSheet" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="radioCompareSheets" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="特定のシート同士を比較する" toggleGroup="$compareBookOrSheet" HBox.hgrow="NEVER" />
+   </children>
+</fx:root>

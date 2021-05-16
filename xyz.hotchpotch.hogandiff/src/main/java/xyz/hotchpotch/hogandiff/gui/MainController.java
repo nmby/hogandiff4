@@ -6,11 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -19,7 +16,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -43,13 +39,7 @@ public class MainController {
     // 比較対象選択エリア -----------------------
     
     @FXML
-    private Pane paneSelectMenu;
-    
-    @FXML
-    private RadioButton radioCompareBooks;
-    
-    @FXML
-    private RadioButton radioCompareSheets;
+    private MenuPane paneMenu;
     
     @FXML
     private Pane paneSelectTargets;
@@ -92,7 +82,6 @@ public class MainController {
     
     // その他プロパティ --------------------------
     
-    private Property<AppMenu> menu = new SimpleObjectProperty<>();
     private BooleanProperty isReady = new SimpleBooleanProperty(false);
     private BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
@@ -119,15 +108,16 @@ public class MainController {
         initSettingsArea();
         initExecutionArea();
         
+        paneMenu.init();
         targetBookSheet1.init(
                 factory,
                 "A",
-                radioCompareBooks.selectedProperty());
+                paneMenu.menuProperty());
         
         targetBookSheet2.init(
                 factory,
                 "B",
-                radioCompareBooks.selectedProperty());
+                paneMenu.menuProperty());
         
         paneOptions.init();
         paneUtil.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
@@ -135,11 +125,6 @@ public class MainController {
     
     private void initProperties() {
         // 比較メニューの選択状態を反映させる。
-        menu.bind(Bindings.createObjectBinding(
-                () -> radioCompareBooks.isSelected()
-                        ? AppMenu.COMPARE_BOOKS
-                        : AppMenu.COMPARE_SHEETS,
-                radioCompareBooks.selectedProperty()));
         
         // 各種コントローラの設定状況に応じて「実行」可能な状態か否かを反映させる。
         isReady.bind(targetBookSheet1.isReadyProperty().and(targetBookSheet2.isReadyProperty()));
@@ -170,7 +155,7 @@ public class MainController {
         buttonExecute.disableProperty().bind(isReady.not());
         
         // 実行中は全コントローラを無効にする。
-        paneSelectMenu.disableProperty().bind(isRunning);
+        paneMenu.disableProperty().bind(isRunning);
         paneSelectTargets.disableProperty().bind(isRunning);
         paneSettings.disableProperty().bind(isRunning);
         paneUtil.disableProperty().bind(isRunning);
@@ -191,9 +176,7 @@ public class MainController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        if (settings.containsKey(SettingKeys.CURR_MENU)) {
-            radioCompareBooks.setSelected(settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
-        }
+        paneMenu.applySettings(settings);
         targetBookSheet1.applySettings(settings, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
         targetBookSheet2.applySettings(settings, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
         paneOptions.applySettings(settings);
@@ -202,11 +185,11 @@ public class MainController {
     private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
+        paneMenu.gatherSettings(builder);
         targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
         targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
         paneOptions.gatherSettings(builder);
         
-        builder.set(SettingKeys.CURR_MENU, menu.getValue());
         builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);

@@ -33,6 +33,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -62,7 +63,7 @@ public class TargetBookSheetParts extends GridPane {
     private ChoiceBox<String> choiceSheetName;
     
     private Factory factory;
-    private BooleanProperty isCompareBooks;
+    private ReadOnlyProperty<AppMenu> menu;
     
     private Property<Path> bookPath = new SimpleObjectProperty<>();
     private StringProperty sheetName = new SimpleStringProperty();
@@ -78,21 +79,25 @@ public class TargetBookSheetParts extends GridPane {
     public void init(
             Factory factory,
             String title,
-            BooleanProperty isCompareBooks) {
+            ReadOnlyProperty<AppMenu> menu) {
         
         Objects.requireNonNull(factory, "factory");
         Objects.requireNonNull(title, "title");
-        Objects.requireNonNull(isCompareBooks, "isCompareBooks");
+        Objects.requireNonNull(menu, "menu");
         
         this.factory = factory;
-        this.isCompareBooks = isCompareBooks;
+        this.menu = menu;
         
         labelTitle.setText(title);
         textBookPath.setOnDragOver(this::onDragOver);
         textBookPath.setOnDragDropped(this::onDragDropped);
         buttonBookPath.setOnAction(this::chooseBook);
-        labelSheetName.disableProperty().bind(isCompareBooks);
-        choiceSheetName.disableProperty().bind(isCompareBooks);
+        labelSheetName.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
+                menu));
+        choiceSheetName.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
+                menu));
         
         bookPath.bind(Bindings.createObjectBinding(
                 () -> textBookPath.getText().isEmpty() ? null : Path.of(textBookPath.getText()),
@@ -100,8 +105,8 @@ public class TargetBookSheetParts extends GridPane {
         sheetName.bind(choiceSheetName.valueProperty());
         isReady.bind(Bindings.createBooleanBinding(
                 () -> bookPath.getValue() != null
-                        && (sheetName.getValue() != null || isCompareBooks.getValue()),
-                bookPath, sheetName, isCompareBooks));
+                        && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
+                bookPath, sheetName, menu));
     }
     
     public ReadOnlyProperty<Path> bookPathProperty() {
@@ -227,7 +232,7 @@ public class TargetBookSheetParts extends GridPane {
         if (bookPath.getValue() != null) {
             builder.set(keyBookPath, bookPath.getValue());
         }
-        if (!isCompareBooks.getValue() && sheetName.getValue() != null) {
+        if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
             builder.set(keySheetName, sheetName.getValue());
         }
     }
