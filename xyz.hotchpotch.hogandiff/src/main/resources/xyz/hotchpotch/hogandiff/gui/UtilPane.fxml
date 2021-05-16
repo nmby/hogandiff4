@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root fx:id="paneUtil" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="utilPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button fx:id="buttonShowWorkDir" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="作業用フォルダを表示する" HBox.hgrow="NEVER" />
       <Button fx:id="buttonDeleteOldWorkDir" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="古い作業用フォルダを削除する" HBox.hgrow="NEVER" />

@@ -39,10 +39,10 @@ public class MainController {
     // 比較対象選択エリア -----------------------
     
     @FXML
-    private MenuPane paneMenu;
+    private MenuPane menuPane;
     
     @FXML
-    private Pane paneSelectTargets;
+    private Pane targetsPane;
     
     @FXML
     private TargetBookSheetParts targetBookSheet1;
@@ -53,10 +53,10 @@ public class MainController {
     // 設定エリア ---------------------------
     
     @FXML
-    private Pane paneSettings;
+    private Pane settingsPane;
     
     @FXML
-    private OptionsParts paneOptions;
+    private OptionsParts optionsPane;
     
     @FXML
     private Button buttonSaveSettings;
@@ -67,7 +67,7 @@ public class MainController {
     // レポートエリア -------------------------
     
     @FXML
-    private Pane paneReporting;
+    private Pane reportingPane;
     
     @FXML
     private ProgressBar progressReport;
@@ -78,7 +78,7 @@ public class MainController {
     // Utilエリア -------------------------
     
     @FXML
-    private UtilPane paneUtil;
+    private UtilPane utilPane;
     
     // その他プロパティ --------------------------
     
@@ -108,45 +108,41 @@ public class MainController {
         initSettingsArea();
         initExecutionArea();
         
-        paneMenu.init();
+        menuPane.init();
         targetBookSheet1.init(
                 factory,
                 "A",
-                paneMenu.menuProperty());
+                menuPane.menuProperty());
         
         targetBookSheet2.init(
                 factory,
                 "B",
-                paneMenu.menuProperty());
+                menuPane.menuProperty());
         
-        paneOptions.init();
-        paneUtil.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
+        optionsPane.init();
+        utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
     }
     
     private void initProperties() {
-        // 比較メニューの選択状態を反映させる。
-        
         // 各種コントローラの設定状況に応じて「実行」可能な状態か否かを反映させる。
         isReady.bind(targetBookSheet1.isReadyProperty().and(targetBookSheet2.isReadyProperty()));
         
         // 以下のプロパティについては、バインディングで値を反映させるのではなく
         // 相手方のイベントハンドラで値を設定する。
-        //      ・hasSettingsChanged
         //      ・isRunning
     }
     
     private void initSettingsArea() {
-        
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
         buttonSaveSettings.disableProperty().bind(
-                paneOptions.hasSettingsChangedProperty().not());
+                optionsPane.hasSettingsChangedProperty().not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         buttonSaveSettings.setOnAction(event -> {
             Settings settings = gatherSettings();
             Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
-            paneOptions.hasSettingsChangedProperty().set(false);
+            optionsPane.hasSettingsChangedProperty().set(false);
         });
     }
     
@@ -155,10 +151,10 @@ public class MainController {
         buttonExecute.disableProperty().bind(isReady.not());
         
         // 実行中は全コントローラを無効にする。
-        paneMenu.disableProperty().bind(isRunning);
-        paneSelectTargets.disableProperty().bind(isRunning);
-        paneSettings.disableProperty().bind(isRunning);
-        paneUtil.disableProperty().bind(isRunning);
+        menuPane.disableProperty().bind(isRunning);
+        targetsPane.disableProperty().bind(isRunning);
+        settingsPane.disableProperty().bind(isRunning);
+        utilPane.disableProperty().bind(isRunning);
         
         // レポートエリアは常に有効にすることにする。
         //paneReporting.disableProperty().bind(isRunning.not());
@@ -176,29 +172,19 @@ public class MainController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        paneMenu.applySettings(settings);
+        menuPane.applySettings(settings);
         targetBookSheet1.applySettings(settings, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
         targetBookSheet2.applySettings(settings, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
-        paneOptions.applySettings(settings);
+        optionsPane.applySettings(settings);
     }
     
     private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
-        paneMenu.gatherSettings(builder);
+        menuPane.gatherSettings(builder);
         targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
         targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
-        paneOptions.gatherSettings(builder);
-        
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
-        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        optionsPane.gatherSettings(builder);
         
         return builder.build();
     }

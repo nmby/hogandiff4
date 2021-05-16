@@ -115,5 +115,15 @@ public class OptionsParts extends VBox {
         builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
         builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
         builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
+        
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
+        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
     }
 }
