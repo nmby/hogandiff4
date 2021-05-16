@@ -12,31 +12,7 @@
    <children>
       <xyz.hotchpotch.hogandiff.gui.MenuPane fx:id="menuPane" />
       <xyz.hotchpotch.hogandiff.gui.TargetsPane fx:id="targetsPane" VBox.vgrow="NEVER" />
-      <HBox fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
-         <children>
-            <xyz.hotchpotch.hogandiff.gui.OptionsParts fx:id="optionsPane" />
-            <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
-               <children>
-                  <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="paneSaveSettings" VBox.vgrow="NEVER">
-                     <children>
-                        <Button fx:id="buttonSaveSettings" disable="true" layoutX="13.0" layoutY="18.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="設定を保存" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="paneExecute" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Button fx:id="buttonExecute" layoutX="30.0" layoutY="18.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="実行" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                     <VBox.margin>
-                        <Insets left="10.0" top="10.0" />
-                     </VBox.margin>
-                  </AnchorPane>
-               </children>
-            </VBox>
-         </children>
-         <VBox.margin>
-            <Insets top="10.0" />
-         </VBox.margin>
-      </HBox>
+      <xyz.hotchpotch.hogandiff.gui.SettingsPane fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
       <VBox fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS">
          <children>
             <ProgressBar fx:id="progressReport" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="0.0" progress="0.0" VBox.vgrow="NEVER" />

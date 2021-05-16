@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,12 +12,10 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
-import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppTask;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -47,16 +44,7 @@ public class MainController {
     // 設定エリア ---------------------------
     
     @FXML
-    private Pane settingsPane;
-    
-    @FXML
-    private OptionsParts optionsPane;
-    
-    @FXML
-    private Button buttonSaveSettings;
-    
-    @FXML
-    private Button buttonExecute;
+    private SettingsPane settingsPane;
     
     // レポートエリア -------------------------
     
@@ -99,12 +87,11 @@ public class MainController {
         factory = Factory.of();
         
         initProperties();
-        initSettingsArea();
         initExecutionArea();
         
         menuPane.init();
         targetsPane.init(factory, menuPane.menuProperty());
-        optionsPane.init();
+        settingsPane.init(isReady, event -> execute());
         utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
     }
     
@@ -117,23 +104,7 @@ public class MainController {
         //      ・isRunning
     }
     
-    private void initSettingsArea() {
-        // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
-        buttonSaveSettings.disableProperty().bind(
-                optionsPane.hasSettingsChangedProperty().not());
-        
-        // 「設定を保存」ボタンのイベントハンドラを登録する。
-        buttonSaveSettings.setOnAction(event -> {
-            Settings settings = gatherSettings();
-            Properties properties = settings.toProperties();
-            AppMain.storeProperties(properties);
-            optionsPane.hasSettingsChangedProperty().set(false);
-        });
-    }
-    
     private void initExecutionArea() {
-        // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
-        buttonExecute.disableProperty().bind(isReady.not());
         
         // 実行中は全コントローラを無効にする。
         menuPane.disableProperty().bind(isRunning);
@@ -143,9 +114,6 @@ public class MainController {
         
         // レポートエリアは常に有効にすることにする。
         //paneReporting.disableProperty().bind(isRunning.not());
-        
-        // 「実行」ボタンのイベントハンドラを登録する。
-        buttonExecute.setOnAction(event -> execute());
     }
     
     /**
@@ -159,7 +127,7 @@ public class MainController {
         
         menuPane.applySettings(settings);
         targetsPane.applySettings(settings);
-        optionsPane.applySettings(settings);
+        settingsPane.applySettings(settings);
     }
     
     private Settings gatherSettings() {
@@ -167,7 +135,7 @@ public class MainController {
         
         menuPane.gatherSettings(builder);
         targetsPane.gatherSettings(builder);
-        optionsPane.gatherSettings(builder);
+        settingsPane.gatherSettings(builder);
         
         return builder.build();
     }
