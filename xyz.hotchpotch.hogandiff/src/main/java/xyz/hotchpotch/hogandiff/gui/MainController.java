@@ -13,9 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppTask;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -49,13 +46,7 @@ public class MainController {
     // レポートエリア -------------------------
     
     @FXML
-    private Pane reportingPane;
-    
-    @FXML
-    private ProgressBar progressReport;
-    
-    @FXML
-    private TextArea textReport;
+    private ReportingPane reportingPane;
     
     // Utilエリア -------------------------
     
@@ -165,16 +156,13 @@ public class MainController {
         isRunning.set(true);
         
         Task<Void> task = AppTask.of(settings, Factory.of());
-        progressReport.progressProperty().bind(task.progressProperty());
-        textReport.textProperty().bind(task.messageProperty());
+        reportingPane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
-            progressReport.progressProperty().unbind();
-            progressReport.setProgress(0D);
-            textReport.textProperty().unbind();
+            reportingPane.unbind();
             if (settings.get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
@@ -184,9 +172,7 @@ public class MainController {
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
             executor.shutdown();
-            progressReport.progressProperty().unbind();
-            progressReport.setProgress(0D);
-            textReport.textProperty().unbind();
+            reportingPane.unbind();
             new Alert(
                     AlertType.WARNING,
                     task.getException().getMessage(),

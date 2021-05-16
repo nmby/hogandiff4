@@ -13,12 +13,7 @@
       <xyz.hotchpotch.hogandiff.gui.MenuPane fx:id="menuPane" />
       <xyz.hotchpotch.hogandiff.gui.TargetsPane fx:id="targetsPane" VBox.vgrow="NEVER" />
       <xyz.hotchpotch.hogandiff.gui.SettingsPane fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
-      <VBox fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS">
-         <children>
-            <ProgressBar fx:id="progressReport" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="0.0" progress="0.0" VBox.vgrow="NEVER" />
-            <TextArea fx:id="textReport" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumnCount="0" prefRowCount="2" wrapText="true" VBox.vgrow="ALWAYS" />
-         </children>
-      </VBox>
+      <xyz.hotchpotch.hogandiff.gui.ReportingPane fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS" />
       <xyz.hotchpotch.hogandiff.gui.UtilPane fx:id="utilPane" />
    </children>
 </VBox>
