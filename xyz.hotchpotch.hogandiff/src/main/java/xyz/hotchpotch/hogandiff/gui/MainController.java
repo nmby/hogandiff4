@@ -55,10 +55,10 @@ public class MainController {
     private Pane paneSelectTargets;
     
     @FXML
-    private TargetBookSheetController targetBookSheet1;
+    private TargetBookSheetParts targetBookSheet1;
     
     @FXML
-    private TargetBookSheetController targetBookSheet2;
+    private TargetBookSheetParts targetBookSheet2;
     
     // 設定エリア ---------------------------
     
@@ -66,7 +66,7 @@ public class MainController {
     private Pane paneSettings;
     
     @FXML
-    private OptionsController paneOptions;
+    private OptionsParts paneOptions;
     
     @FXML
     private Button buttonSaveSettings;
@@ -88,7 +88,7 @@ public class MainController {
     // Utilエリア -------------------------
     
     @FXML
-    private UtilController paneUtil;
+    private UtilPane paneUtil;
     
     // その他プロパティ --------------------------
     

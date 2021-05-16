@@ -38,7 +38,7 @@ import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
-public class TargetBookSheetController extends GridPane {
+public class TargetBookSheetParts extends GridPane {
     
     // [static members] ********************************************************
     
@@ -68,8 +68,8 @@ public class TargetBookSheetController extends GridPane {
     private StringProperty sheetName = new SimpleStringProperty();
     private BooleanProperty isReady = new SimpleBooleanProperty();
     
-    public TargetBookSheetController() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetBookSheetView.fxml"));
+    public TargetBookSheetParts() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetBookSheetParts.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

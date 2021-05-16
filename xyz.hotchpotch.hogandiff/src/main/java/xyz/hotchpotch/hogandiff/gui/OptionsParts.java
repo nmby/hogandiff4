@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
-public class OptionsController extends VBox {
+public class OptionsParts extends VBox {
     
     // [static members] ********************************************************
     
@@ -48,8 +48,8 @@ public class OptionsController extends VBox {
     
     private BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     
-    public OptionsController() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsView.fxml"));
+    public OptionsParts() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

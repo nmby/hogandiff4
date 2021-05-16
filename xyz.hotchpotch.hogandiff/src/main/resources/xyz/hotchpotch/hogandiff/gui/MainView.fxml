@@ -32,8 +32,8 @@
       </HBox>
       <VBox fx:id="paneSelectTargets" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
          <children>
-            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetController fx:id="targetBookSheet1" styleClass="paneTarget" />
-            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetController fx:id="targetBookSheet2" styleClass="paneTarget" />
+            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet1" styleClass="paneTarget" />
+            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet2" styleClass="paneTarget" />
          </children>
          <VBox.margin>
             <Insets bottom="5.0" top="5.0" />
@@ -41,7 +41,7 @@
       </VBox>
       <HBox fx:id="paneSettings" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
          <children>
-            <xyz.hotchpotch.hogandiff.gui.OptionsController fx:id="paneOptions" />
+            <xyz.hotchpotch.hogandiff.gui.OptionsParts fx:id="paneOptions" />
             <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
                <children>
                   <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="paneSaveSettings" VBox.vgrow="NEVER">
@@ -70,6 +70,6 @@
             <TextArea fx:id="textReport" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumnCount="0" prefRowCount="2" wrapText="true" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
-      <xyz.hotchpotch.hogandiff.gui.UtilController fx:id="paneUtil" />
+      <xyz.hotchpotch.hogandiff.gui.UtilPane fx:id="paneUtil" />
    </children>
 </VBox>

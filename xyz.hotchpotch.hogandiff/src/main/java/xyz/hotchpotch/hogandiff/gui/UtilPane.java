@@ -20,7 +20,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
-public class UtilController extends HBox {
+public class UtilPane extends HBox {
     
     // [static members] ********************************************************
     
@@ -35,8 +35,8 @@ public class UtilController extends HBox {
     @FXML
     private Hyperlink linkToWebSite;
     
-    public UtilController() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilView.fxml"));
+    public UtilPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
