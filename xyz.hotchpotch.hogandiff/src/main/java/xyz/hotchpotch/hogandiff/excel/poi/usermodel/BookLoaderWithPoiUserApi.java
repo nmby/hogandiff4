@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -89,6 +91,10 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
                     .toList();
+            
+        } catch(EncryptedDocumentException e) {
+            throw new PasswordHandlingException(
+                    "パスワード付きファイルには対応していません：" + bookPath, e);
             
         } catch (Exception e) {
             throw new ExcelHandlingException("処理に失敗しました：" + bookPath, e);
