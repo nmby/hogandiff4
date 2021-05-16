@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="paneSettingsArea" type="VBox" HBox.hgrow="ALWAYS" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+         <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+         </rowConstraints>
+         <children>
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="比較オプション" GridPane.rowSpan="4" />
+            <CheckBox fx:id="considerRowGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="行の挿入／削除を考慮する" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
+               </GridPane.margin>
+            </CheckBox>
+            <CheckBox fx:id="considerColumnGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="列の挿入／削除を考慮する" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </CheckBox>
+            <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+               <GridPane.margin>
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+               <children>
+                  <CheckBox fx:id="compareCellContentsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セル内容を比較する" HBox.hgrow="NEVER">
+                     <padding>
+                        <Insets right="10.0" />
+                     </padding>
+                  </CheckBox>
+                  <RadioButton fx:id="compareOnValueRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="値">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="compareValueOrFormula" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="compareOnFormulaRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="数式" toggleGroup="$compareValueOrFormula" />
+               </children>
+            </HBox>
+            <CheckBox fx:id="compareCellCommentsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セルコメントを比較する" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </CheckBox>
+         </children>
+      </GridPane>
+      <GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+         <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+         </rowConstraints>
+         <children>
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="レポートオプション" GridPane.rowSpan="2" />
+            <CheckBox fx:id="showPaintedSheetsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="差分セルに色を付けて表示する" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
+               </GridPane.margin>
+            </CheckBox>
+            <CheckBox fx:id="showResultTextCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="比較結果のテキストを表示する" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </CheckBox>
+         </children>
+         <VBox.margin>
+            <Insets bottom="3.0" top="3.0" />
+         </VBox.margin>
+      </GridPane>
+      <GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+         <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+         </rowConstraints>
+         <children>
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="実行オプション" />
+            <CheckBox fx:id="exitWhenFinishedCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="比較完了時にこのアプリを終了する" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="3.0" />
+               </GridPane.margin>
+            </CheckBox>
+         </children>
+      </GridPane>
+   </children>
+   <HBox.margin>
+      <Insets bottom="10.0" />
+   </HBox.margin>
+</fx:root>
