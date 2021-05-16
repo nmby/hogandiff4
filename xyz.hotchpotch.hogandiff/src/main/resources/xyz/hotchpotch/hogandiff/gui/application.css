@@ -1,0 +1,75 @@
+
+.root {
+    -fx-font-size: 12.0px;
+	-fx-padding: 10.0px;
+	-fx-background-color: white;
+}
+
+#menuPane {
+	-fx-spacing: 15.0px;
+	-fx-padding: 3.0px 0.0px 10.0px 0.0px;
+}
+
+#targetsPane {
+	-fx-spacing: 3.0px;
+}
+
+.paneTarget {
+	-fx-background-color: rgb(219.0, 244.0, 231.0);
+	-fx-padding: 0.0px 15.0px 0.0px 0.0px
+}
+
+.labelTargetTitle {
+	-fx-font-size: 18.0px;
+	-fx-text-fill: white;
+	-fx-pref-width: 30.0px;
+	-fx-alignment: center;
+	-fx-background-color: rgb(33.0, 115.0, 70.0);
+}
+
+.labelTargetItem {
+	-fx-pref-width: 75.0px;
+	-fx-padding: 0.0px 3.0px 0.0px 0.0px;
+}
+
+.paneSettingsArea {
+	-fx-background-color: rgb(230.0, 240.0, 255.0);
+	-fx-pref-width: 230.0px;
+}
+
+.labelSettingsTitle {
+	-fx-background-color: rgb(196.0, 219.0, 255.0);
+	-fx-padding: 0.0px 7.0px 0.0px 5.0px;
+	-fx-pref-width: 95.0px;
+}
+
+.paneSaveSettings {
+	-fx-padding: 12.0px 15.0px 12.0px 25.0px;
+	-fx-background-color: rgb(230.0, 240.0, 255.0);
+}
+
+#saveSettingsButton {
+	-fx-pref-width: 100.0px;
+	-fx-pref-height: 45.0px;
+}
+
+.paneExecute {
+	-fx-padding: 12.0px 15.0px 5.0px 15.0px;
+	-fx-background-color: rgb(255.0, 200.0, 200.0);
+}
+
+#executeButton {
+	-fx-font-size: 18.0px;
+	-fx-pref-width: 100.0px;
+}
+
+#reportingPane {
+	-fx-background-color: rgb(255.0, 200.0, 200.0);
+	-fx-padding: 10.0px 10px 0px 10px;
+}
+
+#utilPane {
+	-fx-background-color: rgb(255.0, 200.0, 200.0);
+	-fx-padding: 5px 10.0px 10.0px 10.0px;
+	-fx-spacing: 10.0px;
+}

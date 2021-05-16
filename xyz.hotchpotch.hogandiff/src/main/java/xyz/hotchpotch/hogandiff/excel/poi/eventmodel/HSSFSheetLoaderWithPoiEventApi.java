@@ -9,7 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
@@ -200,7 +199,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 sst = IntStream.range(0, sstRec.getNumUniqueStrings())
                         .mapToObj(sstRec::getString)
                         .map(UnicodeString::getString)
-                        .collect(Collectors.toList());
+                        .toList();
                 step = ProcessingStep.SEARCHING_SHEET_BODY;
                 
             } else if (record.getSid() == EOFRecord.sid) {
@@ -389,7 +388,12 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     String comment = comments.remove(noteRec.getShapeId());
                     
                     if (cells.containsKey(address)) {
-                        cells.get(address).setComment(comment);
+                        CellReplica original = cells.get(address);
+                        cells.put(address, CellReplica.of(
+                                original.row(),
+                                original.column(),
+                                original.content(),
+                                comment));
                     } else {
                         cells.put(address, CellReplica.of(address, "", comment));
                     }

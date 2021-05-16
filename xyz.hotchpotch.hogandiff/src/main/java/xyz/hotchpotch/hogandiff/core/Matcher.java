@@ -80,5 +80,7 @@ public interface Matcher<T> {
      * @param listB リストB
      * @return リストA, Bの要素同士の最適な組み合わせを表す、要素のインデックスのペアのリスト
      */
-    List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB);
+    List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB);
 }

@@ -28,24 +28,18 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * 
      * @author nmby
      */
-    private static class Cost implements Comparable<Cost> {
+    // java16で正式導入されたRecordを使ってみる。
+    private static record Cost(Integer idxA, Integer idxB, int cost)
+            implements Comparable<Cost> {
         
         // [static members] ----------------------------------------------------
         
         // [instance members] --------------------------------------------------
         
-        private final Integer idxA;
-        private final Integer idxB;
-        private final int cost;
-        
-        private Cost(Integer idxA, Integer idxB, int cost) {
+        private Cost {
             assert idxA != null || idxB != null;
             assert idxA == null || 0 <= idxA;
             assert idxB == null || 0 <= idxB;
-            
-            this.idxA = idxA;
-            this.idxB = idxB;
-            this.cost = cost;
         }
         
         private boolean isPaired() {
@@ -132,14 +126,17 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(List<? extends T> listA, List<? extends T> listB) {
+    public List<Pair<Integer>> makePairs(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> Pair.of(n, n))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         
         // まず、全ての組み合わせのコストを計算する。
@@ -148,7 +145,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         Stream<Cost> gapCostsB = IntStream.range(0, listB.size()).parallel()
                 .mapToObj(j -> new Cost(null, j, gapEvaluator.applyAsInt(listB.get(j))));
         Stream<Cost> diffCosts = IntStream.range(0, listA.size()).parallel()
-                .mapToObj(Integer::valueOf)
+                .boxed()
                 .flatMap(i -> IntStream.range(0, listB.size()).parallel()
                         .mapToObj(j -> new Cost(i, j, diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
         

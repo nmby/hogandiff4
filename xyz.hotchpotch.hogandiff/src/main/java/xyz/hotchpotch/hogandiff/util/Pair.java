@@ -11,7 +11,7 @@ import java.util.function.Function;
  * @param <T> 要素の型
  * @author nmby
  */
-public class Pair<T> {
+public record Pair<T>(T a, T b) {
     
     // [static members] ********************************************************
     
@@ -145,31 +145,9 @@ public class Pair<T> {
     
     // [instance members] ******************************************************
     
-    private final Optional<T> a;
-    private final Optional<T> b;
-    
-    private Pair(T a, T b) {
-        this.a = Optional.ofNullable(a);
-        this.b = Optional.ofNullable(b);
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Pair) {
-            Pair<?> other = (Pair<?>) o;
-            return a.equals(other.a) && b.equals(other.b);
-        }
-        return false;
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(a, b);
-    }
-    
     @Override
     public String toString() {
-        return String.format("(%s, %s)", a.orElse(null), b.orElse(null));
+        return String.format("(%s, %s)", a, b);
     }
     
     /**
@@ -178,8 +156,12 @@ public class Pair<T> {
      * @return 要素a
      * @throws NoSuchElementException 要素aが無い場合
      */
+    @Override
     public T a() {
-        return a.get();
+        if (a == null) {
+            throw new NoSuchElementException();
+        }
+        return a;
     }
     
     /**
@@ -188,8 +170,12 @@ public class Pair<T> {
      * @return 要素b
      * @throws NoSuchElementException 要素bが無い場合
      */
+    @Override
     public T b() {
-        return b.get();
+        if (b == null) {
+            throw new NoSuchElementException();
+        }
+        return b;
     }
     
     /**
@@ -213,7 +199,7 @@ public class Pair<T> {
      * @return 要素aがある場合はその値、そうでない場合は {@code other}
      */
     public T aOrElse(T other) {
-        return a.orElse(other);
+        return a == null ? other : a;
     }
     
     /**
@@ -223,7 +209,7 @@ public class Pair<T> {
      * @return 要素bがある場合はその値、そうでない場合は {@code other}
      */
     public T bOrElse(T other) {
-        return b.orElse(other);
+        return b == null ? other : b;
     }
     
     /**
@@ -246,7 +232,7 @@ public class Pair<T> {
      * @return 要素aが存在する場合は {@code true}
      */
     public boolean isPresentA() {
-        return a.isPresent();
+        return a != null;
     }
     
     /**
@@ -255,7 +241,7 @@ public class Pair<T> {
      * @return 要素bが存在する場合は {@code true}
      */
     public boolean isPresentB() {
-        return b.isPresent();
+        return b != null;
     }
     
     /**
@@ -277,7 +263,7 @@ public class Pair<T> {
      * @return 両要素ともに存在する場合は {@code true}
      */
     public boolean isPaired() {
-        return a.isPresent() && b.isPresent();
+        return isPresentA() && isPresentB();
     }
     
     /**
@@ -286,7 +272,7 @@ public class Pair<T> {
      * @return 要素aだけが存在する場合は {@code true}
      */
     public boolean isOnlyA() {
-        return a.isPresent() && b.isEmpty();
+        return isPresentA() && !isPresentB();
     }
     
     /**
@@ -295,7 +281,7 @@ public class Pair<T> {
      * @return 要素bだけが存在する場合は {@code true}
      */
     public boolean isOnlyB() {
-        return a.isEmpty() && b.isPresent();
+        return !isPresentA() && isPresentB();
     }
     
     /**
@@ -317,7 +303,7 @@ public class Pair<T> {
      * @return ペアが空の（どちらの要素も存在しない）場合は {@code true}
      */
     public boolean isEmpty() {
-        return a.isEmpty() && b.isEmpty();
+        return !isPresentA() && !isPresentB();
     }
     
     /**
@@ -326,7 +312,7 @@ public class Pair<T> {
      * @return 要素aと要素bが同じ場合は {@code true}
      */
     public boolean isIdentical() {
-        return a.equals(b);
+        return Objects.equals(a, b);
     }
     
     /**
@@ -335,7 +321,7 @@ public class Pair<T> {
      * @return 要素a, 要素bを入れ替えたペア
      */
     public Pair<T> reversed() {
-        return flatOf(b, a);
+        return new Pair<>(b, a);
     }
     
     /**
@@ -350,6 +336,8 @@ public class Pair<T> {
     public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper");
         
-        return Pair.flatOf(a.map(mapper), b.map(mapper));
+        return new Pair<>(
+                a == null ? null : mapper.apply(a),
+                b == null ? null : mapper.apply(b));
     }
 }
