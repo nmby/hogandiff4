@@ -163,12 +163,6 @@
             <TextArea fx:id="textReport" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumnCount="0" prefRowCount="2" wrapText="true" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
-      <HBox fx:id="paneUtil" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-         <children>
-            <Button fx:id="buttonShowWorkDir" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="作業用フォルダを表示する" HBox.hgrow="NEVER" />
-            <Button fx:id="buttonDeleteOldWorkDir" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="古い作業用フォルダを削除する" HBox.hgrow="NEVER" />
-            <Hyperlink fx:id="linkToWebSite" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="website" HBox.hgrow="NEVER" />
-         </children>
-      </HBox>
+      <xyz.hotchpotch.hogandiff.gui.UtilController fx:id="paneUtil" />
    </children>
 </VBox>
