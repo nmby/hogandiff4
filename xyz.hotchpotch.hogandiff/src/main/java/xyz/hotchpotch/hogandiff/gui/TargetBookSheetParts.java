@@ -215,7 +215,7 @@ public class TargetBookSheetParts extends GridPane {
             bookPathTextField.setText("");
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
-                    AlertType.ERROR,
+                    AlertType.WARNING,
                     "パスワード付きファイルには対応していません：\n" + newBookPath,
                     ButtonType.OK)
                             .showAndWait();
