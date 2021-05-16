@@ -35,6 +35,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 public class TargetBookSheetController extends GridPane {
     
@@ -60,6 +62,7 @@ public class TargetBookSheetController extends GridPane {
     private ChoiceBox<String> choiceSheetName;
     
     private Factory factory;
+    private BooleanProperty isCompareBooks;
     
     private Property<Path> bookPath = new SimpleObjectProperty<>();
     private StringProperty sheetName = new SimpleStringProperty();
@@ -82,6 +85,8 @@ public class TargetBookSheetController extends GridPane {
         Objects.requireNonNull(isCompareBooks, "isCompareBooks");
         
         this.factory = factory;
+        this.isCompareBooks = isCompareBooks;
+        
         labelTitle.setText(title);
         textBookPath.setOnDragOver(this::onDragOver);
         textBookPath.setOnDragDropped(this::onDragDropped);
@@ -191,6 +196,39 @@ public class TargetBookSheetController extends GridPane {
                     "シートが見つかりません：\n" + sheetName,
                     ButtonType.OK)
                             .showAndWait();
+        }
+    }
+    
+    public void applySettings(
+            Settings settings,
+            Key<Path> keyBookPath,
+            Key<String> keySheetName) {
+        
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(keyBookPath, "keyBookPath");
+        Objects.requireNonNull(keySheetName, "keySheetName");
+        
+        if (settings.containsKey(keyBookPath)) {
+            validateAndSetTarget(
+                    settings.get(keyBookPath),
+                    settings.containsKey(keySheetName)
+                            ? settings.get(keySheetName)
+                            : null);
+        }
+    }
+    
+    public void gatherSettings(
+            Settings.Builder builder,
+            Key<Path> keyBookPath,
+            Key<String> keySheetName) {
+        
+        Objects.requireNonNull(builder, "builder");
+        
+        if (bookPath.getValue() != null) {
+            builder.set(keyBookPath, bookPath.getValue());
+        }
+        if (!isCompareBooks.getValue() && sheetName.getValue() != null) {
+            builder.set(keySheetName, sheetName.getValue());
         }
     }
 }

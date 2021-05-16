@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.gui;
 
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -195,46 +194,19 @@ public class MainController {
         if (settings.containsKey(SettingKeys.CURR_MENU)) {
             radioCompareBooks.setSelected(settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
         }
-        if (settings.containsKey(SettingKeys.CURR_BOOK_PATH1)) {
-            targetBookSheet1.validateAndSetTarget(
-                    settings.get(SettingKeys.CURR_BOOK_PATH1),
-                    settings.containsKey(SettingKeys.CURR_SHEET_NAME1)
-                            ? settings.get(SettingKeys.CURR_SHEET_NAME1)
-                            : null);
-        }
-        if (settings.containsKey(SettingKeys.CURR_BOOK_PATH2)) {
-            targetBookSheet2.validateAndSetTarget(
-                    settings.get(SettingKeys.CURR_BOOK_PATH2),
-                    settings.containsKey(SettingKeys.CURR_SHEET_NAME2)
-                            ? settings.get(SettingKeys.CURR_SHEET_NAME2)
-                            : null);
-        }
-        
+        targetBookSheet1.applySettings(settings, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
+        targetBookSheet2.applySettings(settings, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
         paneOptions.applySettings(settings);
     }
     
     private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
+        targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
+        targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+        paneOptions.gatherSettings(builder);
+        
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
-        Path bookPath1 = targetBookSheet1.bookPathProperty().getValue();
-        Path bookPath2 = targetBookSheet2.bookPathProperty().getValue();
-        if (bookPath1 != null) {
-            builder.set(SettingKeys.CURR_BOOK_PATH1, bookPath1);
-        }
-        if (bookPath2 != null) {
-            builder.set(SettingKeys.CURR_BOOK_PATH2, bookPath2);
-        }
-        if (menu.getValue() == AppMenu.COMPARE_SHEETS) {
-            String sheetName1 = targetBookSheet1.sheetNameProperty().getValue();
-            String sheetName2 = targetBookSheet2.sheetNameProperty().getValue();
-            if (sheetName1 != null) {
-                builder.set(SettingKeys.CURR_SHEET_NAME1, sheetName1);
-            }
-            if (sheetName2 != null) {
-                builder.set(SettingKeys.CURR_SHEET_NAME2, sheetName2);
-            }
-        }
         builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
@@ -244,8 +216,6 @@ public class MainController {
         builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
         builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
         builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
-        
-        paneOptions.gatherSettings(builder);
         
         return builder.build();
     }
