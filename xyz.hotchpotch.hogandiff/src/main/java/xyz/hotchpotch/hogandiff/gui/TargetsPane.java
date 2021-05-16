@@ -27,17 +27,13 @@ public class TargetsPane extends VBox {
     @FXML
     private TargetBookSheetParts targetBookSheet2;
     
-    private BooleanProperty isReady = new SimpleBooleanProperty();
+    private final BooleanProperty isReady = new SimpleBooleanProperty();
     
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
-    }
-    
-    public ReadOnlyBooleanProperty isReadyProperty() {
-        return isReady;
     }
     
     public void init(
@@ -65,5 +61,9 @@ public class TargetsPane extends VBox {
         
         targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
         targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+    }
+    
+    public ReadOnlyBooleanProperty isReadyProperty() {
+        return isReady;
     }
 }

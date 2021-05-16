@@ -30,80 +30,46 @@ public class MainController {
     
     // [instance members] ******************************************************
     
-    // 比較対象選択エリア -----------------------
-    
     @FXML
     private MenuPane menuPane;
     
     @FXML
     private TargetsPane targetsPane;
     
-    // 設定エリア ---------------------------
-    
     @FXML
     private SettingsPane settingsPane;
-    
-    // レポートエリア -------------------------
     
     @FXML
     private ReportingPane reportingPane;
     
-    // Utilエリア -------------------------
-    
     @FXML
     private UtilPane utilPane;
     
-    // その他プロパティ --------------------------
-    
-    private BooleanProperty isReady = new SimpleBooleanProperty(false);
-    private BooleanProperty isRunning = new SimpleBooleanProperty(false);
-    
-    // その他メンバ --------------------------
-    
     private Factory factory;
     
-    /**
-     * 実行の準備が整っているかを返します。<br>
-     * 
-     * @return 実行の準備が整っている場合は {@code true}
-     */
-    public boolean isReady() {
-        return isReady.getValue();
-    }
+    private final BooleanProperty isReady = new SimpleBooleanProperty(false);
+    private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
         factory = Factory.of();
-        
-        initProperties();
-        initExecutionArea();
+        isReady.bind(targetsPane.isReadyProperty());
+        // 以下のプロパティについては、バインディングで値を反映させるのではなく
+        // 相手方のイベントハンドラで値を設定する。
+        //      ・isRunning
         
         menuPane.init();
         targetsPane.init(factory, menuPane.menuProperty());
         settingsPane.init(isReady, event -> execute());
         utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
-    }
-    
-    private void initProperties() {
-        // 各種コントローラの設定状況に応じて「実行」可能な状態か否かを反映させる。
-        isReady.bind(targetsPane.isReadyProperty());
         
-        // 以下のプロパティについては、バインディングで値を反映させるのではなく
-        // 相手方のイベントハンドラで値を設定する。
-        //      ・isRunning
-    }
-    
-    private void initExecutionArea() {
-        
-        // 実行中は全コントローラを無効にする。
+        // 実行中はレポートエリアを除く全エリアを無効にする。
         menuPane.disableProperty().bind(isRunning);
         targetsPane.disableProperty().bind(isRunning);
         settingsPane.disableProperty().bind(isRunning);
         utilPane.disableProperty().bind(isRunning);
-        
-        // レポートエリアは常に有効にすることにする。
         //paneReporting.disableProperty().bind(isRunning.not());
     }
     
@@ -129,6 +95,15 @@ public class MainController {
         settingsPane.gatherSettings(builder);
         
         return builder.build();
+    }
+    
+    /**
+     * 実行の準備が整っているかを返します。<br>
+     * 
+     * @return 実行の準備が整っている場合は {@code true}
+     */
+    public boolean isReady() {
+        return isReady.getValue();
     }
     
     /**

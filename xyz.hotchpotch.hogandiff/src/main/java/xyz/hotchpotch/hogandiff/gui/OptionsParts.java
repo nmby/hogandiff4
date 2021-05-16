@@ -46,7 +46,7 @@ public class OptionsParts extends VBox {
     @FXML
     private CheckBox checkExitWhenFinished;
     
-    private BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
+    private final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
@@ -69,10 +69,6 @@ public class OptionsParts extends VBox {
         // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
         radioCompareOnValue.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
         radioCompareOnFormula.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
-    }
-    
-    public BooleanProperty hasSettingsChangedProperty() {
-        return hasSettingsChanged;
     }
     
     public void applySettings(Settings settings) {
@@ -125,5 +121,9 @@ public class OptionsParts extends VBox {
         builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
         builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
         builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+    }
+    
+    public BooleanProperty hasSettingsChangedProperty() {
+        return hasSettingsChanged;
     }
 }

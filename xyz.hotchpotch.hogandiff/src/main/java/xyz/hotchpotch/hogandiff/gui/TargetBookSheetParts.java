@@ -62,12 +62,12 @@ public class TargetBookSheetParts extends GridPane {
     @FXML
     private ChoiceBox<String> choiceSheetName;
     
+    private final Property<Path> bookPath = new SimpleObjectProperty<>();
+    private final StringProperty sheetName = new SimpleStringProperty();
+    private final BooleanProperty isReady = new SimpleBooleanProperty();
+    
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
-    
-    private Property<Path> bookPath = new SimpleObjectProperty<>();
-    private StringProperty sheetName = new SimpleStringProperty();
-    private BooleanProperty isReady = new SimpleBooleanProperty();
     
     public TargetBookSheetParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetBookSheetParts.fxml"));
@@ -107,6 +107,39 @@ public class TargetBookSheetParts extends GridPane {
                 () -> bookPath.getValue() != null
                         && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
                 bookPath, sheetName, menu));
+    }
+    
+    public void applySettings(
+            Settings settings,
+            Key<Path> keyBookPath,
+            Key<String> keySheetName) {
+        
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(keyBookPath, "keyBookPath");
+        Objects.requireNonNull(keySheetName, "keySheetName");
+        
+        if (settings.containsKey(keyBookPath)) {
+            validateAndSetTarget(
+                    settings.get(keyBookPath),
+                    settings.containsKey(keySheetName)
+                            ? settings.get(keySheetName)
+                            : null);
+        }
+    }
+    
+    public void gatherSettings(
+            Settings.Builder builder,
+            Key<Path> keyBookPath,
+            Key<String> keySheetName) {
+        
+        Objects.requireNonNull(builder, "builder");
+        
+        if (bookPath.getValue() != null) {
+            builder.set(keyBookPath, bookPath.getValue());
+        }
+        if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
+            builder.set(keySheetName, sheetName.getValue());
+        }
     }
     
     public ReadOnlyProperty<Path> bookPathProperty() {
@@ -201,39 +234,6 @@ public class TargetBookSheetParts extends GridPane {
                     "シートが見つかりません：\n" + sheetName,
                     ButtonType.OK)
                             .showAndWait();
-        }
-    }
-    
-    public void applySettings(
-            Settings settings,
-            Key<Path> keyBookPath,
-            Key<String> keySheetName) {
-        
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(keyBookPath, "keyBookPath");
-        Objects.requireNonNull(keySheetName, "keySheetName");
-        
-        if (settings.containsKey(keyBookPath)) {
-            validateAndSetTarget(
-                    settings.get(keyBookPath),
-                    settings.containsKey(keySheetName)
-                            ? settings.get(keySheetName)
-                            : null);
-        }
-    }
-    
-    public void gatherSettings(
-            Settings.Builder builder,
-            Key<Path> keyBookPath,
-            Key<String> keySheetName) {
-        
-        Objects.requireNonNull(builder, "builder");
-        
-        if (bookPath.getValue() != null) {
-            builder.set(keyBookPath, bookPath.getValue());
-        }
-        if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
-            builder.set(keySheetName, sheetName.getValue());
         }
     }
 }

@@ -27,17 +27,13 @@ public class MenuPane extends HBox {
     @FXML
     private RadioButton radioCompareSheets;
     
-    private Property<AppMenu> menu = new SimpleObjectProperty<>();
+    private final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
     public MenuPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
-    }
-    
-    public ReadOnlyProperty<AppMenu> menuProperty() {
-        return menu;
     }
     
     public void init() {
@@ -62,5 +58,9 @@ public class MenuPane extends HBox {
         Objects.requireNonNull(builder, "builder");
         
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
+    }
+    
+    public ReadOnlyProperty<AppMenu> menuProperty() {
+        return menu;
     }
 }
