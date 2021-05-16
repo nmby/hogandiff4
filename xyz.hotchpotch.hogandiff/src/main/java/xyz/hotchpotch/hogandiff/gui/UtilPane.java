@@ -27,13 +27,13 @@ public class UtilPane extends HBox {
     // [instance members] ******************************************************
     
     @FXML
-    private Button buttonShowWorkDir;
+    private Button showWorkDirButton;
     
     @FXML
-    private Button buttonDeleteOldWorkDir;
+    private Button deleteOldWorkDirButton;
     
     @FXML
-    private Hyperlink linkToWebSite;
+    private Hyperlink toWebSiteHyperlink;
     
     public UtilPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"));
@@ -45,7 +45,7 @@ public class UtilPane extends HBox {
     public void init(Path workDir) {
         Objects.requireNonNull(workDir, "workDir");
         
-        buttonShowWorkDir.setOnAction(event -> {
+        showWorkDirButton.setOnAction(event -> {
             try {
                 if (!Files.isDirectory(workDir)) {
                     Files.createDirectories(workDir);
@@ -56,7 +56,7 @@ public class UtilPane extends HBox {
             }
         });
         
-        buttonDeleteOldWorkDir.setOnAction(event -> {
+        deleteOldWorkDirButton.setOnAction(event -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
                     "次のフォルダの内容物を全て削除します。よろしいですか？\n" + workDir)
@@ -73,7 +73,7 @@ public class UtilPane extends HBox {
             }
         });
         
-        linkToWebSite.setOnAction(event -> {
+        toWebSiteHyperlink.setOnAction(event -> {
             try {
                 Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/"));
             } catch (Exception e) {

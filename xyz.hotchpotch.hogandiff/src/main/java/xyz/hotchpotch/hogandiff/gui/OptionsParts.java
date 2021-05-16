@@ -20,31 +20,31 @@ public class OptionsParts extends VBox {
     // [instance members] ******************************************************
     
     @FXML
-    private CheckBox checkConsiderRowGaps;
+    private CheckBox considerRowGapsCheckBox;
     
     @FXML
-    private CheckBox checkConsiderColumnGaps;
+    private CheckBox considerColumnGapsCheckBox;
     
     @FXML
-    private CheckBox checkCompareCellContents;
+    private CheckBox compareCellContentsCheckBox;
     
     @FXML
-    private RadioButton radioCompareOnValue;
+    private RadioButton compareOnValueRadioButton;
     
     @FXML
-    private RadioButton radioCompareOnFormula;
+    private RadioButton compareOnFormulaRadioButton;
     
     @FXML
-    private CheckBox checkCompareCellComments;
+    private CheckBox compareCellCommentsCheckBox;
     
     @FXML
-    private CheckBox checkShowPaintedSheets;
+    private CheckBox showPaintedSheetsCheckBox;
     
     @FXML
-    private CheckBox checkShowResultText;
+    private CheckBox showResultTextCheckBox;
     
     @FXML
-    private CheckBox checkExitWhenFinished;
+    private CheckBox exitWhenFinishedCheckBox;
     
     private final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     
@@ -56,61 +56,63 @@ public class OptionsParts extends VBox {
     }
     
     public void init() {
-        checkConsiderRowGaps.setOnAction(event -> hasSettingsChanged.set(true));
-        checkConsiderColumnGaps.setOnAction(event -> hasSettingsChanged.set(true));
-        checkCompareCellContents.setOnAction(event -> hasSettingsChanged.set(true));
-        radioCompareOnValue.setOnAction(event -> hasSettingsChanged.set(true));
-        radioCompareOnFormula.setOnAction(event -> hasSettingsChanged.set(true));
-        checkCompareCellComments.setOnAction(event -> hasSettingsChanged.set(true));
-        checkShowPaintedSheets.setOnAction(event -> hasSettingsChanged.set(true));
-        checkShowResultText.setOnAction(event -> hasSettingsChanged.set(true));
-        checkExitWhenFinished.setOnAction(event -> hasSettingsChanged.set(true));
+        considerRowGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        considerColumnGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        compareCellContentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        compareOnValueRadioButton.setOnAction(event -> hasSettingsChanged.set(true));
+        compareOnFormulaRadioButton.setOnAction(event -> hasSettingsChanged.set(true));
+        compareCellCommentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        showPaintedSheetsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        showResultTextCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+        exitWhenFinishedCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
         
         // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
-        radioCompareOnValue.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
-        radioCompareOnFormula.disableProperty().bind(checkCompareCellContents.selectedProperty().not());
+        compareOnValueRadioButton.disableProperty().bind(
+                compareCellContentsCheckBox.selectedProperty().not());
+        compareOnFormulaRadioButton.disableProperty().bind(
+                compareCellContentsCheckBox.selectedProperty().not());
     }
     
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         if (settings.containsKey(SettingKeys.CONSIDER_ROW_GAPS)) {
-            checkConsiderRowGaps.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
+            considerRowGapsCheckBox.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
         }
         if (settings.containsKey(SettingKeys.CONSIDER_COLUMN_GAPS)) {
-            checkConsiderColumnGaps.setSelected(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS));
+            considerColumnGapsCheckBox.setSelected(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS));
         }
         if (settings.containsKey(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            checkCompareCellContents.setSelected(settings.get(SettingKeys.COMPARE_CELL_CONTENTS));
+            compareCellContentsCheckBox.setSelected(settings.get(SettingKeys.COMPARE_CELL_CONTENTS));
         }
         if (settings.containsKey(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            checkCompareCellComments.setSelected(settings.get(SettingKeys.COMPARE_CELL_COMMENTS));
+            compareCellCommentsCheckBox.setSelected(settings.get(SettingKeys.COMPARE_CELL_COMMENTS));
         }
         if (settings.containsKey(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
-            radioCompareOnFormula.setSelected(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING));
+            compareOnFormulaRadioButton.setSelected(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING));
         }
         if (settings.containsKey(SettingKeys.SHOW_PAINTED_SHEETS)) {
-            checkShowPaintedSheets.setSelected(settings.get(SettingKeys.SHOW_PAINTED_SHEETS));
+            showPaintedSheetsCheckBox.setSelected(settings.get(SettingKeys.SHOW_PAINTED_SHEETS));
         }
         if (settings.containsKey(SettingKeys.SHOW_RESULT_TEXT)) {
-            checkShowResultText.setSelected(settings.get(SettingKeys.SHOW_RESULT_TEXT));
+            showResultTextCheckBox.setSelected(settings.get(SettingKeys.SHOW_RESULT_TEXT));
         }
         if (settings.containsKey(SettingKeys.EXIT_WHEN_FINISHED)) {
-            checkExitWhenFinished.setSelected(settings.get(SettingKeys.EXIT_WHEN_FINISHED));
+            exitWhenFinishedCheckBox.setSelected(settings.get(SettingKeys.EXIT_WHEN_FINISHED));
         }
     }
     
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
-        builder.set(SettingKeys.CONSIDER_ROW_GAPS, checkConsiderRowGaps.isSelected());
-        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, checkConsiderColumnGaps.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, checkCompareCellContents.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, checkCompareCellComments.isSelected());
-        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, radioCompareOnFormula.isSelected());
-        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, checkShowPaintedSheets.isSelected());
-        builder.set(SettingKeys.SHOW_RESULT_TEXT, checkShowResultText.isSelected());
-        builder.set(SettingKeys.EXIT_WHEN_FINISHED, checkExitWhenFinished.isSelected());
+        builder.set(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox.isSelected());
+        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, compareCellContentsCheckBox.isSelected());
+        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, compareCellCommentsCheckBox.isSelected());
+        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected());
+        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox.isSelected());
+        builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());
+        builder.set(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox.isSelected());
         
         builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);

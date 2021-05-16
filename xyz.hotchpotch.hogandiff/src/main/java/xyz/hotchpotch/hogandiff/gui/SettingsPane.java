@@ -21,13 +21,13 @@ public class SettingsPane extends HBox {
     // [instance members] ******************************************************
     
     @FXML
-    private OptionsParts optionsPane;
+    private OptionsParts optionsParts;
     
     @FXML
-    private Button buttonSaveSettings;
+    private Button saveSettingsButton;
     
     @FXML
-    private Button buttonExecute;
+    private Button executeButton;
     
     public SettingsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"));
@@ -42,37 +42,37 @@ public class SettingsPane extends HBox {
         
         Objects.requireNonNull(isReady, "isReady");
         
-        optionsPane.init();
+        optionsParts.init();
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
-        buttonSaveSettings.disableProperty().bind(
-                optionsPane.hasSettingsChangedProperty().not());
+        saveSettingsButton.disableProperty().bind(
+                optionsParts.hasSettingsChangedProperty().not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
-        buttonSaveSettings.setOnAction(event -> {
+        saveSettingsButton.setOnAction(event -> {
             Settings.Builder builder = Settings.builder();
-            optionsPane.gatherSettings(builder);
+            optionsParts.gatherSettings(builder);
             Properties properties = builder.build().toProperties();
             AppMain.storeProperties(properties);
-            optionsPane.hasSettingsChangedProperty().set(false);
+            optionsParts.hasSettingsChangedProperty().set(false);
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
-        buttonExecute.disableProperty().bind(isReady.not());
+        executeButton.disableProperty().bind(isReady.not());
         
         // 「実行」ボタンのイベントハンドラを登録する。
-        buttonExecute.setOnAction(executor);
+        executeButton.setOnAction(executor);
     }
     
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        optionsPane.applySettings(settings);
+        optionsParts.applySettings(settings);
     }
     
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
-        optionsPane.gatherSettings(builder);
+        optionsParts.gatherSettings(builder);
     }
 }

@@ -48,19 +48,19 @@ public class TargetBookSheetParts extends GridPane {
     // [instance members] ******************************************************
     
     @FXML
-    private Label labelTitle;
+    private Label titleLabel;
     
     @FXML
-    private TextField textBookPath;
+    private TextField bookPathTextField;
     
     @FXML
-    private Button buttonBookPath;
+    private Button bookPathButton;
     
     @FXML
-    private Label labelSheetName;
+    private Label sheetNameLabel;
     
     @FXML
-    private ChoiceBox<String> choiceSheetName;
+    private ChoiceBox<String> sheetNameChoiceBox;
     
     private final Property<Path> bookPath = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
@@ -88,21 +88,21 @@ public class TargetBookSheetParts extends GridPane {
         this.factory = factory;
         this.menu = menu;
         
-        labelTitle.setText(title);
-        textBookPath.setOnDragOver(this::onDragOver);
-        textBookPath.setOnDragDropped(this::onDragDropped);
-        buttonBookPath.setOnAction(this::chooseBook);
-        labelSheetName.disableProperty().bind(Bindings.createBooleanBinding(
+        titleLabel.setText(title);
+        bookPathTextField.setOnDragOver(this::onDragOver);
+        bookPathTextField.setOnDragDropped(this::onDragDropped);
+        bookPathButton.setOnAction(this::chooseBook);
+        sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
                 menu));
-        choiceSheetName.disableProperty().bind(Bindings.createBooleanBinding(
+        sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
                 menu));
         
         bookPath.bind(Bindings.createObjectBinding(
-                () -> textBookPath.getText().isEmpty() ? null : Path.of(textBookPath.getText()),
-                textBookPath.textProperty()));
-        sheetName.bind(choiceSheetName.valueProperty());
+                () -> bookPathTextField.getText().isEmpty() ? null : Path.of(bookPathTextField.getText()),
+                bookPathTextField.textProperty()));
+        sheetName.bind(sheetNameChoiceBox.valueProperty());
         isReady.bind(Bindings.createBooleanBinding(
                 () -> bookPath.getValue() != null
                         && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
@@ -197,8 +197,8 @@ public class TargetBookSheetParts extends GridPane {
     
     public void validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
-            textBookPath.setText("");
-            choiceSheetName.setItems(FXCollections.emptyObservableList());
+            bookPathTextField.setText("");
+            sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             return;
         }
         
@@ -206,13 +206,13 @@ public class TargetBookSheetParts extends GridPane {
             BookLoader loader = factory.bookLoader(newBookPath);
             List<String> sheetNames = loader.loadSheetNames(newBookPath);
             
-            textBookPath.setText(newBookPath.toString());
-            choiceSheetName.setItems(FXCollections.observableList(sheetNames));
+            bookPathTextField.setText(newBookPath.toString());
+            sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));
             prevSelectedBookPath = newBookPath;
             
         } catch (Exception e) {
-            textBookPath.setText("");
-            choiceSheetName.setItems(FXCollections.emptyObservableList());
+            bookPathTextField.setText("");
+            sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
                     "ファイルを読み込めません：\n" + newBookPath,
@@ -222,13 +222,13 @@ public class TargetBookSheetParts extends GridPane {
         }
         
         if (sheetName == null) {
-            choiceSheetName.setValue(null);
+            sheetNameChoiceBox.setValue(null);
             
-        } else if (choiceSheetName.getItems().contains(sheetName)) {
-            choiceSheetName.setValue(sheetName);
+        } else if (sheetNameChoiceBox.getItems().contains(sheetName)) {
+            sheetNameChoiceBox.setValue(sheetName);
             
         } else {
-            choiceSheetName.setValue(null);
+            sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
                     "シートが見つかりません：\n" + sheetName,

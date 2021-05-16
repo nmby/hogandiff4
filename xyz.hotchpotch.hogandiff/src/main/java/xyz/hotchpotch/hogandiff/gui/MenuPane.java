@@ -22,10 +22,10 @@ public class MenuPane extends HBox {
     // [instance members] ******************************************************
     
     @FXML
-    private RadioButton radioCompareBooks;
+    private RadioButton compareBooksRadioButton;
     
     @FXML
-    private RadioButton radioCompareSheets;
+    private RadioButton compareSheetsRadioButton;
     
     private final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
@@ -38,10 +38,10 @@ public class MenuPane extends HBox {
     
     public void init() {
         menu.bind(Bindings.createObjectBinding(
-                () -> radioCompareBooks.isSelected()
+                () -> compareBooksRadioButton.isSelected()
                         ? AppMenu.COMPARE_BOOKS
                         : AppMenu.COMPARE_SHEETS,
-                radioCompareBooks.selectedProperty()));
+                compareBooksRadioButton.selectedProperty()));
         
     }
     
@@ -49,7 +49,7 @@ public class MenuPane extends HBox {
         Objects.requireNonNull(settings, "settings");
         
         if (settings.containsKey(SettingKeys.CURR_MENU)) {
-            radioCompareBooks.setSelected(
+            compareBooksRadioButton.setSelected(
                     settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
         }
     }

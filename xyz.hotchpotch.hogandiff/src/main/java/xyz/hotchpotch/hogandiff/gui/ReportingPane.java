@@ -17,10 +17,10 @@ public class ReportingPane extends VBox {
     // [instance members] ******************************************************
     
     @FXML
-    private ProgressBar progressReport;
+    private ProgressBar reportProgressBar;
     
     @FXML
-    private TextArea textReport;
+    private TextArea reportTextArea;
     
     public ReportingPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportingPane.fxml"));
@@ -32,13 +32,13 @@ public class ReportingPane extends VBox {
     public void bind(Task<Void> task) {
         Objects.requireNonNull(task, "task");
         
-        progressReport.progressProperty().bind(task.progressProperty());
-        textReport.textProperty().bind(task.messageProperty());
+        reportProgressBar.progressProperty().bind(task.progressProperty());
+        reportTextArea.textProperty().bind(task.messageProperty());
     }
     
     public void unbind() {
-        progressReport.progressProperty().unbind();
-        progressReport.setProgress(0D);
-        textReport.textProperty().unbind();
+        reportProgressBar.progressProperty().unbind();
+        reportProgressBar.setProgress(0D);
+        reportTextArea.textProperty().unbind();
     }
 }

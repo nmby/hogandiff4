@@ -22,10 +22,10 @@ public class TargetsPane extends VBox {
     // [instance members] ******************************************************
     
     @FXML
-    private TargetBookSheetParts targetBookSheet1;
+    private TargetBookSheetParts targetBookSheetParts1;
     
     @FXML
-    private TargetBookSheetParts targetBookSheet2;
+    private TargetBookSheetParts targetBookSheetParts2;
     
     private final BooleanProperty isReady = new SimpleBooleanProperty();
     
@@ -43,24 +43,36 @@ public class TargetsPane extends VBox {
         Objects.requireNonNull(factory, "factory");
         Objects.requireNonNull(menu, "menu");
         
-        targetBookSheet1.init(factory, "A", menu);
-        targetBookSheet2.init(factory, "B", menu);
+        targetBookSheetParts1.init(factory, "A", menu);
+        targetBookSheetParts2.init(factory, "B", menu);
         
-        isReady.bind(targetBookSheet1.isReadyProperty().and(targetBookSheet2.isReadyProperty()));
+        isReady.bind(
+                targetBookSheetParts1.isReadyProperty()
+                        .and(targetBookSheetParts2.isReadyProperty()));
     }
     
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        targetBookSheet1.applySettings(settings, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheet2.applySettings(settings, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+        targetBookSheetParts1.applySettings(
+                settings, SettingKeys.CURR_BOOK_PATH1,
+                SettingKeys.CURR_SHEET_NAME1);
+        targetBookSheetParts2.applySettings(
+                settings, SettingKeys.CURR_BOOK_PATH2,
+                SettingKeys.CURR_SHEET_NAME2);
     }
     
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
-        targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+        targetBookSheetParts1.gatherSettings(
+                builder,
+                SettingKeys.CURR_BOOK_PATH1,
+                SettingKeys.CURR_SHEET_NAME1);
+        targetBookSheetParts2.gatherSettings(
+                builder,
+                SettingKeys.CURR_BOOK_PATH2,
+                SettingKeys.CURR_SHEET_NAME2);
     }
     
     public ReadOnlyBooleanProperty isReadyProperty() {
