@@ -11,16 +11,8 @@
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="430.0" prefWidth="500.0" styleClass="root" stylesheets="@application.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.hotchpotch.hogandiff.gui.MainController">
    <children>
       <xyz.hotchpotch.hogandiff.gui.MenuPane fx:id="menuPane" />
-      <VBox fx:id="targetsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="3.0" VBox.vgrow="NEVER">
-         <children>
-            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet1" styleClass="paneTarget" />
-            <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet2" styleClass="paneTarget" />
-         </children>
-         <VBox.margin>
-            <Insets bottom="5.0" top="5.0" />
-         </VBox.margin>
-      </VBox>
-      <HBox fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+      <xyz.hotchpotch.hogandiff.gui.TargetsPane fx:id="targetsPane" VBox.vgrow="NEVER" />
+      <HBox fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
          <children>
             <xyz.hotchpotch.hogandiff.gui.OptionsParts fx:id="optionsPane" />
             <VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
@@ -42,7 +34,7 @@
             </VBox>
          </children>
          <VBox.margin>
-            <Insets top="5.0" />
+            <Insets top="10.0" />
          </VBox.margin>
       </HBox>
       <VBox fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS">

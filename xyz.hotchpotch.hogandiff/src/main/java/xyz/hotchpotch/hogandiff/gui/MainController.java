@@ -42,13 +42,7 @@ public class MainController {
     private MenuPane menuPane;
     
     @FXML
-    private Pane targetsPane;
-    
-    @FXML
-    private TargetBookSheetParts targetBookSheet1;
-    
-    @FXML
-    private TargetBookSheetParts targetBookSheet2;
+    private TargetsPane targetsPane;
     
     // 設定エリア ---------------------------
     
@@ -109,23 +103,14 @@ public class MainController {
         initExecutionArea();
         
         menuPane.init();
-        targetBookSheet1.init(
-                factory,
-                "A",
-                menuPane.menuProperty());
-        
-        targetBookSheet2.init(
-                factory,
-                "B",
-                menuPane.menuProperty());
-        
+        targetsPane.init(factory, menuPane.menuProperty());
         optionsPane.init();
         utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
     }
     
     private void initProperties() {
         // 各種コントローラの設定状況に応じて「実行」可能な状態か否かを反映させる。
-        isReady.bind(targetBookSheet1.isReadyProperty().and(targetBookSheet2.isReadyProperty()));
+        isReady.bind(targetsPane.isReadyProperty());
         
         // 以下のプロパティについては、バインディングで値を反映させるのではなく
         // 相手方のイベントハンドラで値を設定する。
@@ -173,8 +158,7 @@ public class MainController {
         Objects.requireNonNull(settings, "settings");
         
         menuPane.applySettings(settings);
-        targetBookSheet1.applySettings(settings, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheet2.applySettings(settings, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+        targetsPane.applySettings(settings);
         optionsPane.applySettings(settings);
     }
     
@@ -182,8 +166,7 @@ public class MainController {
         Settings.Builder builder = Settings.builder();
         
         menuPane.gatherSettings(builder);
-        targetBookSheet1.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheet2.gatherSettings(builder, SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2);
+        targetsPane.gatherSettings(builder);
         optionsPane.gatherSettings(builder);
         
         return builder.build();

@@ -7,7 +7,7 @@
 
 #menuPane {
 	-fx-spacing: 15.0px;
-	-fx-padding: 3.0px 0.0px 5.0px 0.0px;
+	-fx-padding: 3.0px 0.0px 10.0px 0.0px;
 }
 
 #targetsPane {

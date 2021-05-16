@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root fx:id="targetsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="3.0" type="VBox" VBox.vgrow="NEVER" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet1" styleClass="paneTarget" />
+      <xyz.hotchpotch.hogandiff.gui.TargetBookSheetParts fx:id="targetBookSheet2" styleClass="paneTarget" />
+   </children>
+   <opaqueInsets>
+      <Insets top="10.0" />
+   </opaqueInsets>
+</fx:root>
