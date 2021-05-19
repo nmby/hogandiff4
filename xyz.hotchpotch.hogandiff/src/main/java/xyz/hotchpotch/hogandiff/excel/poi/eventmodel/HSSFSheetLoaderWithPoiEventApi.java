@@ -174,15 +174,14 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          * @throws NoSuchElementException 指定された名前のシートが見つからない場合
          */
         private void searchingSheetDefinition(Record record) {
-            if (record.getSid() == BoundSheetRecord.sid) {
-                BoundSheetRecord bsRec = (BoundSheetRecord) record;
+            if (record instanceof BoundSheetRecord bsRec) {
                 if (sheetName.equals(bsRec.getSheetname())) {
                     step = ProcessingStep.READING_SST_DATA;
                 } else {
                     sheetIdx++;
                 }
                 
-            } else if (record.getSid() == EOFRecord.sid) {
+            } else if (record instanceof EOFRecord) {
                 throw new NoSuchElementException(
                         "指定された名前のシートが見つかりません：" + sheetName);
             }
@@ -194,15 +193,14 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          * @param record レコード
          */
         private void readingSstData(Record record) {
-            if (record.getSid() == SSTRecord.sid) {
-                SSTRecord sstRec = (SSTRecord) record;
+            if (record instanceof SSTRecord sstRec) {
                 sst = IntStream.range(0, sstRec.getNumUniqueStrings())
                         .mapToObj(sstRec::getString)
                         .map(UnicodeString::getString)
                         .toList();
                 step = ProcessingStep.SEARCHING_SHEET_BODY;
                 
-            } else if (record.getSid() == EOFRecord.sid) {
+            } else if (record instanceof EOFRecord) {
                 throw new AssertionError("no sst record");
             }
         }
@@ -215,9 +213,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          *      指定された名前のシートがグラフシートもしくはマクロシートだった場合
          */
         private void searchingSheetBody(Record record) {
-            if (record.getSid() == BOFRecord.sid) {
-                BOFRecord bofRec = (BOFRecord) record;
-                
+            if (record instanceof BOFRecord bofRec) {
                 switch (bofRec.getType()) {
                 case BOFRecord.TYPE_WORKSHEET:
                     if (currIdx == sheetIdx) {
@@ -257,9 +253,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          *      指定された名前のシートがダイアログシートだった場合
          */
         private void checkWorksheetOrDialogsheet(Record record) {
-            if (record.getSid() == WSBoolRecord.sid) {
-                WSBoolRecord wsbRec = (WSBoolRecord) record;
-                
+            if (record instanceof WSBoolRecord wsbRec) {
                 if (wsbRec.getDialog()) {
                     // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートも何故か getDialog() == false が返されるっぽい。
                     throw new UnsupportedOperationException(
@@ -267,7 +261,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 }
                 step = ProcessingStep.READING_CELL_CONTENTS_AND_COMMENTS;
                 
-            } else if (record.getSid() == EOFRecord.sid) {
+            } else if (record instanceof EOFRecord) {
                 throw new AssertionError("no WSBool record");
             }
         }
@@ -332,12 +326,11 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                         null));
                     }
                     
-                } else if (record.getSid() == StringRecord.sid) {
+                } else if (record instanceof StringRecord sRec) {
                     if (prevFormulaRec == null) {
                         throw new AssertionError("unexpected string record");
                     }
                     
-                    StringRecord sRec = (StringRecord) record;
                     String value = sRec.getString();
                     if (value != null && !"".equals(value)) {
                         cells.put(
