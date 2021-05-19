@@ -2,6 +2,8 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -12,6 +14,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 public class OptionsParts extends VBox {
     
@@ -76,30 +79,20 @@ public class OptionsParts extends VBox {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        if (settings.containsKey(SettingKeys.CONSIDER_ROW_GAPS)) {
-            considerRowGapsCheckBox.setSelected(settings.get(SettingKeys.CONSIDER_ROW_GAPS));
-        }
-        if (settings.containsKey(SettingKeys.CONSIDER_COLUMN_GAPS)) {
-            considerColumnGapsCheckBox.setSelected(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_CELL_CONTENTS)) {
-            compareCellContentsCheckBox.setSelected(settings.get(SettingKeys.COMPARE_CELL_CONTENTS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_CELL_COMMENTS)) {
-            compareCellCommentsCheckBox.setSelected(settings.get(SettingKeys.COMPARE_CELL_COMMENTS));
-        }
-        if (settings.containsKey(SettingKeys.COMPARE_ON_FORMULA_STRING)) {
-            compareOnFormulaRadioButton.setSelected(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING));
-        }
-        if (settings.containsKey(SettingKeys.SHOW_PAINTED_SHEETS)) {
-            showPaintedSheetsCheckBox.setSelected(settings.get(SettingKeys.SHOW_PAINTED_SHEETS));
-        }
-        if (settings.containsKey(SettingKeys.SHOW_RESULT_TEXT)) {
-            showResultTextCheckBox.setSelected(settings.get(SettingKeys.SHOW_RESULT_TEXT));
-        }
-        if (settings.containsKey(SettingKeys.EXIT_WHEN_FINISHED)) {
-            exitWhenFinishedCheckBox.setSelected(settings.get(SettingKeys.EXIT_WHEN_FINISHED));
-        }
+        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> {
+            if (settings.containsKey(key)) {
+                setter.accept(settings.get(key));
+            }
+        };
+        
+        applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
+        applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
+        applicator.accept(SettingKeys.COMPARE_CELL_CONTENTS, compareCellContentsCheckBox::setSelected);
+        applicator.accept(SettingKeys.COMPARE_CELL_COMMENTS, compareCellCommentsCheckBox::setSelected);
+        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton::setSelected);
+        applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
+        applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
+        applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
     }
     
     public void gatherSettings(Settings.Builder builder) {
