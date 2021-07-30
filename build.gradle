@@ -19,8 +19,8 @@ final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyy
 
 final def baseDir = projectDir.toPath()
 final def outputDir = baseDir.resolve('build/' + timetag)
-final def outputDirWin64 = outputDir.resolve("方眼Diff-${version}-win64")
-final def outputDirMacOS = outputDir.resolve("方眼Diff-${version}-macos")
+final def outputDirWinX64 = outputDir.resolve("方眼Diff-${version}-win-x64")
+final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
 
 final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
 
@@ -49,7 +49,7 @@ final def requiredMods = '' \
     + 'jdk.charsets,' \
     + 'jdk.zipfs'
 
-// executable on [Win64, MacOS]
+// executable on [win-x64, mac-x64]
 task pickUpJars {
     group 'distribution_common'
 
@@ -66,9 +66,9 @@ task pickUpJars {
     }
 }
 
-// executable on [Win64, MacOS]
-task jlinkForWin64 {
-    group 'distribution_win64'
+// executable on [win-x64, mac-x64]
+task jlinkForWinX64 {
+    group 'distribution_win_x64'
 
     doLast {
         exec {
@@ -76,20 +76,20 @@ task jlinkForWin64 {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.win64']}" \
+                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
                                     + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.win64']}",
+                                    + "${project['myprop.jfx.mod.win.x64']}",
                     '--add-modules', requiredMods,
-                    '--output', outputDir.resolve('tmp/jre-min-win64'),
+                    '--output', outputDir.resolve('tmp/jre-min-win-x64'),
                     '--strip-debug',
                     '--verbose'
         }
     }
 }
 
-// executable on [Win64, MacOS]
-task jlinkForMacOS {
-    group 'distribution_macos'
+// executable on [win-x64, mac-x64]
+task jlinkForMacX64 {
+    group 'distribution_mac_x64'
 
     doLast {
         exec {
@@ -97,20 +97,20 @@ task jlinkForMacOS {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.macos']}" \
+                    '--module-path', "${project['myprop.jre.mod.mac.x64']}" \
                                     + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.macos']}",
+                                    + "${project['myprop.jfx.mod.mac.x64']}",
                     '--add-modules', requiredMods,
-                    '--output', outputDir.resolve('tmp/jre-min-macos'),
+                    '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
                     '--strip-debug',
                     '--verbose'
         }
     }
 }
 
-// executable on [Win64]
-task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
-    group 'distribution_win64'
+// executable on [win-x64]
+task jpackageForWinX64(dependsOn: [pickUpJars, jlinkForWinX64]) {
+    group 'distribution_win_x64'
 
     doLast {
         exec {
@@ -123,7 +123,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
-                    '--runtime-image', outputDir.resolve('tmp/jre-min-win64'),
+                    '--runtime-image', outputDir.resolve('tmp/jre-min-win-x64'),
                     '--icon', baseDir.resolve('resources/favicon.ico'),
                     '--input', outputDir.resolve("tmp/jars"),
                     '--java-options', '-Xms256m',
@@ -134,7 +134,7 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
                     '--win-menu',
                     '--win-per-user-install',
                     '--win-shortcut',
-                    '--temp', outputDir.resolve("tmp/jpackage-win64"),
+                    '--temp', outputDir.resolve("tmp/jpackage-win-x64"),
                     // TODO: --name 等に全角文字を含められるようにする。
                     // --description, --name, --win-menu-group に全角文字が含まれると、
                     // WiX Toolset v3.11 の light.exe 実行で下記中間ファイルに
@@ -151,9 +151,9 @@ task jpackageForWin64(dependsOn: [pickUpJars, jlinkForWin64]) {
     }
 }
 
-// executable on [MacOS]
-task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
-    group 'distribution_macos'
+// executable on [mac-x64]
+task jpackageForMacX64(dependsOn: [pickUpJars, jlinkForMacX64]) {
+    group 'distribution_mac_x64'
 
     doLast {
         exec {
@@ -168,7 +168,7 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
-                    '--runtime-image', outputDir.resolve('tmp/jre-min-macos'),
+                    '--runtime-image', outputDir.resolve('tmp/jre-min-mac-x64'),
                     '--icon', baseDir.resolve('resources/hogandiff.icns'),
                     '--input', outputDir.resolve("tmp/jars"),
                     '--java-options', '-Xms256m',
@@ -180,14 +180,14 @@ task jpackageForMacOS(dependsOn: [pickUpJars, jlinkForMacOS]) {
                     '--mac-sign',
                     '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
                     '--license-file', baseDir.resolve('LICENSE.txt'),
-                    '--temp', outputDir.resolve("tmp/jpackage-macos")
+                    '--temp', outputDir.resolve("tmp/jpackage-mac-x64")
         }
     }
 }
 
-// executable on [Win64]
-task exewrapForWin64 {
-    group 'distribution_win64'
+// executable on [win-x64]
+task exewrapForWinX64 {
+    group 'distribution_win_x64'
 
     doLast {
         exec {
@@ -201,108 +201,108 @@ task exewrapForWin64 {
                     '-p', '方眼Diff',
                     '-c', '(c) 2018-2021 nmby',
                     '-j', targetJar,
-                    '-o', outputDirWin64.resolve('方眼Diff.exe')
+                    '-o', outputDirWinX64.resolve('方眼Diff.exe')
         }
     }
 }
 
-// executable on [Win64, MacOS]
-task gatherFilesForWin64(dependsOn: jlinkForWin64) {
-    group 'distribution_win64'
+// executable on [win-x64, mac-x64]
+task gatherFilesForWinX64(dependsOn: jlinkForWinX64) {
+    group 'distribution_win_x64'
 
     doLast {
         copy {
             from baseDir
             include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirWin64
+            into outputDirWinX64
         }
         copy {
             from baseDir.resolve('resources')
             include '方眼Diff.exe.vmoptions'
-            into outputDirWin64
+            into outputDirWinX64
         }
         copy {
             from project['myprop.userlib'] + "/${poi}"
             include poiFiles
-            into outputDirWin64.resolve("lib/${poi}")
+            into outputDirWinX64.resolve("lib/${poi}")
         }
         copy {
-            from outputDir.resolve('tmp/jre-min-win64')
-            into outputDirWin64.resolve("jre-min")
+            from outputDir.resolve('tmp/jre-min-win-x64')
+            into outputDirWinX64.resolve("jre-min")
         }
     }
 }
 
-// executable on [Win64, MacOS]
-task gatherFilesForMacOS(dependsOn: jlinkForMacOS) {
-    group 'distribution_macos'
+// executable on [win-x64, mac-x64]
+task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
+    group 'distribution_mac_x64'
 
     doLast {
         copy {
             from baseDir.resolve('resources/方眼Diff.app')
             exclude '**/.gitkeep'
-            into outputDirMacOS.resolve('方眼Diff.app')
+            into outputDirMacX64.resolve('方眼Diff.app')
         }
         copy {
             from baseDir
             include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirMacOS.resolve('方眼Diff.app/Contents/Resources')
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Resources')
         }
         copy {
             from targetJar
-            into outputDirMacOS.resolve('方眼Diff.app/Contents/Java')
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java')
         }
         copy {
             String poiMod = poi.replace('.', '_')
             from project['myprop.userlib'] + "/${poi}"
             include poiFiles
-            into outputDirMacOS.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
+            into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
         }
         copy {
-            from outputDir.resolve('tmp/jre-min-macos')
-            into outputDirMacOS.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+            from outputDir.resolve('tmp/jre-min-mac-x64')
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
         }
     }
 }
 
-// executable on [Win64]
-task zipForWin64(type: Zip, dependsOn: [exewrapForWin64, gatherFilesForWin64]) {
-    group 'distribution_win64'
+// executable on [win-x64]
+task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]) {
+    group 'distribution_win_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-win64"
+    baseName = "hogandiff-${version}-win-x64"
     destinationDir = file(outputDir)
-    from outputDirWin64
-    into outputDirWin64.getFileName().toString()
+    from outputDirWinX64
+    into outputDirWinX64.getFileName().toString()
 }
 
-// executable on [Win64, MacOS]
-task zipForMacOS(type: Zip, dependsOn: gatherFilesForMacOS) {
-    group 'distribution_macos'
+// executable on [win-x64, mac-x64]
+task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
+    group 'distribution_mac_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-macos"
+    baseName = "hogandiff-${version}-mac-x64"
     destinationDir = file(outputDir)
-    from outputDirMacOS
-    into outputDirMacOS.getFileName().toString()
+    from outputDirMacX64
+    into outputDirMacX64.getFileName().toString()
 }
 
-// executable on [Win64]
-task allForWin64(dependsOn: /* jpackageForWin64 */ zipForWin64) {
-    group 'distribution_win64'
+// executable on [win-x64]
+task allForWinX64(dependsOn: /* jpackageForWinX64 */ zipForWinX64) {
+    group 'distribution_win_x64'
 }
 
-// executable on [Win64, MacOS]
-task allForMacOS(dependsOn: /* jpackageForMacOS */ zipForMacOS) {
-    group 'distribution_macos'
+// executable on [win-x64, mac-x64]
+task allForMacX64(dependsOn: /* jpackageForMacX64 */ zipForMacX64) {
+    group 'distribution_mac_x64'
 }
 
-// executable on [Win64]
-task all(dependsOn: [allForWin64, allForMacOS]) {
+// executable on [win-x64]
+task all(dependsOn: [allForWinX64, allForMacX64]) {
     group 'distribution_common'
 }
 
-// executable on [Win64, MacOS]
+// executable on [win-x64, mac-x64]
 task checkDependencies {
     group 'test'
 
@@ -316,9 +316,9 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--module-path', "${project['myprop.jre.mod.win64']}" \
+                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
                                     + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.lib.win64']}" \
+                                    + "${project['myprop.jfx.lib.win.x64']}" \
                                     + "${project['myprop.common.pathseparator']}" \
                                     + "${poiMods}",
                     '-s', targetJar
