@@ -27,7 +27,7 @@ public class SettingKeys {
     public static final Key<Path> WORK_DIR_BASE = new Key<>(
             "application.system.workDirBase",
             () -> Path.of(
-                    System.getProperty("java.io.tmpdir"),
+                    System.getProperty("user.home"),
                     SettingKeys.class.getPackageName()),
             Path::toString,
             Path::of,
