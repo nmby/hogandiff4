@@ -55,13 +55,13 @@ public class MainController {
      */
     public void initialize() {
         factory = Factory.of();
-        isReady.bind(targetsPane.isReadyProperty());
+        isReady.bind(targetsPane.isReady);
         // 以下のプロパティについては、バインディングで値を反映させるのではなく
         // 相手方のイベントハンドラで値を設定する。
         //      ・isRunning
         
         menuPane.init();
-        targetsPane.init(factory, menuPane.menuProperty());
+        targetsPane.init(factory, menuPane.menu);
         settingsPane.init(isReady, event -> execute());
         utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
         

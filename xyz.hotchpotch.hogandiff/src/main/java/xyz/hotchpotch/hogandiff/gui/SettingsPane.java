@@ -36,7 +36,7 @@ public class SettingsPane extends HBox {
         loader.load();
     }
     
-    public void init(
+    /*package*/ void init(
             ReadOnlyBooleanProperty isReady,
             EventHandler<ActionEvent> executor) {
         
@@ -46,7 +46,7 @@ public class SettingsPane extends HBox {
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
         saveSettingsButton.disableProperty().bind(
-                optionsParts.hasSettingsChangedProperty().not());
+                optionsParts.hasSettingsChanged.not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
@@ -54,7 +54,7 @@ public class SettingsPane extends HBox {
             optionsParts.gatherSettings(builder);
             Properties properties = builder.build().toProperties();
             AppMain.storeProperties(properties);
-            optionsParts.hasSettingsChangedProperty().set(false);
+            optionsParts.hasSettingsChanged.set(false);
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
@@ -64,13 +64,13 @@ public class SettingsPane extends HBox {
         executeButton.setOnAction(executor);
     }
     
-    public void applySettings(Settings settings) {
+    /*package*/ void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         optionsParts.applySettings(settings);
     }
     
-    public void gatherSettings(Settings.Builder builder) {
+    /*package*/ void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         optionsParts.gatherSettings(builder);

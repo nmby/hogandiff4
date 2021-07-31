@@ -42,7 +42,7 @@ public class UtilPane extends HBox {
         loader.load();
     }
     
-    public void init(Path workDir) {
+    /*package*/ void init(Path workDir) {
         Objects.requireNonNull(workDir, "workDir");
         
         showWorkDirButton.setOnAction(event -> {

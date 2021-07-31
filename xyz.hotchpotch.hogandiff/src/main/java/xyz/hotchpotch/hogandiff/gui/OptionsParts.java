@@ -49,7 +49,7 @@ public class OptionsParts extends VBox {
     @FXML
     private CheckBox exitWhenFinishedCheckBox;
     
-    private final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
@@ -58,7 +58,7 @@ public class OptionsParts extends VBox {
         loader.load();
     }
     
-    public void init() {
+    /*package*/ void init() {
         considerRowGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
         considerColumnGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
         compareCellContentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
@@ -76,7 +76,7 @@ public class OptionsParts extends VBox {
                 compareCellContentsCheckBox.selectedProperty().not());
     }
     
-    public void applySettings(Settings settings) {
+    /*package*/ void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> {
@@ -95,7 +95,7 @@ public class OptionsParts extends VBox {
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
     }
     
-    public void gatherSettings(Settings.Builder builder) {
+    /*package*/ void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         builder.set(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox.isSelected());
@@ -116,9 +116,5 @@ public class OptionsParts extends VBox {
         builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
         builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
         builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
-    }
-    
-    public BooleanProperty hasSettingsChangedProperty() {
-        return hasSettingsChanged;
     }
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -27,7 +26,7 @@ public class TargetsPane extends VBox {
     @FXML
     private TargetBookSheetParts targetBookSheetParts2;
     
-    private final BooleanProperty isReady = new SimpleBooleanProperty();
+    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty();
     
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"));
@@ -36,7 +35,7 @@ public class TargetsPane extends VBox {
         loader.load();
     }
     
-    public void init(
+    /*package*/ void init(
             Factory factory,
             ReadOnlyProperty<AppMenu> menu) {
         
@@ -47,11 +46,11 @@ public class TargetsPane extends VBox {
         targetBookSheetParts2.init(factory, "B", menu);
         
         isReady.bind(
-                targetBookSheetParts1.isReadyProperty()
-                        .and(targetBookSheetParts2.isReadyProperty()));
+                targetBookSheetParts1.isReady
+                        .and(targetBookSheetParts2.isReady));
     }
     
-    public void applySettings(Settings settings) {
+    /*package*/ void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         targetBookSheetParts1.applySettings(
@@ -62,7 +61,7 @@ public class TargetsPane extends VBox {
                 SettingKeys.CURR_SHEET_NAME2);
     }
     
-    public void gatherSettings(Settings.Builder builder) {
+    /*package*/ void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         targetBookSheetParts1.gatherSettings(
@@ -73,9 +72,5 @@ public class TargetsPane extends VBox {
                 builder,
                 SettingKeys.CURR_BOOK_PATH2,
                 SettingKeys.CURR_SHEET_NAME2);
-    }
-    
-    public ReadOnlyBooleanProperty isReadyProperty() {
-        return isReady;
     }
 }

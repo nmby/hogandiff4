@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +26,7 @@ public class MenuPane extends HBox {
     @FXML
     private RadioButton compareSheetsRadioButton;
     
-    private final Property<AppMenu> menu = new SimpleObjectProperty<>();
+    /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
     public MenuPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"));
@@ -36,7 +35,7 @@ public class MenuPane extends HBox {
         loader.load();
     }
     
-    public void init() {
+    /*package*/ void init() {
         menu.bind(Bindings.createObjectBinding(
                 () -> compareBooksRadioButton.isSelected()
                         ? AppMenu.COMPARE_BOOKS
@@ -45,7 +44,7 @@ public class MenuPane extends HBox {
         
     }
     
-    public void applySettings(Settings settings) {
+    /*package*/ void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         if (settings.containsKey(SettingKeys.CURR_MENU)) {
@@ -54,13 +53,9 @@ public class MenuPane extends HBox {
         }
     }
     
-    public void gatherSettings(Settings.Builder builder) {
+    /*package*/ void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
-    }
-    
-    public ReadOnlyProperty<AppMenu> menuProperty() {
-        return menu;
     }
 }

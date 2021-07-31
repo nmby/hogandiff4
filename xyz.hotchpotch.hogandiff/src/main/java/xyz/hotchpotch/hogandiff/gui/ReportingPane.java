@@ -29,14 +29,14 @@ public class ReportingPane extends VBox {
         loader.load();
     }
     
-    public void bind(Task<Void> task) {
+    /*package*/ void bind(Task<Void> task) {
         Objects.requireNonNull(task, "task");
         
         reportProgressBar.progressProperty().bind(task.progressProperty());
         reportTextArea.textProperty().bind(task.messageProperty());
     }
     
-    public void unbind() {
+    /*package*/ void unbind() {
         reportProgressBar.progressProperty().unbind();
         reportProgressBar.setProgress(0D);
         reportTextArea.textProperty().unbind();
