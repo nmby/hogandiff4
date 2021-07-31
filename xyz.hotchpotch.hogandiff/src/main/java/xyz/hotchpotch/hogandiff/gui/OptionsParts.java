@@ -14,6 +14,11 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
+/**
+ * 各種オプション指定部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class OptionsParts extends VBox implements ChildController {
     
     // [static members] ********************************************************
@@ -107,15 +112,5 @@ public class OptionsParts extends VBox implements ChildController {
         builder.set(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox.isSelected());
         builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());
         builder.set(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox.isSelected());
-        
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.WORK_DIR_BASE);
-        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
     }
 }

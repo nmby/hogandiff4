@@ -10,6 +10,11 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
+/**
+ * 実行状況表示部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class ReportingPane extends VBox implements ChildController {
     
     // [static members] ********************************************************

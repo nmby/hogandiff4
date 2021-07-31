@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -38,6 +37,11 @@ import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
+/**
+ * ブック・シート選択部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class TargetBookSheetParts extends GridPane {
     
     // [static members] ********************************************************
@@ -77,16 +81,14 @@ public class TargetBookSheetParts extends GridPane {
     }
     
     /*package*/ void init(
-            Factory factory,
-            String title,
-            ReadOnlyProperty<AppMenu> menu) {
+            MainController parent,
+            String title) {
         
-        Objects.requireNonNull(factory, "factory");
-        Objects.requireNonNull(title, "title");
-        Objects.requireNonNull(menu, "menu");
+        assert parent != null;
+        assert title != null;
         
-        this.factory = factory;
-        this.menu = menu;
+        factory = parent.factory;
+        menu = parent.menu;
         
         titleLabel.setText(title);
         bookPathTextField.setOnDragOver(this::onDragOver);
@@ -114,9 +116,9 @@ public class TargetBookSheetParts extends GridPane {
             Key<Path> keyBookPath,
             Key<String> keySheetName) {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(keyBookPath, "keyBookPath");
-        Objects.requireNonNull(keySheetName, "keySheetName");
+        assert settings != null;
+        assert keyBookPath != null;
+        assert keySheetName != null;
         
         if (settings.containsKey(keyBookPath)) {
             validateAndSetTarget(
@@ -132,7 +134,9 @@ public class TargetBookSheetParts extends GridPane {
             Key<Path> keyBookPath,
             Key<String> keySheetName) {
         
-        Objects.requireNonNull(builder, "builder");
+        assert builder != null;
+        assert keyBookPath != null;
+        assert keySheetName != null;
         
         if (bookPath.getValue() != null) {
             builder.set(keyBookPath, bookPath.getValue());

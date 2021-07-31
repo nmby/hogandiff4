@@ -10,6 +10,11 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
+/**
+ * 比較対象選択部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class TargetsPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
@@ -33,8 +38,8 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        targetBookSheetParts1.init(parent.factory, "A", parent.menu);
-        targetBookSheetParts2.init(parent.factory, "B", parent.menu);
+        targetBookSheetParts1.init(parent, "A");
+        targetBookSheetParts2.init(parent, "B");
         
         disableProperty().bind(parent.isRunning);
     }

@@ -92,6 +92,15 @@ public class MainController {
     /*package*/ Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
         
         children.forEach(child -> child.gatherSettings(builder));

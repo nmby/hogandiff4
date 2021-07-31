@@ -11,6 +11,11 @@ import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
+/**
+ * 各種オプション指定部分と設定保存・実行ボタンを含む画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class SettingsPane extends HBox implements ChildController {
     
     // [static members] ********************************************************

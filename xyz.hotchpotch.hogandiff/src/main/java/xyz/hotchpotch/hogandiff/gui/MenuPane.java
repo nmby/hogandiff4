@@ -12,6 +12,11 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
+/**
+ * 処理内容選択メニュー部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class MenuPane extends HBox implements ChildController {
     
     // [static members] ********************************************************
@@ -57,5 +62,7 @@ public class MenuPane extends HBox implements ChildController {
     @Override
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
+        
+        // nop
     }
 }

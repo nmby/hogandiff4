@@ -25,6 +25,11 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
+/**
+ * 画面フッタ部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class UtilPane extends HBox implements ChildController {
     
     // [static members] ********************************************************
@@ -43,7 +48,7 @@ public class UtilPane extends HBox implements ChildController {
     @FXML
     private Hyperlink toWebSiteHyperlink;
     
-    private Path workDir;
+    private Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
     
     public UtilPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"));
@@ -62,8 +67,13 @@ public class UtilPane extends HBox implements ChildController {
                     Files.createDirectories(workDir);
                 }
                 Desktop.getDesktop().open(workDir.toFile());
+                
             } catch (Exception e) {
-                // nop
+                new Alert(
+                        AlertType.WARNING,
+                        "作業用フォルダの表示に失敗しました。\n" + workDir,
+                        ButtonType.OK)
+                                .showAndWait();
             }
         });
         
@@ -112,7 +122,7 @@ public class UtilPane extends HBox implements ChildController {
                     } catch (IOException e) {
                         new Alert(
                                 AlertType.WARNING,
-                                "作業用フォルダの変更に失敗しました。\n",// + newPath,
+                                "作業用フォルダの変更に失敗しました。\n" + newPath,
                                 ButtonType.OK)
                                         .showAndWait();
                         return;
@@ -125,9 +135,15 @@ public class UtilPane extends HBox implements ChildController {
         
         toWebSiteHyperlink.setOnAction(event -> {
             try {
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/"));
+                Desktop.getDesktop().browse(URI.create(AppMain.WEB_URL));
+                
             } catch (Exception e) {
-                // nop
+                new Alert(
+                        AlertType.WARNING,
+                        "Webページの表示に失敗しました。ご利用のブラウザでお試しください。\n"
+                                + AppMain.WEB_URL,
+                        ButtonType.OK)
+                                .showAndWait();
             }
         });
         
