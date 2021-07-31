@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -18,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
@@ -33,6 +36,9 @@ public class UtilPane extends HBox implements ChildController {
     
     @FXML
     private Button deleteOldWorkDirButton;
+    
+    @FXML
+    private Button changeWorkDirButton;
     
     @FXML
     private Hyperlink toWebSiteHyperlink;
@@ -75,6 +81,45 @@ public class UtilPane extends HBox implements ChildController {
                 } catch (Exception e) {
                     //nop
                 }
+            }
+        });
+        
+        changeWorkDirButton.setOnAction(event -> {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            
+            dirChooser.setTitle("作業用フォルダの変更");
+            dirChooser.setInitialDirectory(workDir.toFile());
+            
+            File newDir = null;
+            try {
+                newDir = dirChooser.showDialog(getScene().getWindow());
+            } catch (IllegalArgumentException e) {
+                newDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get().toFile();
+            }
+            
+            if (newDir != null) {
+                Path newPath = newDir.toPath();
+                if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
+                    newPath = newPath.resolve(AppMain.APP_DOMAIN);
+                }
+                if (newPath.equals(workDir)) {
+                    return;
+                }
+                
+                if (!Files.isDirectory(newPath)) {
+                    try {
+                        Files.createDirectory(newPath);
+                    } catch (IOException e) {
+                        new Alert(
+                                AlertType.WARNING,
+                                "作業用フォルダの変更に失敗しました。\n",// + newPath,
+                                ButtonType.OK)
+                                        .showAndWait();
+                        return;
+                    }
+                }
+                workDir = newPath;
+                parent.hasSettingsChanged.set(true);
             }
         });
         

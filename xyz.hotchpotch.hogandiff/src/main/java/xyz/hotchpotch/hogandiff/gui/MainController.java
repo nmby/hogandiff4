@@ -89,7 +89,7 @@ public class MainController {
         children.forEach(child -> child.applySettings(settings));
     }
     
-    private Settings gatherSettings() {
+    /*package*/ Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
         builder.set(SettingKeys.CURR_MENU, menu.getValue());

@@ -28,10 +28,10 @@ public class SettingKeys {
             "application.system.workDirBase",
             () -> Path.of(
                     System.getProperty("user.home"),
-                    SettingKeys.class.getPackageName()),
+                    AppMain.APP_DOMAIN),
             Path::toString,
             Path::of,
-            false);
+            true);
     
     /** 今回の実行を識別するためのタイムスタンプタグ */
     public static final Key<String> CURR_TIMESTAMP = new Key<>(

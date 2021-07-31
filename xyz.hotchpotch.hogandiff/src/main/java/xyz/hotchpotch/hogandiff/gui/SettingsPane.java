@@ -44,9 +44,8 @@ public class SettingsPane extends HBox implements ChildController {
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
-            Settings.Builder builder = Settings.builder();
-            optionsParts.gatherSettings(builder);
-            Properties properties = builder.build().toProperties();
+            Settings settings = parent.gatherSettings();
+            Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
             parent.hasSettingsChanged.set(false);
         });
