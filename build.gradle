@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.7.9'
+final def version = '0.8.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
