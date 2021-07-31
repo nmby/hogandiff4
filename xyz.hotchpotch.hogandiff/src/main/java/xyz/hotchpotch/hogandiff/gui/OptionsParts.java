@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -49,8 +48,6 @@ public class OptionsParts extends VBox {
     @FXML
     private CheckBox exitWhenFinishedCheckBox;
     
-    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
-    
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
         loader.setRoot(this);
@@ -58,7 +55,7 @@ public class OptionsParts extends VBox {
         loader.load();
     }
     
-    /*package*/ void init() {
+    /*package*/ void init(BooleanProperty hasSettingsChanged) {
         considerRowGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
         considerColumnGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
         compareCellContentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));

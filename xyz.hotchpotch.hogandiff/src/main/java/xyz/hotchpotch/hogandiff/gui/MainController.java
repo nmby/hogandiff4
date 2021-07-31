@@ -47,7 +47,8 @@ public class MainController {
     
     private Factory factory;
     
-    private final BooleanProperty isReady = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     /**
@@ -62,7 +63,7 @@ public class MainController {
         
         menuPane.init();
         targetsPane.init(factory, menuPane.menu);
-        settingsPane.init(isReady, event -> execute());
+        settingsPane.init(this);
         utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
         
         // 実行中はレポートエリアを除く全エリアを無効にする。
