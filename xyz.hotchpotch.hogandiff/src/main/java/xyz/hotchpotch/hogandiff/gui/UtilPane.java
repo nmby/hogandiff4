@@ -130,6 +130,12 @@ public class UtilPane extends HBox implements ChildController {
                 }
                 workDir = newPath;
                 parent.hasSettingsChanged.set(true);
+                new Alert(
+                        AlertType.INFORMATION,
+                        "作業用フォルダを一時的に変更しました。\n"
+                                + "変更を保存するには「設定を保存」ボタンを押してください。",
+                        ButtonType.OK)
+                                .showAndWait();
             }
         });
         
