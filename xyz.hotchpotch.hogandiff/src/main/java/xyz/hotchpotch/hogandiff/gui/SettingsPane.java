@@ -56,6 +56,8 @@ public class SettingsPane extends HBox implements ChildController {
         
         // 「実行」ボタンのイベントハンドラを登録する。
         executeButton.setOnAction(event -> parent.execute());
+        
+        disableProperty().bind(parent.isRunning);
     }
     
     @Override

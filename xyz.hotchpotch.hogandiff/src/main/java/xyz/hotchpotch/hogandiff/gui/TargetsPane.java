@@ -3,8 +3,7 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.io.IOException;
 import java.util.Objects;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
@@ -23,8 +22,6 @@ public class TargetsPane extends VBox implements ChildController {
     @FXML
     private TargetBookSheetParts targetBookSheetParts2;
     
-    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty();
-    
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"));
         loader.setRoot(this);
@@ -39,8 +36,7 @@ public class TargetsPane extends VBox implements ChildController {
         targetBookSheetParts1.init(parent.factory, "A", parent.menu);
         targetBookSheetParts2.init(parent.factory, "B", parent.menu);
         
-        isReady.bind(
-                targetBookSheetParts1.isReady.and(targetBookSheetParts2.isReady));
+        disableProperty().bind(parent.isRunning);
     }
     
     @Override
@@ -67,5 +63,10 @@ public class TargetsPane extends VBox implements ChildController {
                 builder,
                 SettingKeys.CURR_BOOK_PATH2,
                 SettingKeys.CURR_SHEET_NAME2);
+    }
+    
+    @Override
+    public BooleanExpression isReady() {
+        return targetBookSheetParts1.isReady.and(targetBookSheetParts2.isReady);
     }
 }

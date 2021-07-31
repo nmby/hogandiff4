@@ -1,10 +1,12 @@
 package xyz.hotchpotch.hogandiff.gui;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -47,33 +49,32 @@ public class MainController {
     @FXML
     private UtilPane utilPane;
     
+    private List<ChildController> children;
+    
     /*package*/ final Factory factory = Factory.of();
     /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
     /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
-    private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        isReady.bind(targetsPane.isReady);
-        // 以下のプロパティについては、バインディングで値を反映させるのではなく
-        // 相手方のイベントハンドラで値を設定する。
-        //      ・isRunning
+        children = List.of(
+                menuPane,
+                targetsPane,
+                settingsPane,
+                reportingPane,
+                utilPane);
         
-        menuPane.init(this);
-        targetsPane.init(this);
-        settingsPane.init(this);
-        reportingPane.init(this);
-        utilPane.init(this);
+        isReady.bind(
+                children.stream()
+                        .map(ChildController::isReady)
+                        .reduce(BooleanExpression::and)
+                        .get());
         
-        // 実行中はレポートエリアを除く全エリアを無効にする。
-        menuPane.disableProperty().bind(isRunning);
-        targetsPane.disableProperty().bind(isRunning);
-        settingsPane.disableProperty().bind(isRunning);
-        //reportingPane.disableProperty().bind(isRunning.not());
-        utilPane.disableProperty().bind(isRunning);
+        children.forEach(child -> child.init(this));
     }
     
     /**
@@ -85,11 +86,7 @@ public class MainController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        menuPane.applySettings(settings);
-        targetsPane.applySettings(settings);
-        settingsPane.applySettings(settings);
-        reportingPane.applySettings(settings);
-        utilPane.applySettings(settings);
+        children.forEach(child -> child.applySettings(settings));
     }
     
     private Settings gatherSettings() {
@@ -97,11 +94,7 @@ public class MainController {
         
         builder.set(SettingKeys.CURR_MENU, menu.getValue());
         
-        menuPane.gatherSettings(builder);
-        targetsPane.gatherSettings(builder);
-        settingsPane.gatherSettings(builder);
-        reportingPane.gatherSettings(builder);
-        utilPane.gatherSettings(builder);
+        children.forEach(child -> child.gatherSettings(builder));
         
         return builder.build();
     }

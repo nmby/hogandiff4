@@ -85,6 +85,8 @@ public class UtilPane extends HBox implements ChildController {
                 // nop
             }
         });
+        
+        disableProperty().bind(parent.isRunning);
     }
     
     @Override

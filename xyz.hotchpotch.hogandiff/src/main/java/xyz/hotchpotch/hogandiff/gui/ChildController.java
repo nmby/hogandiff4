@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui;
 
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.property.SimpleBooleanProperty;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /*package*/ interface ChildController {
@@ -15,5 +17,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     default void gatherSettings(Settings.Builder builder) {
+    }
+    
+    default BooleanExpression isReady() {
+        return new SimpleBooleanProperty(true);
     }
 }

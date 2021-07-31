@@ -41,6 +41,7 @@ public class MenuPane extends HBox implements ChildController {
                         : AppMenu.COMPARE_SHEETS,
                 compareBooksRadioButton.selectedProperty()));
         
+        disableProperty().bind(parent.isRunning);
     }
     
     @Override
