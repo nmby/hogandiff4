@@ -5,14 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,6 +37,11 @@ import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
+/**
+ * ブック・シート選択部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
 public class TargetBookSheetParts extends GridPane {
     
     // [static members] ********************************************************
@@ -63,9 +65,10 @@ public class TargetBookSheetParts extends GridPane {
     @FXML
     private ChoiceBox<String> sheetNameChoiceBox;
     
+    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty();
+    
     private final Property<Path> bookPath = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
-    private final BooleanProperty isReady = new SimpleBooleanProperty();
     
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
@@ -77,17 +80,15 @@ public class TargetBookSheetParts extends GridPane {
         loader.load();
     }
     
-    public void init(
-            Factory factory,
-            String title,
-            ReadOnlyProperty<AppMenu> menu) {
+    /*package*/ void init(
+            MainController parent,
+            String title) {
         
-        Objects.requireNonNull(factory, "factory");
-        Objects.requireNonNull(title, "title");
-        Objects.requireNonNull(menu, "menu");
+        assert parent != null;
+        assert title != null;
         
-        this.factory = factory;
-        this.menu = menu;
+        factory = parent.factory;
+        menu = parent.menu;
         
         titleLabel.setText(title);
         bookPathTextField.setOnDragOver(this::onDragOver);
@@ -110,14 +111,14 @@ public class TargetBookSheetParts extends GridPane {
                 bookPath, sheetName, menu));
     }
     
-    public void applySettings(
+    /*package*/ void applySettings(
             Settings settings,
             Key<Path> keyBookPath,
             Key<String> keySheetName) {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(keyBookPath, "keyBookPath");
-        Objects.requireNonNull(keySheetName, "keySheetName");
+        assert settings != null;
+        assert keyBookPath != null;
+        assert keySheetName != null;
         
         if (settings.containsKey(keyBookPath)) {
             validateAndSetTarget(
@@ -128,12 +129,14 @@ public class TargetBookSheetParts extends GridPane {
         }
     }
     
-    public void gatherSettings(
+    /*package*/ void gatherSettings(
             Settings.Builder builder,
             Key<Path> keyBookPath,
             Key<String> keySheetName) {
         
-        Objects.requireNonNull(builder, "builder");
+        assert builder != null;
+        assert keyBookPath != null;
+        assert keySheetName != null;
         
         if (bookPath.getValue() != null) {
             builder.set(keyBookPath, bookPath.getValue());
@@ -141,18 +144,6 @@ public class TargetBookSheetParts extends GridPane {
         if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
             builder.set(keySheetName, sheetName.getValue());
         }
-    }
-    
-    public ReadOnlyProperty<Path> bookPathProperty() {
-        return bookPath;
-    }
-    
-    public ReadOnlyStringProperty sheetNameProperty() {
-        return sheetName;
-    }
-    
-    public ReadOnlyBooleanProperty isReadyProperty() {
-        return isReady;
     }
     
     private void onDragOver(DragEvent event) {
@@ -196,7 +187,7 @@ public class TargetBookSheetParts extends GridPane {
         }
     }
     
-    public void validateAndSetTarget(Path newBookPath, String sheetName) {
+    private void validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
             bookPathTextField.setText("");
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());

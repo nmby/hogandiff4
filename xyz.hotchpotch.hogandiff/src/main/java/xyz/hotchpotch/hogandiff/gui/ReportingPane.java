@@ -10,7 +10,12 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
-public class ReportingPane extends VBox {
+/**
+ * 実行状況表示部分の画面部品です。<br>
+ * 
+ * @author nmby
+ */
+public class ReportingPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -29,14 +34,14 @@ public class ReportingPane extends VBox {
         loader.load();
     }
     
-    public void bind(Task<Void> task) {
+    /*package*/ void bind(Task<Void> task) {
         Objects.requireNonNull(task, "task");
         
         reportProgressBar.progressProperty().bind(task.progressProperty());
         reportTextArea.textProperty().bind(task.messageProperty());
     }
     
-    public void unbind() {
+    /*package*/ void unbind() {
         reportProgressBar.progressProperty().unbind();
         reportProgressBar.setProgress(0D);
         reportTextArea.textProperty().unbind();

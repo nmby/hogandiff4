@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Properties;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -14,7 +11,12 @@ import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
-public class SettingsPane extends HBox {
+/**
+ * 各種オプション指定部分と設定保存・実行ボタンを含む画面部品です。<br>
+ * 
+ * @author nmby
+ */
+public class SettingsPane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -36,40 +38,40 @@ public class SettingsPane extends HBox {
         loader.load();
     }
     
-    public void init(
-            ReadOnlyBooleanProperty isReady,
-            EventHandler<ActionEvent> executor) {
+    @Override
+    public void init(MainController parent) {
+        Objects.requireNonNull(parent, "parent");
         
-        Objects.requireNonNull(isReady, "isReady");
-        
-        optionsParts.init();
+        optionsParts.init(parent);
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
-        saveSettingsButton.disableProperty().bind(
-                optionsParts.hasSettingsChangedProperty().not());
+        saveSettingsButton.disableProperty().bind(parent.hasSettingsChanged.not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
-            Settings.Builder builder = Settings.builder();
-            optionsParts.gatherSettings(builder);
-            Properties properties = builder.build().toProperties();
+            Settings settings = parent.gatherSettings();
+            Properties properties = settings.toProperties();
             AppMain.storeProperties(properties);
-            optionsParts.hasSettingsChangedProperty().set(false);
+            parent.hasSettingsChanged.set(false);
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
-        executeButton.disableProperty().bind(isReady.not());
+        executeButton.disableProperty().bind(parent.isReady.not());
         
         // 「実行」ボタンのイベントハンドラを登録する。
-        executeButton.setOnAction(executor);
+        executeButton.setOnAction(event -> parent.execute());
+        
+        disableProperty().bind(parent.isRunning);
     }
     
+    @Override
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         optionsParts.applySettings(settings);
     }
     
+    @Override
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         

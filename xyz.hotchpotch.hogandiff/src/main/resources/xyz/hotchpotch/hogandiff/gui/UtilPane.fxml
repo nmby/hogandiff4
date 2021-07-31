@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.HBox?>
@@ -8,6 +9,10 @@
    <children>
       <Button fx:id="showWorkDirButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="作業用フォルダを表示する" HBox.hgrow="NEVER" />
       <Button fx:id="deleteOldWorkDirButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="古い作業用フォルダを削除する" HBox.hgrow="NEVER" />
-      <Hyperlink fx:id="toWebSiteHyperlink" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="website" HBox.hgrow="NEVER" />
+      <Button fx:id="changeWorkDirButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="変更..." HBox.hgrow="NEVER" />
+      <Hyperlink fx:id="toWebSiteHyperlink" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="website" HBox.hgrow="NEVER">
+         <HBox.margin>
+            <Insets left="7.0" />
+         </HBox.margin></Hyperlink>
    </children>
 </fx:root>

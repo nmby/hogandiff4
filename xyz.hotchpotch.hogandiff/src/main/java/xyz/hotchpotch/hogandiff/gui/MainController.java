@@ -1,12 +1,16 @@
 package xyz.hotchpotch.hogandiff.gui;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -45,32 +49,32 @@ public class MainController {
     @FXML
     private UtilPane utilPane;
     
-    private Factory factory;
+    private List<ChildController> children;
     
-    private final BooleanProperty isReady = new SimpleBooleanProperty(false);
-    private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    /*package*/ final Factory factory = Factory.of();
+    /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
+    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
+    /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        factory = Factory.of();
-        isReady.bind(targetsPane.isReadyProperty());
-        // 以下のプロパティについては、バインディングで値を反映させるのではなく
-        // 相手方のイベントハンドラで値を設定する。
-        //      ・isRunning
+        children = List.of(
+                menuPane,
+                targetsPane,
+                settingsPane,
+                reportingPane,
+                utilPane);
         
-        menuPane.init();
-        targetsPane.init(factory, menuPane.menuProperty());
-        settingsPane.init(isReady, event -> execute());
-        utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
+        isReady.bind(
+                children.stream()
+                        .map(ChildController::isReady)
+                        .reduce(BooleanExpression::and)
+                        .get());
         
-        // 実行中はレポートエリアを除く全エリアを無効にする。
-        menuPane.disableProperty().bind(isRunning);
-        targetsPane.disableProperty().bind(isRunning);
-        settingsPane.disableProperty().bind(isRunning);
-        utilPane.disableProperty().bind(isRunning);
-        //paneReporting.disableProperty().bind(isRunning.not());
+        children.forEach(child -> child.init(this));
     }
     
     /**
@@ -82,17 +86,24 @@ public class MainController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        menuPane.applySettings(settings);
-        targetsPane.applySettings(settings);
-        settingsPane.applySettings(settings);
+        children.forEach(child -> child.applySettings(settings));
     }
     
-    private Settings gatherSettings() {
+    /*package*/ Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
-        menuPane.gatherSettings(builder);
-        targetsPane.gatherSettings(builder);
-        settingsPane.gatherSettings(builder);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
+        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
+        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
+        
+        builder.set(SettingKeys.CURR_MENU, menu.getValue());
+        
+        children.forEach(child -> child.gatherSettings(builder));
         
         return builder.build();
     }
@@ -130,7 +141,7 @@ public class MainController {
         
         isRunning.set(true);
         
-        Task<Void> task = AppTask.of(settings, Factory.of());
+        Task<Void> task = AppTask.of(settings, factory);
         reportingPane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);

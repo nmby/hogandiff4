@@ -65,11 +65,11 @@
 
 #reportingPane {
 	-fx-background-color: rgb(255.0, 200.0, 200.0);
-	-fx-padding: 10.0px 10px 0px 10px;
+	-fx-padding: 10.0px 10.0px 0.0px 10.0px;
 }
 
 #utilPane {
 	-fx-background-color: rgb(255.0, 200.0, 200.0);
-	-fx-padding: 5px 10.0px 10.0px 10.0px;
-	-fx-spacing: 10.0px;
+	-fx-padding: 5.0px 10.0px 10.0px 10.0px;
+	-fx-spacing: 1.0px;
 }

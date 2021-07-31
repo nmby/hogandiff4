@@ -29,6 +29,10 @@ public class AppMain extends Application {
     
     // [static members] ********************************************************
     
+    // xyz.hotchpotch.hogandiff
+    public static final String APP_DOMAIN = AppMain.class.getPackageName();
+    public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
+    
     /** このアプリケーションのバージョン */
     private static final String VERSION = "v0.7.9";
     
