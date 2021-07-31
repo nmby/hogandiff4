@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
-public class SettingsPane extends HBox {
+public class SettingsPane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -33,14 +33,14 @@ public class SettingsPane extends HBox {
         loader.load();
     }
     
-    /*package*/ void init(MainController mainController) {
-        assert mainController != null;
+    @Override
+    public void init(MainController parent) {
+        Objects.requireNonNull(parent, "parent");
         
-        optionsParts.init(mainController.hasSettingsChanged);
+        optionsParts.init(parent);
         
         // 各種設定の変更有無に応じて「設定の保存」ボタンの有効／無効を切り替える。
-        saveSettingsButton.disableProperty().bind(
-                mainController.hasSettingsChanged.not());
+        saveSettingsButton.disableProperty().bind(parent.hasSettingsChanged.not());
         
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
@@ -48,23 +48,25 @@ public class SettingsPane extends HBox {
             optionsParts.gatherSettings(builder);
             Properties properties = builder.build().toProperties();
             AppMain.storeProperties(properties);
-            mainController.hasSettingsChanged.set(false);
+            parent.hasSettingsChanged.set(false);
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
-        executeButton.disableProperty().bind(mainController.isReady.not());
+        executeButton.disableProperty().bind(parent.isReady.not());
         
         // 「実行」ボタンのイベントハンドラを登録する。
-        executeButton.setOnAction(event -> mainController.execute());
+        executeButton.setOnAction(event -> parent.execute());
     }
     
-    /*package*/ void applySettings(Settings settings) {
+    @Override
+    public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         optionsParts.applySettings(settings);
     }
     
-    /*package*/ void gatherSettings(Settings.Builder builder) {
+    @Override
+    public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         optionsParts.gatherSettings(builder);

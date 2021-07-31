@@ -18,9 +18,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
+import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
-public class UtilPane extends HBox {
+public class UtilPane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -35,6 +37,8 @@ public class UtilPane extends HBox {
     @FXML
     private Hyperlink toWebSiteHyperlink;
     
+    private Path workDir;
+    
     public UtilPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"));
         loader.setRoot(this);
@@ -42,8 +46,9 @@ public class UtilPane extends HBox {
         loader.load();
     }
     
-    /*package*/ void init(Path workDir) {
-        Objects.requireNonNull(workDir, "workDir");
+    @Override
+    public void init(MainController parent) {
+        Objects.requireNonNull(parent, "parent");
         
         showWorkDirButton.setOnAction(event -> {
             try {
@@ -80,5 +85,23 @@ public class UtilPane extends HBox {
                 // nop
             }
         });
+    }
+    
+    @Override
+    public void applySettings(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        if (settings.containsKey(SettingKeys.WORK_DIR_BASE)) {
+            workDir = settings.get(SettingKeys.WORK_DIR_BASE);
+        } else {
+            workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
+        }
+    }
+    
+    @Override
+    public void gatherSettings(Settings.Builder builder) {
+        Objects.requireNonNull(builder, "builder");
+        
+        builder.set(SettingKeys.WORK_DIR_BASE, workDir);
     }
 }

@@ -4,17 +4,14 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
-public class TargetsPane extends VBox {
+public class TargetsPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -35,22 +32,19 @@ public class TargetsPane extends VBox {
         loader.load();
     }
     
-    /*package*/ void init(
-            Factory factory,
-            ReadOnlyProperty<AppMenu> menu) {
+    @Override
+    public void init(MainController parent) {
+        Objects.requireNonNull(parent, "parent");
         
-        Objects.requireNonNull(factory, "factory");
-        Objects.requireNonNull(menu, "menu");
-        
-        targetBookSheetParts1.init(factory, "A", menu);
-        targetBookSheetParts2.init(factory, "B", menu);
+        targetBookSheetParts1.init(parent.factory, "A", parent.menu);
+        targetBookSheetParts2.init(parent.factory, "B", parent.menu);
         
         isReady.bind(
-                targetBookSheetParts1.isReady
-                        .and(targetBookSheetParts2.isReady));
+                targetBookSheetParts1.isReady.and(targetBookSheetParts2.isReady));
     }
     
-    /*package*/ void applySettings(Settings settings) {
+    @Override
+    public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         targetBookSheetParts1.applySettings(
@@ -61,7 +55,8 @@ public class TargetsPane extends VBox {
                 SettingKeys.CURR_SHEET_NAME2);
     }
     
-    /*package*/ void gatherSettings(Settings.Builder builder) {
+    @Override
+    public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         targetBookSheetParts1.gatherSettings(

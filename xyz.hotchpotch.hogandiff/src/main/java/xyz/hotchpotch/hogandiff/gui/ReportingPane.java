@@ -10,7 +10,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
-public class ReportingPane extends VBox {
+public class ReportingPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
     

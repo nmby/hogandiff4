@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -15,7 +14,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
-public class OptionsParts extends VBox {
+public class OptionsParts extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -55,16 +54,19 @@ public class OptionsParts extends VBox {
         loader.load();
     }
     
-    /*package*/ void init(BooleanProperty hasSettingsChanged) {
-        considerRowGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        considerColumnGapsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        compareCellContentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        compareOnValueRadioButton.setOnAction(event -> hasSettingsChanged.set(true));
-        compareOnFormulaRadioButton.setOnAction(event -> hasSettingsChanged.set(true));
-        compareCellCommentsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        showPaintedSheetsCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        showResultTextCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
-        exitWhenFinishedCheckBox.setOnAction(event -> hasSettingsChanged.set(true));
+    @Override
+    public void init(MainController parent) {
+        Objects.requireNonNull(parent, "parent");
+        
+        considerRowGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        considerColumnGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        compareCellContentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        compareOnValueRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        compareOnFormulaRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        compareCellCommentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        showPaintedSheetsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         
         // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
         compareOnValueRadioButton.disableProperty().bind(
@@ -73,7 +75,8 @@ public class OptionsParts extends VBox {
                 compareCellContentsCheckBox.selectedProperty().not());
     }
     
-    /*package*/ void applySettings(Settings settings) {
+    @Override
+    public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> {
@@ -92,7 +95,8 @@ public class OptionsParts extends VBox {
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
     }
     
-    /*package*/ void gatherSettings(Settings.Builder builder) {
+    @Override
+    public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
         builder.set(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox.isSelected());

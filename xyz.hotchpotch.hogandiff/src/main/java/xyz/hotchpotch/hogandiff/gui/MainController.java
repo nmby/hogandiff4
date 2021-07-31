@@ -6,7 +6,9 @@ import java.util.concurrent.Executors;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -45,8 +47,8 @@ public class MainController {
     @FXML
     private UtilPane utilPane;
     
-    private Factory factory;
-    
+    /*package*/ final Factory factory = Factory.of();
+    /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
     /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
@@ -55,23 +57,23 @@ public class MainController {
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        factory = Factory.of();
         isReady.bind(targetsPane.isReady);
         // 以下のプロパティについては、バインディングで値を反映させるのではなく
         // 相手方のイベントハンドラで値を設定する。
         //      ・isRunning
         
-        menuPane.init();
-        targetsPane.init(factory, menuPane.menu);
+        menuPane.init(this);
+        targetsPane.init(this);
         settingsPane.init(this);
-        utilPane.init(SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get());
+        reportingPane.init(this);
+        utilPane.init(this);
         
         // 実行中はレポートエリアを除く全エリアを無効にする。
         menuPane.disableProperty().bind(isRunning);
         targetsPane.disableProperty().bind(isRunning);
         settingsPane.disableProperty().bind(isRunning);
+        //reportingPane.disableProperty().bind(isRunning.not());
         utilPane.disableProperty().bind(isRunning);
-        //paneReporting.disableProperty().bind(isRunning.not());
     }
     
     /**
@@ -86,14 +88,20 @@ public class MainController {
         menuPane.applySettings(settings);
         targetsPane.applySettings(settings);
         settingsPane.applySettings(settings);
+        reportingPane.applySettings(settings);
+        utilPane.applySettings(settings);
     }
     
     private Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
+        builder.set(SettingKeys.CURR_MENU, menu.getValue());
+        
         menuPane.gatherSettings(builder);
         targetsPane.gatherSettings(builder);
         settingsPane.gatherSettings(builder);
+        reportingPane.gatherSettings(builder);
+        utilPane.gatherSettings(builder);
         
         return builder.build();
     }
@@ -131,7 +139,7 @@ public class MainController {
         
         isRunning.set(true);
         
-        Task<Void> task = AppTask.of(settings, Factory.of());
+        Task<Void> task = AppTask.of(settings, factory);
         reportingPane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);

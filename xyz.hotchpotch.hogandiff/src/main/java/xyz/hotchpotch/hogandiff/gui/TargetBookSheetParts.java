@@ -183,7 +183,7 @@ public class TargetBookSheetParts extends GridPane {
         }
     }
     
-    /*package*/ void validateAndSetTarget(Path newBookPath, String sheetName) {
+    private void validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
             bookPathTextField.setText("");
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
