@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -133,9 +132,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                 Map<String, CellReplica> cellsMap = cells.parallelStream()
                         .collect(Collectors.toMap(
                                 CellReplica::address,
-                                Function.identity(),
-                                (c1, c2) -> { throw new AssertionError(); },
-                                HashMap::new));
+                                Function.identity()));
                 
                 sheet.getCellComments().forEach((addr, comm) -> {
                     String address = addr.formatAsString();
