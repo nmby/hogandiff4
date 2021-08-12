@@ -39,6 +39,7 @@ import org.apache.poi.ss.util.NumberToTextConverter;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -316,7 +317,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     if (value != null && !"".equals(value)) {
                         CellRecord cellRec = (CellRecord) record;
                         cells.put(
-                                CellReplica.idxToAddress(
+                                CellsUtil.idxToAddress(
                                         cellRec.getRow(),
                                         cellRec.getColumn()),
                                 CellReplica.of(
@@ -334,7 +335,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     String value = sRec.getString();
                     if (value != null && !"".equals(value)) {
                         cells.put(
-                                CellReplica.idxToAddress(
+                                CellsUtil.idxToAddress(
                                         prevFormulaRec.getRow(),
                                         prevFormulaRec.getColumn()),
                                 CellReplica.of(
@@ -377,7 +378,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 
                 case NoteRecord.sid:
                     NoteRecord noteRec = (NoteRecord) record;
-                    String address = CellReplica.idxToAddress(noteRec.getRow(), noteRec.getColumn());
+                    String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
                     String comment = comments.remove(noteRec.getShapeId());
                     
                     if (cells.containsKey(address)) {

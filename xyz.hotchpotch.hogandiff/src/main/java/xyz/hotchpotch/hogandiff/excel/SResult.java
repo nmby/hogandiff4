@@ -240,7 +240,7 @@ public record SResult(
                     str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
                     cols.forEach(column -> str
                             .append("    ")
-                            .append(CellReplica.columnIdxToStr(column))
+                            .append(CellsUtil.columnIdxToStr(column))
                             .append("列").append(BR));
                 }
             }
@@ -292,7 +292,7 @@ public record SResult(
             str.append("Column Gaps :").append(BR);
             
             Function<List<Integer>, String> columnsToStr = columns -> columns.stream()
-                    .map(CellReplica::columnIdxToStr)
+                    .map(CellsUtil::columnIdxToStr)
                     .collect(Collectors.joining(", "));
             
             if (!redundantColumns.a().isEmpty()) {

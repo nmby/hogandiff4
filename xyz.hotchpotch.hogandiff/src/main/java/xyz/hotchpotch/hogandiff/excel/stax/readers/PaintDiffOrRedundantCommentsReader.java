@@ -16,7 +16,7 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.V_QNAME;
@@ -145,7 +145,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             if (row < 0 || column < 0) {
                 throw new AssertionError("no row or column element.");
             }
-            String address = CellReplica.idxToAddress(row, column);
+            String address = CellsUtil.idxToAddress(row, column);
             
             if (diffCommentAddrs.contains(address)) {
                 processCommentShape(queue, diffCommentColor);
