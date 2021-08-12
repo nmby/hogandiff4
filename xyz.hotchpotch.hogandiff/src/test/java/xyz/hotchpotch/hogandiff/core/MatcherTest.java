@@ -41,7 +41,7 @@ class MatcherTest {
         
         assertTrue(
                 Matcher.minimumEditDistanceMatcherOf(gapEvaluator,
-                        diffEvaluator) instanceof MinimumEditDistanceMatcher);
+                        diffEvaluator) instanceof MinimumEditDistanceMatcher2);
     }
     
     @Test
