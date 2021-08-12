@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -137,7 +138,7 @@ public class SComparatorImpl implements SComparator {
                 cell2 = itr2.next();
             }
             comp = comparator.compare(cell1, cell2);
-            if (comp == 0 && !CellReplica.attrEquals(cell1, cell2)) {
+            if (comp == 0 && !CellsUtil.attrEquals(cell1, cell2)) {
                 diff += 2;
             } else if (comp != 0) {
                 diff++;
@@ -274,14 +275,14 @@ public class SComparatorImpl implements SComparator {
         this.compareCellComments = compareCellComments;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row, CellReplica::attrCompare);
-            columnsMapper = mapper(CellReplica::column, CellReplica::attrCompare);
+            rowsMapper = mapper(CellReplica::row, CellsUtil::attrCompare);
+            columnsMapper = mapper(CellReplica::column, CellsUtil::attrCompare);
         } else if (considerRowGaps) {
-            rowsMapper = mapper(CellReplica::row, Comparator.comparing(CellReplica::column));
+            rowsMapper = mapper(CellReplica::row, Comparator.comparingInt(CellReplica::column));
             columnsMapper = mapper(CellReplica::column);
         } else if (considerColumnGaps) {
             rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column, Comparator.comparing(CellReplica::row));
+            columnsMapper = mapper(CellReplica::column, Comparator.comparingInt(CellReplica::row));
         } else {
             rowsMapper = mapper(CellReplica::row);
             columnsMapper = mapper(CellReplica::column);
@@ -374,12 +375,12 @@ public class SComparatorImpl implements SComparator {
             return columnPairs.stream().filter(Pair::isPaired).map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
-                String address1 = CellReplica.idxToAddress(row1, column1);
-                String address2 = CellReplica.idxToAddress(row2, column2);
+                String address1 = CellsUtil.idxToAddress(row1, column1);
+                String address2 = CellsUtil.idxToAddress(row2, column2);
                 CellReplica cell1 = map1.get(address1);
                 CellReplica cell2 = map2.get(address2);
                 
-                return CellReplica.attrEquals(cell1, cell2)
+                return CellsUtil.attrEquals(cell1, cell2)
                         ? null
                         : Pair.<CellReplica> of(
                                 cell1 != null ? cell1 : CellReplica.empty(row1, column1),

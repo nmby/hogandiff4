@@ -157,11 +157,15 @@ public class MainController {
         });
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
+            Throwable e = task.getException();
+            e.printStackTrace();
             executor.shutdown();
             reportingPane.unbind();
             new Alert(
                     AlertType.WARNING,
-                    task.getException().getMessage(),
+                    "予期せぬ例外が発生しました。\n%s\n%s".formatted(
+                            e.getClass().getName(),
+                            e.getMessage()),
                     ButtonType.OK)
                             .showAndWait();
             isRunning.set(false);
