@@ -277,11 +277,11 @@ public class SComparatorImpl implements SComparator {
             rowsMapper = mapper(CellReplica::row, CellReplica::attrCompare);
             columnsMapper = mapper(CellReplica::column, CellReplica::attrCompare);
         } else if (considerRowGaps) {
-            rowsMapper = mapper(CellReplica::row, Comparator.comparing(CellReplica::column));
+            rowsMapper = mapper(CellReplica::row, Comparator.comparingInt(CellReplica::column));
             columnsMapper = mapper(CellReplica::column);
         } else if (considerColumnGaps) {
             rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column, Comparator.comparing(CellReplica::row));
+            columnsMapper = mapper(CellReplica::column, Comparator.comparingInt(CellReplica::row));
         } else {
             rowsMapper = mapper(CellReplica::row);
             columnsMapper = mapper(CellReplica::column);
