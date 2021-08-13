@@ -17,6 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param <T> リストの要素の型
  * @author nmby
  */
+@Deprecated
 /*package*/ class MinimumEditDistanceMatcher<T> implements Matcher<T> {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
