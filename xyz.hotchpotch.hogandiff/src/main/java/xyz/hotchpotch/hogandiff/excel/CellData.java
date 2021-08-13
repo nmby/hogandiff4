@@ -98,7 +98,7 @@ public interface CellData {
      * @param cell 比較対象のセル（{@code null} 許容）
      * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
      */
-    default boolean attrEquals(CellData cell) {
+    default boolean dataEquals(CellData cell) {
         return cell != null
                 && Objects.equals(content(), cell.content())
                 && Objects.equals(comment(), cell.comment());
@@ -113,7 +113,7 @@ public interface CellData {
      *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
-    default int attrCompareTo(CellData cell) {
+    default int dataCompareTo(CellData cell) {
         Objects.requireNonNull(cell, "cell");
         
         return !content().equals(cell.content())

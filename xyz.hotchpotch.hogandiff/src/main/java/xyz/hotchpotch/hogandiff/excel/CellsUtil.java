@@ -84,7 +84,7 @@ public class CellsUtil {
      * @return {@code cell1}, {@code cell2} が同一か属性値が等しい場合は {@code true}
      */
     public static boolean attrEquals(CellData cell1, CellData cell2) {
-        return cell1 == cell2 || (cell1 != null && cell1.attrEquals(cell2));
+        return cell1 == cell2 || (cell1 != null && cell1.dataEquals(cell2));
     }
     
     /**
@@ -99,7 +99,7 @@ public class CellsUtil {
         Objects.requireNonNull(cell1, "cell1");
         Objects.requireNonNull(cell2, "cell2");
         
-        return cell1.attrCompareTo(cell2);
+        return cell1.dataCompareTo(cell2);
     }
     
     // [instance members] ******************************************************
