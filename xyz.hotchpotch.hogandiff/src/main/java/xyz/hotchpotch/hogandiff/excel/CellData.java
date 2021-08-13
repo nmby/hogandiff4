@@ -132,7 +132,9 @@ public interface CellData {
      * @param cell 比較対象のセルデータ
      * @return データ内容が等価な場合は {@code true}
      */
-    boolean dataEquals(CellData cell);
+    default boolean dataEquals(CellData cell) {
+        return contentEquals(cell) && commentEquals(cell);
+    }
     
     /**
      * このセルデータと指定されたセルデータのデータ内容（セル内容とセルコメント）の大小関係を返します。<br>

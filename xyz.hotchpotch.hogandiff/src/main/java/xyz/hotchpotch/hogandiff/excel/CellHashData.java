@@ -1,26 +1,24 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * セルデータ（セル内容、セルコメント）を {@link String} で持つ {@link CellData} の実装です。<br>
+ * セルデータ（セル内容、セルコメント）をハッシュ値で持つ {@link CellData} の実装です。<br>
  *
  * @author nmby
  */
-/*package*/ record CellStringData(
+/*package*/ record CellHashData(
         int row,
         int column,
-        String content,
-        String comment)
+        int contentHash,
+        int commentHash)
         implements CellData {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    /*package*/ CellStringData {
-        Objects.requireNonNull(content, "content");
+    /*package*/ CellHashData {
         if (row < 0 || column < 0) {
             throw new IllegalArgumentException("row==%d, column==%d".formatted(row, column));
         }
@@ -28,7 +26,7 @@ import java.util.Objects;
     
     @Override
     public boolean hasComment() {
-        return comment != null;
+        return commentHash != 0;
     }
     
     /**
@@ -40,27 +38,25 @@ import java.util.Objects;
     @Override
     public CellData addComment(String comment) {
         Objects.requireNonNull(comment, "comment");
-        if (this.comment != null) {
+        if (commentHash != 0) {
             throw new IllegalStateException();
         }
         
-        return new CellStringData(row, column, content, comment);
+        return new CellHashData(row, column, contentHash, comment.hashCode());
     }
     
     @Override
     public boolean contentEquals(CellData cell) {
-        if (cell instanceof CellStringData cd) {
-            return content.equals(cd.content);
+        if (cell instanceof CellHashData cd) {
+            return contentHash == cd.contentHash;
         }
         return false;
     }
     
     @Override
     public boolean commentEquals(CellData cell) {
-        if (cell instanceof CellStringData cd) {
-            return comment == null
-                    ? cd.comment == null
-                    : comment.equals(cd.comment);
+        if (cell instanceof CellHashData cd) {
+            return commentHash == cd.commentHash;
         }
         return false;
     }
@@ -72,20 +68,16 @@ import java.util.Objects;
      */
     @Override
     public int dataCompareTo(CellData cell) {
-        if (cell instanceof CellStringData cd) {
-            return !contentEquals(cell)
-                    ? content.compareTo(cd.content)
-                    : Objects.compare(comment, cd.comment, Comparator.naturalOrder());
+        if (cell instanceof CellHashData cd) {
+            return contentHash != cd.contentHash
+                    ? Integer.compare(contentHash, cd.contentHash)
+                    : Integer.compare(commentHash, cd.commentHash);
         }
         throw new IllegalArgumentException();
     }
     
     @Override
     public String toString() {
-        return String.format(
-                "%s: %s%s",
-                address(),
-                content,
-                comment == null ? "" : " [comment: " + comment + "]");
+        return String.format("%s: （省メモリモードでは表示できません）", address());
     }
 }
