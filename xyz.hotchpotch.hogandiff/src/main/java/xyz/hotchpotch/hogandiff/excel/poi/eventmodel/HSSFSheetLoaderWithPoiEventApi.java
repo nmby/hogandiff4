@@ -38,7 +38,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
@@ -100,7 +100,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         private final boolean extractContents;
         private final boolean extractComments;
         private final boolean extractCachedValue;
-        private final Map<String, CellReplica> cells = new HashMap<>();
+        private final Map<String, CellData> cells = new HashMap<>();
         private final Map<Integer, String> comments = new HashMap<>();
         
         private ProcessingStep step = ProcessingStep.SEARCHING_SHEET_DEFINITION;
@@ -320,7 +320,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellsUtil.idxToAddress(
                                         cellRec.getRow(),
                                         cellRec.getColumn()),
-                                CellReplica.of(
+                                CellData.of(
                                         cellRec.getRow(),
                                         cellRec.getColumn(),
                                         value,
@@ -338,7 +338,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellsUtil.idxToAddress(
                                         prevFormulaRec.getRow(),
                                         prevFormulaRec.getColumn()),
-                                CellReplica.of(
+                                CellData.of(
                                         prevFormulaRec.getRow(),
                                         prevFormulaRec.getColumn(),
                                         sRec.getString(),
@@ -382,14 +382,14 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     String comment = comments.remove(noteRec.getShapeId());
                     
                     if (cells.containsKey(address)) {
-                        CellReplica original = cells.get(address);
-                        cells.put(address, CellReplica.of(
+                        CellData original = cells.get(address);
+                        cells.put(address, CellData.of(
                                 original.row(),
                                 original.column(),
                                 original.content(),
                                 comment));
                     } else {
-                        cells.put(address, CellReplica.of(address, "", comment));
+                        cells.put(address, CellData.of(address, "", comment));
                     }
                     break;
                 }
@@ -508,7 +508,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

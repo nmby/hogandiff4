@@ -83,7 +83,7 @@ public class CellsUtil {
      * @param cell2 比較対象のセル2（{@code null} 許容）
      * @return {@code cell1}, {@code cell2} が同一か属性値が等しい場合は {@code true}
      */
-    public static boolean attrEquals(CellReplica cell1, CellReplica cell2) {
+    public static boolean attrEquals(CellData cell1, CellData cell2) {
         return cell1 == cell2 || (cell1 != null && cell1.attrEquals(cell2));
     }
     
@@ -95,7 +95,7 @@ public class CellsUtil {
      * @return セル1の属性値がセル2の属性値より小さい場合は負の整数、等しい場合は0、大きい場合は正の整数
      * @throws NullPointerException {@code cell1}, {@code cell2} のいずれかが {@code null} の場合
      */
-    public static int attrCompare(CellReplica cell1, CellReplica cell2) {
+    public static int attrCompare(CellData cell1, CellData cell2) {
         Objects.requireNonNull(cell1, "cell1");
         Objects.requireNonNull(cell2, "cell2");
         

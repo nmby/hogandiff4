@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -53,7 +53,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     public static SheetLoader of(
             boolean extractContents,
             boolean extractComments,
-            Function<Cell, CellReplica> converter) {
+            Function<Cell, CellData> converter) {
         
         if (extractContents) {
             Objects.requireNonNull(converter, "converter");
@@ -68,12 +68,12 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     
     private final boolean extractContents;
     private final boolean extractComments;
-    private final Function<Cell, CellReplica> converter;
+    private final Function<Cell, CellData> converter;
     
     private SheetLoaderWithPoiUserApi(
             boolean extractContents,
             boolean extractComments,
-            Function<Cell, CellReplica> converter) {
+            Function<Cell, CellData> converter) {
         
         assert !extractContents || converter != null;
         
@@ -98,7 +98,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");
@@ -120,7 +120,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
             CommonUtil.ifNotSupportedSheetTypeThenThrow(getClass(), possibleTypes);
             
-            Set<CellReplica> cells = extractContents
+            Set<CellData> cells = extractContents
                     ? StreamSupport.stream(sheet.spliterator(), true)
                             .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
                             .map(converter::apply)
@@ -129,9 +129,9 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                     : new HashSet<>();
             
             if (extractComments) {
-                Map<String, CellReplica> cellsMap = cells.parallelStream()
+                Map<String, CellData> cellsMap = cells.parallelStream()
                         .collect(Collectors.toMap(
-                                CellReplica::address,
+                                CellData::address,
                                 Function.identity()));
                 
                 sheet.getCellComments().forEach((addr, comm) -> {
@@ -140,15 +140,15 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                     String comment = Optional.ofNullable(comm.getString().getString()).orElse("");
                     
                     if (cellsMap.containsKey(address)) {
-                        CellReplica original = cellsMap.get(address);
+                        CellData original = cellsMap.get(address);
                         cells.remove(original);
-                        cells.add(CellReplica.of(
+                        cells.add(CellData.of(
                                 original.row(),
                                 original.column(),
                                 original.content(),
                                 comment));
                     } else {
-                        cells.add(CellReplica.of(address, "", comment));
+                        cells.add(CellData.of(address, "", comment));
                     }
                 });
             }

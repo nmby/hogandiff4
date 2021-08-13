@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -98,7 +98,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         private final Deque<String> qNames = new ArrayDeque<>();
         private final Map<String, StringBuilder> texts = new HashMap<>();
-        private final Set<CellReplica> cells = new HashSet<>();
+        private final Set<CellData> cells = new HashSet<>();
         
         private XSSFCellType type;
         private String address;
@@ -178,7 +178,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(address, value, null));
+                    cells.add(CellData.of(address, value, null));
                 }
                 
                 qNames.removeFirst();
@@ -195,18 +195,18 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         // [instance members] --------------------------------------------------
         
-        private final Set<CellReplica> cells;
-        private final Map<String, CellReplica> cellsMap;
+        private final Set<CellData> cells;
+        private final Map<String, CellData> cellsMap;
         
         private String address;
         private StringBuilder comment;
         
-        private Handler2(Set<CellReplica> cells) {
+        private Handler2(Set<CellData> cells) {
             assert cells != null;
             
             this.cells = cells;
             this.cellsMap = cells.parallelStream()
-                    .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+                    .collect(Collectors.toMap(CellData::address, Function.identity()));
         }
         
         @Override
@@ -230,15 +230,15 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         public void endElement(String uri, String localName, String qName) {
             if ("comment".equals(qName)) {
                 if (cellsMap.containsKey(address)) {
-                    CellReplica original = cellsMap.get(address);
+                    CellData original = cellsMap.get(address);
                     cells.remove(original);
-                    cells.add(CellReplica.of(
+                    cells.add(CellData.of(
                             original.row(),
                             original.column(),
                             original.content(),
                             comment.toString()));
                 } else {
-                    cells.add(CellReplica.of(address, "", comment.toString()));
+                    cells.add(CellData.of(address, "", comment.toString()));
                 }
                 
                 address = null;
@@ -334,7 +334,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");
@@ -363,7 +363,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            Set<CellReplica> cells = null;
+            Set<CellData> cells = null;
             
             if (extractContents) {
                 Handler1 handler1 = new Handler1(extractCachedValue, sst);

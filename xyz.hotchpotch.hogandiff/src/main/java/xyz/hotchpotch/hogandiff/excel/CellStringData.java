@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.Objects;
 
 /**
- * セルデータ（セル内容、セルコメント）を {@link String} で持つ {@link CellReplica} の実装です。<br>
+ * セルデータ（セル内容、セルコメント）を {@link String} で持つ {@link CellData} の実装です。<br>
  *
  * @author nmby
  */
@@ -12,7 +12,7 @@ import java.util.Objects;
         int column,
         String content,
         String comment)
-        implements CellReplica {
+        implements CellData {
     
     // [static members] ********************************************************
     

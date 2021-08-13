@@ -122,11 +122,11 @@ public class Factory {
         boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        Function<Cell, CellReplica> converter = cell -> {
+        Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return "".equals(content)
                     ? null
-                    : CellReplica.of(
+                    : CellData.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,

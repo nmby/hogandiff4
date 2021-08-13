@@ -11,7 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
@@ -126,13 +126,13 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。", null),
-                        CellReplica.of(2, 1, "X", null),
-                        CellReplica.of(3, 1, "Y", null),
-                        CellReplica.of(4, 1, "Z", null),
-                        CellReplica.of(2, 2, "90", null),
-                        CellReplica.of(3, 2, "20", null),
-                        CellReplica.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。", null),
+                        CellData.of(2, 1, "X", null),
+                        CellData.of(3, 1, "Y", null),
+                        CellData.of(4, 1, "Z", null),
+                        CellData.of(2, 2, "90", null),
+                        CellData.of(3, 2, "20", null),
+                        CellData.of(4, 2, "60", null)),
                 testee.loadCells(test1_xlsx, "A1_ワークシート"));
     }
     
@@ -140,7 +140,7 @@ class XSSFSheetLoaderWithSaxTest {
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
         SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, test3_xlsx);
         
-        List<CellReplica> actual = new ArrayList<>(
+        List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
@@ -156,93 +156,93 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 List.of(
-                        CellReplica.of(1, 2, "数値：整数", null),
-                        CellReplica.of(1, 3, "1234567890", null),
-                        CellReplica.of(2, 2, "数値：小数", null),
+                        CellData.of(1, 2, "数値：整数", null),
+                        CellData.of(1, 3, "1234567890", null),
+                        CellData.of(2, 2, "数値：小数", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(2, 3, "3.141592", null),
-                        CellReplica.of(2, 3, "3.1415920000000002", null),
-                        CellReplica.of(3, 2, "文字列", null),
-                        CellReplica.of(3, 3, "abcあいう123", null),
-                        CellReplica.of(4, 2, "真偽値：真", null),
-                        CellReplica.of(4, 3, "true", null),
-                        CellReplica.of(5, 2, "真偽値：偽", null),
-                        CellReplica.of(5, 3, "false", null)),
+                        CellData.of(2, 3, "3.1415920000000002", null),
+                        CellData.of(3, 2, "文字列", null),
+                        CellData.of(3, 3, "abcあいう123", null),
+                        CellData.of(4, 2, "真偽値：真", null),
+                        CellData.of(4, 3, "true", null),
+                        CellData.of(5, 2, "真偽値：偽", null),
+                        CellData.of(5, 3, "false", null)),
                 actual.subList(0, 10));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(6, 2, "エラー：ゼロ除算", null),
-                        CellReplica.of(6, 3, "#DIV/0!", null),
-                        CellReplica.of(7, 2, "エラー：該当なし", null),
-                        CellReplica.of(7, 3, "#N/A", null),
-                        CellReplica.of(8, 2, "エラー：名前不正", null),
-                        CellReplica.of(8, 3, "#NAME?", null),
-                        CellReplica.of(9, 2, "エラー：ヌル", null),
-                        CellReplica.of(9, 3, "#NULL!", null),
-                        CellReplica.of(10, 2, "エラー：数値不正", null),
-                        CellReplica.of(10, 3, "#NUM!", null),
-                        CellReplica.of(11, 2, "エラー：参照不正", null),
-                        CellReplica.of(11, 3, "#REF!", null),
-                        CellReplica.of(12, 2, "エラー：値不正", null),
-                        CellReplica.of(12, 3, "#VALUE!", null)),
+                        CellData.of(6, 2, "エラー：ゼロ除算", null),
+                        CellData.of(6, 3, "#DIV/0!", null),
+                        CellData.of(7, 2, "エラー：該当なし", null),
+                        CellData.of(7, 3, "#N/A", null),
+                        CellData.of(8, 2, "エラー：名前不正", null),
+                        CellData.of(8, 3, "#NAME?", null),
+                        CellData.of(9, 2, "エラー：ヌル", null),
+                        CellData.of(9, 3, "#NULL!", null),
+                        CellData.of(10, 2, "エラー：数値不正", null),
+                        CellData.of(10, 3, "#NUM!", null),
+                        CellData.of(11, 2, "エラー：参照不正", null),
+                        CellData.of(11, 3, "#REF!", null),
+                        CellData.of(12, 2, "エラー：値不正", null),
+                        CellData.of(12, 3, "#VALUE!", null)),
                 actual.subList(10, 24));
         
         assertEquals(
                 List.of(
                         // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
-                        CellReplica.of(13, 2, "日付", null),
+                        CellData.of(13, 2, "日付", null),
                         //CellReplica.of(13, 3, "2019/7/28", null),
-                        CellReplica.of(13, 3, "43674", null),
-                        CellReplica.of(14, 2, "時刻", null),
+                        CellData.of(13, 3, "43674", null),
+                        CellData.of(14, 2, "時刻", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(14, 3, "13:47", null),
-                        CellReplica.of(14, 3, "0.57430555555555551", null)),
+                        CellData.of(14, 3, "0.57430555555555551", null)),
                 actual.subList(24, 28));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(16, 2, "数式（数値：整数）", null),
-                        CellReplica.of(16, 3, "31400", null),
-                        CellReplica.of(17, 2, "数式（数値：小数）", null),
+                        CellData.of(16, 2, "数式（数値：整数）", null),
+                        CellData.of(16, 3, "31400", null),
+                        CellData.of(17, 2, "数式（数値：小数）", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
-                        CellReplica.of(17, 3, "3.3333333333333335", null),
-                        CellReplica.of(18, 2, "数式（文字列）", null),
-                        CellReplica.of(18, 3, "TRUEだよ", null),
-                        CellReplica.of(19, 2, "数式（真偽値：真）", null),
-                        CellReplica.of(19, 3, "true", null),
-                        CellReplica.of(20, 2, "数式（真偽値：偽）", null),
-                        CellReplica.of(20, 3, "false", null)),
+                        CellData.of(17, 3, "3.3333333333333335", null),
+                        CellData.of(18, 2, "数式（文字列）", null),
+                        CellData.of(18, 3, "TRUEだよ", null),
+                        CellData.of(19, 2, "数式（真偽値：真）", null),
+                        CellData.of(19, 3, "true", null),
+                        CellData.of(20, 2, "数式（真偽値：偽）", null),
+                        CellData.of(20, 3, "false", null)),
                 actual.subList(28, 38));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(21, 2, "数式（エラー：ゼロ除算）", null),
-                        CellReplica.of(21, 3, "#DIV/0!", null),
-                        CellReplica.of(22, 2, "数式（エラー：該当なし）", null),
-                        CellReplica.of(22, 3, "#N/A", null),
-                        CellReplica.of(23, 2, "数式（エラー：名前不正）", null),
-                        CellReplica.of(23, 3, "#NAME?", null),
-                        CellReplica.of(24, 2, "数式（エラー：ヌル）", null),
-                        CellReplica.of(24, 3, "#NULL!", null),
-                        CellReplica.of(25, 2, "数式（エラー：数値不正）", null),
-                        CellReplica.of(25, 3, "#NUM!", null),
-                        CellReplica.of(26, 2, "数式（エラー：参照不正）", null),
-                        CellReplica.of(26, 3, "#REF!", null),
-                        CellReplica.of(27, 2, "数式（エラー：値不正）", null),
-                        CellReplica.of(27, 3, "#VALUE!", null)),
+                        CellData.of(21, 2, "数式（エラー：ゼロ除算）", null),
+                        CellData.of(21, 3, "#DIV/0!", null),
+                        CellData.of(22, 2, "数式（エラー：該当なし）", null),
+                        CellData.of(22, 3, "#N/A", null),
+                        CellData.of(23, 2, "数式（エラー：名前不正）", null),
+                        CellData.of(23, 3, "#NAME?", null),
+                        CellData.of(24, 2, "数式（エラー：ヌル）", null),
+                        CellData.of(24, 3, "#NULL!", null),
+                        CellData.of(25, 2, "数式（エラー：数値不正）", null),
+                        CellData.of(25, 3, "#NUM!", null),
+                        CellData.of(26, 2, "数式（エラー：参照不正）", null),
+                        CellData.of(26, 3, "#REF!", null),
+                        CellData.of(27, 2, "数式（エラー：値不正）", null),
+                        CellData.of(27, 3, "#VALUE!", null)),
                 actual.subList(38, 52));
         
         assertEquals(
                 List.of(
                         // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
-                        CellReplica.of(28, 2, "数式（日付）", null),
+                        CellData.of(28, 2, "数式（日付）", null),
                         //CellReplica.of(28, 3, "2019/7/28", null),
-                        CellReplica.of(28, 3, "43674", null),
-                        CellReplica.of(29, 2, "数式（時刻）", null),
+                        CellData.of(28, 3, "43674", null),
+                        CellData.of(29, 2, "数式（時刻）", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(29, 3, "12:47", null)),
-                        CellReplica.of(29, 3, "0.53263888888888888", null)),
+                        CellData.of(29, 3, "0.53263888888888888", null)),
                 actual.subList(52, 56));
     }
     
@@ -250,7 +250,7 @@ class XSSFSheetLoaderWithSaxTest {
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
         SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, false, test3_xlsx);
         
-        List<CellReplica> actual = new ArrayList<>(
+        List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
@@ -266,88 +266,88 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 List.of(
-                        CellReplica.of(1, 2, "数値：整数", null),
-                        CellReplica.of(1, 3, "1234567890", null),
-                        CellReplica.of(2, 2, "数値：小数", null),
+                        CellData.of(1, 2, "数値：整数", null),
+                        CellData.of(1, 3, "1234567890", null),
+                        CellData.of(2, 2, "数値：小数", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(2, 3, "3.141592", null),
-                        CellReplica.of(2, 3, "3.1415920000000002", null),
-                        CellReplica.of(3, 2, "文字列", null),
-                        CellReplica.of(3, 3, "abcあいう123", null),
-                        CellReplica.of(4, 2, "真偽値：真", null),
-                        CellReplica.of(4, 3, "true", null),
-                        CellReplica.of(5, 2, "真偽値：偽", null),
-                        CellReplica.of(5, 3, "false", null)),
+                        CellData.of(2, 3, "3.1415920000000002", null),
+                        CellData.of(3, 2, "文字列", null),
+                        CellData.of(3, 3, "abcあいう123", null),
+                        CellData.of(4, 2, "真偽値：真", null),
+                        CellData.of(4, 3, "true", null),
+                        CellData.of(5, 2, "真偽値：偽", null),
+                        CellData.of(5, 3, "false", null)),
                 actual.subList(0, 10));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(6, 2, "エラー：ゼロ除算", null),
-                        CellReplica.of(6, 3, "#DIV/0!", null),
-                        CellReplica.of(7, 2, "エラー：該当なし", null),
-                        CellReplica.of(7, 3, "#N/A", null),
-                        CellReplica.of(8, 2, "エラー：名前不正", null),
-                        CellReplica.of(8, 3, "#NAME?", null),
-                        CellReplica.of(9, 2, "エラー：ヌル", null),
-                        CellReplica.of(9, 3, "#NULL!", null),
-                        CellReplica.of(10, 2, "エラー：数値不正", null),
-                        CellReplica.of(10, 3, "#NUM!", null),
-                        CellReplica.of(11, 2, "エラー：参照不正", null),
-                        CellReplica.of(11, 3, "#REF!", null),
-                        CellReplica.of(12, 2, "エラー：値不正", null),
-                        CellReplica.of(12, 3, "#VALUE!", null)),
+                        CellData.of(6, 2, "エラー：ゼロ除算", null),
+                        CellData.of(6, 3, "#DIV/0!", null),
+                        CellData.of(7, 2, "エラー：該当なし", null),
+                        CellData.of(7, 3, "#N/A", null),
+                        CellData.of(8, 2, "エラー：名前不正", null),
+                        CellData.of(8, 3, "#NAME?", null),
+                        CellData.of(9, 2, "エラー：ヌル", null),
+                        CellData.of(9, 3, "#NULL!", null),
+                        CellData.of(10, 2, "エラー：数値不正", null),
+                        CellData.of(10, 3, "#NUM!", null),
+                        CellData.of(11, 2, "エラー：参照不正", null),
+                        CellData.of(11, 3, "#REF!", null),
+                        CellData.of(12, 2, "エラー：値不正", null),
+                        CellData.of(12, 3, "#VALUE!", null)),
                 actual.subList(10, 24));
         
         assertEquals(
                 List.of(
                         // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
-                        CellReplica.of(13, 2, "日付", null),
+                        CellData.of(13, 2, "日付", null),
                         //CellReplica.of(13, 3, "2019/7/28", null),
-                        CellReplica.of(13, 3, "43674", null),
-                        CellReplica.of(14, 2, "時刻", null),
+                        CellData.of(13, 3, "43674", null),
+                        CellData.of(14, 2, "時刻", null),
                         // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(14, 3, "13:47", null),
-                        CellReplica.of(14, 3, "0.57430555555555551", null)),
+                        CellData.of(14, 3, "0.57430555555555551", null)),
                 actual.subList(24, 28));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(16, 2, "数式（数値：整数）", null),
-                        CellReplica.of(16, 3, " ROUND(D3 * 100, 0) * 100", null),
-                        CellReplica.of(17, 2, "数式（数値：小数）", null),
-                        CellReplica.of(17, 3, " 10 / 3", null),
-                        CellReplica.of(18, 2, "数式（文字列）", null),
-                        CellReplica.of(18, 3, " D5 & \"だよ\"", null),
-                        CellReplica.of(19, 2, "数式（真偽値：真）", null),
-                        CellReplica.of(19, 3, "(1=1)", null),
-                        CellReplica.of(20, 2, "数式（真偽値：偽）", null),
-                        CellReplica.of(20, 3, " (\"あ\" = \"い\")", null)),
+                        CellData.of(16, 2, "数式（数値：整数）", null),
+                        CellData.of(16, 3, " ROUND(D3 * 100, 0) * 100", null),
+                        CellData.of(17, 2, "数式（数値：小数）", null),
+                        CellData.of(17, 3, " 10 / 3", null),
+                        CellData.of(18, 2, "数式（文字列）", null),
+                        CellData.of(18, 3, " D5 & \"だよ\"", null),
+                        CellData.of(19, 2, "数式（真偽値：真）", null),
+                        CellData.of(19, 3, "(1=1)", null),
+                        CellData.of(20, 2, "数式（真偽値：偽）", null),
+                        CellData.of(20, 3, " (\"あ\" = \"い\")", null)),
                 actual.subList(28, 38));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(21, 2, "数式（エラー：ゼロ除算）", null),
-                        CellReplica.of(21, 3, " D3 / (D2 - 1234567890)", null),
-                        CellReplica.of(22, 2, "数式（エラー：該当なし）", null),
-                        CellReplica.of(22, 3, " VLOOKUP(\"dummy\", C17:D22, 2)", null),
-                        CellReplica.of(23, 2, "数式（エラー：名前不正）", null),
-                        CellReplica.of(23, 3, " dummy()", null),
-                        CellReplica.of(24, 2, "数式（エラー：ヌル）", null),
-                        CellReplica.of(24, 3, " MAX(D2:D3 D17:D18)", null),
-                        CellReplica.of(25, 2, "数式（エラー：数値不正）", null),
-                        CellReplica.of(25, 3, " DATE(-1, -1, -1)", null),
-                        CellReplica.of(26, 2, "数式（エラー：参照不正）", null),
-                        CellReplica.of(26, 3, " INDIRECT(\"dummy\") + 100", null),
-                        CellReplica.of(27, 2, "数式（エラー：値不正）", null),
-                        CellReplica.of(27, 3, " \"abc\" + 123", null)),
+                        CellData.of(21, 2, "数式（エラー：ゼロ除算）", null),
+                        CellData.of(21, 3, " D3 / (D2 - 1234567890)", null),
+                        CellData.of(22, 2, "数式（エラー：該当なし）", null),
+                        CellData.of(22, 3, " VLOOKUP(\"dummy\", C17:D22, 2)", null),
+                        CellData.of(23, 2, "数式（エラー：名前不正）", null),
+                        CellData.of(23, 3, " dummy()", null),
+                        CellData.of(24, 2, "数式（エラー：ヌル）", null),
+                        CellData.of(24, 3, " MAX(D2:D3 D17:D18)", null),
+                        CellData.of(25, 2, "数式（エラー：数値不正）", null),
+                        CellData.of(25, 3, " DATE(-1, -1, -1)", null),
+                        CellData.of(26, 2, "数式（エラー：参照不正）", null),
+                        CellData.of(26, 3, " INDIRECT(\"dummy\") + 100", null),
+                        CellData.of(27, 2, "数式（エラー：値不正）", null),
+                        CellData.of(27, 3, " \"abc\" + 123", null)),
                 actual.subList(38, 52));
         
         assertEquals(
                 List.of(
-                        CellReplica.of(28, 2, "数式（日付）", null),
-                        CellReplica.of(28, 3, " DATE(2019, 7, 28)", null),
-                        CellReplica.of(29, 2, "数式（時刻）", null),
-                        CellReplica.of(29, 3, " D15 - \"1:00\"", null)),
+                        CellData.of(28, 2, "数式（日付）", null),
+                        CellData.of(28, 3, " DATE(2019, 7, 28)", null),
+                        CellData.of(29, 2, "数式（時刻）", null),
+                        CellData.of(29, 3, " D15 - \"1:00\"", null)),
                 actual.subList(52, 56));
     }
     
@@ -357,13 +357,13 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(1, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(4, 1, "", "Authorなし"),
-                        CellReplica.of(7, 1, "", "非表示"),
-                        CellReplica.of(10, 1, "", "書式設定"),
-                        CellReplica.of(13, 1, "セル値あり", "コメント"),
-                        CellReplica.of(16, 1, "空コメント", ""),
-                        CellReplica.of(19, 1, "セル値のみ", null)),
+                        CellData.of(1, 1, "", "Author:\nComment\nComment"),
+                        CellData.of(4, 1, "", "Authorなし"),
+                        CellData.of(7, 1, "", "非表示"),
+                        CellData.of(10, 1, "", "書式設定"),
+                        CellData.of(13, 1, "セル値あり", "コメント"),
+                        CellData.of(16, 1, "空コメント", ""),
+                        CellData.of(19, 1, "セル値のみ", null)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
     
@@ -373,13 +373,13 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(1, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(4, 1, "", "Authorなし"),
-                        CellReplica.of(7, 1, "", "非表示"),
-                        CellReplica.of(10, 1, "", "書式設定"),
-                        CellReplica.of(13, 1, "セル値あり", "コメント"),
-                        CellReplica.of(16, 1, "空コメント", ""),
-                        CellReplica.of(19, 1, " \"セル値\" & \"のみ\"", null)),
+                        CellData.of(1, 1, "", "Author:\nComment\nComment"),
+                        CellData.of(4, 1, "", "Authorなし"),
+                        CellData.of(7, 1, "", "非表示"),
+                        CellData.of(10, 1, "", "書式設定"),
+                        CellData.of(13, 1, "セル値あり", "コメント"),
+                        CellData.of(16, 1, "空コメント", ""),
+                        CellData.of(19, 1, " \"セル値\" & \"のみ\"", null)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
     
@@ -389,9 +389,9 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(13, 1, "セル値あり", null),
-                        CellReplica.of(16, 1, "空コメント", null),
-                        CellReplica.of(19, 1, "セル値のみ", null)),
+                        CellData.of(13, 1, "セル値あり", null),
+                        CellData.of(16, 1, "空コメント", null),
+                        CellData.of(19, 1, "セル値のみ", null)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
     
@@ -401,9 +401,9 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(13, 1, "セル値あり", null),
-                        CellReplica.of(16, 1, "空コメント", null),
-                        CellReplica.of(19, 1, " \"セル値\" & \"のみ\"", null)),
+                        CellData.of(13, 1, "セル値あり", null),
+                        CellData.of(16, 1, "空コメント", null),
+                        CellData.of(19, 1, " \"セル値\" & \"のみ\"", null)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
     
@@ -414,12 +414,12 @@ class XSSFSheetLoaderWithSaxTest {
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(1, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(4, 1, "", "Authorなし"),
-                        CellReplica.of(7, 1, "", "非表示"),
-                        CellReplica.of(10, 1, "", "書式設定"),
-                        CellReplica.of(13, 1, "", "コメント"),
-                        CellReplica.of(16, 1, "", "")),
+                        CellData.of(1, 1, "", "Author:\nComment\nComment"),
+                        CellData.of(4, 1, "", "Authorなし"),
+                        CellData.of(7, 1, "", "非表示"),
+                        CellData.of(10, 1, "", "書式設定"),
+                        CellData.of(13, 1, "", "コメント"),
+                        CellData.of(16, 1, "", "")),
                 testee1.loadCells(test4_xlsx, "コメント"));
         assertEquals(
                 testee2.loadCells(test4_xlsx, "コメント"),

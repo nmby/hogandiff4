@@ -9,7 +9,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  *
  * @author nmby
  */
-public interface CellReplica {
+public interface CellData {
     
     // [static members] ********************************************************
     
@@ -24,7 +24,7 @@ public interface CellReplica {
      * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellReplica of(int row, int column, String content, String comment) {
+    public static CellData of(int row, int column, String content, String comment) {
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
@@ -42,11 +42,11 @@ public interface CellReplica {
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
-    public static CellReplica of(String address, String content, String comment) {
+    public static CellData of(String address, String content, String comment) {
         Objects.requireNonNull(address, "address");
         
         Pair<Integer> idx = CellsUtil.addressToIdx(address);
-        return CellReplica.of(idx.a(), idx.b(), content, comment);
+        return CellData.of(idx.a(), idx.b(), content, comment);
     }
     
     /**
@@ -57,8 +57,8 @@ public interface CellReplica {
      * @return 新たな空のセルレプリカ
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellReplica empty(int row, int column) {
-        return CellReplica.of(row, column, "", null);
+    public static CellData empty(int row, int column) {
+        return CellData.of(row, column, "", null);
     }
     
     /**
@@ -68,8 +68,8 @@ public interface CellReplica {
      * @return 新たな空のセルレプリカ
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
-    public static CellReplica empty(String address) {
-        return CellReplica.of(address, "", null);
+    public static CellData empty(String address) {
+        return CellData.of(address, "", null);
     }
     
     // [instance members] ******************************************************
@@ -98,7 +98,7 @@ public interface CellReplica {
      * @param cell 比較対象のセル（{@code null} 許容）
      * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
      */
-    default boolean attrEquals(CellReplica cell) {
+    default boolean attrEquals(CellData cell) {
         return cell != null
                 && Objects.equals(content(), cell.content())
                 && Objects.equals(comment(), cell.comment());
@@ -113,7 +113,7 @@ public interface CellReplica {
      *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
-    default int attrCompareTo(CellReplica cell) {
+    default int attrCompareTo(CellData cell) {
         Objects.requireNonNull(cell, "cell");
         
         return !content().equals(cell.content())

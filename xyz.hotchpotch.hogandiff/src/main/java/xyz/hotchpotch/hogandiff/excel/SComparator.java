@@ -23,6 +23,6 @@ public interface SComparator {
      * @return 比較結果
      */
     SResult compare(
-            Set<CellReplica> cells1,
-            Set<CellReplica> cells2);
+            Set<CellData> cells1,
+            Set<CellData> cells2);
 }
