@@ -19,13 +19,18 @@ import java.util.Objects;
     
     // [instance members] ******************************************************
     
-    public CellStringData {
+    /*package*/ CellStringData {
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IllegalArgumentException("row==%d, column==%d".formatted(row, column));
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IllegalStateException このセルデータが既にセルコメントを保持する場合
+     */
     @Override
     public CellData addComment(String comment) {
         if (this.comment != null) {
@@ -66,6 +71,11 @@ import java.util.Objects;
         return false;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IllegalArgumentException 指定されたセルデータの型がこのセルデータと異なる場合
+     */
     @Override
     public int dataCompareTo(CellData cell) {
         if (cell instanceof CellStringData cd) {

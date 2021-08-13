@@ -14,12 +14,12 @@ public interface CellData {
     // [static members] ********************************************************
     
     /**
-     * 新たなセルレプリカを生成します。<br>
+     * 新たなセルデータを生成します。<br>
      * 
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @param content セル内容
-     * @return 新たなセルレプリカ
+     * @return 新たなセルデータ
      * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
@@ -33,11 +33,11 @@ public interface CellData {
     }
     
     /**
-     * 新たなセルレプリカを生成します。<br>
+     * 新たなセルデータを生成します。<br>
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
      * @param content セル内容
-     * @return 新たなセルレプリカ
+     * @return 新たなセルデータ
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
     public static CellData of(String address, String content) {
@@ -48,11 +48,11 @@ public interface CellData {
     }
     
     /**
-     * 新たな空のセルレプリカを生成します。<br>
+     * 新たな空のセルデータを生成します。<br>
      * 
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
-     * @return 新たな空のセルレプリカ
+     * @return 新たな空のセルデータ
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
     public static CellData empty(int row, int column) {
@@ -60,10 +60,10 @@ public interface CellData {
     }
     
     /**
-     * 新たな空のセルレプリカを生成します。<br>
+     * 新たな空のセルデータを生成します。<br>
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
-     * @return 新たな空のセルレプリカ
+     * @return 新たな空のセルデータ
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
     public static CellData empty(String address) {
@@ -72,8 +72,18 @@ public interface CellData {
     
     // [instance members] ******************************************************
     
+    /**
+     * 行インデックス（0開始）を返します。<br>
+     * 
+     * @return 行インデックス（0開始）
+     */
     int row();
     
+    /**
+     * 列インデックス（0開始）を返します。<br>
+     * 
+     * @return 列インデックス（0開始）
+     */
     int column();
     
     /**
@@ -85,31 +95,50 @@ public interface CellData {
         return CellsUtil.idxToAddress(row(), column());
     }
     
+    /**
+     * このセルデータがセルコメントを保持するか否かを返します。<br>
+     * 
+     * @return セルコメントを保持する場合は {@code true}
+     */
     boolean hasComment();
     
+    /**
+     * このセルデータにセルコメントを追加して出来るセルデータを新たに生成して返します。<br>
+     * 
+     * @param comment セルコメント
+     * @return 新たなセルデータ
+     */
     CellData addComment(String comment);
     
+    /**
+     * このセルデータと指定されたセルデータのセル内容が等価か否かを返します。<br>
+     * 
+     * @param cell 比較対象のセルデータ
+     * @return セル内容が等価な場合は {@code true}
+     */
     boolean contentEquals(CellData cell);
     
+    /**
+     * このセルデータと指定されたセルデータのセルコメントが等価か否かを返します。<br>
+     * 
+     * @param cell 比較対象のセルデータ
+     * @return セルコメントが等価な場合は {@code true}
+     */
     boolean commentEquals(CellData cell);
     
     /**
-     * {@code #row()}, {@code #column()} を除く属性について、
-     * このセルと指定されたセルの属性値が等しいかを返します。<br>
+     * このセルデータと指定されたセルデータのデータ内容（セル内容とセルコメント）が等価か否かを返します。<br>
      * 
-     * @param cell 比較対象のセル（{@code null} 許容）
-     * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
+     * @param cell 比較対象のセルデータ
+     * @return データ内容が等価な場合は {@code true}
      */
     boolean dataEquals(CellData cell);
     
     /**
-     * {@code #row()}, {@code #column()} を除く属性について、
-     * このセルと指定されたセルの属性値の大小関係を返します。<br>
+     * このセルデータと指定されたセルデータのデータ内容（セル内容とセルコメント）の大小関係を返します。<br>
      * 
-     * @param cell 比較対象のセル
-     * @return このセルの属性値が指定されたセルの属性値より
-     *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
-     * @throws NullPointerException {@code cell} が {@code null} の場合
+     * @param cell 比較対象のセルデータ
+     * @return このセルデータのデータ内容が小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
      */
     int dataCompareTo(CellData cell);
 }
