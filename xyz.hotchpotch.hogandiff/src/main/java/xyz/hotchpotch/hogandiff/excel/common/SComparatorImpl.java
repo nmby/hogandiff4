@@ -138,7 +138,7 @@ public class SComparatorImpl implements SComparator {
                 cell2 = itr2.next();
             }
             comp = comparator.compare(cell1, cell2);
-            if (comp == 0 && !CellsUtil.attrEquals(cell1, cell2)) {
+            if (comp == 0 && !cell1.dataEquals(cell2)) {
                 diff += 2;
             } else if (comp != 0) {
                 diff++;
@@ -275,8 +275,8 @@ public class SComparatorImpl implements SComparator {
         this.compareCellComments = compareCellComments;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(CellData::row, CellsUtil::attrCompare);
-            columnsMapper = mapper(CellData::column, CellsUtil::attrCompare);
+            rowsMapper = mapper(CellData::row, CellData::dataCompareTo);
+            columnsMapper = mapper(CellData::column, CellData::dataCompareTo);
         } else if (considerRowGaps) {
             rowsMapper = mapper(CellData::row, Comparator.comparingInt(CellData::column));
             columnsMapper = mapper(CellData::column);
@@ -380,7 +380,7 @@ public class SComparatorImpl implements SComparator {
                 CellData cell1 = map1.get(address1);
                 CellData cell2 = map2.get(address2);
                 
-                return CellsUtil.attrEquals(cell1, cell2)
+                return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
                         ? null
                         : Pair.<CellData> of(
                                 cell1 != null ? cell1 : CellData.empty(row1, column1),

@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,47 @@ import java.util.Objects;
         }
         
         return new CellStringData(row, column, content, comment);
+    }
+    
+    @Override
+    public boolean hasComment() {
+        return comment != null;
+    }
+    
+    @Override
+    public boolean contentEquals(CellData cell) {
+        if (cell instanceof CellStringData cd) {
+            return content.equals(cd.content);
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean commentEquals(CellData cell) {
+        if (cell instanceof CellStringData cd) {
+            return comment == null
+                    ? cd.comment == null
+                    : comment.equals(cd.comment);
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean dataEquals(CellData cell) {
+        if (cell instanceof CellStringData) {
+            return contentEquals(cell) && commentEquals(cell);
+        }
+        return false;
+    }
+    
+    @Override
+    public int dataCompareTo(CellData cell) {
+        if (cell instanceof CellStringData cd) {
+            return !contentEquals(cell)
+                    ? content.compareTo(cd.content)
+                    : Objects.compare(comment, cd.comment, Comparator.naturalOrder());
+        }
+        throw new IllegalArgumentException();
     }
     
     @Override

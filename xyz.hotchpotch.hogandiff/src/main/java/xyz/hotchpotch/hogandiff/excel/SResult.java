@@ -136,23 +136,23 @@ public record SResult(
         List<CellData> diffCellContents = !compareCellContents
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> !Objects.equals(p.a().content(), p.b().content()))
+                        .filter(p -> !p.a().contentEquals(p.b()))
                         .map(p -> p.get(side))
                         .toList();
         
         List<CellData> diffCellComments = !compareCellComments
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> p.a().comment() != null && p.b().comment() != null)
-                        .filter(p -> !Objects.equals(p.a().comment(), p.b().comment()))
+                        .filter(p -> p.a().hasComment() && p.b().hasComment())
+                        .filter(p -> !p.a().commentEquals(p.b()))
                         .map(p -> p.get(side))
                         .toList();
         
         List<CellData> redundantCellComments = !compareCellComments
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> p.get(side).comment() != null)
-                        .filter(p -> p.get(side.opposite()).comment() == null)
+                        .filter(p -> p.get(side).hasComment())
+                        .filter(p -> !p.get(side.opposite()).hasComment())
                         .map(p -> p.get(side))
                         .toList();
         

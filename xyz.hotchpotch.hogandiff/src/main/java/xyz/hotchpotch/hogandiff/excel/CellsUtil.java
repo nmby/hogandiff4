@@ -76,32 +76,6 @@ public class CellsUtil {
         return ca.getColumn();
     }
     
-    /**
-     * 指定された2つのセルの {@code #row()}, {@code #column()} を除く属性値が等しいかを返します。<br>
-     * 
-     * @param cell1 比較対象のセル1（{@code null} 許容）
-     * @param cell2 比較対象のセル2（{@code null} 許容）
-     * @return {@code cell1}, {@code cell2} が同一か属性値が等しい場合は {@code true}
-     */
-    public static boolean attrEquals(CellData cell1, CellData cell2) {
-        return cell1 == cell2 || (cell1 != null && cell1.dataEquals(cell2));
-    }
-    
-    /**
-     * 指定された2つのセルの {@code #row()}, {@code #column()} を除く属性値の大小関係を返します。<br>
-     * 
-     * @param cell1 比較対象のセル1
-     * @param cell2 比較対象のセル2
-     * @return セル1の属性値がセル2の属性値より小さい場合は負の整数、等しい場合は0、大きい場合は正の整数
-     * @throws NullPointerException {@code cell1}, {@code cell2} のいずれかが {@code null} の場合
-     */
-    public static int attrCompare(CellData cell1, CellData cell2) {
-        Objects.requireNonNull(cell1, "cell1");
-        Objects.requireNonNull(cell2, "cell2");
-        
-        return cell1.dataCompareTo(cell2);
-    }
-    
     // [instance members] ******************************************************
     
     private CellsUtil() {

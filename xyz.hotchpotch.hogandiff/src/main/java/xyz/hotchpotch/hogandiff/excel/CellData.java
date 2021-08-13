@@ -85,11 +85,13 @@ public interface CellData {
         return CellsUtil.idxToAddress(row(), column());
     }
     
-    String content();
-    
-    String comment();
+    boolean hasComment();
     
     CellData addComment(String comment);
+    
+    boolean contentEquals(CellData cell);
+    
+    boolean commentEquals(CellData cell);
     
     /**
      * {@code #row()}, {@code #column()} を除く属性について、
@@ -98,11 +100,7 @@ public interface CellData {
      * @param cell 比較対象のセル（{@code null} 許容）
      * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
      */
-    default boolean dataEquals(CellData cell) {
-        return cell != null
-                && Objects.equals(content(), cell.content())
-                && Objects.equals(comment(), cell.comment());
-    }
+    boolean dataEquals(CellData cell);
     
     /**
      * {@code #row()}, {@code #column()} を除く属性について、
@@ -113,13 +111,5 @@ public interface CellData {
      *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
-    default int dataCompareTo(CellData cell) {
-        Objects.requireNonNull(cell, "cell");
-        
-        return !content().equals(cell.content())
-                ? content().compareTo(cell.content())
-                : comment() != null && cell.comment() != null
-                        ? comment().compareTo(cell.comment())
-                        : 0;
-    }
+    int dataCompareTo(CellData cell);
 }
