@@ -19,17 +19,25 @@ public interface CellData {
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @param content セル内容
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新たなセルデータ
      * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellData of(int row, int column, String content) {
+    public static CellData of(
+            int row,
+            int column,
+            String content,
+            boolean saveMemory) {
+        
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellStringData(row, column, content, null);
+        return saveMemory
+                ? new CellHashData(row, column, content.hashCode(), 0)
+                : new CellStringData(row, column, content, null);
     }
     
     /**
@@ -37,14 +45,19 @@ public interface CellData {
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
      * @param content セル内容
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新たなセルデータ
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
-    public static CellData of(String address, String content) {
+    public static CellData of(
+            String address,
+            String content,
+            boolean saveMemory) {
+        
         Objects.requireNonNull(address, "address");
         
         Pair<Integer> idx = CellsUtil.addressToIdx(address);
-        return CellData.of(idx.a(), idx.b(), content);
+        return CellData.of(idx.a(), idx.b(), content, saveMemory);
     }
     
     /**
@@ -52,22 +65,31 @@ public interface CellData {
      * 
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新たな空のセルデータ
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellData empty(int row, int column) {
-        return CellData.of(row, column, "");
+    public static CellData empty(
+            int row,
+            int column,
+            boolean saveMemory) {
+        
+        return CellData.of(row, column, "", saveMemory);
     }
     
     /**
      * 新たな空のセルデータを生成します。<br>
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新たな空のセルデータ
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
-    public static CellData empty(String address) {
-        return CellData.of(address, "");
+    public static CellData empty(
+            String address,
+            boolean saveMemory) {
+        
+        return CellData.of(address, "", saveMemory);
     }
     
     // [instance members] ******************************************************

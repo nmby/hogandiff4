@@ -239,19 +239,22 @@ public class SComparatorImpl implements SComparator {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param compareCellContents 比較においてセル内容を比較する場合は {@code true}
      * @param compareCellComments 比較においてセルコメントを比較する場合は {@code true}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
     public static SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean compareCellContents,
-            boolean compareCellComments) {
+            boolean compareCellComments,
+            boolean saveMemory) {
         
         return new SComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
                 compareCellContents,
-                compareCellComments);
+                compareCellComments,
+                saveMemory);
     }
     
     // [instance members] ******************************************************
@@ -260,6 +263,7 @@ public class SComparatorImpl implements SComparator {
     private final boolean considerColumnGaps;
     private final boolean compareCellContents;
     private final boolean compareCellComments;
+    private final boolean saveMemory;
     private final Mapper rowsMapper;
     private final Mapper columnsMapper;
     
@@ -267,12 +271,14 @@ public class SComparatorImpl implements SComparator {
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean compareCellContents,
-            boolean compareCellComments) {
+            boolean compareCellComments,
+            boolean saveMemory) {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
         this.compareCellContents = compareCellContents;
         this.compareCellComments = compareCellComments;
+        this.saveMemory = saveMemory;
         
         if (considerRowGaps && considerColumnGaps) {
             rowsMapper = mapper(CellData::row, CellData::dataCompareTo);
@@ -383,8 +389,8 @@ public class SComparatorImpl implements SComparator {
                 return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
                         ? null
                         : Pair.<CellData> of(
-                                cell1 != null ? cell1 : CellData.empty(row1, column1),
-                                cell2 != null ? cell2 : CellData.empty(row2, column2));
+                                cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
+                                cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
             });
         }).filter(Objects::nonNull).toList();
     }

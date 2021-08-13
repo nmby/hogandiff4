@@ -15,11 +15,11 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
-class XSSFSheetLoaderWithSaxTest {
+class XSSFSheetLoaderWithSaxTestSaveMemory {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
+    private static final boolean saveMemory = true;
     
     private static Path test1_xls;
     private static Path test1_xlsb;
@@ -31,13 +31,13 @@ class XSSFSheetLoaderWithSaxTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
-        test2_xlsm = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
-        test3_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI());
-        test4_xlsx = Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI());
+        test1_xls = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsx").toURI());
+        test2_xlsm = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test2_passwordAAA.xlsm").toURI());
+        test3_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test3.xlsx").toURI());
+        test4_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test4.xlsx").toURI());
     }
     
     // [instance members] ******************************************************

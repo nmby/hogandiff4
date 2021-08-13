@@ -94,6 +94,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         // [instance members] --------------------------------------------------
         
         private final boolean extractCachedValue;
+        private final boolean saveMemory;
         private final List<String> sst;
         
         private final Deque<String> qNames = new ArrayDeque<>();
@@ -105,11 +106,13 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         private Handler1(
                 boolean extractCachedValue,
+                boolean saveMemory,
                 List<String> sst) {
             
             assert sst != null;
             
             this.extractCachedValue = extractCachedValue;
+            this.saveMemory = saveMemory;
             this.sst = sst;
         }
         
@@ -178,7 +181,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellData.of(address, value));
+                    cells.add(CellData.of(address, value, saveMemory));
                 }
                 
                 qNames.removeFirst();
@@ -197,16 +200,18 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         private final Set<CellData> cells;
         private final Map<String, CellData> cellsMap;
+        private final boolean saveMemory;
         
         private String address;
         private StringBuilder comment;
         
-        private Handler2(Set<CellData> cells) {
+        private Handler2(Set<CellData> cells, boolean saveMemory) {
             assert cells != null;
             
             this.cells = cells;
             this.cellsMap = cells.parallelStream()
                     .collect(Collectors.toMap(CellData::address, Function.identity()));
+            this.saveMemory = saveMemory;
         }
         
         @Override
@@ -234,7 +239,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     cells.remove(original);
                     cells.add(original.addComment(comment.toString()));
                 } else {
-                    cells.add(CellData.of(address, "").addComment(comment.toString()));
+                    cells.add(CellData.of(address, "", saveMemory).addComment(comment.toString()));
                 }
                 
                 address = null;
@@ -251,6 +256,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @param bookPath Excelブックのパス
      * @return 新しいローダー
      * @throws NullPointerException
@@ -265,6 +271,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,
+            boolean saveMemory,
             Path bookPath)
             throws ExcelHandlingException {
         
@@ -277,6 +284,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 extractContents,
                 extractComments,
                 extractCachedValue,
+                saveMemory,
                 bookPath);
     }
     
@@ -285,6 +293,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     private final boolean extractContents;
     private final boolean extractComments;
     private final boolean extractCachedValue;
+    private final boolean saveMemory;
     private final Path bookPath;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
@@ -293,6 +302,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,
+            boolean saveMemory,
             Path bookPath)
             throws ExcelHandlingException {
         
@@ -302,6 +312,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         this.extractContents = extractContents;
         this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
+        this.saveMemory = saveMemory;
         this.bookPath = bookPath;
         this.nameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(
@@ -362,7 +373,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             Set<CellData> cells = null;
             
             if (extractContents) {
-                Handler1 handler1 = new Handler1(extractCachedValue, sst);
+                Handler1 handler1 = new Handler1(extractCachedValue, saveMemory, sst);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
                     parser.parse(is, handler1);
                 }
@@ -372,7 +383,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             }
             
             if (extractComments && info.commentSource() != null) {
-                Handler2 handler2 = new Handler2(cells);
+                Handler2 handler2 = new Handler2(cells, saveMemory);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
                     parser.parse(is, handler2);
                 }

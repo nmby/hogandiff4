@@ -17,7 +17,9 @@ class CombinedSheetLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final CellData cell1 = CellData.of(1, 2, "success");
+    private static final boolean saveMemory = false;
+    
+    private static final CellData cell1 = CellData.of(1, 2, "success", saveMemory);
     
     private static final SheetLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
     

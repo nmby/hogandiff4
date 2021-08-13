@@ -43,6 +43,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
      * 
      * @param extractContents セル内容を抽出する場合は {@code true}
      * @param extractComments セルコメントを抽出する場合は {@code true}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @param converter セル変換関数
      * @return 新しいローダー
      * @throws NullPointerException {@code extractContents} が {@code true}
@@ -53,6 +54,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     public static SheetLoader of(
             boolean extractContents,
             boolean extractComments,
+            boolean saveMemory,
             Function<Cell, CellData> converter) {
         
         if (extractContents) {
@@ -61,24 +63,31 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             throw new IllegalArgumentException("unnecessary converter.");
         }
         
-        return new SheetLoaderWithPoiUserApi(extractContents, extractComments, converter);
+        return new SheetLoaderWithPoiUserApi(
+                extractContents,
+                extractComments,
+                saveMemory,
+                converter);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractContents;
     private final boolean extractComments;
+    private final boolean saveMemory;
     private final Function<Cell, CellData> converter;
     
     private SheetLoaderWithPoiUserApi(
             boolean extractContents,
             boolean extractComments,
+            boolean saveMemory,
             Function<Cell, CellData> converter) {
         
         assert !extractContents || converter != null;
         
         this.extractContents = extractContents;
         this.extractComments = extractComments;
+        this.saveMemory = saveMemory;
         this.converter = converter;
     }
     
@@ -144,7 +153,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                         cells.remove(original);
                         cells.add(original.addComment(comment));
                     } else {
-                        cells.add(CellData.of(address, "").addComment(comment));
+                        cells.add(CellData.of(address, "", saveMemory).addComment(comment));
                     }
                 });
             }

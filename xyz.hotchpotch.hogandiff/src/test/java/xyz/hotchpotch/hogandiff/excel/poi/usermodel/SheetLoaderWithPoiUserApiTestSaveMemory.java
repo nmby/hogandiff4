@@ -15,11 +15,11 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
-class SheetLoaderWithPoiUserApiTest {
+class SheetLoaderWithPoiUserApiTestSaveMemory {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
+    private static final boolean saveMemory = true;
     
     private static final Function<Cell, CellData> converter = cell -> CellData.of(
             cell.getRowIndex(),
@@ -38,14 +38,14 @@ class SheetLoaderWithPoiUserApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-        test4_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI());
-        test4_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI());
+        test1_xls = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test2_passwordAAA.xlsx").toURI());
+        test4_xls = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test4.xls").toURI());
+        test4_xlsx = Path.of(SheetLoaderWithPoiUserApiTestSaveMemory.class.getResource("Test4.xlsx").toURI());
     }
     
     // [instance members] ******************************************************

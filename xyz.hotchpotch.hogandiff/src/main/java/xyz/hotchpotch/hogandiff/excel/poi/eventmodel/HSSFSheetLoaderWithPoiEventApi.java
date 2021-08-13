@@ -100,6 +100,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         private final boolean extractContents;
         private final boolean extractComments;
         private final boolean extractCachedValue;
+        private final boolean saveMemory;
         private final Map<String, CellData> cells = new HashMap<>();
         private final Map<Integer, String> comments = new HashMap<>();
         
@@ -114,7 +115,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 String sheetName,
                 boolean extractContents,
                 boolean extractComments,
-                boolean extractCachedValue) {
+                boolean extractCachedValue,
+                boolean saveMemory) {
             
             assert sheetName != null;
             assert extractContents || extractComments;
@@ -123,6 +125,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             this.extractContents = extractContents;
             this.extractComments = extractComments;
             this.extractCachedValue = extractCachedValue;
+            this.saveMemory = saveMemory;
         }
         
         /**
@@ -323,7 +326,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellData.of(
                                         cellRec.getRow(),
                                         cellRec.getColumn(),
-                                        value));
+                                        value,
+                                        saveMemory));
                     }
                     
                 } else if (record instanceof StringRecord sRec) {
@@ -340,7 +344,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellData.of(
                                         prevFormulaRec.getRow(),
                                         prevFormulaRec.getColumn(),
-                                        sRec.getString()));
+                                        sRec.getString(),
+                                        saveMemory));
                     }
                     prevFormulaRec = null;
                 }
@@ -383,7 +388,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                         CellData original = cells.get(address);
                         cells.put(address, original.addComment(comment));
                     } else {
-                        cells.put(address, CellData.of(address, "").addComment(comment));
+                        cells.put(address, CellData.of(address, "", saveMemory).addComment(comment));
                     }
                     break;
                 }
@@ -460,14 +465,20 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいローダー
      */
     public static SheetLoader of(
             boolean extractContents,
             boolean extractComments,
-            boolean extractCachedValue) {
+            boolean extractCachedValue,
+            boolean saveMemory) {
         
-        return new HSSFSheetLoaderWithPoiEventApi(extractContents, extractComments, extractCachedValue);
+        return new HSSFSheetLoaderWithPoiEventApi(
+                extractContents,
+                extractComments,
+                extractCachedValue,
+                saveMemory);
     }
     
     // [instance members] ******************************************************
@@ -475,15 +486,18 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     private final boolean extractContents;
     private final boolean extractComments;
     private final boolean extractCachedValue;
+    private final boolean saveMemory;
     
     private HSSFSheetLoaderWithPoiEventApi(
             boolean extractContents,
             boolean extractComments,
-            boolean extractCachedValue) {
+            boolean extractCachedValue,
+            boolean saveMemory) {
         
         this.extractContents = extractContents;
         this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
+        this.saveMemory = saveMemory;
     }
     
     /**
@@ -518,7 +532,11 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             
             HSSFRequest req = new HSSFRequest();
             Listener1 listener1 = new Listener1(
-                    sheetName, extractContents, extractComments, extractCachedValue);
+                    sheetName,
+                    extractContents,
+                    extractComments,
+                    extractCachedValue,
+                    saveMemory);
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
