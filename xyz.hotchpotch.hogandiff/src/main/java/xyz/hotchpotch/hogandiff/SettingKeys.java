@@ -239,6 +239,14 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
+    /** 実行オプション：省メモリモードで比較するか */
+    public static final Key<Boolean> SAVE_MEMORY = new Key<>(
+            "application.execution.saveMemory",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが
     // 保証されないということなので、一応 Set#copyOf でラップしておく。

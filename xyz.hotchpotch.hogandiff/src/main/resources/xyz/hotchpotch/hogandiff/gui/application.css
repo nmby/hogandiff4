@@ -44,22 +44,22 @@
 }
 
 .paneSaveSettings {
-	-fx-padding: 12.0px 15.0px 12.0px 25.0px;
+	-fx-padding: 13.0px 15.0px 13.0px 25.0px;
 	-fx-background-color: rgb(230.0, 240.0, 255.0);
 }
 
 #saveSettingsButton {
 	-fx-pref-width: 100.0px;
-	-fx-pref-height: 45.0px;
+	-fx-pref-height: 50.0px;
 }
 
 .paneExecute {
-	-fx-padding: 12.0px 15.0px 5.0px 15.0px;
+	-fx-padding: 13.0px 15.0px 5.0px 15.0px;
 	-fx-background-color: rgb(255.0, 200.0, 200.0);
 }
 
 #executeButton {
-	-fx-font-size: 18.0px;
+	-fx-font-size: 20.0px;
 	-fx-pref-width: 100.0px;
 }
 

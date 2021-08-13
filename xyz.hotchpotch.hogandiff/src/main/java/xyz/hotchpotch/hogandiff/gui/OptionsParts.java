@@ -52,6 +52,9 @@ public class OptionsParts extends VBox implements ChildController {
     @FXML
     private CheckBox exitWhenFinishedCheckBox;
     
+    @FXML
+    private CheckBox saveMemoryCheckBox;
+    
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
         loader.setRoot(this);
@@ -72,6 +75,7 @@ public class OptionsParts extends VBox implements ChildController {
         showPaintedSheetsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        saveMemoryCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         
         // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
         compareOnValueRadioButton.disableProperty().bind(
@@ -98,6 +102,7 @@ public class OptionsParts extends VBox implements ChildController {
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
+        applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
     }
     
     @Override
@@ -112,5 +117,6 @@ public class OptionsParts extends VBox implements ChildController {
         builder.set(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox.isSelected());
         builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());
         builder.set(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox.isSelected());
+        builder.set(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox.isSelected());
     }
 }
