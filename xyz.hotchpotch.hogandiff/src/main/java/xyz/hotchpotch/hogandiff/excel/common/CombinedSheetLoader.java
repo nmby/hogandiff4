@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
@@ -72,7 +72,7 @@ public class CombinedSheetLoader implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");

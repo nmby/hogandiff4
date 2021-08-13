@@ -121,16 +121,17 @@ public class Factory {
                 || settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
-        Function<Cell, CellReplica> converter = cell -> {
+        Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return "".equals(content)
                     ? null
-                    : CellReplica.of(
+                    : CellData.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,
-                            null);
+                            saveMemory);
         };
         
         BookType bookType = BookType.of(bookPath);
@@ -138,17 +139,30 @@ public class Factory {
         case XLS:
             return CombinedSheetLoader.of(List.of(
                     () -> HSSFSheetLoaderWithPoiEventApi.of(
-                            extractContents, extractComments, useCachedValue),
+                            extractContents,
+                            extractComments,
+                            useCachedValue,
+                            saveMemory),
                     () -> SheetLoaderWithPoiUserApi.of(
-                            extractContents, extractComments, converter)));
+                            extractContents,
+                            extractComments,
+                            saveMemory,
+                            converter)));
         
         case XLSX:
         case XLSM:
             return CombinedSheetLoader.of(List.of(
                     () -> XSSFSheetLoaderWithSax.of(
-                            extractContents, extractComments, useCachedValue, bookPath),
+                            extractContents,
+                            extractComments,
+                            useCachedValue,
+                            saveMemory,
+                            bookPath),
                     () -> SheetLoaderWithPoiUserApi.of(
-                            extractContents, extractComments, converter)));
+                            extractContents,
+                            extractComments,
+                            saveMemory,
+                            converter)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
@@ -173,12 +187,14 @@ public class Factory {
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean compareCellContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS);
         boolean compareCellComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
+        boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
         return SComparatorImpl.of(
                 considerRowGaps,
                 considerColumnGaps,
                 compareCellContents,
-                compareCellComments);
+                compareCellComments,
+                saveMemory);
     }
     
     /**

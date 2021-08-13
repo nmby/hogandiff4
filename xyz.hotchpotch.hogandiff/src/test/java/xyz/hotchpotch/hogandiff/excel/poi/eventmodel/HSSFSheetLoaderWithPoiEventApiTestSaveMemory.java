@@ -15,11 +15,11 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
-class HSSFSheetLoaderWithPoiEventApiTest {
+class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
+    private static final boolean saveMemory = true;
     
     private static Path test1_xls;
     private static Path test1_xlsb;
@@ -32,14 +32,14 @@ class HSSFSheetLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-        test3_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
-        test5_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
+        test1_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test2_passwordAAA.xlsx").toURI());
+        test3_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test3.xls").toURI());
+        test5_xls = Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test5.xls").toURI());
     }
     
     // [instance members] ******************************************************

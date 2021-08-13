@@ -94,12 +94,18 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
          </rowConstraints>
          <children>
-            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="実行オプション" />
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="実行オプション" GridPane.rowSpan="2" />
             <CheckBox fx:id="exitWhenFinishedCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="比較完了時にこのアプリを終了する" GridPane.columnIndex="1">
                <GridPane.margin>
-                  <Insets bottom="3.0" left="7.0" right="7.0" top="3.0" />
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
+               </GridPane.margin>
+            </CheckBox>
+            <CheckBox fx:id="saveMemoryCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="省メモリモード" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
                </GridPane.margin>
             </CheckBox>
          </children>

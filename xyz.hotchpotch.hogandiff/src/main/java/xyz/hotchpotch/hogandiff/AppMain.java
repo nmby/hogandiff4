@@ -98,9 +98,9 @@ public class AppMain extends Application {
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("方眼Diff  -  " + VERSION);
-        primaryStage.setScene(new Scene(root, 500, 450));
+        primaryStage.setScene(new Scene(root, 500, 464));
         primaryStage.setMinWidth(500);
-        primaryStage.setMinHeight(450);
+        primaryStage.setMinHeight(464);
         
         MainController controller = loader.getController();
         Settings settings = arrangeSettings();
