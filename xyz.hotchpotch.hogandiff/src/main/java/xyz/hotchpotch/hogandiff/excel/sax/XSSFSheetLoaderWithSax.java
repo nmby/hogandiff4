@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -94,22 +94,25 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         // [instance members] --------------------------------------------------
         
         private final boolean extractCachedValue;
+        private final boolean saveMemory;
         private final List<String> sst;
         
         private final Deque<String> qNames = new ArrayDeque<>();
         private final Map<String, StringBuilder> texts = new HashMap<>();
-        private final Set<CellReplica> cells = new HashSet<>();
+        private final Set<CellData> cells = new HashSet<>();
         
         private XSSFCellType type;
         private String address;
         
         private Handler1(
                 boolean extractCachedValue,
+                boolean saveMemory,
                 List<String> sst) {
             
             assert sst != null;
             
             this.extractCachedValue = extractCachedValue;
+            this.saveMemory = saveMemory;
             this.sst = sst;
         }
         
@@ -178,7 +181,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellReplica.of(address, value, null));
+                    cells.add(CellData.of(address, value, saveMemory));
                 }
                 
                 qNames.removeFirst();
@@ -195,18 +198,20 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         // [instance members] --------------------------------------------------
         
-        private final Set<CellReplica> cells;
-        private final Map<String, CellReplica> cellsMap;
+        private final Set<CellData> cells;
+        private final Map<String, CellData> cellsMap;
+        private final boolean saveMemory;
         
         private String address;
         private StringBuilder comment;
         
-        private Handler2(Set<CellReplica> cells) {
+        private Handler2(Set<CellData> cells, boolean saveMemory) {
             assert cells != null;
             
             this.cells = cells;
             this.cellsMap = cells.parallelStream()
-                    .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+                    .collect(Collectors.toMap(CellData::address, Function.identity()));
+            this.saveMemory = saveMemory;
         }
         
         @Override
@@ -230,15 +235,11 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         public void endElement(String uri, String localName, String qName) {
             if ("comment".equals(qName)) {
                 if (cellsMap.containsKey(address)) {
-                    CellReplica original = cellsMap.get(address);
+                    CellData original = cellsMap.get(address);
                     cells.remove(original);
-                    cells.add(CellReplica.of(
-                            original.row(),
-                            original.column(),
-                            original.content(),
-                            comment.toString()));
+                    cells.add(original.addComment(comment.toString()));
                 } else {
-                    cells.add(CellReplica.of(address, "", comment.toString()));
+                    cells.add(CellData.of(address, "", saveMemory).addComment(comment.toString()));
                 }
                 
                 address = null;
@@ -255,6 +256,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @param bookPath Excelブックのパス
      * @return 新しいローダー
      * @throws NullPointerException
@@ -269,6 +271,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,
+            boolean saveMemory,
             Path bookPath)
             throws ExcelHandlingException {
         
@@ -281,6 +284,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 extractContents,
                 extractComments,
                 extractCachedValue,
+                saveMemory,
                 bookPath);
     }
     
@@ -289,6 +293,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     private final boolean extractContents;
     private final boolean extractComments;
     private final boolean extractCachedValue;
+    private final boolean saveMemory;
     private final Path bookPath;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
@@ -297,6 +302,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             boolean extractContents,
             boolean extractComments,
             boolean extractCachedValue,
+            boolean saveMemory,
             Path bookPath)
             throws ExcelHandlingException {
         
@@ -306,6 +312,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         this.extractContents = extractContents;
         this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
+        this.saveMemory = saveMemory;
         this.bookPath = bookPath;
         this.nameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
                 .collect(Collectors.toMap(
@@ -334,7 +341,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellReplica> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(Path bookPath, String sheetName)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(bookPath, "bookPath");
@@ -363,10 +370,10 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            Set<CellReplica> cells = null;
+            Set<CellData> cells = null;
             
             if (extractContents) {
-                Handler1 handler1 = new Handler1(extractCachedValue, sst);
+                Handler1 handler1 = new Handler1(extractCachedValue, saveMemory, sst);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
                     parser.parse(is, handler1);
                 }
@@ -376,7 +383,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             }
             
             if (extractComments && info.commentSource() != null) {
-                Handler2 handler2 = new Handler2(cells);
+                Handler2 handler2 = new Handler2(cells, saveMemory);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
                     parser.parse(is, handler2);
                 }

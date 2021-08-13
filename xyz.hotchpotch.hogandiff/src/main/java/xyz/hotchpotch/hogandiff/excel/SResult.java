@@ -20,7 +20,7 @@ public record SResult(
         boolean compareCellComments,
         Pair<List<Integer>> redundantRows,
         Pair<List<Integer>> redundantColumns,
-        List<Pair<CellReplica>> diffCells) {
+        List<Pair<CellData>> diffCells) {
     
     // [static members] ********************************************************
     
@@ -34,9 +34,9 @@ public record SResult(
     public static record Piece(
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
-            List<CellReplica> diffCellContents,
-            List<CellReplica> diffCellComments,
-            List<CellReplica> redundantCellComments) {
+            List<CellData> diffCellContents,
+            List<CellData> diffCellComments,
+            List<CellData> redundantCellComments) {
         
         // [static members] ----------------------------------------------------
         
@@ -133,26 +133,26 @@ public record SResult(
     public Piece getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
-        List<CellReplica> diffCellContents = !compareCellContents
+        List<CellData> diffCellContents = !compareCellContents
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> !Objects.equals(p.a().content(), p.b().content()))
+                        .filter(p -> !p.a().contentEquals(p.b()))
                         .map(p -> p.get(side))
                         .toList();
         
-        List<CellReplica> diffCellComments = !compareCellComments
+        List<CellData> diffCellComments = !compareCellComments
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> p.a().comment() != null && p.b().comment() != null)
-                        .filter(p -> !Objects.equals(p.a().comment(), p.b().comment()))
+                        .filter(p -> p.a().hasComment() && p.b().hasComment())
+                        .filter(p -> !p.a().commentEquals(p.b()))
                         .map(p -> p.get(side))
                         .toList();
         
-        List<CellReplica> redundantCellComments = !compareCellComments
+        List<CellData> redundantCellComments = !compareCellComments
                 ? List.of()
                 : diffCells.stream()
-                        .filter(p -> p.get(side).comment() != null)
-                        .filter(p -> p.get(side.opposite()).comment() == null)
+                        .filter(p -> p.get(side).hasComment())
+                        .filter(p -> !p.get(side.opposite()).hasComment())
                         .map(p -> p.get(side))
                         .toList();
         
@@ -240,7 +240,7 @@ public record SResult(
                     str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
                     cols.forEach(column -> str
                             .append("    ")
-                            .append(CellReplica.columnIdxToStr(column))
+                            .append(CellsUtil.columnIdxToStr(column))
                             .append("列").append(BR));
                 }
             }
@@ -292,7 +292,7 @@ public record SResult(
             str.append("Column Gaps :").append(BR);
             
             Function<List<Integer>, String> columnsToStr = columns -> columns.stream()
-                    .map(CellReplica::columnIdxToStr)
+                    .map(CellsUtil::columnIdxToStr)
                     .collect(Collectors.joining(", "));
             
             if (!redundantColumns.a().isEmpty()) {

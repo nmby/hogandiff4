@@ -69,6 +69,7 @@ public class UtilPane extends HBox implements ChildController {
                 Desktop.getDesktop().open(workDir.toFile());
                 
             } catch (Exception e) {
+                e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
                         "作業用フォルダの表示に失敗しました。\n" + workDir,
@@ -120,6 +121,7 @@ public class UtilPane extends HBox implements ChildController {
                     try {
                         Files.createDirectory(newPath);
                     } catch (IOException e) {
+                        e.printStackTrace();
                         new Alert(
                                 AlertType.WARNING,
                                 "作業用フォルダの変更に失敗しました。\n" + newPath,
@@ -144,6 +146,7 @@ public class UtilPane extends HBox implements ChildController {
                 Desktop.getDesktop().browse(URI.create(AppMain.WEB_URL));
                 
             } catch (Exception e) {
+                e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
                         "Webページの表示に失敗しました。ご利用のブラウザでお試しください。\n"

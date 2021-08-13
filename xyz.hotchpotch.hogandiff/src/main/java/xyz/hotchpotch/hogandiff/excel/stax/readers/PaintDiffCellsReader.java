@@ -21,7 +21,8 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
@@ -41,7 +42,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
     
-    private static final Comparator<CellReplica> cellSorter = (c1, c2) -> {
+    private static final Comparator<CellData> cellSorter = (c1, c2) -> {
         if (c1.row() != c2.row()) {
             return c1.row() < c2.row() ? -1 : 1;
         }
@@ -63,7 +64,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCellContents,
+            List<CellData> diffCellContents,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
@@ -88,7 +89,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     private PaintDiffCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<CellReplica> diffCellContents,
+            List<CellData> diffCellContents,
             short colorIdx) {
         
         super(source);
@@ -100,9 +101,9 @@ public class PaintDiffCellsReader extends BufferingReader {
         this.diffAddresses = diffCellContents.stream()
                 .sorted(cellSorter)
                 .collect(Collectors.groupingBy(
-                        CellReplica::row,
+                        CellData::row,
                         Collectors.mapping(
-                                CellReplica::address,
+                                CellData::address,
                                 Collectors.toCollection(ArrayDeque::new))));
         this.targetRows = diffAddresses.keySet().stream()
                 .sorted()
@@ -157,9 +158,9 @@ public class PaintDiffCellsReader extends BufferingReader {
         String addr = addrs.poll();
         
         while (nextC != null && addr != null) {
-            int sourceColumn = CellReplica.addressToIdx(
+            int sourceColumn = CellsUtil.addressToIdx(
                     nextC.peek().asStartElement().getAttributeByName(NONS_QNAME.R).getValue()).b();
-            int targetColumn = CellReplica.addressToIdx(addr).b();
+            int targetColumn = CellsUtil.addressToIdx(addr).b();
             
             if (targetColumn < sourceColumn) {
                 createCell(addr);

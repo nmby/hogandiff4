@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
@@ -19,11 +19,13 @@ class SheetLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static final Function<Cell, CellReplica> converter = cell -> CellReplica.of(
+    private static final boolean saveMemory = false;
+    
+    private static final Function<Cell, CellData> converter = cell -> CellData.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
             PoiUtil.getCellContentAsString(cell, false),
-            null);
+            saveMemory);
     
     private static Path test1_xls;
     private static Path test1_xlsb;
@@ -52,31 +54,31 @@ class SheetLoaderWithPoiUserApiTest {
     void testOf() {
         assertThrows(
                 NullPointerException.class,
-                () -> SheetLoaderWithPoiUserApi.of(true, true, null));
+                () -> SheetLoaderWithPoiUserApi.of(true, true, saveMemory, null));
         assertThrows(
                 NullPointerException.class,
-                () -> SheetLoaderWithPoiUserApi.of(true, false, null));
+                () -> SheetLoaderWithPoiUserApi.of(true, false, saveMemory, null));
         
         assertThrows(
                 IllegalArgumentException.class,
-                () -> SheetLoaderWithPoiUserApi.of(false, true, converter));
+                () -> SheetLoaderWithPoiUserApi.of(false, true, saveMemory, converter));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> SheetLoaderWithPoiUserApi.of(false, false, converter));
+                () -> SheetLoaderWithPoiUserApi.of(false, false, saveMemory, converter));
         
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(true, true, converter) instanceof SheetLoaderWithPoiUserApi);
+                SheetLoaderWithPoiUserApi.of(true, true, saveMemory, converter) instanceof SheetLoaderWithPoiUserApi);
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(true, false, converter) instanceof SheetLoaderWithPoiUserApi);
+                SheetLoaderWithPoiUserApi.of(true, false, saveMemory, converter) instanceof SheetLoaderWithPoiUserApi);
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(false, true, null) instanceof SheetLoaderWithPoiUserApi);
+                SheetLoaderWithPoiUserApi.of(false, true, saveMemory, null) instanceof SheetLoaderWithPoiUserApi);
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(false, false, null) instanceof SheetLoaderWithPoiUserApi);
+                SheetLoaderWithPoiUserApi.of(false, false, saveMemory, null) instanceof SheetLoaderWithPoiUserApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(true, true, converter);
+        SheetLoader testee = SheetLoaderWithPoiUserApi.of(true, true, saveMemory, converter);
         
         // 対照群
         assertDoesNotThrow(
@@ -105,7 +107,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(true, true, converter);
+        SheetLoader testee = SheetLoaderWithPoiUserApi.of(true, true, saveMemory, converter);
         
         // 存在しないファイル
         assertThrows(
@@ -147,38 +149,38 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, true, converter);
-        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(true, false, converter);
+        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, true, saveMemory, converter);
+        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(true, false, saveMemory, converter);
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。", null),
-                        CellReplica.of(2, 1, "X", null),
-                        CellReplica.of(3, 1, "Y", null),
-                        CellReplica.of(4, 1, "Z", null),
-                        CellReplica.of(2, 2, "90", null),
-                        CellReplica.of(3, 2, "20", null),
-                        CellReplica.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
+                        CellData.of(2, 1, "X", saveMemory),
+                        CellData.of(3, 1, "Y", saveMemory),
+                        CellData.of(4, 1, "Z", saveMemory),
+                        CellData.of(2, 2, "90", saveMemory),
+                        CellData.of(3, 2, "20", saveMemory),
+                        CellData.of(4, 2, "60", saveMemory)),
                 testee1.loadCells(test1_xls, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。", null),
-                        CellReplica.of(2, 1, "X", null),
-                        CellReplica.of(3, 1, "Y", null),
-                        CellReplica.of(4, 1, "Z", null),
-                        CellReplica.of(2, 2, "90", null),
-                        CellReplica.of(3, 2, "20", null),
-                        CellReplica.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
+                        CellData.of(2, 1, "X", saveMemory),
+                        CellData.of(3, 1, "Y", saveMemory),
+                        CellData.of(4, 1, "Z", saveMemory),
+                        CellData.of(2, 2, "90", saveMemory),
+                        CellData.of(3, 2, "20", saveMemory),
+                        CellData.of(4, 2, "60", saveMemory)),
                 testee1.loadCells(test1_xlsx, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellReplica.of(0, 0, "これはワークシートです。", null),
-                        CellReplica.of(2, 1, "X", null),
-                        CellReplica.of(3, 1, "Y", null),
-                        CellReplica.of(4, 1, "Z", null),
-                        CellReplica.of(2, 2, "90", null),
-                        CellReplica.of(3, 2, "20", null),
-                        CellReplica.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
+                        CellData.of(2, 1, "X", saveMemory),
+                        CellData.of(3, 1, "Y", saveMemory),
+                        CellData.of(4, 1, "Z", saveMemory),
+                        CellData.of(2, 2, "90", saveMemory),
+                        CellData.of(3, 2, "20", saveMemory),
+                        CellData.of(4, 2, "60", saveMemory)),
                 testee1.loadCells(test1_xlsm, "A1_ワークシート"));
         
         assertEquals(
@@ -194,8 +196,8 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_セル内容抽出2() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(false, true, null);
-        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, false, null);
+        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(false, true, saveMemory, null);
+        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, false, saveMemory, null);
         
         assertEquals(
                 Set.of(),
@@ -220,62 +222,62 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, true, converter);
-        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, true, null);
+        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, true, saveMemory, converter);
+        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, true, saveMemory, null);
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(6, 1, "", "Authorなし"),
-                        CellReplica.of(10, 1, "", "非表示"),
-                        CellReplica.of(14, 1, "", "書式設定"),
-                        CellReplica.of(18, 1, "セル値あり", "コメント"),
-                        CellReplica.of(22, 1, "空コメント", "")),
+                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり", saveMemory).addComment("コメント"),
+                        CellData.of(22, 1, "空コメント", saveMemory).addComment("")),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellReplica.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(6, 1, "", "Authorなし"),
-                        CellReplica.of(10, 1, "", "非表示"),
-                        CellReplica.of(14, 1, "", "書式設定"),
-                        CellReplica.of(18, 1, "セル値あり", "コメント"),
-                        CellReplica.of(22, 1, "空コメント", "")),
+                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり", saveMemory).addComment("コメント"),
+                        CellData.of(22, 1, "空コメント", saveMemory).addComment("")),
                 testee1.loadCells(test4_xlsx, "コメント"));
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(6, 1, "", "Authorなし"),
-                        CellReplica.of(10, 1, "", "非表示"),
-                        CellReplica.of(14, 1, "", "書式設定"),
-                        CellReplica.of(18, 1, "", "コメント"),
-                        CellReplica.of(22, 1, "", "")),
+                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
+                        CellData.of(18, 1, "", saveMemory).addComment("コメント"),
+                        CellData.of(22, 1, "", saveMemory).addComment("")),
                 testee2.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellReplica.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellReplica.of(6, 1, "", "Authorなし"),
-                        CellReplica.of(10, 1, "", "非表示"),
-                        CellReplica.of(14, 1, "", "書式設定"),
-                        CellReplica.of(18, 1, "", "コメント"),
-                        CellReplica.of(22, 1, "", "")),
+                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
+                        CellData.of(18, 1, "", saveMemory).addComment("コメント"),
+                        CellData.of(22, 1, "", saveMemory).addComment("")),
                 testee2.loadCells(test4_xlsx, "コメント"));
     }
     
     @Test
     void testLoadCells_コメント抽出2() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, false, converter);
-        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, false, null);
+        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(true, false, saveMemory, converter);
+        SheetLoader testee2 = SheetLoaderWithPoiUserApi.of(false, false, saveMemory, null);
         
         assertEquals(
                 Set.of(
-                        CellReplica.of(18, 1, "セル値あり", null),
-                        CellReplica.of(22, 1, "空コメント", null)),
+                        CellData.of(18, 1, "セル値あり", saveMemory),
+                        CellData.of(22, 1, "空コメント", saveMemory)),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellReplica.of(18, 1, "セル値あり", null),
-                        CellReplica.of(22, 1, "空コメント", null)),
+                        CellData.of(18, 1, "セル値あり", saveMemory),
+                        CellData.of(22, 1, "空コメント", saveMemory)),
                 testee1.loadCells(test4_xlsx, "コメント"));
         
         assertEquals(

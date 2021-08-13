@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -598,10 +598,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
                 reader = PaintDiffOrRedundantCommentsReader.of(
                         reader,
                         p.diffCellComments().stream()
-                                .map(CellReplica::address)
+                                .map(CellData::address)
                                 .collect(Collectors.toSet()),
                         p.redundantCellComments().stream()
-                                .map(CellReplica::address)
+                                .map(CellData::address)
                                 .collect(Collectors.toSet()),
                         diffCommentColor,
                         redundantCommentColor);

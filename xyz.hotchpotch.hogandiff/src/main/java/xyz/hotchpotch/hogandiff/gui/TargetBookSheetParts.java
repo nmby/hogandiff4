@@ -213,6 +213,7 @@ public class TargetBookSheetParts extends GridPane {
             return;
             
         } catch (Exception e) {
+            e.printStackTrace();
             bookPathTextField.setText("");
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(

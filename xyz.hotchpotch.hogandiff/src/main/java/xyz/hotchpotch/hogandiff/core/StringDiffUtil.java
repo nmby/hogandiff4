@@ -22,7 +22,7 @@ public class StringDiffUtil {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher<>(
+    private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher2<>(
             x -> 1,
             (x, y) -> x.equals(y) ? 0 : 3);
     

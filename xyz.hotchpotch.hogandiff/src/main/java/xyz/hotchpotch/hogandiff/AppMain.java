@@ -36,7 +36,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.8.0";
+    private static final String VERSION = "v0.9.0";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -98,9 +98,9 @@ public class AppMain extends Application {
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle("方眼Diff  -  " + VERSION);
-        primaryStage.setScene(new Scene(root, 500, 450));
+        primaryStage.setScene(new Scene(root, 500, 464));
         primaryStage.setMinWidth(500);
-        primaryStage.setMinHeight(450);
+        primaryStage.setMinHeight(464);
         
         MainController controller = loader.getController();
         Settings settings = arrangeSettings();

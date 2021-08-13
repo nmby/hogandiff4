@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -48,8 +49,8 @@ public class SComparatorImpl implements SComparator {
          * @return 行同士または列同士の対応関係
          */
         List<Pair<Integer>> makePairs(
-                Set<CellReplica> cells1,
-                Set<CellReplica> cells2);
+                Set<CellData> cells1,
+                Set<CellData> cells2);
     }
     
     /**
@@ -59,7 +60,7 @@ public class SComparatorImpl implements SComparator {
      * @return 縦方向の要素同士を対応付けるマッパー
      */
     private static Mapper mapper(
-            ToIntFunction<CellReplica> verticality) {
+            ToIntFunction<CellData> verticality) {
         
         assert verticality != null;
         
@@ -84,8 +85,8 @@ public class SComparatorImpl implements SComparator {
      * @return 縦方向の要素同士を対応付けるマッパー
      */
     private static <U> Mapper mapper(
-            ToIntFunction<CellReplica> verticality,
-            Comparator<CellReplica> comparator) {
+            ToIntFunction<CellData> verticality,
+            Comparator<CellData> comparator) {
         
         assert verticality != null;
         assert comparator != null;
@@ -96,12 +97,12 @@ public class SComparatorImpl implements SComparator {
             assert cells1 != cells2;
             
             int start = range(cells1, cells2, verticality).a();
-            List<List<CellReplica>> cellsList1 = convert(
+            List<List<CellData>> cellsList1 = convert(
                     cells1, start, verticality, comparator);
-            List<List<CellReplica>> cellsList2 = convert(
+            List<List<CellData>> cellsList2 = convert(
                     cells2, start, verticality, comparator);
             
-            Matcher<List<CellReplica>> matcher = Matcher.minimumEditDistanceMatcherOf(
+            Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
                     List::size,
                     (list1, list2) -> evaluateDiff(list1, list2, comparator));
             
@@ -112,22 +113,22 @@ public class SComparatorImpl implements SComparator {
     }
     
     private static <U> int evaluateDiff(
-            List<CellReplica> list1,
-            List<CellReplica> list2,
-            Comparator<CellReplica> comparator) {
+            List<CellData> list1,
+            List<CellData> list2,
+            Comparator<CellData> comparator) {
         
         assert list1 != null;
         assert list2 != null;
         assert list1 != list2;
         assert comparator != null;
         
-        Iterator<CellReplica> itr1 = list1.iterator();
-        Iterator<CellReplica> itr2 = list2.iterator();
+        Iterator<CellData> itr1 = list1.iterator();
+        Iterator<CellData> itr2 = list2.iterator();
         
         int diff = 0;
         int comp = 0;
-        CellReplica cell1 = null;
-        CellReplica cell2 = null;
+        CellData cell1 = null;
+        CellData cell2 = null;
         
         while (itr1.hasNext() && itr2.hasNext()) {
             if (comp <= 0) {
@@ -137,7 +138,7 @@ public class SComparatorImpl implements SComparator {
                 cell2 = itr2.next();
             }
             comp = comparator.compare(cell1, cell2);
-            if (comp == 0 && !CellReplica.attrEquals(cell1, cell2)) {
+            if (comp == 0 && !cell1.dataEquals(cell2)) {
                 diff += 2;
             } else if (comp != 0) {
                 diff++;
@@ -168,37 +169,37 @@ public class SComparatorImpl implements SComparator {
      * @param comparator 横方向のソートキーの比較関数
      * @return セルのリストのリスト
      */
-    private static <U> List<List<CellReplica>> convert(
-            Set<CellReplica> cells,
+    private static <U> List<List<CellData>> convert(
+            Set<CellData> cells,
             int start,
-            ToIntFunction<CellReplica> verticality,
-            Comparator<CellReplica> comparator) {
+            ToIntFunction<CellData> verticality,
+            Comparator<CellData> comparator) {
         
         assert cells != null;
         assert 0 <= start;
         assert verticality != null;
         assert comparator != null;
         
-        Map<Integer, List<CellReplica>> map = cells.stream()
+        Map<Integer, List<CellData>> map = cells.stream()
                 .collect(Collectors.groupingBy(verticality::applyAsInt));
         
         int end = range(cells, verticality).b();
         return IntStream.rangeClosed(start, end).parallel()
                 .mapToObj(i -> {
                     if (map.containsKey(i)) {
-                        List<CellReplica> list = map.get(i);
+                        List<CellData> list = map.get(i);
                         list.sort(comparator);
                         return list;
                     } else {
-                        return List.<CellReplica> of();
+                        return List.<CellData> of();
                     }
                 })
                 .toList();
     }
     
     private static Pair<Integer> range(
-            Set<CellReplica> cells,
-            ToIntFunction<CellReplica> axis) {
+            Set<CellData> cells,
+            ToIntFunction<CellData> axis) {
         
         assert cells != null;
         assert axis != null;
@@ -214,9 +215,9 @@ public class SComparatorImpl implements SComparator {
     }
     
     private static Pair<Integer> range(
-            Set<CellReplica> cells1,
-            Set<CellReplica> cells2,
-            ToIntFunction<CellReplica> axis) {
+            Set<CellData> cells1,
+            Set<CellData> cells2,
+            ToIntFunction<CellData> axis) {
         
         assert cells1 != null;
         assert cells2 != null;
@@ -238,19 +239,22 @@ public class SComparatorImpl implements SComparator {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param compareCellContents 比較においてセル内容を比較する場合は {@code true}
      * @param compareCellComments 比較においてセルコメントを比較する場合は {@code true}
+     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
     public static SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean compareCellContents,
-            boolean compareCellComments) {
+            boolean compareCellComments,
+            boolean saveMemory) {
         
         return new SComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
                 compareCellContents,
-                compareCellComments);
+                compareCellComments,
+                saveMemory);
     }
     
     // [instance members] ******************************************************
@@ -259,6 +263,7 @@ public class SComparatorImpl implements SComparator {
     private final boolean considerColumnGaps;
     private final boolean compareCellContents;
     private final boolean compareCellComments;
+    private final boolean saveMemory;
     private final Mapper rowsMapper;
     private final Mapper columnsMapper;
     
@@ -266,25 +271,27 @@ public class SComparatorImpl implements SComparator {
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean compareCellContents,
-            boolean compareCellComments) {
+            boolean compareCellComments,
+            boolean saveMemory) {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
         this.compareCellContents = compareCellContents;
         this.compareCellComments = compareCellComments;
+        this.saveMemory = saveMemory;
         
         if (considerRowGaps && considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row, CellReplica::attrCompare);
-            columnsMapper = mapper(CellReplica::column, CellReplica::attrCompare);
+            rowsMapper = mapper(CellData::row, CellData::dataCompareTo);
+            columnsMapper = mapper(CellData::column, CellData::dataCompareTo);
         } else if (considerRowGaps) {
-            rowsMapper = mapper(CellReplica::row, Comparator.comparing(CellReplica::column));
-            columnsMapper = mapper(CellReplica::column);
+            rowsMapper = mapper(CellData::row, Comparator.comparingInt(CellData::column));
+            columnsMapper = mapper(CellData::column);
         } else if (considerColumnGaps) {
-            rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column, Comparator.comparing(CellReplica::row));
+            rowsMapper = mapper(CellData::row);
+            columnsMapper = mapper(CellData::column, Comparator.comparingInt(CellData::row));
         } else {
-            rowsMapper = mapper(CellReplica::row);
-            columnsMapper = mapper(CellReplica::column);
+            rowsMapper = mapper(CellData::row);
+            columnsMapper = mapper(CellData::column);
         }
     }
     
@@ -298,8 +305,8 @@ public class SComparatorImpl implements SComparator {
      */
     @Override
     public SResult compare(
-            Set<CellReplica> cells1,
-            Set<CellReplica> cells2) {
+            Set<CellData> cells1,
+            Set<CellData> cells2) {
         
         Objects.requireNonNull(cells1, "cells1");
         Objects.requireNonNull(cells2, "cells2");
@@ -335,7 +342,7 @@ public class SComparatorImpl implements SComparator {
                 .filter(Pair::isOnlyB).map(Pair::b).toList();
         
         // 差分セルの収集
-        List<Pair<CellReplica>> diffCells = extractDiffs(
+        List<Pair<CellData>> diffCells = extractDiffs(
                 cells1, cells2, rowPairs, columnPairs);
         
         return new SResult(
@@ -348,9 +355,9 @@ public class SComparatorImpl implements SComparator {
                 diffCells);
     }
     
-    private List<Pair<CellReplica>> extractDiffs(
-            Set<CellReplica> cells1,
-            Set<CellReplica> cells2,
+    private List<Pair<CellData>> extractDiffs(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
             List<Pair<Integer>> rowPairs,
             List<Pair<Integer>> columnPairs) {
         
@@ -362,10 +369,10 @@ public class SComparatorImpl implements SComparator {
         
         // TODO: 要処理内容見直し
         
-        Map<String, CellReplica> map1 = cells1.stream()
-                .collect(Collectors.toMap(CellReplica::address, Function.identity()));
-        Map<String, CellReplica> map2 = cells2.stream()
-                .collect(Collectors.toMap(CellReplica::address, Function.identity()));
+        Map<String, CellData> map1 = cells1.stream()
+                .collect(Collectors.toMap(CellData::address, Function.identity()));
+        Map<String, CellData> map2 = cells2.stream()
+                .collect(Collectors.toMap(CellData::address, Function.identity()));
         
         return rowPairs.parallelStream().filter(Pair::isPaired).flatMap(rp -> {
             int row1 = rp.a();
@@ -374,16 +381,16 @@ public class SComparatorImpl implements SComparator {
             return columnPairs.stream().filter(Pair::isPaired).map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
-                String address1 = CellReplica.idxToAddress(row1, column1);
-                String address2 = CellReplica.idxToAddress(row2, column2);
-                CellReplica cell1 = map1.get(address1);
-                CellReplica cell2 = map2.get(address2);
+                String address1 = CellsUtil.idxToAddress(row1, column1);
+                String address2 = CellsUtil.idxToAddress(row2, column2);
+                CellData cell1 = map1.get(address1);
+                CellData cell2 = map2.get(address2);
                 
-                return CellReplica.attrEquals(cell1, cell2)
+                return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
                         ? null
-                        : Pair.<CellReplica> of(
-                                cell1 != null ? cell1 : CellReplica.empty(row1, column1),
-                                cell2 != null ? cell2 : CellReplica.empty(row2, column2));
+                        : Pair.<CellData> of(
+                                cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
+                                cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
             });
         }).filter(Objects::nonNull).toList();
     }

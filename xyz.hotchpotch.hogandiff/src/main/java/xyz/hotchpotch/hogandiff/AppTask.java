@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BResult;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
-import xyz.hotchpotch.hogandiff.excel.CellReplica;
+import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
@@ -236,8 +236,8 @@ public class AppTask extends Task<Void> {
                 str.append(BResult.formatSheetNamesPair(i, pair));
                 updateMessage(str.toString());
                 
-                Set<CellReplica> cells1 = loader1.loadCells(bookPath1, pair.a());
-                Set<CellReplica> cells2 = loader2.loadCells(bookPath2, pair.b());
+                Set<CellData> cells1 = loader1.loadCells(bookPath1, pair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookPath2, pair.b());
                 SResult result = comparator.compare(cells1, cells2);
                 results.put(pair, Optional.of(result));
                 
