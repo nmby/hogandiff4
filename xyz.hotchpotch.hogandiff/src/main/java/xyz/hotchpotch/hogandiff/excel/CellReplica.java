@@ -9,11 +9,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  *
  * @author nmby
  */
-public record CellReplica(
-        int row,
-        int column,
-        String content,
-        String comment) {
+public interface CellReplica {
     
     // [static members] ********************************************************
     
@@ -34,7 +30,7 @@ public record CellReplica(
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellReplica(row, column, content, comment);
+        return new CellStringData(row, column, content, comment);
     }
     
     /**
@@ -78,21 +74,22 @@ public record CellReplica(
     
     // [instance members] ******************************************************
     
-    public CellReplica {
-        Objects.requireNonNull(content, "content");
-        if (row < 0 || column < 0) {
-            throw new IllegalArgumentException("row==%d, column==%d".formatted(row, column));
-        }
-    }
+    int row();
+    
+    int column();
     
     /**
      * セルアドレス（{@code "A1"} 形式）を返します。<br>
      * 
      * @return セルアドレス（{@code "A1"} 形式）
      */
-    public String address() {
+    default String address() {
         return CellsUtil.idxToAddress(row(), column());
     }
+    
+    String content();
+    
+    String comment();
     
     /**
      * {@code #row()}, {@code #column()} を除く属性について、
@@ -101,10 +98,10 @@ public record CellReplica(
      * @param cell 比較対象のセル（{@code null} 許容）
      * @return {@code cell} が {@code null} でなく属性値が等しい場合は {@code true}
      */
-    public boolean attrEquals(CellReplica cell) {
+    default boolean attrEquals(CellReplica cell) {
         return cell != null
-                && content.equals(cell.content)
-                && Objects.equals(comment, cell.comment);
+                && Objects.equals(content(), cell.content())
+                && Objects.equals(comment(), cell.comment());
     }
     
     /**
@@ -116,22 +113,13 @@ public record CellReplica(
      *          小さい場合は負の整数、等しい場合はゼロ、大きい場合は正の整数
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
-    public int attrCompareTo(CellReplica cell) {
+    default int attrCompareTo(CellReplica cell) {
         Objects.requireNonNull(cell, "cell");
         
-        return !content.equals(cell.content)
-                ? content.compareTo(cell.content)
-                : comment != null && cell.comment != null
-                        ? comment.compareTo(cell.comment)
+        return !content().equals(cell.content())
+                ? content().compareTo(cell.content())
+                : comment() != null && cell.comment() != null
+                        ? comment().compareTo(cell.comment())
                         : 0;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format(
-                "%s: %s%s",
-                address(),
-                content,
-                comment == null ? "" : " [comment: " + comment + "]");
     }
 }
