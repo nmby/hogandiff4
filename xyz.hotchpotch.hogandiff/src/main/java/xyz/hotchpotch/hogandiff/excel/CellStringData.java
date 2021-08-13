@@ -26,6 +26,15 @@ import java.util.Objects;
     }
     
     @Override
+    public CellData addComment(String comment) {
+        if (this.comment != null) {
+            throw new IllegalStateException();
+        }
+        
+        return new CellStringData(row, column, content, comment);
+    }
+    
+    @Override
     public String toString() {
         return String.format(
                 "%s: %s%s",

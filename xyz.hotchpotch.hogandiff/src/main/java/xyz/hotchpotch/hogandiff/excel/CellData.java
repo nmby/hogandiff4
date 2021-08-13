@@ -19,18 +19,17 @@ public interface CellData {
      * @param row 行インデックス（0開始）
      * @param column 列インデックス（0開始）
      * @param content セル内容
-     * @param comment セルコメント（{@code null} 許容）
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code content} が {@code null} の場合
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
-    public static CellData of(int row, int column, String content, String comment) {
+    public static CellData of(int row, int column, String content) {
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
         }
         
-        return new CellStringData(row, column, content, comment);
+        return new CellStringData(row, column, content, null);
     }
     
     /**
@@ -38,15 +37,14 @@ public interface CellData {
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
      * @param content セル内容
-     * @param comment セルコメント（{@code null} 許容）
      * @return 新たなセルレプリカ
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
-    public static CellData of(String address, String content, String comment) {
+    public static CellData of(String address, String content) {
         Objects.requireNonNull(address, "address");
         
         Pair<Integer> idx = CellsUtil.addressToIdx(address);
-        return CellData.of(idx.a(), idx.b(), content, comment);
+        return CellData.of(idx.a(), idx.b(), content);
     }
     
     /**
@@ -58,7 +56,7 @@ public interface CellData {
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが 0 未満の場合
      */
     public static CellData empty(int row, int column) {
-        return CellData.of(row, column, "", null);
+        return CellData.of(row, column, "");
     }
     
     /**
@@ -69,7 +67,7 @@ public interface CellData {
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
     public static CellData empty(String address) {
-        return CellData.of(address, "", null);
+        return CellData.of(address, "");
     }
     
     // [instance members] ******************************************************
@@ -90,6 +88,8 @@ public interface CellData {
     String content();
     
     String comment();
+    
+    CellData addComment(String comment);
     
     /**
      * {@code #row()}, {@code #column()} を除く属性について、

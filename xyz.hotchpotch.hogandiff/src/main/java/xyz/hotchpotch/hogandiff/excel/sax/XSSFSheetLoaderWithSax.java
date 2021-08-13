@@ -178,7 +178,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellData.of(address, value, null));
+                    cells.add(CellData.of(address, value));
                 }
                 
                 qNames.removeFirst();
@@ -232,13 +232,9 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 if (cellsMap.containsKey(address)) {
                     CellData original = cellsMap.get(address);
                     cells.remove(original);
-                    cells.add(CellData.of(
-                            original.row(),
-                            original.column(),
-                            original.content(),
-                            comment.toString()));
+                    cells.add(original.addComment(comment.toString()));
                 } else {
-                    cells.add(CellData.of(address, "", comment.toString()));
+                    cells.add(CellData.of(address, "").addComment(comment.toString()));
                 }
                 
                 address = null;

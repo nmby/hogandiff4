@@ -140,13 +140,13 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", null),
-                        CellData.of(2, 1, "X", null),
-                        CellData.of(3, 1, "Y", null),
-                        CellData.of(4, 1, "Z", null),
-                        CellData.of(2, 2, "90", null),
-                        CellData.of(3, 2, "20", null),
-                        CellData.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。"),
+                        CellData.of(2, 1, "X"),
+                        CellData.of(3, 1, "Y"),
+                        CellData.of(4, 1, "Z"),
+                        CellData.of(2, 2, "90"),
+                        CellData.of(3, 2, "20"),
+                        CellData.of(4, 2, "60")),
                 testee.loadCells(test1_xls, "A1_ワークシート"));
     }
     
@@ -170,88 +170,88 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         
         assertEquals(
                 List.of(
-                        CellData.of(1, 2, "数値：整数", null),
-                        CellData.of(1, 3, "1234567890", null),
-                        CellData.of(2, 2, "数値：小数", null),
-                        CellData.of(2, 3, "3.141592", null),
-                        CellData.of(3, 2, "文字列", null),
-                        CellData.of(3, 3, "abcあいう123", null),
-                        CellData.of(4, 2, "真偽値：真", null),
-                        CellData.of(4, 3, "true", null),
-                        CellData.of(5, 2, "真偽値：偽", null),
-                        CellData.of(5, 3, "false", null)),
+                        CellData.of(1, 2, "数値：整数"),
+                        CellData.of(1, 3, "1234567890"),
+                        CellData.of(2, 2, "数値：小数"),
+                        CellData.of(2, 3, "3.141592"),
+                        CellData.of(3, 2, "文字列"),
+                        CellData.of(3, 3, "abcあいう123"),
+                        CellData.of(4, 2, "真偽値：真"),
+                        CellData.of(4, 3, "true"),
+                        CellData.of(5, 2, "真偽値：偽"),
+                        CellData.of(5, 3, "false")),
                 actual.subList(0, 10));
         
         assertEquals(
                 List.of(
-                        CellData.of(6, 2, "エラー：ゼロ除算", null),
-                        CellData.of(6, 3, "#DIV/0!", null),
-                        CellData.of(7, 2, "エラー：該当なし", null),
-                        CellData.of(7, 3, "#N/A", null),
-                        CellData.of(8, 2, "エラー：名前不正", null),
-                        CellData.of(8, 3, "#NAME?", null),
-                        CellData.of(9, 2, "エラー：ヌル", null),
-                        CellData.of(9, 3, "#NULL!", null),
-                        CellData.of(10, 2, "エラー：数値不正", null),
-                        CellData.of(10, 3, "#NUM!", null),
-                        CellData.of(11, 2, "エラー：参照不正", null),
-                        CellData.of(11, 3, "#REF!", null),
-                        CellData.of(12, 2, "エラー：値不正", null),
-                        CellData.of(12, 3, "#VALUE!", null)),
+                        CellData.of(6, 2, "エラー：ゼロ除算"),
+                        CellData.of(6, 3, "#DIV/0!"),
+                        CellData.of(7, 2, "エラー：該当なし"),
+                        CellData.of(7, 3, "#N/A"),
+                        CellData.of(8, 2, "エラー：名前不正"),
+                        CellData.of(8, 3, "#NAME?"),
+                        CellData.of(9, 2, "エラー：ヌル"),
+                        CellData.of(9, 3, "#NULL!"),
+                        CellData.of(10, 2, "エラー：数値不正"),
+                        CellData.of(10, 3, "#NUM!"),
+                        CellData.of(11, 2, "エラー：参照不正"),
+                        CellData.of(11, 3, "#REF!"),
+                        CellData.of(12, 2, "エラー：値不正"),
+                        CellData.of(12, 3, "#VALUE!")),
                 actual.subList(10, 24));
         
         assertEquals(
                 List.of(
                         // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
-                        CellData.of(13, 2, "日付", null),
-                        //CellReplica.of(13, 3, "2019/7/28", null),
-                        CellData.of(13, 3, "43674", null),
-                        CellData.of(14, 2, "時刻", null),
-                        //CellReplica.of(14, 3, "13:47", null),
-                        CellData.of(14, 3, "0.574305555555556", null)),
+                        CellData.of(13, 2, "日付"),
+                        //CellReplica.of(13, 3, "2019/7/28"),
+                        CellData.of(13, 3, "43674"),
+                        CellData.of(14, 2, "時刻"),
+                        //CellReplica.of(14, 3, "13:47"),
+                        CellData.of(14, 3, "0.574305555555556")),
                 actual.subList(24, 28));
         
         assertEquals(
                 List.of(
-                        CellData.of(16, 2, "数式（数値：整数）", null),
-                        CellData.of(16, 3, "31400", null),
-                        CellData.of(17, 2, "数式（数値：小数）", null),
-                        CellData.of(17, 3, "3.33333333333333", null),
-                        CellData.of(18, 2, "数式（文字列）", null),
-                        CellData.of(18, 3, "TRUEだよ", null),
-                        CellData.of(19, 2, "数式（真偽値：真）", null),
-                        CellData.of(19, 3, "true", null),
-                        CellData.of(20, 2, "数式（真偽値：偽）", null),
-                        CellData.of(20, 3, "false", null)),
+                        CellData.of(16, 2, "数式（数値：整数）"),
+                        CellData.of(16, 3, "31400"),
+                        CellData.of(17, 2, "数式（数値：小数）"),
+                        CellData.of(17, 3, "3.33333333333333"),
+                        CellData.of(18, 2, "数式（文字列）"),
+                        CellData.of(18, 3, "TRUEだよ"),
+                        CellData.of(19, 2, "数式（真偽値：真）"),
+                        CellData.of(19, 3, "true"),
+                        CellData.of(20, 2, "数式（真偽値：偽）"),
+                        CellData.of(20, 3, "false")),
                 actual.subList(28, 38));
         
         assertEquals(
                 List.of(
-                        CellData.of(21, 2, "数式（エラー：ゼロ除算）", null),
-                        CellData.of(21, 3, "#DIV/0!", null),
-                        CellData.of(22, 2, "数式（エラー：該当なし）", null),
-                        CellData.of(22, 3, "#N/A", null),
-                        CellData.of(23, 2, "数式（エラー：名前不正）", null),
-                        CellData.of(23, 3, "#NAME?", null),
-                        CellData.of(24, 2, "数式（エラー：ヌル）", null),
-                        CellData.of(24, 3, "#NULL!", null),
-                        CellData.of(25, 2, "数式（エラー：数値不正）", null),
-                        CellData.of(25, 3, "#NUM!", null),
-                        CellData.of(26, 2, "数式（エラー：参照不正）", null),
-                        CellData.of(26, 3, "#REF!", null),
-                        CellData.of(27, 2, "数式（エラー：値不正）", null),
-                        CellData.of(27, 3, "#VALUE!", null)),
+                        CellData.of(21, 2, "数式（エラー：ゼロ除算）"),
+                        CellData.of(21, 3, "#DIV/0!"),
+                        CellData.of(22, 2, "数式（エラー：該当なし）"),
+                        CellData.of(22, 3, "#N/A"),
+                        CellData.of(23, 2, "数式（エラー：名前不正）"),
+                        CellData.of(23, 3, "#NAME?"),
+                        CellData.of(24, 2, "数式（エラー：ヌル）"),
+                        CellData.of(24, 3, "#NULL!"),
+                        CellData.of(25, 2, "数式（エラー：数値不正）"),
+                        CellData.of(25, 3, "#NUM!"),
+                        CellData.of(26, 2, "数式（エラー：参照不正）"),
+                        CellData.of(26, 3, "#REF!"),
+                        CellData.of(27, 2, "数式（エラー：値不正）"),
+                        CellData.of(27, 3, "#VALUE!")),
                 actual.subList(38, 52));
         
         assertEquals(
                 List.of(
                         // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
-                        CellData.of(28, 2, "数式（日付）", null),
-                        //CellReplica.of(28, 3, "2019/7/28", null),
-                        CellData.of(28, 3, "43674", null),
-                        CellData.of(29, 2, "数式（時刻）", null),
-                        //CellReplica.of(29, 3, "12:47", null)),
-                        CellData.of(29, 3, "0.532638888888889", null)),
+                        CellData.of(28, 2, "数式（日付）"),
+                        //CellReplica.of(28, 3, "2019/7/28"),
+                        CellData.of(28, 3, "43674"),
+                        CellData.of(29, 2, "数式（時刻）"),
+                        //CellReplica.of(29, 3, "12:47")),
+                        CellData.of(29, 3, "0.532638888888889")),
                 actual.subList(52, 56));
     }
     
@@ -271,13 +271,13 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(1, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(4, 1, "", "Authorなし"),
-                        CellData.of(7, 1, "", "非表示"),
-                        CellData.of(10, 1, "", "書式設定"),
-                        CellData.of(13, 1, "セル値あり", "コメント"),
-                        CellData.of(16, 1, "空コメント", ""),
-                        CellData.of(19, 1, "セル値のみ", null)),
+                        CellData.of(1, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(4, 1, "").addComment("Authorなし"),
+                        CellData.of(7, 1, "").addComment("非表示"),
+                        CellData.of(10, 1, "").addComment("書式設定"),
+                        CellData.of(13, 1, "セル値あり").addComment("コメント"),
+                        CellData.of(16, 1, "空コメント").addComment(""),
+                        CellData.of(19, 1, "セル値のみ")),
                 testee.loadCells(test5_xls, "コメント"));
     }
     
@@ -287,9 +287,9 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(13, 1, "セル値あり", null),
-                        CellData.of(16, 1, "空コメント", null),
-                        CellData.of(19, 1, "セル値のみ", null)),
+                        CellData.of(13, 1, "セル値あり"),
+                        CellData.of(16, 1, "空コメント"),
+                        CellData.of(19, 1, "セル値のみ")),
                 testee.loadCells(test5_xls, "コメント"));
     }
     
@@ -299,12 +299,12 @@ class HSSFSheetLoaderWithPoiEventApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(1, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(4, 1, "", "Authorなし"),
-                        CellData.of(7, 1, "", "非表示"),
-                        CellData.of(10, 1, "", "書式設定"),
-                        CellData.of(13, 1, "", "コメント"),
-                        CellData.of(16, 1, "", "")),
+                        CellData.of(1, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(4, 1, "").addComment("Authorなし"),
+                        CellData.of(7, 1, "").addComment("非表示"),
+                        CellData.of(10, 1, "").addComment("書式設定"),
+                        CellData.of(13, 1, "").addComment("コメント"),
+                        CellData.of(16, 1, "").addComment("")),
                 testee.loadCells(test5_xls, "コメント"));
     }
     

@@ -17,7 +17,7 @@ class CombinedSheetLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final CellData cell1 = CellData.of(1, 2, "success", null);
+    private static final CellData cell1 = CellData.of(1, 2, "success");
     
     private static final SheetLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
     

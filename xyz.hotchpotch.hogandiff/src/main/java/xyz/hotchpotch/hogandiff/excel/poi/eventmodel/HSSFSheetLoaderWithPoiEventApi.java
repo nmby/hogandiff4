@@ -323,8 +323,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellData.of(
                                         cellRec.getRow(),
                                         cellRec.getColumn(),
-                                        value,
-                                        null));
+                                        value));
                     }
                     
                 } else if (record instanceof StringRecord sRec) {
@@ -341,8 +340,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                                 CellData.of(
                                         prevFormulaRec.getRow(),
                                         prevFormulaRec.getColumn(),
-                                        sRec.getString(),
-                                        null));
+                                        sRec.getString()));
                     }
                     prevFormulaRec = null;
                 }
@@ -383,13 +381,9 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     
                     if (cells.containsKey(address)) {
                         CellData original = cells.get(address);
-                        cells.put(address, CellData.of(
-                                original.row(),
-                                original.column(),
-                                original.content(),
-                                comment));
+                        cells.put(address, original.addComment(comment));
                     } else {
-                        cells.put(address, CellData.of(address, "", comment));
+                        cells.put(address, CellData.of(address, "").addComment(comment));
                     }
                     break;
                 }

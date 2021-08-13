@@ -129,8 +129,7 @@ public class Factory {
                     : CellData.of(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
-                            content,
-                            null);
+                            content);
         };
         
         BookType bookType = BookType.of(bookPath);

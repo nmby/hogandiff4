@@ -22,8 +22,7 @@ class SheetLoaderWithPoiUserApiTest {
     private static final Function<Cell, CellData> converter = cell -> CellData.of(
             cell.getRowIndex(),
             cell.getColumnIndex(),
-            PoiUtil.getCellContentAsString(cell, false),
-            null);
+            PoiUtil.getCellContentAsString(cell, false));
     
     private static Path test1_xls;
     private static Path test1_xlsb;
@@ -152,33 +151,33 @@ class SheetLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", null),
-                        CellData.of(2, 1, "X", null),
-                        CellData.of(3, 1, "Y", null),
-                        CellData.of(4, 1, "Z", null),
-                        CellData.of(2, 2, "90", null),
-                        CellData.of(3, 2, "20", null),
-                        CellData.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。"),
+                        CellData.of(2, 1, "X"),
+                        CellData.of(3, 1, "Y"),
+                        CellData.of(4, 1, "Z"),
+                        CellData.of(2, 2, "90"),
+                        CellData.of(3, 2, "20"),
+                        CellData.of(4, 2, "60")),
                 testee1.loadCells(test1_xls, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", null),
-                        CellData.of(2, 1, "X", null),
-                        CellData.of(3, 1, "Y", null),
-                        CellData.of(4, 1, "Z", null),
-                        CellData.of(2, 2, "90", null),
-                        CellData.of(3, 2, "20", null),
-                        CellData.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。"),
+                        CellData.of(2, 1, "X"),
+                        CellData.of(3, 1, "Y"),
+                        CellData.of(4, 1, "Z"),
+                        CellData.of(2, 2, "90"),
+                        CellData.of(3, 2, "20"),
+                        CellData.of(4, 2, "60")),
                 testee1.loadCells(test1_xlsx, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", null),
-                        CellData.of(2, 1, "X", null),
-                        CellData.of(3, 1, "Y", null),
-                        CellData.of(4, 1, "Z", null),
-                        CellData.of(2, 2, "90", null),
-                        CellData.of(3, 2, "20", null),
-                        CellData.of(4, 2, "60", null)),
+                        CellData.of(0, 0, "これはワークシートです。"),
+                        CellData.of(2, 1, "X"),
+                        CellData.of(3, 1, "Y"),
+                        CellData.of(4, 1, "Z"),
+                        CellData.of(2, 2, "90"),
+                        CellData.of(3, 2, "20"),
+                        CellData.of(4, 2, "60")),
                 testee1.loadCells(test1_xlsm, "A1_ワークシート"));
         
         assertEquals(
@@ -225,40 +224,40 @@ class SheetLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", "Authorなし"),
-                        CellData.of(10, 1, "", "非表示"),
-                        CellData.of(14, 1, "", "書式設定"),
-                        CellData.of(18, 1, "セル値あり", "コメント"),
-                        CellData.of(22, 1, "空コメント", "")),
+                        CellData.of(2, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "").addComment("Authorなし"),
+                        CellData.of(10, 1, "").addComment("非表示"),
+                        CellData.of(14, 1, "").addComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり").addComment("コメント"),
+                        CellData.of(22, 1, "空コメント").addComment("")),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", "Authorなし"),
-                        CellData.of(10, 1, "", "非表示"),
-                        CellData.of(14, 1, "", "書式設定"),
-                        CellData.of(18, 1, "セル値あり", "コメント"),
-                        CellData.of(22, 1, "空コメント", "")),
+                        CellData.of(2, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "").addComment("Authorなし"),
+                        CellData.of(10, 1, "").addComment("非表示"),
+                        CellData.of(14, 1, "").addComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり").addComment("コメント"),
+                        CellData.of(22, 1, "空コメント").addComment("")),
                 testee1.loadCells(test4_xlsx, "コメント"));
         
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", "Authorなし"),
-                        CellData.of(10, 1, "", "非表示"),
-                        CellData.of(14, 1, "", "書式設定"),
-                        CellData.of(18, 1, "", "コメント"),
-                        CellData.of(22, 1, "", "")),
+                        CellData.of(2, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "").addComment("Authorなし"),
+                        CellData.of(10, 1, "").addComment("非表示"),
+                        CellData.of(14, 1, "").addComment("書式設定"),
+                        CellData.of(18, 1, "").addComment("コメント"),
+                        CellData.of(22, 1, "").addComment("")),
                 testee2.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", "Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", "Authorなし"),
-                        CellData.of(10, 1, "", "非表示"),
-                        CellData.of(14, 1, "", "書式設定"),
-                        CellData.of(18, 1, "", "コメント"),
-                        CellData.of(22, 1, "", "")),
+                        CellData.of(2, 1, "").addComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "").addComment("Authorなし"),
+                        CellData.of(10, 1, "").addComment("非表示"),
+                        CellData.of(14, 1, "").addComment("書式設定"),
+                        CellData.of(18, 1, "").addComment("コメント"),
+                        CellData.of(22, 1, "").addComment("")),
                 testee2.loadCells(test4_xlsx, "コメント"));
     }
     
@@ -269,13 +268,13 @@ class SheetLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(18, 1, "セル値あり", null),
-                        CellData.of(22, 1, "空コメント", null)),
+                        CellData.of(18, 1, "セル値あり"),
+                        CellData.of(22, 1, "空コメント")),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellData.of(18, 1, "セル値あり", null),
-                        CellData.of(22, 1, "空コメント", null)),
+                        CellData.of(18, 1, "セル値あり"),
+                        CellData.of(22, 1, "空コメント")),
                 testee1.loadCells(test4_xlsx, "コメント"));
         
         assertEquals(
