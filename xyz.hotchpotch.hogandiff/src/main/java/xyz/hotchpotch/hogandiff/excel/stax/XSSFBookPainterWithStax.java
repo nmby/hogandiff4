@@ -52,7 +52,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffOrRedundantCommentsR
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintSheetTabReader;
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * StAX (Streaming API for XML) を利用して
@@ -93,7 +93,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
         private final Document styles;
         private final Element elemCellXfs;
         private final Element elemFills;
-        private final Map<Pair<Integer>, Integer> xfsMap = new HashMap<>();
+        private final Map<IntPair, Integer> xfsMap = new HashMap<>();
         private final Map<Short, Integer> fillsMap = new HashMap<>();
         
         private int cellXfsCount;
@@ -118,7 +118,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
          * @return 該当するスタイルのインデックス
          */
         public synchronized int getPaintedStyle(int styleIdx, short colorIdx) {
-            Pair<Integer> key = Pair.of(styleIdx, (int) colorIdx);
+            IntPair key = IntPair.of(styleIdx, colorIdx);
             if (xfsMap.containsKey(key)) {
                 return xfsMap.get(key);
             } else {
@@ -136,7 +136,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
          * @return 新たなスタイルのインデックス
          */
         private int copyXf(int styleIdx, short colorIdx) {
-            xfsMap.put(Pair.of(styleIdx, (int) colorIdx), cellXfsCount);
+            xfsMap.put(IntPair.of(styleIdx, colorIdx), cellXfsCount);
             cellXfsCount++;
             elemCellXfs.setAttribute("count", Integer.toString(cellXfsCount));
             

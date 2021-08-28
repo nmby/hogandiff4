@@ -70,7 +70,7 @@ public class SComparatorImpl implements SComparator {
             assert cells2 != null;
             assert cells1 != cells2;
             
-            Pair<Integer> range = range(cells1, cells2, verticality);
+            IntPair range = range(cells1, cells2, verticality);
             return IntStream.rangeClosed(range.a(), range.b())
                     .mapToObj(n -> IntPair.of(n, n))
                     .toList();
@@ -198,7 +198,7 @@ public class SComparatorImpl implements SComparator {
                 .toList();
     }
     
-    private static Pair<Integer> range(
+    private static IntPair range(
             Set<CellData> cells,
             ToIntFunction<CellData> axis) {
         
@@ -212,10 +212,10 @@ public class SComparatorImpl implements SComparator {
                 .mapToInt(axis)
                 .max().orElse(0);
         
-        return Pair.of(min, max);
+        return IntPair.of(min, max);
     }
     
-    private static Pair<Integer> range(
+    private static IntPair range(
             Set<CellData> cells1,
             Set<CellData> cells2,
             ToIntFunction<CellData> axis) {
@@ -225,10 +225,10 @@ public class SComparatorImpl implements SComparator {
         assert cells1 != cells2;
         assert axis != null;
         
-        Pair<Integer> range1 = range(cells1, axis);
-        Pair<Integer> range2 = range(cells2, axis);
+        IntPair range1 = range(cells1, axis);
+        IntPair range2 = range(cells2, axis);
         
-        return Pair.of(
+        return IntPair.of(
                 Math.min(range1.a(), range2.a()),
                 Math.max(range1.b(), range2.b()));
     }
