@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * 同型の2つの要素を保持する不変クラスです。<br>
@@ -177,41 +176,11 @@ public record Pair<T>(T a, T b) {
     }
     
     /**
-     * 指定された側の要素だけが存在するかを返します。<br>
-     * 
-     * @param side 要素の側
-     * @return 指定された側の要素だけが存在する場合は {@code true}
-     * @throws NullPointerException {@code side} が {@code null} の場合
-     */
-    public boolean isOnly(Side side) {
-        Objects.requireNonNull(side, "side");
-        
-        return side == Side.A ? isOnlyA() : isOnlyB();
-    }
-    
-    /**
      * 要素aと要素bが同じであるかを返します。<br>
      * 
      * @return 要素aと要素bが同じ場合は {@code true}
      */
     public boolean isIdentical() {
         return Objects.equals(a, b);
-    }
-    
-    /**
-     * このペアの要素に {@code mapper} をそれぞれ適用して得られる値を要素とする
-     * 新しいペアを生成して返します。<br>
-     * 
-     * @param <U> 新しいペアの要素の型
-     * @param mapper 変換関数
-     * @return 新しいペア
-     * @throws NullPointerException {@code mapper} が {@code null} の場合
-     */
-    public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper");
-        
-        return new Pair<>(
-                a == null ? null : mapper.apply(a),
-                b == null ? null : mapper.apply(b));
     }
 }
