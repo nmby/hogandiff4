@@ -16,6 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -48,7 +49,7 @@ public class SComparatorImpl implements SComparator {
          * @param cells2 セルセット2
          * @return 行同士または列同士の対応関係
          */
-        List<Pair<Integer>> makePairs(
+        List<IntPair> makePairs(
                 Set<CellData> cells1,
                 Set<CellData> cells2);
     }
@@ -71,7 +72,7 @@ public class SComparatorImpl implements SComparator {
             
             Pair<Integer> range = range(cells1, cells2, verticality);
             return IntStream.rangeClosed(range.a(), range.b())
-                    .mapToObj(n -> Pair.of(n, n))
+                    .mapToObj(n -> IntPair.of(n, n))
                     .toList();
         };
     }
@@ -326,20 +327,20 @@ public class SComparatorImpl implements SComparator {
             }
         }
         
-        List<Pair<Integer>> rowPairs = rowsMapper.makePairs(cells1, cells2);
-        List<Pair<Integer>> columnPairs = columnsMapper.makePairs(cells1, cells2);
+        List<IntPair> rowPairs = rowsMapper.makePairs(cells1, cells2);
+        List<IntPair> columnPairs = columnsMapper.makePairs(cells1, cells2);
         
         // 余剰行の収集
         List<Integer> redundantRows1 = rowPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).toList();
+                .filter(IntPair::isOnlyA).map(IntPair::a).toList();
         List<Integer> redundantRows2 = rowPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).toList();
+                .filter(IntPair::isOnlyB).map(IntPair::b).toList();
         
         // 余剰列の収集
         List<Integer> redundantColumns1 = columnPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).toList();
+                .filter(IntPair::isOnlyA).map(IntPair::a).toList();
         List<Integer> redundantColumns2 = columnPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).toList();
+                .filter(IntPair::isOnlyB).map(IntPair::b).toList();
         
         // 差分セルの収集
         List<Pair<CellData>> diffCells = extractDiffs(
@@ -358,8 +359,8 @@ public class SComparatorImpl implements SComparator {
     private List<Pair<CellData>> extractDiffs(
             Set<CellData> cells1,
             Set<CellData> cells2,
-            List<Pair<Integer>> rowPairs,
-            List<Pair<Integer>> columnPairs) {
+            List<IntPair> rowPairs,
+            List<IntPair> columnPairs) {
         
         assert cells1 != null;
         assert cells2 != null;
@@ -374,11 +375,11 @@ public class SComparatorImpl implements SComparator {
         Map<String, CellData> map2 = cells2.stream()
                 .collect(Collectors.toMap(CellData::address, Function.identity()));
         
-        return rowPairs.parallelStream().filter(Pair::isPaired).flatMap(rp -> {
+        return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(rp -> {
             int row1 = rp.a();
             int row2 = rp.b();
             
-            return columnPairs.stream().filter(Pair::isPaired).map(cp -> {
+            return columnPairs.stream().filter(IntPair::isPaired).map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
                 String address1 = CellsUtil.idxToAddress(row1, column1);

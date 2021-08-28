@@ -9,7 +9,7 @@ import java.util.function.ToIntFunction;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 class MinimumEditDistanceMatcher2Test {
     
@@ -71,9 +71,9 @@ class MinimumEditDistanceMatcher2Test {
                 testee.makePairs(list0_1, list0_1));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2)),
                 testee.makePairs(listABC_1, listABC_1));
         
         // 別インスタンス同一内容
@@ -82,9 +82,9 @@ class MinimumEditDistanceMatcher2Test {
                 testee.makePairs(list0_1, list0_2));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2)),
                 testee.makePairs(listABC_1, listABC_2));
     }
     
@@ -95,15 +95,15 @@ class MinimumEditDistanceMatcher2Test {
         // 一方が長さゼロ
         assertEquals(
                 List.of(
-                        Pair.ofNullable(null, 0),
-                        Pair.ofNullable(null, 1),
-                        Pair.ofNullable(null, 2)),
+                        IntPair.onlyB(0),
+                        IntPair.onlyB(1),
+                        IntPair.onlyB(2)),
                 testee.makePairs(list0_1, listABC_1));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, null),
-                        Pair.ofNullable(1, null),
-                        Pair.ofNullable(2, null)),
+                        IntPair.onlyA(0),
+                        IntPair.onlyA(1),
+                        IntPair.onlyA(2)),
                 testee.makePairs(listABC_1, list0_1));
         
         // 一般
@@ -112,30 +112,30 @@ class MinimumEditDistanceMatcher2Test {
         //  SITT ING
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, null),
-                        Pair.ofNullable(null, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2),
-                        Pair.ofNullable(3, 3),
-                        Pair.ofNullable(4, null),
-                        Pair.ofNullable(null, 4),
-                        Pair.ofNullable(5, 5),
-                        Pair.ofNullable(null, 6)),
+                        IntPair.onlyA(0),
+                        IntPair.onlyB(0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2),
+                        IntPair.of(3, 3),
+                        IntPair.onlyA(4),
+                        IntPair.onlyB(4),
+                        IntPair.of(5, 5),
+                        IntPair.onlyB(6)),
                 testee.makePairs(listKITTEN, listSITTING));
         // S ITTI NG
         //   |||  |
         //  KITT EN
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, null),
-                        Pair.ofNullable(null, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2),
-                        Pair.ofNullable(3, 3),
-                        Pair.ofNullable(4, null),
-                        Pair.ofNullable(null, 4),
-                        Pair.ofNullable(5, 5),
-                        Pair.ofNullable(6, null)),
+                        IntPair.onlyA(0),
+                        IntPair.onlyB(0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2),
+                        IntPair.of(3, 3),
+                        IntPair.onlyA(4),
+                        IntPair.onlyB(4),
+                        IntPair.of(5, 5),
+                        IntPair.onlyA(6)),
                 testee.makePairs(listSITTING, listKITTEN));
     }
 }

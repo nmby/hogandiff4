@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 class SimpleMatcherTest {
     
@@ -53,45 +53,45 @@ class SimpleMatcherTest {
                 testee.makePairs(list0, list0));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2)),
                 testee.makePairs(listABC, listABC));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2)),
                 testee.makePairs(listABC, listXYZ));
         
         // 長さが異なる場合
         assertEquals(
                 List.of(
-                        Pair.ofNullable(null, 0),
-                        Pair.ofNullable(null, 1),
-                        Pair.ofNullable(null, 2)),
+                        IntPair.onlyB(0),
+                        IntPair.onlyB(1),
+                        IntPair.onlyB(2)),
                 testee.makePairs(list0, listABC));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, null),
-                        Pair.ofNullable(1, null),
-                        Pair.ofNullable(2, null)),
+                        IntPair.onlyA(0),
+                        IntPair.onlyA(1),
+                        IntPair.onlyA(2)),
                 testee.makePairs(listABC, list0));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2),
-                        Pair.ofNullable(null, 3),
-                        Pair.ofNullable(null, 4)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2),
+                        IntPair.onlyB(3),
+                        IntPair.onlyB(4)),
                 testee.makePairs(listXYZ, listVWXYZ));
         assertEquals(
                 List.of(
-                        Pair.ofNullable(0, 0),
-                        Pair.ofNullable(1, 1),
-                        Pair.ofNullable(2, 2),
-                        Pair.ofNullable(3, null),
-                        Pair.ofNullable(4, null)),
+                        IntPair.of(0, 0),
+                        IntPair.of(1, 1),
+                        IntPair.of(2, 2),
+                        IntPair.onlyA(3),
+                        IntPair.onlyA(4)),
                 testee.makePairs(listVWXYZ, listXYZ));
     }
 }
