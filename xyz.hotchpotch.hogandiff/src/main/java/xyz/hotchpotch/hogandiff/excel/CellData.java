@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * Excelシート上のセルを表します。<br>
@@ -56,7 +56,7 @@ public interface CellData {
         
         Objects.requireNonNull(address, "address");
         
-        Pair<Integer> idx = CellsUtil.addressToIdx(address);
+        IntPair idx = CellsUtil.addressToIdx(address);
         return CellData.of(idx.a(), idx.b(), content, saveMemory);
     }
     

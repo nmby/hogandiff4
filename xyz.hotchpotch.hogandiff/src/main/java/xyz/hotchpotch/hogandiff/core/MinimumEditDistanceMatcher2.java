@@ -7,7 +7,7 @@ import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 2つのリスト間の編集距離が最小となるように要素同士を対応付ける {@link Matcher} の実装です。<br>
@@ -91,7 +91,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(
+    public List<IntPair> makePairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -100,22 +100,22 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         
         if (listA == listB) {
             return IntStream.range(0, listA.size())
-                    .mapToObj(n -> Pair.of(n, n))
+                    .mapToObj(n -> IntPair.of(n, n))
                     .toList();
         }
         if (listA.isEmpty() && listB.isEmpty()) {
             return List.of();
         }
         if (listA.isEmpty()) {
-            return IntStream.range(0, listB.size()).mapToObj(Pair::onlyB).toList();
+            return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
         }
         if (listB.isEmpty()) {
-            return IntStream.range(0, listA.size()).mapToObj(Pair::onlyA).toList();
+            return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
         }
         
         ComeFrom bestRoute = calcBestRoute(listA, listB);
         
-        List<Pair<Integer>> pairs = traceBestRoute(listA, listB, bestRoute);
+        List<IntPair> pairs = traceBestRoute(listA, listB, bestRoute);
         
         return pairs;
     }
@@ -210,7 +210,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         return comeFrom0[1];
     }
     
-    private List<Pair<Integer>> traceBestRoute(
+    private List<IntPair> traceBestRoute(
             List<? extends T> listA,
             List<? extends T> listB,
             ComeFrom comeFrom) {
@@ -219,7 +219,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         assert listB != null;
         assert comeFrom != null;
         
-        LinkedList<Pair<Integer>> bestRoute = new LinkedList<>();
+        LinkedList<IntPair> bestRoute = new LinkedList<>();
         int a = listA.size();
         int b = listB.size();
         
@@ -228,15 +228,15 @@ import xyz.hotchpotch.hogandiff.util.Pair;
             case FROM_UPPER_LEFT:
                 a--;
                 b--;
-                bestRoute.addFirst(Pair.of(a, b));
+                bestRoute.addFirst(IntPair.of(a, b));
                 break;
             case FROM_UPPER:
                 a--;
-                bestRoute.addFirst(Pair.onlyA(a));
+                bestRoute.addFirst(IntPair.onlyA(a));
                 break;
             case FROM_LEFT:
                 b--;
-                bestRoute.addFirst(Pair.onlyB(b));
+                bestRoute.addFirst(IntPair.onlyB(b));
                 break;
             default:
                 throw new AssertionError(comeFrom.direction);

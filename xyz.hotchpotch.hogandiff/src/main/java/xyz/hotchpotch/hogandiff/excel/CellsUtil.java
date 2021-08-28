@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.apache.poi.ss.util.CellAddress;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * セルに関するユーティリティクラスです。<br>
@@ -39,11 +39,11 @@ public class CellsUtil {
      * @return 行・列のインデックスのペア
      * @throws NullPointerException {@code address} が {@code null} の場合
      */
-    public static Pair<Integer> addressToIdx(String address) {
+    public static IntPair addressToIdx(String address) {
         Objects.requireNonNull(address, "address");
         
         CellAddress ca = new CellAddress(address);
-        return Pair.of(ca.getRow(), ca.getColumn());
+        return IntPair.of(ca.getRow(), ca.getColumn());
     }
     
     /**

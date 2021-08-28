@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 2つのリストの要素同士の組み合わせの中で、リスト内における要素の順番に関わりなく
@@ -29,7 +29,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @author nmby
      */
     // java16で正式導入されたRecordを使ってみる。
-    private static record Cost(Integer idxA, Integer idxB, int cost)
+    private static record Cost(IntPair idxs, int cost)
             implements Comparable<Cost> {
         
         // [static members] ----------------------------------------------------
@@ -37,13 +37,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         // [instance members] --------------------------------------------------
         
         private Cost {
-            assert idxA != null || idxB != null;
-            assert idxA == null || 0 <= idxA;
-            assert idxB == null || 0 <= idxB;
-        }
-        
-        private boolean isPaired() {
-            return idxA != null && idxB != null;
+            assert idxs != null;
         }
         
         @Override
@@ -54,13 +48,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
                 // コストそのものが異なる場合は、それに基づいて比較する。
                 return cost < other.cost ? -1 : 1;
             }
-            if (isPaired() && other.isPaired()) {
+            if (idxs.isPaired() && other.idxs.isPaired()) {
                 // コストが同じでともにペアリング済みの場合
                 
-                int iA = idxA;
-                int iB = idxB;
-                int oA = other.idxA;
-                int oB = other.idxB;
+                int iA = idxs.a();
+                int iB = idxs.b();
+                int oA = other.idxs.a();
+                int oB = other.idxs.b();
                 
                 if (Math.abs(iA - iB) != Math.abs(oA - oB)) {
                     // ペア間の距離が異なる場合は、近い方を「小さい」と判断する。
@@ -77,20 +71,20 @@ import xyz.hotchpotch.hogandiff.util.Pair;
                 // ここまで到達しないはず
                 throw new AssertionError(String.format("this:%s, other:%s", this, other));
                 
-            } else if (isPaired() != other.isPaired()) {
+            } else if (idxs.isPaired() != other.idxs.isPaired()) {
                 // コストが同じで片方のみペアリング済みの場合は、ペアリング済みの方を「小さい」と判断する。
-                return isPaired() ? -1 : 1;
+                return idxs.isPaired() ? -1 : 1;
                 
             } else {
                 // コストが同じでともに単独の場合
                 
-                if ((idxA == null) != (other.idxA == null)) {
+                if (idxs.hasA() != other.idxs.hasA()) {
                     // idxAが存在する方を「小さい」と判断する。
-                    return idxA != null ? -1 : 1;
+                    return idxs.hasA() ? -1 : 1;
                 }
                 
-                int i = idxA != null ? idxA : idxB;
-                int o = other.idxA != null ? other.idxA : other.idxB;
+                int i = idxs.hasA() ? idxs.a() : idxs.b();
+                int o = other.idxs.hasA() ? other.idxs.a() : other.idxs.b();
                 if (i != o) {
                     // 存在する方の原点からの距離が異なる場合は、原点に近い方を「小さい」と判断する。
                     return i < o ? -1 : 1;
@@ -126,7 +120,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(
+    public List<IntPair> makePairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -135,38 +129,40 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         
         if (listA == listB) {
             return IntStream.range(0, listA.size())
-                    .mapToObj(n -> Pair.of(n, n))
+                    .mapToObj(n -> IntPair.of(n, n))
                     .toList();
         }
         
         // まず、全ての組み合わせのコストを計算する。
         Stream<Cost> gapCostsA = IntStream.range(0, listA.size()).parallel()
-                .mapToObj(i -> new Cost(i, null, gapEvaluator.applyAsInt(listA.get(i))));
+                .mapToObj(i -> new Cost(IntPair.onlyA(i), gapEvaluator.applyAsInt(listA.get(i))));
         Stream<Cost> gapCostsB = IntStream.range(0, listB.size()).parallel()
-                .mapToObj(j -> new Cost(null, j, gapEvaluator.applyAsInt(listB.get(j))));
+                .mapToObj(j -> new Cost(IntPair.onlyB(j), gapEvaluator.applyAsInt(listB.get(j))));
         Stream<Cost> diffCosts = IntStream.range(0, listA.size()).parallel()
                 .boxed()
                 .flatMap(i -> IntStream.range(0, listB.size()).parallel()
-                        .mapToObj(j -> new Cost(i, j, diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
+                        .mapToObj(j -> new Cost(
+                                IntPair.of(i, j),
+                                diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
         
         // これらを結合し、小さい順にソートする。
         LinkedList<Cost> costs = Stream.concat(Stream.concat(gapCostsA, gapCostsB), diffCosts)
                 .sorted()
                 .collect(Collectors.toCollection(LinkedList::new));
         
-        List<Pair<Integer>> pairs = new ArrayList<>();
+        List<IntPair> pairs = new ArrayList<>();
         while (0 < costs.size()) {
             
             // 小さいものから結果として採用する。
             Cost cost = costs.removeFirst();
-            pairs.add(Pair.ofNullable(cost.idxA, cost.idxB));
+            pairs.add(cost.idxs);
             
             // 結果として採用された要素を含む候補を除去する。
-            if (cost.idxA != null) {
-                costs.removeIf(c -> cost.idxA.equals(c.idxA));
+            if (cost.idxs.hasA()) {
+                costs.removeIf(c -> c.idxs.hasA() && c.idxs.a() == cost.idxs.a());
             }
-            if (cost.idxB != null) {
-                costs.removeIf(c -> cost.idxB.equals(c.idxB));
+            if (cost.idxs.hasB()) {
+                costs.removeIf(c -> c.idxs.hasB() && c.idxs.b() == cost.idxs.b());
             }
         }
         return pairs;

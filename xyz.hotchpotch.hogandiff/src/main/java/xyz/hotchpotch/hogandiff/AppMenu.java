@@ -9,6 +9,7 @@ import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -56,12 +57,12 @@ public enum AppMenu {
                     String::length,
                     StringDiffUtil::levenshteinDistance);
             
-            List<Pair<Integer>> pairs = matcher.makePairs(sheetNames1, sheetNames2);
+            List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
             
             return pairs.stream()
                     .map(p -> Pair.ofNullable(
-                            p.isPresentA() ? sheetNames1.get(p.a()) : null,
-                            p.isPresentB() ? sheetNames2.get(p.b()) : null))
+                            p.hasA() ? sheetNames1.get(p.a()) : null,
+                            p.hasB() ? sheetNames2.get(p.b()) : null))
                     .toList();
         }
     },

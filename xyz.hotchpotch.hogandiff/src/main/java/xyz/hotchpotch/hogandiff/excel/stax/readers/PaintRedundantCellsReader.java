@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 余剰行や余剰列上のセルに色を付ける {@link XMLEventReader} の実装です。<br>
@@ -104,7 +104,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
         }
         
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
-        Pair<Integer> idx = CellsUtil.addressToIdx(address);
+        IntPair idx = CellsUtil.addressToIdx(address);
         int row = idx.a();
         int column = idx.b();
         

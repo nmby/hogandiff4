@@ -25,7 +25,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 余剰列に色を付ける {@link XMLEventReader} の実装です。<br>
@@ -71,7 +71,7 @@ public class PaintColumnsReader extends BufferingReader {
     // [instance members] ******************************************************
     
     private final StylesManager stylesManager;
-    private final Deque<Pair<Integer>> targetRanges = new ArrayDeque<>();
+    private final Deque<IntPair> targetRanges = new ArrayDeque<>();
     private final short colorIdx;
     private boolean auto;
     
@@ -101,14 +101,14 @@ public class PaintColumnsReader extends BufferingReader {
                 } else if (end + 1 == i) {
                     end = i;
                 } else if (end + 1 < i) {
-                    targetRanges.add(Pair.of(start, end));
+                    targetRanges.add(IntPair.of(start, end));
                     start = i;
                     end = i;
                 } else {
                     throw new AssertionError();
                 }
             }
-            targetRanges.add(Pair.of(start, end));
+            targetRanges.add(IntPair.of(start, end));
         }
     }
     
@@ -137,8 +137,8 @@ public class PaintColumnsReader extends BufferingReader {
         }
         
         Deque<XMLEvent> nextCol = new ArrayDeque<>();
-        Pair<Integer> sourceRange = supplyCol(nextCol);
-        Pair<Integer> targetRange = targetRanges.removeFirst();
+        IntPair sourceRange = supplyCol(nextCol);
+        IntPair targetRange = targetRanges.removeFirst();
         
         // 実装の容易さを優先し、cols 要素内の全 col 要素を一気に片付けてしまうことにする。
         // col 要素の数は高が知れているので、メモリ消費量は問題にならないはず。
@@ -171,7 +171,7 @@ public class PaintColumnsReader extends BufferingReader {
                 // sourceRange      +--...
                 
                 createCol(targetRange.a(), sourceRange.a() - 1);
-                targetRange = Pair.of(sourceRange.a(), targetRange.b());
+                targetRange = IntPair.of(sourceRange.a(), targetRange.b());
                 
             } else if (sourceRange.a() < targetRange.a()) {
                 // targetRange      +--...
@@ -184,7 +184,7 @@ public class PaintColumnsReader extends BufferingReader {
                 buffer.addAll(copyCol);
                 nextCol.addFirst(modifyCol(start, targetRange.a(), sourceRange.b(), false));
                 
-                sourceRange = Pair.of(targetRange.a(), sourceRange.b());
+                sourceRange = IntPair.of(targetRange.a(), sourceRange.b());
                 
             } else if (targetRange.b() < sourceRange.b()) {
                 // targetRange  +---+
@@ -197,7 +197,7 @@ public class PaintColumnsReader extends BufferingReader {
                 buffer.addAll(copyCol);
                 nextCol.addFirst(modifyCol(start, targetRange.b() + 1, sourceRange.b(), false));
                 
-                sourceRange = Pair.of(targetRange.b() + 1, sourceRange.b());
+                sourceRange = IntPair.of(targetRange.b() + 1, sourceRange.b());
                 targetRange = targetRanges.pollFirst();
                 
             } else if (sourceRange.b() < targetRange.b()) {
@@ -210,7 +210,7 @@ public class PaintColumnsReader extends BufferingReader {
                 buffer.addAll(nextCol);
                 nextCol.clear();
                 
-                targetRange = Pair.of(sourceRange.b() + 1, targetRange.b());
+                targetRange = IntPair.of(sourceRange.b() + 1, targetRange.b());
                 event = source.peek();
                 if (StaxUtil.isStart(event, QNAME.COL)) {
                     sourceRange = supplyCol(nextCol);
@@ -263,21 +263,21 @@ public class PaintColumnsReader extends BufferingReader {
      * @return 次の col 要素の範囲を表すペア
      * @throws XMLStreamException XMLイベントの解析に失敗した場合
      */
-    private Pair<Integer> supplyCol(Deque<XMLEvent> nextCol) throws XMLStreamException {
+    private IntPair supplyCol(Deque<XMLEvent> nextCol) throws XMLStreamException {
         XMLEvent event;
         do {
             event = source.nextEvent();
             nextCol.add(event);
         } while (!StaxUtil.isEnd(event, QNAME.COL));
         
-        return Pair.of(
+        return IntPair.of(
                 Integer.parseInt(nextCol.getFirst().asStartElement()
                         .getAttributeByName(NONS_QNAME.MIN).getValue()) - 1,
                 Integer.parseInt(nextCol.getFirst().asStartElement()
                         .getAttributeByName(NONS_QNAME.MAX).getValue()) - 1);
     }
     
-    private void createCol(Pair<Integer> range) {
+    private void createCol(IntPair range) {
         createCol(range.a(), range.b());
     }
     
