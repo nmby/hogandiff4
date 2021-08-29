@@ -15,6 +15,62 @@ public abstract class IntPair {
     
     // [static members] ********************************************************
     
+    private static class Same extends IntPair {
+        private final int x;
+        
+        private Same(int x) {
+            this.x = x;
+        }
+        
+        @Override
+        public int a() {
+            return x;
+        }
+        
+        @Override
+        public int b() {
+            return x;
+        }
+        
+        @Override
+        public boolean hasA() {
+            return true;
+        }
+        
+        @Override
+        public boolean hasB() {
+            return true;
+        }
+        
+        @Override
+        public IntPair map(IntUnaryOperator mapper) {
+            Objects.requireNonNull(mapper, "mapper");
+            
+            return new Same(mapper.applyAsInt(x));
+        }
+        
+        @Override
+        public String toString() {
+            return "(%d, %d)".formatted(x, x);
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Same p) {
+                return x == p.x;
+            }
+            if (o instanceof Both p) {
+                return x == p.a && x == p.b;
+            }
+            return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            return 31 * x + x;
+        }
+    }
+    
     private static class Both extends IntPair {
         private final int a;
         private final int b;
@@ -60,6 +116,9 @@ public abstract class IntPair {
         public boolean equals(Object o) {
             if (o instanceof Both p) {
                 return a == p.a && b == p.b;
+            }
+            if (o instanceof Same p) {
+                return a == p.x && b == p.x;
             }
             return false;
         }
@@ -184,7 +243,7 @@ public abstract class IntPair {
      * @return 新たなペア
      */
     public static IntPair of(int a, int b) {
-        return new Both(a, b);
+        return a == b ? new Same(a) : new Both(a, b);
     }
     
     /**
@@ -221,34 +280,78 @@ public abstract class IntPair {
     private IntPair() {
     }
     
+    /**
+     * 値aがある場合はその値を返し、そうでない場合は例外をスローします。<br>
+     * 
+     * @return 値a
+     * @throws NoSuchElementException 値aが無い場合
+     */
     public int a() {
         throw new NoSuchElementException();
     }
     
+    /**
+     * 値bがある場合はその値を返し、そうでない場合は例外をスローします。<br>
+     * 
+     * @return 値b
+     * @throws NoSuchElementException 値bが無い場合
+     */
     public int b() {
         throw new NoSuchElementException();
     }
     
+    /**
+     * 値aが存在するかを返します。<br>
+     * 
+     * @return 値aが存在する場合は {@code true}
+     */
     public boolean hasA() {
         return false;
     }
     
+    /**
+     * 値bが存在するかを返します。<br>
+     * 
+     * @return 値bが存在する場合は {@code true}
+     */
     public boolean hasB() {
         return false;
     }
     
+    /**
+     * 値a, 値bがともに存在するかを返します。<br>
+     * 
+     * @return 両値ともに存在する場合は {@code true}
+     */
     public final boolean isPaired() {
         return hasA() && hasB();
     }
     
+    /**
+     * 値aだけが存在するかを返します。<br>
+     * 
+     * @return 値aだけが存在する場合は {@code true}
+     */
     public final boolean isOnlyA() {
         return hasA() && !hasB();
     }
     
+    /**
+     * 値bだけが存在するかを返します。<br>
+     * 
+     * @return 値bだけが存在する場合は {@code true}
+     */
     public final boolean isOnlyB() {
         return !hasA() && hasB();
     }
     
+    /**
+     * 値a, 値bそれぞれに指定された演算を適用して得られるペアを返します。<br>
+     * 
+     * @param mapper 値a, 値bに適用する演算
+     * @return 新たなペア
+     * @throws NullPointerException {@code mapper} が {@code null} の場合
+     */
     public IntPair map(IntUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper");
         
