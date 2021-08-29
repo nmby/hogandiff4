@@ -280,34 +280,78 @@ public abstract class IntPair {
     private IntPair() {
     }
     
+    /**
+     * 値aがある場合はその値を返し、そうでない場合は例外をスローします。<br>
+     * 
+     * @return 値a
+     * @throws NoSuchElementException 値aが無い場合
+     */
     public int a() {
         throw new NoSuchElementException();
     }
     
+    /**
+     * 値bがある場合はその値を返し、そうでない場合は例外をスローします。<br>
+     * 
+     * @return 値b
+     * @throws NoSuchElementException 値bが無い場合
+     */
     public int b() {
         throw new NoSuchElementException();
     }
     
+    /**
+     * 値aが存在するかを返します。<br>
+     * 
+     * @return 値aが存在する場合は {@code true}
+     */
     public boolean hasA() {
         return false;
     }
     
+    /**
+     * 値bが存在するかを返します。<br>
+     * 
+     * @return 値bが存在する場合は {@code true}
+     */
     public boolean hasB() {
         return false;
     }
     
+    /**
+     * 値a, 値bがともに存在するかを返します。<br>
+     * 
+     * @return 両値ともに存在する場合は {@code true}
+     */
     public final boolean isPaired() {
         return hasA() && hasB();
     }
     
+    /**
+     * 値aだけが存在するかを返します。<br>
+     * 
+     * @return 値aだけが存在する場合は {@code true}
+     */
     public final boolean isOnlyA() {
         return hasA() && !hasB();
     }
     
+    /**
+     * 値bだけが存在するかを返します。<br>
+     * 
+     * @return 値bだけが存在する場合は {@code true}
+     */
     public final boolean isOnlyB() {
         return !hasA() && hasB();
     }
     
+    /**
+     * 値a, 値bそれぞれに指定された演算を適用して得られるペアを返します。<br>
+     * 
+     * @param mapper 値a, 値bに適用する演算
+     * @return 新たなペア
+     * @throws NullPointerException {@code mapper} が {@code null} の場合
+     */
     public IntPair map(IntUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper");
         
