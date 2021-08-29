@@ -28,6 +28,8 @@ public class SComparatorImpl implements SComparator {
     
     // [static members] ********************************************************
     
+    private static int[] EMPTY_INT_ARRAY = new int[] {};
+    
     /**
      * 行同士または列同士の対応関係を決定するマッパーを表します。<br>
      * これは、{@link #makePairs(Set, Set)} を関数メソッドに持つ関数型インタフェースです。<br>
@@ -319,8 +321,8 @@ public class SComparatorImpl implements SComparator {
                         considerColumnGaps,
                         compareCellContents,
                         compareCellComments,
-                        Pair.of(List.of(), List.of()),
-                        Pair.of(List.of(), List.of()),
+                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
+                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
@@ -331,16 +333,16 @@ public class SComparatorImpl implements SComparator {
         List<IntPair> columnPairs = columnsMapper.makePairs(cells1, cells2);
         
         // 余剰行の収集
-        List<Integer> redundantRows1 = rowPairs.stream()
-                .filter(IntPair::isOnlyA).map(IntPair::a).toList();
-        List<Integer> redundantRows2 = rowPairs.stream()
-                .filter(IntPair::isOnlyB).map(IntPair::b).toList();
+        int[] redundantRows1 = rowPairs.stream()
+                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
+        int[] redundantRows2 = rowPairs.stream()
+                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
         
         // 余剰列の収集
-        List<Integer> redundantColumns1 = columnPairs.stream()
-                .filter(IntPair::isOnlyA).map(IntPair::a).toList();
-        List<Integer> redundantColumns2 = columnPairs.stream()
-                .filter(IntPair::isOnlyB).map(IntPair::b).toList();
+        int[] redundantColumns1 = columnPairs.stream()
+                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
+        int[] redundantColumns2 = columnPairs.stream()
+                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
         
         // 差分セルの収集
         List<Pair<CellData>> diffCells = extractDiffs(

@@ -1,15 +1,16 @@
 package xyz.hotchpotch.hogandiff.excel.stax.readers;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -50,7 +51,7 @@ public class PaintRowsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<Integer> targetRows,
+            int[] targetRows,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
@@ -74,7 +75,7 @@ public class PaintRowsReader extends BufferingReader {
     private PaintRowsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<Integer> targetRows,
+            int[] targetRows,
             short colorIdx) {
         
         super(source);
@@ -83,7 +84,7 @@ public class PaintRowsReader extends BufferingReader {
         assert targetRows != null;
         
         this.stylesManager = stylesManager;
-        this.targetRows = new ArrayDeque<>(targetRows);
+        this.targetRows = Arrays.stream(targetRows).boxed().collect(Collectors.toCollection(ArrayDeque::new));
         this.colorIdx = colorIdx;
     }
     
