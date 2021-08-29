@@ -375,11 +375,13 @@ public class SComparatorImpl implements SComparator {
         Map<String, CellData> map2 = cells2.stream()
                 .collect(Collectors.toMap(CellData::address, Function.identity()));
         
+        List<IntPair> columnPairsFiltered = columnPairs.stream().filter(IntPair::isPaired).toList();
+        
         return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(rp -> {
             int row1 = rp.a();
             int row2 = rp.b();
             
-            return columnPairs.stream().filter(IntPair::isPaired).map(cp -> {
+            return columnPairsFiltered.stream().map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
                 String address1 = CellsUtil.idxToAddress(row1, column1);
@@ -392,7 +394,7 @@ public class SComparatorImpl implements SComparator {
                         : Pair.<CellData> of(
                                 cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
                                 cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
-            });
-        }).filter(Objects::nonNull).toList();
+            }).filter(Objects::nonNull);
+        }).toList();
     }
 }

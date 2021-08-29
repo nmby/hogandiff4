@@ -2,8 +2,6 @@ package xyz.hotchpotch.hogandiff.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * 同型の2つの要素を保持する不変クラスです。<br>
@@ -14,8 +12,6 @@ import java.util.function.Function;
 public record Pair<T>(T a, T b) {
     
     // [static members] ********************************************************
-    
-    private static final Pair<?> EMPTY = new Pair<>(null, null);
     
     /**
      * ペアのどちら側かを表す列挙型です。<br>
@@ -61,22 +57,6 @@ public record Pair<T>(T a, T b) {
     }
     
     /**
-     * 新たなペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param a 要素a
-     * @param b 要素b
-     * @return 新たなペア
-     * @throws NullPointerException {@code a}, {@code b} のいずれかが {@code null} の場合
-     */
-    public static <T> Pair<T> flatOf(Optional<? extends T> a, Optional<? extends T> b) {
-        Objects.requireNonNull(a, "a");
-        Objects.requireNonNull(b, "b");
-        
-        return new Pair<>(a.orElse(null), b.orElse(null));
-    }
-    
-    /**
      * どちらかまたは両方の要素が欠けている可能性のあるペアを生成します。<br>
      * 
      * @param <T> 要素の型
@@ -86,61 +66,6 @@ public record Pair<T>(T a, T b) {
      */
     public static <T> Pair<T> ofNullable(T a, T b) {
         return new Pair<>(a, b);
-    }
-    
-    /**
-     * 要素aだけが存在し要素bが欠けているペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param a 要素a
-     * @return 新たなペア
-     * @throws NullPointerException {@code a} が {@code null} の場合
-     */
-    public static <T> Pair<T> onlyA(T a) {
-        Objects.requireNonNull(a, "a");
-        
-        return new Pair<>(a, null);
-    }
-    
-    /**
-     * 要素bだけが存在し要素aが欠けているペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param b 要素b
-     * @return 新たなペア
-     * @throws NullPointerException {@code b} が {@code null} の場合
-     */
-    public static <T> Pair<T> onlyB(T b) {
-        Objects.requireNonNull(b, "b");
-        
-        return new Pair<>(null, b);
-    }
-    
-    /**
-     * 指定された側の要素だけが存在し、他方が欠けているペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param side 要素の側
-     * @param value 要素の値
-     * @return 新たなペア
-     * @throws NullPointerException {@code side}, {@code value} のいずれかが {@code null} の場合
-     */
-    public static <T> Pair<T> only(Side side, T value) {
-        Objects.requireNonNull(side, "side");
-        Objects.requireNonNull(value, "value");
-        
-        return side == Side.A ? onlyA(value) : onlyB(value);
-    }
-    
-    /**
-     * 空のペアを返します。<br>
-     * 
-     * @param <T> 要素の型
-     * @return 空のペア
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Pair<T> empty() {
-        return (Pair<T>) EMPTY;
     }
     
     // [instance members] ******************************************************
@@ -193,45 +118,11 @@ public record Pair<T>(T a, T b) {
     }
     
     /**
-     * 要素aがある場合はその値を返し、そうでない場合は {@code other} を返します。<br>
-     * 
-     * @param other 要素aが無い場合に返される値（{@code null} 許容）
-     * @return 要素aがある場合はその値、そうでない場合は {@code other}
-     */
-    public T aOrElse(T other) {
-        return a == null ? other : a;
-    }
-    
-    /**
-     * 要素bがある場合はその値を返し、そうでない場合は {@code other} を返します。<br>
-     * 
-     * @param other 要素bが無い場合に返される値（{@code null} 許容）
-     * @return 要素bがある場合はその値、そうでない場合は {@code other}
-     */
-    public T bOrElse(T other) {
-        return b == null ? other : b;
-    }
-    
-    /**
-     * 指定された側の要素がある場合はその値を返し、そうでない場合は {@code other} を返します。<br>
-     * 
-     * @param side 要素の側
-     * @param other 指定された側の要素が無い場合に返される値（{@code null} 許容）
-     * @return 指定された側の要素がある場合はその値、そうでない場合は {@code other}
-     * @throws NullPointerException {@code side} が {@code null} の場合
-     */
-    public T orElse(Side side, T other) {
-        Objects.requireNonNull(side, "side");
-        
-        return side == Side.A ? aOrElse(other) : bOrElse(other);
-    }
-    
-    /**
      * 要素aが存在するかを返します。<br>
      * 
      * @return 要素aが存在する場合は {@code true}
      */
-    public boolean isPresentA() {
+    public boolean hasA() {
         return a != null;
     }
     
@@ -240,7 +131,7 @@ public record Pair<T>(T a, T b) {
      * 
      * @return 要素bが存在する場合は {@code true}
      */
-    public boolean isPresentB() {
+    public boolean hasB() {
         return b != null;
     }
     
@@ -251,10 +142,10 @@ public record Pair<T>(T a, T b) {
      * @return 指定された側の要素が存在する場合は {@code true}
      * @throws NullPointerException {@code side} が {@code null} の場合
      */
-    public boolean isPresent(Side side) {
+    public boolean has(Side side) {
         Objects.requireNonNull(side, "side");
         
-        return side == Side.A ? isPresentA() : isPresentB();
+        return side == Side.A ? hasA() : hasB();
     }
     
     /**
@@ -263,7 +154,7 @@ public record Pair<T>(T a, T b) {
      * @return 両要素ともに存在する場合は {@code true}
      */
     public boolean isPaired() {
-        return isPresentA() && isPresentB();
+        return hasA() && hasB();
     }
     
     /**
@@ -272,7 +163,7 @@ public record Pair<T>(T a, T b) {
      * @return 要素aだけが存在する場合は {@code true}
      */
     public boolean isOnlyA() {
-        return isPresentA() && !isPresentB();
+        return hasA() && !hasB();
     }
     
     /**
@@ -281,29 +172,7 @@ public record Pair<T>(T a, T b) {
      * @return 要素bだけが存在する場合は {@code true}
      */
     public boolean isOnlyB() {
-        return !isPresentA() && isPresentB();
-    }
-    
-    /**
-     * 指定された側の要素だけが存在するかを返します。<br>
-     * 
-     * @param side 要素の側
-     * @return 指定された側の要素だけが存在する場合は {@code true}
-     * @throws NullPointerException {@code side} が {@code null} の場合
-     */
-    public boolean isOnly(Side side) {
-        Objects.requireNonNull(side, "side");
-        
-        return side == Side.A ? isOnlyA() : isOnlyB();
-    }
-    
-    /**
-     * ペアが空（どちらの要素も存在しない）かを返します。<br>
-     * 
-     * @return ペアが空の（どちらの要素も存在しない）場合は {@code true}
-     */
-    public boolean isEmpty() {
-        return !isPresentA() && !isPresentB();
+        return !hasA() && hasB();
     }
     
     /**
@@ -313,31 +182,5 @@ public record Pair<T>(T a, T b) {
      */
     public boolean isIdentical() {
         return Objects.equals(a, b);
-    }
-    
-    /**
-     * 要素a, 要素bを入れ替えたペアを生成して返します。<br>
-     * 
-     * @return 要素a, 要素bを入れ替えたペア
-     */
-    public Pair<T> reversed() {
-        return new Pair<>(b, a);
-    }
-    
-    /**
-     * このペアの要素に {@code mapper} をそれぞれ適用して得られる値を要素とする
-     * 新しいペアを生成して返します。<br>
-     * 
-     * @param <U> 新しいペアの要素の型
-     * @param mapper 変換関数
-     * @return 新しいペア
-     * @throws NullPointerException {@code mapper} が {@code null} の場合
-     */
-    public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper");
-        
-        return new Pair<>(
-                a == null ? null : mapper.apply(a),
-                b == null ? null : mapper.apply(b));
     }
 }

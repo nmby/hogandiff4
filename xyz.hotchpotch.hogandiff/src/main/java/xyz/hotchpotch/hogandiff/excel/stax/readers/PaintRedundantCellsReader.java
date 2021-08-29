@@ -105,10 +105,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
         
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
         IntPair idx = CellsUtil.addressToIdx(address);
-        int row = idx.a();
-        int column = idx.b();
         
-        if (redundantRows.contains(row) || redundantColumns.contains(column)) {
+        if (redundantRows.contains(idx.a()) || redundantColumns.contains(idx.b())) {
             buffer.add(paintCell(event.asStartElement()));
             source.nextEvent();
         }
