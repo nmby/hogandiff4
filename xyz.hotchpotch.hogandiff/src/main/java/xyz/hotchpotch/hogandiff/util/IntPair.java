@@ -15,6 +15,62 @@ public abstract class IntPair {
     
     // [static members] ********************************************************
     
+    private static class Same extends IntPair {
+        private final int x;
+        
+        private Same(int x) {
+            this.x = x;
+        }
+        
+        @Override
+        public int a() {
+            return x;
+        }
+        
+        @Override
+        public int b() {
+            return x;
+        }
+        
+        @Override
+        public boolean hasA() {
+            return true;
+        }
+        
+        @Override
+        public boolean hasB() {
+            return true;
+        }
+        
+        @Override
+        public IntPair map(IntUnaryOperator mapper) {
+            Objects.requireNonNull(mapper, "mapper");
+            
+            return new Same(mapper.applyAsInt(x));
+        }
+        
+        @Override
+        public String toString() {
+            return "(%d, %d)".formatted(x, x);
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Same p) {
+                return x == p.x;
+            }
+            if (o instanceof Both p) {
+                return x == p.a && x == p.b;
+            }
+            return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            return 31 * x + x;
+        }
+    }
+    
     private static class Both extends IntPair {
         private final int a;
         private final int b;
@@ -60,6 +116,9 @@ public abstract class IntPair {
         public boolean equals(Object o) {
             if (o instanceof Both p) {
                 return a == p.a && b == p.b;
+            }
+            if (o instanceof Same p) {
+                return a == p.x && b == p.x;
             }
             return false;
         }
@@ -184,7 +243,7 @@ public abstract class IntPair {
      * @return 新たなペア
      */
     public static IntPair of(int a, int b) {
-        return new Both(a, b);
+        return a == b ? new Same(a) : new Both(a, b);
     }
     
     /**
