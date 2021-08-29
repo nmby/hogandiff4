@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -320,22 +321,22 @@ public class PoiUtil {
      * @throws NullPointerException
      *              {@code sheet}, {@code rowIdxs} のいずれかが {@code null} の場合
      */
-    public static void paintRows(Sheet sheet, List<Integer> rowIdxs, short color) {
+    public static void paintRows(Sheet sheet, int[] rowIdxs, short color) {
         Objects.requireNonNull(sheet, "sheet");
         Objects.requireNonNull(rowIdxs, "rowIdxs");
         
-        if (rowIdxs.isEmpty()) {
+        if (rowIdxs.length == 0) {
             return;
         }
         
         // まず、存在しない行を作成する。
         Set<Row> rows = new HashSet<>();
-        rowIdxs.forEach(i -> {
+        for (int i : rowIdxs) {
             if (sheet.getRow(i) == null) {
                 sheet.createRow(i);
             }
             rows.add(sheet.getRow(i));
-        });
+        }
         
         // 次に、着色前の現在のスタイルで行をグルーピングする。
         Map<CellStyle, Set<Row>> currStyles = rows.stream()
@@ -376,23 +377,25 @@ public class PoiUtil {
      * @throws NullPointerException
      *              {@code sheet}, {@code columnIdxs} のいずれかが {@code null} の場合
      */
-    public static void paintColumns(Sheet sheet, List<Integer> columnIdxs, short color) {
+    public static void paintColumns(Sheet sheet, int[] columnIdxs, short color) {
         Objects.requireNonNull(sheet, "sheet");
         Objects.requireNonNull(columnIdxs, "columnIdxs");
         
-        if (columnIdxs.isEmpty()) {
+        if (columnIdxs.length == 0) {
             return;
         }
         
         // まず、着色前の現行スタイルで列をグルーピングする。
-        Map<CellStyle, Set<Integer>> currStyles = columnIdxs.stream()
+        Map<CellStyle, Set<Integer>> currStyles = Arrays.stream(columnIdxs)
                 .filter(i -> sheet.getColumnStyle(i) != null)
+                .boxed()
                 .collect(Collectors.groupingBy(
                         sheet::getColumnStyle,
                         HashMap::new,
                         Collectors.toSet()));
-        currStyles.put(null, columnIdxs.stream()
+        currStyles.put(null, Arrays.stream(columnIdxs)
                 .filter(i -> sheet.getColumnStyle(i) == null)
+                .boxed()
                 .collect(Collectors.toSet()));
         
         // そして、現行スタイルごとに着色スタイルを用意し、対象列に適用する。
@@ -407,7 +410,7 @@ public class PoiUtil {
         });
         
         // 対象列上のセルのアドレスを集め、着色する。
-        Set<Integer> idxs = Set.copyOf(columnIdxs);
+        Set<Integer> idxs = Arrays.stream(columnIdxs).boxed().collect(Collectors.toSet());
         Set<CellAddress> addresses = StreamSupport.stream(sheet.spliterator(), true)
                 .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
                 .filter(cell -> idxs.contains(cell.getColumnIndex()))

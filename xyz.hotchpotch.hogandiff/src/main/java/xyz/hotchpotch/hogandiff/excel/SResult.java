@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -18,8 +19,8 @@ public record SResult(
         boolean considerColumnGaps,
         boolean compareCellContents,
         boolean compareCellComments,
-        Pair<List<Integer>> redundantRows,
-        Pair<List<Integer>> redundantColumns,
+        Pair<int[]> redundantRows,
+        Pair<int[]> redundantColumns,
         List<Pair<CellData>> diffCells) {
     
     // [static members] ********************************************************
@@ -32,8 +33,8 @@ public record SResult(
      * @author nmby
      */
     public static record Piece(
-            List<Integer> redundantRows,
-            List<Integer> redundantColumns,
+            int[] redundantRows,
+            int[] redundantColumns,
             List<CellData> diffCellContents,
             List<CellData> diffCellComments,
             List<CellData> redundantCellComments) {
@@ -52,12 +53,12 @@ public record SResult(
             Objects.requireNonNull(diffCellComments, "diffCellComments");
             Objects.requireNonNull(redundantCellComments, "redundantCellComments");
             
-            // 一応防御的コピーしておく。
-            redundantRows = List.copyOf(redundantRows);
-            redundantColumns = List.copyOf(redundantColumns);
-            diffCellContents = List.copyOf(diffCellContents);
-            diffCellComments = List.copyOf(diffCellComments);
-            redundantCellComments = List.copyOf(redundantCellComments);
+            // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
+            //redundantRows = Arrays.copyOf(redundantRows, redundantRows.length);
+            //redundantColumns = Arrays.copyOf(redundantColumns, redundantColumns.length);
+            //diffCellContents = List.copyOf(diffCellContents);
+            //diffCellComments = List.copyOf(diffCellComments);
+            //redundantCellComments = List.copyOf(redundantCellComments);
         }
         
         /**
@@ -66,8 +67,8 @@ public record SResult(
          * @return ひとつでも差分がある場合は {@code true}
          */
         public boolean hasDiff() {
-            return !redundantRows.isEmpty()
-                    || !redundantColumns.isEmpty()
+            return 0 < redundantRows.length
+                    || 0 < redundantColumns.length
                     || !diffCellContents.isEmpty()
                     || !diffCellComments.isEmpty()
                     || !redundantCellComments.isEmpty();
@@ -102,25 +103,25 @@ public record SResult(
             throw new IllegalArgumentException("illegal result");
         }
         
-        if (!considerRowGaps && (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty())) {
+        if (!considerRowGaps && (0 < redundantRows.a().length || 0 < redundantRows.b().length)) {
             throw new IllegalArgumentException("illegal row result");
         }
-        if (!considerColumnGaps && (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty())) {
+        if (!considerColumnGaps && (0 < redundantColumns.a().length || 0 < redundantColumns.b().length)) {
             throw new IllegalArgumentException("illegal column result");
         }
         
-        // 一応、防御的コピーしておく。
-        if (redundantRows.isPaired()) {
-            redundantRows = Pair.of(
-                    List.copyOf(redundantRows.a()),
-                    List.copyOf(redundantRows.b()));
-        }
-        if (redundantColumns.isPaired()) {
-            redundantColumns = Pair.of(
-                    List.copyOf(redundantColumns.a()),
-                    List.copyOf(redundantColumns.b()));
-        }
-        diffCells = List.copyOf(diffCells);
+        // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
+        //if (redundantRows.isPaired()) {
+        //    redundantRows = Pair.of(
+        //            Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
+        //            Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
+        //}
+        //if (redundantColumns.isPaired()) {
+        //    redundantColumns = Pair.of(
+        //            Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
+        //            Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
+        //}
+        //diffCells = List.copyOf(diffCells);
     }
     
     /**
@@ -170,10 +171,10 @@ public record SResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return !redundantRows.a().isEmpty()
-                || !redundantRows.b().isEmpty()
-                || !redundantColumns.a().isEmpty()
-                || !redundantColumns.b().isEmpty()
+        return 0 < redundantRows.a().length
+                || 0 < redundantRows.b().length
+                || 0 < redundantColumns.a().length
+                || 0 < redundantColumns.b().length
                 || !diffCells.isEmpty();
     }
     
@@ -187,8 +188,8 @@ public record SResult(
             return "(差分なし)";
         }
         
-        int rows = redundantRows.a().size() + redundantRows.b().size();
-        int cols = redundantColumns.a().size() + redundantColumns.b().size();
+        int rows = redundantRows.a().length + redundantRows.b().length;
+        int cols = redundantColumns.a().length + redundantColumns.b().length;
         int cells = diffCells.size();
         
         StringBuilder str = new StringBuilder();
@@ -223,25 +224,26 @@ public record SResult(
         
         StringBuilder str = new StringBuilder();
         
-        if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
+        if (0 < redundantRows.a().length || 0 < redundantRows.b().length) {
             for (Side side : Side.values()) {
-                List<Integer> rows = redundantRows.get(side);
-                if (!rows.isEmpty()) {
+                int[] rows = redundantRows.get(side);
+                if (0 < rows.length) {
                     str.append(String.format("シート%s上の余剰行 : ", side)).append(BR);
-                    rows.forEach(row -> str.append("    行").append(row + 1).append(BR));
+                    for (int row : rows) {
+                        str.append("    行").append(row + 1).append(BR);
+                    }
                 }
             }
             str.append(BR);
         }
-        if (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty()) {
+        if (0 < redundantColumns.a().length || 0 < redundantColumns.b().length) {
             for (Side side : Side.values()) {
-                List<Integer> cols = redundantColumns.get(side);
-                if (!cols.isEmpty()) {
+                int[] cols = redundantColumns.get(side);
+                if (0 < cols.length) {
                     str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
-                    cols.forEach(column -> str
-                            .append("    ")
-                            .append(CellsUtil.columnIdxToStr(column))
-                            .append("列").append(BR));
+                    for (int col : cols) {
+                        str.append("    ").append(CellsUtil.columnIdxToStr(col)).append("列").append(BR);
+                    }
                 }
             }
             str.append(BR);
@@ -271,34 +273,34 @@ public record SResult(
     public String getDiff() {
         StringBuilder str = new StringBuilder();
         
-        if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
+        if (0 < redundantRows.a().length || 0 < redundantRows.b().length) {
             str.append("Row Gaps :").append(BR);
             
-            Function<List<Integer>, String> rowsToStr = rows -> rows.stream()
+            Function<int[], String> rowsToStr = rows -> Arrays.stream(rows)
                     .map(i -> i + 1)
-                    .map(String::valueOf)
+                    .mapToObj(String::valueOf)
                     .collect(Collectors.joining(", "));
             
-            if (!redundantRows.a().isEmpty()) {
+            if (0 < redundantRows.a().length) {
                 str.append("- ").append(rowsToStr.apply(redundantRows.a())).append(BR);
             }
-            if (!redundantRows.b().isEmpty()) {
+            if (0 < redundantRows.b().length) {
                 str.append("+ ").append(rowsToStr.apply(redundantRows.b())).append(BR);
             }
             str.append(BR);
         }
         
-        if (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty()) {
+        if (0 < redundantColumns.a().length || 0 < redundantColumns.b().length) {
             str.append("Column Gaps :").append(BR);
             
-            Function<List<Integer>, String> columnsToStr = columns -> columns.stream()
-                    .map(CellsUtil::columnIdxToStr)
+            Function<int[], String> columnsToStr = columns -> Arrays.stream(columns)
+                    .mapToObj(CellsUtil::columnIdxToStr)
                     .collect(Collectors.joining(", "));
             
-            if (!redundantColumns.a().isEmpty()) {
+            if (0 < redundantColumns.a().length) {
                 str.append("- ").append(columnsToStr.apply(redundantColumns.a())).append(BR);
             }
-            if (!redundantColumns.b().isEmpty()) {
+            if (0 < redundantColumns.b().length) {
                 str.append("+ ").append(columnsToStr.apply(redundantColumns.b())).append(BR);
             }
             str.append(BR);
