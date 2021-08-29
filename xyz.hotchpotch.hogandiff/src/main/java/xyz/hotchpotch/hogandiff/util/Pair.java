@@ -122,7 +122,7 @@ public record Pair<T>(T a, T b) {
      * 
      * @return 要素aが存在する場合は {@code true}
      */
-    public boolean isPresentA() {
+    public boolean hasA() {
         return a != null;
     }
     
@@ -131,7 +131,7 @@ public record Pair<T>(T a, T b) {
      * 
      * @return 要素bが存在する場合は {@code true}
      */
-    public boolean isPresentB() {
+    public boolean hasB() {
         return b != null;
     }
     
@@ -142,10 +142,10 @@ public record Pair<T>(T a, T b) {
      * @return 指定された側の要素が存在する場合は {@code true}
      * @throws NullPointerException {@code side} が {@code null} の場合
      */
-    public boolean isPresent(Side side) {
+    public boolean has(Side side) {
         Objects.requireNonNull(side, "side");
         
-        return side == Side.A ? isPresentA() : isPresentB();
+        return side == Side.A ? hasA() : hasB();
     }
     
     /**
@@ -154,7 +154,7 @@ public record Pair<T>(T a, T b) {
      * @return 両要素ともに存在する場合は {@code true}
      */
     public boolean isPaired() {
-        return isPresentA() && isPresentB();
+        return hasA() && hasB();
     }
     
     /**
@@ -163,7 +163,7 @@ public record Pair<T>(T a, T b) {
      * @return 要素aだけが存在する場合は {@code true}
      */
     public boolean isOnlyA() {
-        return isPresentA() && !isPresentB();
+        return hasA() && !hasB();
     }
     
     /**
@@ -172,7 +172,7 @@ public record Pair<T>(T a, T b) {
      * @return 要素bだけが存在する場合は {@code true}
      */
     public boolean isOnlyB() {
-        return !isPresentA() && isPresentB();
+        return !hasA() && hasB();
     }
     
     /**
