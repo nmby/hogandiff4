@@ -94,14 +94,10 @@ public class AppTask extends Task<Void> {
         BResult results = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
-        if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
-            showResultText(workDir, results, 75, 80);
-        }
+        showResultText(workDir, results, 75, 80);
         
         // 5. 比較結果の表示（Excelブック）
-        if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-            showPaintedSheets(workDir, results, 80, 98);
-        }
+        showPaintedSheets(workDir, results, 80, 98);
         
         // 6. 処理終了のアナウンス
         announceEnd();
@@ -281,13 +277,17 @@ public class AppTask extends Task<Void> {
             textPath = workDir.resolve("result.txt");
             
             str.append(String.format(
-                    "比較結果テキストを保存して表示しています...\n    - %s\n\n", textPath));
+                    "比較結果テキストを保存しています...\n    - %s\n\n", textPath));
             updateMessage(str.toString());
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(results.toString());
             }
-            Desktop.getDesktop().open(textPath.toFile());
+            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
+                str.append("比較結果テキストを表示しています...\n\n");
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(textPath.toFile());
+            }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
@@ -341,9 +341,12 @@ public class AppTask extends Task<Void> {
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
-            str.append("比較結果のExcelブックを表示しています...\n\n");
-            updateMessage(str.toString());
-            Desktop.getDesktop().open(dst.toFile());
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append("比較結果のExcelブックを表示しています...\n\n");
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(dst.toFile());
+            }
+            
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
@@ -384,10 +387,13 @@ public class AppTask extends Task<Void> {
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
-            str.append("比較結果のExcelブックを表示しています...\n\n");
-            updateMessage(str.toString());
-            Desktop.getDesktop().open(dst1.toFile());
-            Desktop.getDesktop().open(dst2.toFile());
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append("比較結果のExcelブックを表示しています...\n\n");
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(dst1.toFile());
+                Desktop.getDesktop().open(dst2.toFile());
+            }
+            
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {

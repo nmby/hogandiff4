@@ -34,7 +34,7 @@ public class SettingKeys {
             true);
     
     /** 今回の実行を識別するためのタイムスタンプタグ */
-    public static final Key<String> CURR_TIMESTAMP = new Key<>(
+    public static final Key<String> CURR_TIMESTAMP = new Key<String>(
             "application.current.timestamp",
             () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
             Function.identity(),
@@ -42,7 +42,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較メニュー */
-    public static final Key<AppMenu> CURR_MENU = new Key<>(
+    public static final Key<AppMenu> CURR_MENU = new Key<AppMenu>(
             "application.current.menu",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -52,7 +52,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelブック1のパス */
-    public static final Key<Path> CURR_BOOK_PATH1 = new Key<>(
+    public static final Key<Path> CURR_BOOK_PATH1 = new Key<Path>(
             "application.current.bookPath1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -62,7 +62,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelブック2のパス */
-    public static final Key<Path> CURR_BOOK_PATH2 = new Key<>(
+    public static final Key<Path> CURR_BOOK_PATH2 = new Key<Path>(
             "application.current.bookPath2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -72,7 +72,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
-    public static final Key<String> CURR_SHEET_NAME1 = new Key<>(
+    public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(
             "application.current.sheetName1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -82,7 +82,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelシート2の名前 */
-    public static final Key<String> CURR_SHEET_NAME2 = new Key<>(
+    public static final Key<String> CURR_SHEET_NAME2 = new Key<String>(
             "application.current.sheetName2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -95,7 +95,7 @@ public class SettingKeys {
      * Excelシート同士の比較において、
      * 行の挿入／削除を考慮する（{@code true}）か考慮しない（{@code false}）かを表します。<br>
      */
-    public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(
+    public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<Boolean>(
             "compare.considerRowGaps",
             () -> true,
             String::valueOf,
@@ -106,7 +106,7 @@ public class SettingKeys {
      * Excelシート同士の比較において、
      * 列の挿入／削除を考慮する（{@code true}）か考慮しない（{@code false}）かを表します。<br>
      */
-    public static final Key<Boolean> CONSIDER_COLUMN_GAPS = new Key<>(
+    public static final Key<Boolean> CONSIDER_COLUMN_GAPS = new Key<Boolean>(
             "compare.considerColumnGaps",
             () -> false,
             String::valueOf,
@@ -116,7 +116,7 @@ public class SettingKeys {
     /**
      * Excelセルの比較において、セル内容を比較するかを表します。<br>
      */
-    public static final Key<Boolean> COMPARE_CELL_CONTENTS = new Key<>(
+    public static final Key<Boolean> COMPARE_CELL_CONTENTS = new Key<Boolean>(
             "compare.compareCellContents",
             () -> true,
             String::valueOf,
@@ -126,7 +126,7 @@ public class SettingKeys {
     /**
      * Excelセルの比較において、セルコメントを比較するかを表します。<br>
      */
-    public static final Key<Boolean> COMPARE_CELL_COMMENTS = new Key<>(
+    public static final Key<Boolean> COMPARE_CELL_COMMENTS = new Key<Boolean>(
             "compare.compareCellComments",
             () -> true,
             String::valueOf,
@@ -138,7 +138,7 @@ public class SettingKeys {
      * 数式文字列を比較する（{@code true}）か
      * Excelファイルにキャッシュされている計算結果の値を比較する（{@code false}）かを表します。<br>
      */
-    public static final Key<Boolean> COMPARE_ON_FORMULA_STRING = new Key<>(
+    public static final Key<Boolean> COMPARE_ON_FORMULA_STRING = new Key<Boolean>(
             "compare.compareOnFormulaString",
             () -> false,
             String::valueOf,
@@ -148,7 +148,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、余剰行・余剰列に着ける色のインデックス値を表します。<br>
      */
-    public static final Key<Short> REDUNDANT_COLOR = new Key<>(
+    public static final Key<Short> REDUNDANT_COLOR = new Key<Short>(
             "report.redundantColor",
             () -> IndexedColors.CORAL.getIndex(),
             String::valueOf,
@@ -158,7 +158,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、差分セルに着ける色のインデックス値を表します。<br>
      */
-    public static final Key<Short> DIFF_COLOR = new Key<>(
+    public static final Key<Short> DIFF_COLOR = new Key<Short>(
             "report.diffColor",
             () -> IndexedColors.YELLOW.getIndex(),
             String::valueOf,
@@ -168,7 +168,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、余剰セルコメントに着ける色を表します。<br>
      */
-    public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<>(
+    public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<Color>(
             "report.redundantCommentColor",
             () -> new Color(255, 128, 128),
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
@@ -178,7 +178,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、差分セルコメントに着ける色を表します。<br>
      */
-    public static final Key<Color> DIFF_COMMENT_COLOR = new Key<>(
+    public static final Key<Color> DIFF_COMMENT_COLOR = new Key<Color>(
             "report.diffCommentColor",
             () -> Color.YELLOW,
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
@@ -188,7 +188,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、余剰シートの見出しに着ける色を表します。<br>
      */
-    public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<>(
+    public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<Color>(
             "report.redundantSheetColor",
             () -> Color.RED,
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
@@ -198,7 +198,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、差分シートの見出しに着ける色を表します。<br>
      */
-    public static final Key<Color> DIFF_SHEET_COLOR = new Key<>(
+    public static final Key<Color> DIFF_SHEET_COLOR = new Key<Color>(
             "report.diffSheetColor",
             () -> Color.YELLOW,
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
@@ -208,7 +208,7 @@ public class SettingKeys {
     /**
      * 比較結果のレポートにおいて、差分無しシートの見出しに着ける色を表します。<br>
      */
-    public static final Key<Color> SAME_SHEET_COLOR = new Key<>(
+    public static final Key<Color> SAME_SHEET_COLOR = new Key<Color>(
             "report.sameSheetColor",
             () -> Color.CYAN,
             color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
@@ -216,7 +216,7 @@ public class SettingKeys {
             false);
     
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
-    public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<>(
+    public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<Boolean>(
             "application.report.showPaintedSheets",
             () -> true,
             String::valueOf,
@@ -224,7 +224,7 @@ public class SettingKeys {
             true);
     
     /** レポートオプション：比較結果が記載されたテキストを表示するか */
-    public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<>(
+    public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<Boolean>(
             "application.report.showResultText",
             () -> true,
             String::valueOf,
@@ -232,7 +232,7 @@ public class SettingKeys {
             true);
     
     /** 実行オプション：比較完了時にこのアプリを終了するか */
-    public static final Key<Boolean> EXIT_WHEN_FINISHED = new Key<>(
+    public static final Key<Boolean> EXIT_WHEN_FINISHED = new Key<Boolean>(
             "application.execution.exitWhenFinished",
             () -> false,
             String::valueOf,
@@ -240,7 +240,7 @@ public class SettingKeys {
             true);
     
     /** 実行オプション：省メモリモードで比較するか */
-    public static final Key<Boolean> SAVE_MEMORY = new Key<>(
+    public static final Key<Boolean> SAVE_MEMORY = new Key<Boolean>(
             "application.execution.saveMemory",
             () -> false,
             String::valueOf,
