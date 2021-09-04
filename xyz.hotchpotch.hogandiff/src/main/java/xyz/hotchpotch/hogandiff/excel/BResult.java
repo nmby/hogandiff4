@@ -40,8 +40,8 @@ public class BResult {
         
         return String.format("    %d) %s vs %s",
                 idx + 1,
-                pair.isPresentA() ? "A[" + pair.a() + "]" : "(比較相手なし)",
-                pair.isPresentB() ? "B[" + pair.b() + "]" : "(比較相手なし)");
+                pair.hasA() ? "A[" + pair.a() + "]" : "(比較相手なし)",
+                pair.hasB() ? "B[" + pair.b() + "]" : "(比較相手なし)");
     }
     
     /**
@@ -102,7 +102,7 @@ public class BResult {
         Objects.requireNonNull(side, "side");
         
         return results.entrySet().stream()
-                .filter(entry -> entry.getKey().isPresent(side))
+                .filter(entry -> entry.getKey().has(side))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().get(side),
                         entry -> entry.getValue().map(s -> s.getPiece(side))));

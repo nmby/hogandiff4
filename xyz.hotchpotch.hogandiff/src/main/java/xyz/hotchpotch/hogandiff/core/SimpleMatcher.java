@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 2つのリストの要素同士を、リストの先頭から順に対応付ける {@link Matcher} の実装です。<br>
@@ -29,7 +29,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<Pair<Integer>> makePairs(
+    public List<IntPair> makePairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -37,9 +37,11 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         Objects.requireNonNull(listB, "listB");
         
         return IntStream.range(0, Math.max(listA.size(), listB.size()))
-                .mapToObj(n -> Pair.ofNullable(
-                        n < listA.size() ? n : null,
-                        n < listB.size() ? n : null))
+                .mapToObj(n -> listA.size() <= n
+                        ? IntPair.onlyB(n)
+                        : listB.size() <= n
+                                ? IntPair.onlyA(n)
+                                : IntPair.of(n, n))
                 .toList();
     }
 }

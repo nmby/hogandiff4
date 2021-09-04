@@ -1,12 +1,13 @@
 package xyz.hotchpotch.hogandiff.excel.stax.readers;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -21,7 +22,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 余剰行や余剰列上のセルに色を付ける {@link XMLEventReader} の実装です。<br>
@@ -50,8 +51,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<Integer> redundantRows,
-            List<Integer> redundantColumns,
+            int[] redundantRows,
+            int[] redundantColumns,
             short colorIdx) {
         
         Objects.requireNonNull(source, "source");
@@ -77,8 +78,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
     private PaintRedundantCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            List<Integer> redundantRows,
-            List<Integer> redundantColumns,
+            int[] redundantRows,
+            int[] redundantColumns,
             short colorIdx) {
         
         super(source);
@@ -88,8 +89,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
         assert redundantColumns != null;
         
         this.stylesManager = stylesManager;
-        this.redundantRows = Set.copyOf(redundantRows);
-        this.redundantColumns = Set.copyOf(redundantColumns);
+        this.redundantRows = Arrays.stream(redundantRows).boxed().collect(Collectors.toSet());
+        this.redundantColumns = Arrays.stream(redundantColumns).boxed().collect(Collectors.toSet());
         this.colorIdx = colorIdx;
     }
     
@@ -104,11 +105,9 @@ public class PaintRedundantCellsReader extends BufferingReader {
         }
         
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
-        Pair<Integer> idx = CellsUtil.addressToIdx(address);
-        int row = idx.a();
-        int column = idx.b();
+        IntPair idx = CellsUtil.addressToIdx(address);
         
-        if (redundantRows.contains(row) || redundantColumns.contains(column)) {
+        if (redundantRows.contains(idx.a()) || redundantColumns.contains(idx.b())) {
             buffer.add(paintCell(event.asStartElement()));
             source.nextEvent();
         }

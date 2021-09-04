@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 文字列同士のdiffに関する機能を提供するユーティリティクラスです。<br>
@@ -55,10 +55,10 @@ public class StringDiffUtil {
         // サロゲートペアの扱いは、・・・まぁ、これで良いでしょ
         List<Integer> codePoints1 = str1.codePoints().boxed().toList();
         List<Integer> codePoints2 = str2.codePoints().boxed().toList();
-        List<Pair<Integer>> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
+        List<IntPair> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
         
         return (int) pairs.stream()
-                .filter(Predicate.not(Pair::isPaired))
+                .filter(Predicate.not(IntPair::isPaired))
                 .count();
     }
     

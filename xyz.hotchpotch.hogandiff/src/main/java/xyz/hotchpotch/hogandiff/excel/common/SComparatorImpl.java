@@ -16,6 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -26,6 +27,8 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public class SComparatorImpl implements SComparator {
     
     // [static members] ********************************************************
+    
+    private static int[] EMPTY_INT_ARRAY = new int[] {};
     
     /**
      * 行同士または列同士の対応関係を決定するマッパーを表します。<br>
@@ -48,7 +51,7 @@ public class SComparatorImpl implements SComparator {
          * @param cells2 セルセット2
          * @return 行同士または列同士の対応関係
          */
-        List<Pair<Integer>> makePairs(
+        List<IntPair> makePairs(
                 Set<CellData> cells1,
                 Set<CellData> cells2);
     }
@@ -69,9 +72,9 @@ public class SComparatorImpl implements SComparator {
             assert cells2 != null;
             assert cells1 != cells2;
             
-            Pair<Integer> range = range(cells1, cells2, verticality);
+            IntPair range = range(cells1, cells2, verticality);
             return IntStream.rangeClosed(range.a(), range.b())
-                    .mapToObj(n -> Pair.of(n, n))
+                    .mapToObj(n -> IntPair.of(n, n))
                     .toList();
         };
     }
@@ -197,7 +200,7 @@ public class SComparatorImpl implements SComparator {
                 .toList();
     }
     
-    private static Pair<Integer> range(
+    private static IntPair range(
             Set<CellData> cells,
             ToIntFunction<CellData> axis) {
         
@@ -211,10 +214,10 @@ public class SComparatorImpl implements SComparator {
                 .mapToInt(axis)
                 .max().orElse(0);
         
-        return Pair.of(min, max);
+        return IntPair.of(min, max);
     }
     
-    private static Pair<Integer> range(
+    private static IntPair range(
             Set<CellData> cells1,
             Set<CellData> cells2,
             ToIntFunction<CellData> axis) {
@@ -224,10 +227,10 @@ public class SComparatorImpl implements SComparator {
         assert cells1 != cells2;
         assert axis != null;
         
-        Pair<Integer> range1 = range(cells1, axis);
-        Pair<Integer> range2 = range(cells2, axis);
+        IntPair range1 = range(cells1, axis);
+        IntPair range2 = range(cells2, axis);
         
-        return Pair.of(
+        return IntPair.of(
                 Math.min(range1.a(), range2.a()),
                 Math.max(range1.b(), range2.b()));
     }
@@ -318,28 +321,28 @@ public class SComparatorImpl implements SComparator {
                         considerColumnGaps,
                         compareCellContents,
                         compareCellComments,
-                        Pair.of(List.of(), List.of()),
-                        Pair.of(List.of(), List.of()),
+                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
+                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
             }
         }
         
-        List<Pair<Integer>> rowPairs = rowsMapper.makePairs(cells1, cells2);
-        List<Pair<Integer>> columnPairs = columnsMapper.makePairs(cells1, cells2);
+        List<IntPair> rowPairs = rowsMapper.makePairs(cells1, cells2);
+        List<IntPair> columnPairs = columnsMapper.makePairs(cells1, cells2);
         
         // 余剰行の収集
-        List<Integer> redundantRows1 = rowPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).toList();
-        List<Integer> redundantRows2 = rowPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).toList();
+        int[] redundantRows1 = rowPairs.stream()
+                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
+        int[] redundantRows2 = rowPairs.stream()
+                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
         
         // 余剰列の収集
-        List<Integer> redundantColumns1 = columnPairs.stream()
-                .filter(Pair::isOnlyA).map(Pair::a).toList();
-        List<Integer> redundantColumns2 = columnPairs.stream()
-                .filter(Pair::isOnlyB).map(Pair::b).toList();
+        int[] redundantColumns1 = columnPairs.stream()
+                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
+        int[] redundantColumns2 = columnPairs.stream()
+                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
         
         // 差分セルの収集
         List<Pair<CellData>> diffCells = extractDiffs(
@@ -358,8 +361,8 @@ public class SComparatorImpl implements SComparator {
     private List<Pair<CellData>> extractDiffs(
             Set<CellData> cells1,
             Set<CellData> cells2,
-            List<Pair<Integer>> rowPairs,
-            List<Pair<Integer>> columnPairs) {
+            List<IntPair> rowPairs,
+            List<IntPair> columnPairs) {
         
         assert cells1 != null;
         assert cells2 != null;
@@ -374,11 +377,13 @@ public class SComparatorImpl implements SComparator {
         Map<String, CellData> map2 = cells2.stream()
                 .collect(Collectors.toMap(CellData::address, Function.identity()));
         
-        return rowPairs.parallelStream().filter(Pair::isPaired).flatMap(rp -> {
+        List<IntPair> columnPairsFiltered = columnPairs.stream().filter(IntPair::isPaired).toList();
+        
+        return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(rp -> {
             int row1 = rp.a();
             int row2 = rp.b();
             
-            return columnPairs.stream().filter(Pair::isPaired).map(cp -> {
+            return columnPairsFiltered.stream().map(cp -> {
                 int column1 = cp.a();
                 int column2 = cp.b();
                 String address1 = CellsUtil.idxToAddress(row1, column1);
@@ -391,7 +396,7 @@ public class SComparatorImpl implements SComparator {
                         : Pair.<CellData> of(
                                 cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
                                 cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
-            });
-        }).filter(Objects::nonNull).toList();
+            }).filter(Objects::nonNull);
+        }).toList();
     }
 }

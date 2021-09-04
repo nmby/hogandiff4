@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
-import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * 2つのリストの要素同士の最適な組み合わせを返すマッチャーを表します。<br>
@@ -80,7 +80,7 @@ public interface Matcher<T> {
      * @param listB リストB
      * @return リストA, Bの要素同士の最適な組み合わせを表す、要素のインデックスのペアのリスト
      */
-    List<Pair<Integer>> makePairs(
+    List<IntPair> makePairs(
             List<? extends T> listA,
             List<? extends T> listB);
 }
