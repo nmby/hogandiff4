@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
@@ -85,17 +85,13 @@ public class UtilPane extends HBox implements ChildController {
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try (Stream<Path> children = Files.walk(workDir)) {
-                    children.filter(path -> !path.equals(workDir))
-                            .sorted(Comparator.reverseOrder())
-                            .forEach(UnsafeConsumer.toConsumer(path -> {
-                                Desktop desktop = Desktop.getDesktop();
-                                if (desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)) {
-                                    desktop.moveToTrash(path.toFile());
-                                } else {
-                                    Files.deleteIfExists(path);
-                                }
-                            }));
+                Desktop desktop = Desktop.getDesktop();
+                Consumer<Path> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
+                        ? path -> desktop.moveToTrash(path.toFile())
+                        : UnsafeConsumer.toConsumer(Files::deleteIfExists);
+                
+                try (Stream<Path> children = Files.list(workDir)) {
+                    children.forEach(deleteAction);
                 } catch (Exception e) {
                     //nop
                 }
