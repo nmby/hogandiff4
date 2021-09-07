@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
@@ -86,15 +85,15 @@ public class UtilPane extends HBox implements ChildController {
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 Desktop desktop = Desktop.getDesktop();
-                Consumer<Path> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
+                UnsafeConsumer<Path> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
                         ? path -> desktop.moveToTrash(path.toFile())
-                        : UnsafeConsumer.toConsumer(Files::deleteIfExists);
+                        : Files::deleteIfExists;
                 
                 try (Stream<Path> children = Files.list(workDir)) {
                     children.forEach(path -> {
                         try {
                             deleteAction.accept(path);
-                        } catch (RuntimeException e) {
+                        } catch (Exception e) {
                             // nop
                             // 使用中などの理由で削除できないファイルがある場合は
                             // それを飛ばして削除処理を継続する
