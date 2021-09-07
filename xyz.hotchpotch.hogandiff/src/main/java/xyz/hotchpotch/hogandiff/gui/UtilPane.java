@@ -91,7 +91,15 @@ public class UtilPane extends HBox implements ChildController {
                         : UnsafeConsumer.toConsumer(Files::deleteIfExists);
                 
                 try (Stream<Path> children = Files.list(workDir)) {
-                    children.forEach(deleteAction);
+                    children.forEach(path -> {
+                        try {
+                            deleteAction.accept(path);
+                        } catch (RuntimeException e) {
+                            // nop
+                            // 使用中などの理由で削除できないファイルがある場合は
+                            // それを飛ばして削除処理を継続する
+                        }
+                    });
                 } catch (Exception e) {
                     //nop
                 }
