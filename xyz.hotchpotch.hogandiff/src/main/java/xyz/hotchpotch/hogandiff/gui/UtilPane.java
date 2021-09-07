@@ -88,7 +88,14 @@ public class UtilPane extends HBox implements ChildController {
                 try (Stream<Path> children = Files.walk(workDir)) {
                     children.filter(path -> !path.equals(workDir))
                             .sorted(Comparator.reverseOrder())
-                            .forEach(UnsafeConsumer.toConsumer(Files::deleteIfExists));
+                            .forEach(UnsafeConsumer.toConsumer(path -> {
+                                Desktop desktop = Desktop.getDesktop();
+                                if (desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)) {
+                                    desktop.moveToTrash(path.toFile());
+                                } else {
+                                    Files.deleteIfExists(path);
+                                }
+                            }));
                 } catch (Exception e) {
                     //nop
                 }
