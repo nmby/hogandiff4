@@ -116,10 +116,10 @@ public class Factory {
         // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
         // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
         // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
-        boolean extractContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS)
-                || settings.get(SettingKeys.CONSIDER_ROW_GAPS)
-                || settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean extractComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
+        @Deprecated // TODO: ロジック最適化
+        boolean extractContents = true;
+        @Deprecated // TODO: ロジック最適化
+        boolean extractComments = true;
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
@@ -185,8 +185,10 @@ public class Factory {
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean compareCellContents = settings.get(SettingKeys.COMPARE_CELL_CONTENTS);
-        boolean compareCellComments = settings.get(SettingKeys.COMPARE_CELL_COMMENTS);
+        @Deprecated // TODO: ロジック最適化
+        boolean compareCellContents = true;
+        @Deprecated // TODO: ロジック最適化
+        boolean compareCellComments = true;
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
         return SComparatorImpl.of(

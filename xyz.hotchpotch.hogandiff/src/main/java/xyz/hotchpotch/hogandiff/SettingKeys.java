@@ -114,26 +114,6 @@ public class SettingKeys {
             true);
     
     /**
-     * Excelセルの比較において、セル内容を比較するかを表します。<br>
-     */
-    public static final Key<Boolean> COMPARE_CELL_CONTENTS = new Key<Boolean>(
-            "compare.compareCellContents",
-            () -> true,
-            String::valueOf,
-            Boolean::valueOf,
-            true);
-    
-    /**
-     * Excelセルの比較において、セルコメントを比較するかを表します。<br>
-     */
-    public static final Key<Boolean> COMPARE_CELL_COMMENTS = new Key<Boolean>(
-            "compare.compareCellComments",
-            () -> true,
-            String::valueOf,
-            Boolean::valueOf,
-            true);
-    
-    /**
      * Excelセル内容の比較において、セルの内容が数式の場合に
      * 数式文字列を比較する（{@code true}）か
      * Excelファイルにキャッシュされている計算結果の値を比較する（{@code false}）かを表します。<br>
