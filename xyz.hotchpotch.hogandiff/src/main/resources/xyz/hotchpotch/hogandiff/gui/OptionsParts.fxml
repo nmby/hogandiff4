@@ -41,7 +41,7 @@
                   <Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
                </GridPane.margin>
                <children>
-                  <CheckBox fx:id="compareCellContentsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セル内容を比較する" HBox.hgrow="NEVER">
+                  <CheckBox fx:id="compareCellContentsCheckBox" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セル内容を比較する" HBox.hgrow="NEVER">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
@@ -54,7 +54,7 @@
                   <RadioButton fx:id="compareOnFormulaRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="数式" toggleGroup="$compareValueOrFormula" />
                </children>
             </HBox>
-            <CheckBox fx:id="compareCellCommentsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セルコメントを比較する" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <CheckBox fx:id="compareCellCommentsCheckBox" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="セルコメントを比較する" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
                </GridPane.margin>
