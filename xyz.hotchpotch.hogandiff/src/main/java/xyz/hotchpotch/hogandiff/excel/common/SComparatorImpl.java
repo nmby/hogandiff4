@@ -240,23 +240,17 @@ public class SComparatorImpl implements SComparator {
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
-     * @param compareCellContents 比較においてセル内容を比較する場合は {@code true}
-     * @param compareCellComments 比較においてセルコメントを比較する場合は {@code true}
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
     public static SComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean compareCellContents,
-            boolean compareCellComments,
             boolean saveMemory) {
         
         return new SComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
-                compareCellContents,
-                compareCellComments,
                 saveMemory);
     }
     
@@ -264,8 +258,6 @@ public class SComparatorImpl implements SComparator {
     
     private final boolean considerRowGaps;
     private final boolean considerColumnGaps;
-    private final boolean compareCellContents;
-    private final boolean compareCellComments;
     private final boolean saveMemory;
     private final Mapper rowsMapper;
     private final Mapper columnsMapper;
@@ -273,14 +265,10 @@ public class SComparatorImpl implements SComparator {
     private SComparatorImpl(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean compareCellContents,
-            boolean compareCellComments,
             boolean saveMemory) {
         
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
-        this.compareCellContents = compareCellContents;
-        this.compareCellComments = compareCellComments;
         this.saveMemory = saveMemory;
         
         if (considerRowGaps && considerColumnGaps) {
@@ -319,8 +307,6 @@ public class SComparatorImpl implements SComparator {
                 return new SResult(
                         considerRowGaps,
                         considerColumnGaps,
-                        compareCellContents,
-                        compareCellComments,
                         Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
                         Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
                         List.of());
@@ -351,8 +337,6 @@ public class SComparatorImpl implements SComparator {
         return new SResult(
                 considerRowGaps,
                 considerColumnGaps,
-                compareCellContents,
-                compareCellComments,
                 Pair.of(redundantRows1, redundantRows2),
                 Pair.of(redundantColumns1, redundantColumns2),
                 diffCells);

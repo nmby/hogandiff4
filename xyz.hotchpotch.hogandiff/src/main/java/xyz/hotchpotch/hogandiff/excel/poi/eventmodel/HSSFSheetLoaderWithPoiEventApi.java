@@ -97,8 +97,6 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         // [instance members] --------------------------------------------------
         
         private final String sheetName;
-        private final boolean extractContents;
-        private final boolean extractComments;
         private final boolean extractCachedValue;
         private final boolean saveMemory;
         private final Map<String, CellData> cells = new HashMap<>();
@@ -113,17 +111,12 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         
         private Listener1(
                 String sheetName,
-                boolean extractContents,
-                boolean extractComments,
                 boolean extractCachedValue,
                 boolean saveMemory) {
             
             assert sheetName != null;
-            assert extractContents || extractComments;
             
             this.sheetName = sheetName;
-            this.extractContents = extractContents;
-            this.extractComments = extractComments;
             this.extractCachedValue = extractCachedValue;
             this.saveMemory = saveMemory;
         }
@@ -276,126 +269,116 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
          * @param record レコード
          */
         private void readingCellContentsAndComments(Record record) {
-            if (extractContents) {
-                if (record instanceof CellRecord) {
-                    if (prevFormulaRec != null) {
-                        throw new AssertionError("no following string record");
-                    }
-                    
-                    String value = null;
-                    
-                    switch (record.getSid()) {
-                    case LabelSSTRecord.sid:
-                        LabelSSTRecord lRec = (LabelSSTRecord) record;
-                        value = sst.get(lRec.getSSTIndex());
-                        break;
-                    
-                    case NumberRecord.sid:
-                        NumberRecord nRec = (NumberRecord) record;
-                        value = NumberToTextConverter.toText(nRec.getValue());
-                        break;
-                    
-                    case RKRecord.sid:
-                        RKRecord rkRec = (RKRecord) record;
-                        value = NumberToTextConverter.toText(rkRec.getRKNumber());
-                        break;
-                    
-                    case BoolErrRecord.sid:
-                        BoolErrRecord beRec = (BoolErrRecord) record;
-                        if (beRec.isBoolean()) {
-                            value = Boolean.toString(beRec.getBooleanValue());
-                        } else {
-                            value = ErrorEval.getText(beRec.getErrorValue());
-                        }
-                        break;
-                    
-                    case FormulaRecord.sid:
-                        value = getValueFromFormulaRecord((FormulaRecord) record);
-                        break;
-                    
-                    default:
-                        throw new AssertionError(record.getSid());
-                    }
-                    
-                    if (value != null && !"".equals(value)) {
-                        CellRecord cellRec = (CellRecord) record;
-                        cells.put(
-                                CellsUtil.idxToAddress(
-                                        cellRec.getRow(),
-                                        cellRec.getColumn()),
-                                CellData.of(
-                                        cellRec.getRow(),
-                                        cellRec.getColumn(),
-                                        value,
-                                        saveMemory));
-                    }
-                    
-                } else if (record instanceof StringRecord sRec) {
-                    if (prevFormulaRec == null) {
-                        throw new AssertionError("unexpected string record");
-                    }
-                    
-                    String value = sRec.getString();
-                    if (value != null && !"".equals(value)) {
-                        cells.put(
-                                CellsUtil.idxToAddress(
-                                        prevFormulaRec.getRow(),
-                                        prevFormulaRec.getColumn()),
-                                CellData.of(
-                                        prevFormulaRec.getRow(),
-                                        prevFormulaRec.getColumn(),
-                                        sRec.getString(),
-                                        saveMemory));
-                    }
-                    prevFormulaRec = null;
-                }
+            if (record instanceof CellRecord && prevFormulaRec != null) {
+                throw new AssertionError("no following string record");
+            }
+            if (record instanceof StringRecord sRec && prevFormulaRec == null) {
+                throw new AssertionError("unexpected string record");
             }
             
-            if (extractComments) {
-                switch (record.getSid()) {
-                case ObjRecord.sid:
-                    ObjRecord objRec = (ObjRecord) record;
-                    Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
-                            .filter(sub -> sub instanceof CommonObjectDataSubRecord)
-                            .map(sub -> (CommonObjectDataSubRecord) sub)
-                            .filter(sub -> sub.getObjectType() == CommonObjectDataSubRecord.OBJECT_TYPE_COMMENT)
-                            .findAny();
-                    ftCmo.ifPresent(ftCmoRec -> {
-                        if (prevFtCmoRec != null) {
-                            throw new AssertionError("no following txo record");
-                        }
-                        prevFtCmoRec = ftCmoRec;
-                    });
-                    break;
-                
-                case TextObjectRecord.sid:
-                    if (prevFtCmoRec == null) {
-                        // throw new AssertionError("no preceding ftCmo record");
-                        // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
-                        break;
+            String value = null;
+            
+            switch (record.getSid()) {
+            case LabelSSTRecord.sid: // セル内容抽出用
+                LabelSSTRecord lRec = (LabelSSTRecord) record;
+                value = sst.get(lRec.getSSTIndex());
+                break;
+            
+            case NumberRecord.sid: // セル内容抽出用
+                NumberRecord nRec = (NumberRecord) record;
+                value = NumberToTextConverter.toText(nRec.getValue());
+                break;
+            
+            case RKRecord.sid: // セル内容抽出用
+                RKRecord rkRec = (RKRecord) record;
+                value = NumberToTextConverter.toText(rkRec.getRKNumber());
+                break;
+            
+            case BoolErrRecord.sid: // セル内容抽出用
+                BoolErrRecord beRec = (BoolErrRecord) record;
+                if (beRec.isBoolean()) {
+                    value = Boolean.toString(beRec.getBooleanValue());
+                } else {
+                    value = ErrorEval.getText(beRec.getErrorValue());
+                }
+                break;
+            
+            case FormulaRecord.sid: // セル内容抽出用
+                value = getValueFromFormulaRecord((FormulaRecord) record);
+                break;
+            
+            case StringRecord.sid: // 数式計算値抽出用
+                StringRecord sRec = (StringRecord) record;
+                String calculated = sRec.getString();
+                if (calculated != null && !"".equals(calculated)) {
+                    cells.put(
+                            CellsUtil.idxToAddress(
+                                    prevFormulaRec.getRow(),
+                                    prevFormulaRec.getColumn()),
+                            CellData.of(
+                                    prevFormulaRec.getRow(),
+                                    prevFormulaRec.getColumn(),
+                                    calculated,
+                                    saveMemory));
+                }
+                prevFormulaRec = null;
+                break;
+            
+            case ObjRecord.sid: // セルコメント抽出用
+                ObjRecord objRec = (ObjRecord) record;
+                Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
+                        .filter(sub -> sub instanceof CommonObjectDataSubRecord)
+                        .map(sub -> (CommonObjectDataSubRecord) sub)
+                        .filter(sub -> sub.getObjectType() == CommonObjectDataSubRecord.OBJECT_TYPE_COMMENT)
+                        .findAny();
+                ftCmo.ifPresent(ftCmoRec -> {
+                    if (prevFtCmoRec != null) {
+                        throw new AssertionError("no following txo record");
                     }
-                    TextObjectRecord txoRec = (TextObjectRecord) record;
-                    comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
-                    prevFtCmoRec = null;
-                    break;
-                
-                case NoteRecord.sid:
-                    NoteRecord noteRec = (NoteRecord) record;
-                    String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
-                    String comment = comments.remove(noteRec.getShapeId());
-                    
-                    if (cells.containsKey(address)) {
-                        CellData original = cells.get(address);
-                        cells.put(address, original.addComment(comment));
-                    } else {
-                        cells.put(address, CellData.of(address, "", saveMemory).addComment(comment));
-                    }
+                    prevFtCmoRec = ftCmoRec;
+                });
+                break;
+            
+            case TextObjectRecord.sid: // セルコメント抽出用
+                if (prevFtCmoRec == null) {
+                    // throw new AssertionError("no preceding ftCmo record");
+                    // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
                     break;
                 }
-            }
+                TextObjectRecord txoRec = (TextObjectRecord) record;
+                comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
+                prevFtCmoRec = null;
+                break;
             
-            if (record.getSid() == EOFRecord.sid) {
+            case NoteRecord.sid: // セルコメント抽出用
+                NoteRecord noteRec = (NoteRecord) record;
+                String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
+                String comment = comments.remove(noteRec.getShapeId());
+                
+                if (cells.containsKey(address)) {
+                    CellData original = cells.get(address);
+                    cells.put(address, original.addComment(comment));
+                } else {
+                    cells.put(address, CellData.of(address, "", saveMemory).addComment(comment));
+                }
+                break;
+            
+            case EOFRecord.sid: // 次ステップに移行
                 step = ProcessingStep.COMPLETED;
+                break;
+            }
+            
+            if (value != null && !"".equals(value)) {
+                CellRecord cellRec = (CellRecord) record;
+                cells.put(
+                        CellsUtil.idxToAddress(
+                                cellRec.getRow(),
+                                cellRec.getColumn()),
+                        CellData.of(
+                                cellRec.getRow(),
+                                cellRec.getColumn(),
+                                value,
+                                saveMemory));
             }
         }
         
@@ -469,33 +452,23 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * @return 新しいローダー
      */
     public static SheetLoader of(
-            boolean extractContents,
-            boolean extractComments,
             boolean extractCachedValue,
             boolean saveMemory) {
         
         return new HSSFSheetLoaderWithPoiEventApi(
-                extractContents,
-                extractComments,
                 extractCachedValue,
                 saveMemory);
     }
     
     // [instance members] ******************************************************
     
-    private final boolean extractContents;
-    private final boolean extractComments;
     private final boolean extractCachedValue;
     private final boolean saveMemory;
     
     private HSSFSheetLoaderWithPoiEventApi(
-            boolean extractContents,
-            boolean extractComments,
             boolean extractCachedValue,
             boolean saveMemory) {
         
-        this.extractContents = extractContents;
-        this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
         this.saveMemory = saveMemory;
     }
@@ -523,18 +496,12 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        if (!extractContents && !extractComments) {
-            return Set.of();
-        }
-        
         try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
             Listener1 listener1 = new Listener1(
                     sheetName,
-                    extractContents,
-                    extractComments,
                     extractCachedValue,
                     saveMemory);
             req.addListenerForAllRecords(listener1);
