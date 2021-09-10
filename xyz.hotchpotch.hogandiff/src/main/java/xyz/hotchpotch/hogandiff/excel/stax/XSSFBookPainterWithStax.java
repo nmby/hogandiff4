@@ -456,39 +456,21 @@ public class XSSFBookPainterWithStax implements BookPainter {
             Optional<Piece> piece = diff.getValue();
             SheetInfo info = sheetNameToInfo.get(sheetName);
             
-            // 例外が発生した場合もその部分だけをスキップして処理継続した方が
-            // ユーザーにとっては有益であると考え、小刻みに try-catch で囲うことにする。
+            // xl/worksheets/sheet?.xml エントリに対する処理
+            String source = info.source();
+            processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
             
-            try {
-                // xl/worksheets/sheet?.xml エントリに対する処理
-                String source = info.source();
-                processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
+            // xl/drawings/vmlDrawing?.vml エントリに対する処理
+            String vmlDrawingSource = info.vmlDrawingSource();
+            if (vmlDrawingSource != null) {
+                processCommentDrawingEntry(
+                        inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
             }
             
-            try {
-                // xl/drawings/vmlDrawing?.vml エントリに対する処理
-                String vmlDrawingSource = info.vmlDrawingSource();
-                if (vmlDrawingSource != null) {
-                    processCommentDrawingEntry(
-                            inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
-                }
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
-            
-            try {
-                // xl/comments?.xml エントリに対する処理
-                String commentSource = info.commentSource();
-                if (commentSource != null) {
-                    processCommentEntry(inFs, outFs, commentSource);
-                }
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
+            // xl/comments?.xml エントリに対する処理
+            String commentSource = info.commentSource();
+            if (commentSource != null) {
+                processCommentEntry(inFs, outFs, commentSource);
             }
         }
         
