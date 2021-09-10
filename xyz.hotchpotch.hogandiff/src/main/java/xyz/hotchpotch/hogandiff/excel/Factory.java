@@ -116,10 +116,6 @@ public class Factory {
         // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
         // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
         // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
-        @Deprecated // TODO: ロジック最適化
-        boolean extractContents = true;
-        @Deprecated // TODO: ロジック最適化
-        boolean extractComments = true;
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
@@ -139,13 +135,9 @@ public class Factory {
         case XLS:
             return CombinedSheetLoader.of(List.of(
                     () -> HSSFSheetLoaderWithPoiEventApi.of(
-                            extractContents,
-                            extractComments,
                             useCachedValue,
                             saveMemory),
                     () -> SheetLoaderWithPoiUserApi.of(
-                            extractContents,
-                            extractComments,
                             saveMemory,
                             converter)));
         
@@ -153,14 +145,10 @@ public class Factory {
         case XLSM:
             return CombinedSheetLoader.of(List.of(
                     () -> XSSFSheetLoaderWithSax.of(
-                            extractContents,
-                            extractComments,
                             useCachedValue,
                             saveMemory,
                             bookPath),
                     () -> SheetLoaderWithPoiUserApi.of(
-                            extractContents,
-                            extractComments,
                             saveMemory,
                             converter)));
         
@@ -185,17 +173,11 @@ public class Factory {
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
-        @Deprecated // TODO: ロジック最適化
-        boolean compareCellContents = true;
-        @Deprecated // TODO: ロジック最適化
-        boolean compareCellComments = true;
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
         return SComparatorImpl.of(
                 considerRowGaps,
                 considerColumnGaps,
-                compareCellContents,
-                compareCellComments,
                 saveMemory);
     }
     

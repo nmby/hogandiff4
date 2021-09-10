@@ -17,8 +17,6 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public record SResult(
         boolean considerRowGaps,
         boolean considerColumnGaps,
-        boolean compareCellContents,
-        boolean compareCellComments,
         Pair<int[]> redundantRows,
         Pair<int[]> redundantColumns,
         List<Pair<CellData>> diffCells) {
@@ -82,8 +80,6 @@ public record SResult(
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
-     * @param compareCellContents 比較においてセル内容を比較したか
-     * @param compareCellComments 比較においてセルコメントを比較したか
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
@@ -134,28 +130,22 @@ public record SResult(
     public Piece getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
-        List<CellData> diffCellContents = !compareCellContents
-                ? List.of()
-                : diffCells.stream()
-                        .filter(p -> !p.a().contentEquals(p.b()))
-                        .map(p -> p.get(side))
-                        .toList();
+        List<CellData> diffCellContents = diffCells.stream()
+                .filter(p -> !p.a().contentEquals(p.b()))
+                .map(p -> p.get(side))
+                .toList();
         
-        List<CellData> diffCellComments = !compareCellComments
-                ? List.of()
-                : diffCells.stream()
-                        .filter(p -> p.a().hasComment() && p.b().hasComment())
-                        .filter(p -> !p.a().commentEquals(p.b()))
-                        .map(p -> p.get(side))
-                        .toList();
+        List<CellData> diffCellComments = diffCells.stream()
+                .filter(p -> p.a().hasComment() && p.b().hasComment())
+                .filter(p -> !p.a().commentEquals(p.b()))
+                .map(p -> p.get(side))
+                .toList();
         
-        List<CellData> redundantCellComments = !compareCellComments
-                ? List.of()
-                : diffCells.stream()
-                        .filter(p -> p.get(side).hasComment())
-                        .filter(p -> !p.get(side.opposite()).hasComment())
-                        .map(p -> p.get(side))
-                        .toList();
+        List<CellData> redundantCellComments = diffCells.stream()
+                .filter(p -> p.get(side).hasComment())
+                .filter(p -> !p.get(side.opposite()).hasComment())
+                .map(p -> p.get(side))
+                .toList();
         
         return new Piece(
                 redundantRows.get(side),

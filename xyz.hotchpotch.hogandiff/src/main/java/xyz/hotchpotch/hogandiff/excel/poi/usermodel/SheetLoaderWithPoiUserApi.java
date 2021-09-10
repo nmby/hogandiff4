@@ -41,8 +41,6 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param extractContents セル内容を抽出する場合は {@code true}
-     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @param converter セル変換関数
      * @return 新しいローダー
@@ -52,41 +50,27 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
      *                               かつ {@code converter} が {@code null} 以外の場合
      */
     public static SheetLoader of(
-            boolean extractContents,
-            boolean extractComments,
             boolean saveMemory,
             Function<Cell, CellData> converter) {
         
-        if (extractContents) {
-            Objects.requireNonNull(converter, "converter");
-        } else if (converter != null) {
-            throw new IllegalArgumentException("unnecessary converter.");
-        }
+        Objects.requireNonNull(converter, "converter");
         
         return new SheetLoaderWithPoiUserApi(
-                extractContents,
-                extractComments,
                 saveMemory,
                 converter);
     }
     
     // [instance members] ******************************************************
     
-    private final boolean extractContents;
-    private final boolean extractComments;
     private final boolean saveMemory;
     private final Function<Cell, CellData> converter;
     
     private SheetLoaderWithPoiUserApi(
-            boolean extractContents,
-            boolean extractComments,
             boolean saveMemory,
             Function<Cell, CellData> converter) {
         
-        assert !extractContents || converter != null;
+        assert converter != null;
         
-        this.extractContents = extractContents;
-        this.extractComments = extractComments;
         this.saveMemory = saveMemory;
         this.converter = converter;
     }
@@ -129,34 +113,30 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
             CommonUtil.ifNotSupportedSheetTypeThenThrow(getClass(), possibleTypes);
             
-            Set<CellData> cells = extractContents
-                    ? StreamSupport.stream(sheet.spliterator(), true)
-                            .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
-                            .map(converter::apply)
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toCollection(HashSet::new))
-                    : new HashSet<>();
+            Set<CellData> cells = StreamSupport.stream(sheet.spliterator(), true)
+                    .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
+                    .map(converter::apply)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toCollection(HashSet::new));
             
-            if (extractComments) {
-                Map<String, CellData> cellsMap = cells.parallelStream()
-                        .collect(Collectors.toMap(
-                                CellData::address,
-                                Function.identity()));
+            Map<String, CellData> cellsMap = cells.parallelStream()
+                    .collect(Collectors.toMap(
+                            CellData::address,
+                            Function.identity()));
+            
+            sheet.getCellComments().forEach((addr, comm) -> {
+                String address = addr.formatAsString();
+                // xlsx/xlsm 形式の場合、空コメントから null が返されるため、空文字列に標準化する。
+                String comment = Optional.ofNullable(comm.getString().getString()).orElse("");
                 
-                sheet.getCellComments().forEach((addr, comm) -> {
-                    String address = addr.formatAsString();
-                    // xlsx/xlsm 形式の場合、空コメントから null が返されるため、空文字列に標準化する。
-                    String comment = Optional.ofNullable(comm.getString().getString()).orElse("");
-                    
-                    if (cellsMap.containsKey(address)) {
-                        CellData original = cellsMap.get(address);
-                        cells.remove(original);
-                        cells.add(original.addComment(comment));
-                    } else {
-                        cells.add(CellData.of(address, "", saveMemory).addComment(comment));
-                    }
-                });
-            }
+                if (cellsMap.containsKey(address)) {
+                    CellData original = cellsMap.get(address);
+                    cells.remove(original);
+                    cells.add(original.addComment(comment));
+                } else {
+                    cells.add(CellData.of(address, "", saveMemory).addComment(comment));
+                }
+            });
             
             return cells;
             
