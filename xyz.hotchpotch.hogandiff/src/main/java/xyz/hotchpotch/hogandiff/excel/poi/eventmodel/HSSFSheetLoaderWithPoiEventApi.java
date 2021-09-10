@@ -307,10 +307,10 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 value = getValueFromFormulaRecord((FormulaRecord) record);
                 break;
             
-            case StringRecord.sid: // 数式抽出用
+            case StringRecord.sid: // 数式計算値抽出用
                 StringRecord sRec = (StringRecord) record;
-                String forumula = sRec.getString();
-                if (forumula != null && !"".equals(forumula)) {
+                String calculated = sRec.getString();
+                if (calculated != null && !"".equals(calculated)) {
                     cells.put(
                             CellsUtil.idxToAddress(
                                     prevFormulaRec.getRow(),
@@ -318,7 +318,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                             CellData.of(
                                     prevFormulaRec.getRow(),
                                     prevFormulaRec.getColumn(),
-                                    forumula,
+                                    calculated,
                                     saveMemory));
                 }
                 prevFormulaRec = null;

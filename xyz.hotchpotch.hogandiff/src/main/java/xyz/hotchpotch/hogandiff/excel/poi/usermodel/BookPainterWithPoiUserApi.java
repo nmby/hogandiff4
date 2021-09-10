@@ -167,38 +167,51 @@ public class BookPainterWithPoiUserApi implements BookPainter {
         try (InputStream is = Files.newInputStream(dstBookPath);
                 Workbook book = WorkbookFactory.create(is)) {
             
-            // 3. まず、全ての色をクリアする。
-            PoiUtil.clearAllColors(book);
+            // 例外が発生した場合もその部分だけをスキップして処理継続した方が
+            // ユーザーにとっては有益であると考え、小刻みに try-catch で囲うことにする。
+            
+            try {
+                // 3. まず、全ての色をクリアする。
+                PoiUtil.clearAllColors(book);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
             
             // 4. 差分個所に色を付ける。
             diffs.forEach((sheetName, piece) -> {
-                Sheet sheet = book.getSheet(sheetName);
-                
-                if (piece.isPresent()) {
-                    Piece p = piece.get();
+                try {
+                    Sheet sheet = book.getSheet(sheetName);
                     
-                    PoiUtil.paintRows(sheet, p.redundantRows(), redundantColor);
-                    PoiUtil.paintColumns(sheet, p.redundantColumns(), redundantColor);
-                    
-                    Set<CellAddress> diffContents = p.diffCellContents().stream()
-                            .map(c -> new CellAddress(c.row(), c.column()))
-                            .collect(Collectors.toSet());
-                    PoiUtil.paintCells(sheet, diffContents, diffColor);
-                    
-                    Set<CellAddress> diffComments = p.diffCellComments().stream()
-                            .map(c -> new CellAddress(c.row(), c.column()))
-                            .collect(Collectors.toSet());
-                    PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
-                    
-                    Set<CellAddress> redundantComments = p.redundantCellComments().stream()
-                            .map(c -> new CellAddress(c.row(), c.column()))
-                            .collect(Collectors.toSet());
-                    PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
-                    
-                    PoiUtil.paintSheetTab(sheet, p.hasDiff() ? diffSheetColor : sameSheetColor);
-                    
-                } else {
-                    PoiUtil.paintSheetTab(sheet, redundantSheetColor);
+                    if (piece.isPresent()) {
+                        Piece p = piece.get();
+                        
+                        PoiUtil.paintRows(sheet, p.redundantRows(), redundantColor);
+                        PoiUtil.paintColumns(sheet, p.redundantColumns(), redundantColor);
+                        
+                        Set<CellAddress> diffContents = p.diffCellContents().stream()
+                                .map(c -> new CellAddress(c.row(), c.column()))
+                                .collect(Collectors.toSet());
+                        PoiUtil.paintCells(sheet, diffContents, diffColor);
+                        
+                        Set<CellAddress> diffComments = p.diffCellComments().stream()
+                                .map(c -> new CellAddress(c.row(), c.column()))
+                                .collect(Collectors.toSet());
+                        PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
+                        
+                        Set<CellAddress> redundantComments = p.redundantCellComments().stream()
+                                .map(c -> new CellAddress(c.row(), c.column()))
+                                .collect(Collectors.toSet());
+                        PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
+                        
+                        PoiUtil.paintSheetTab(sheet, p.hasDiff() ? diffSheetColor : sameSheetColor);
+                        
+                    } else {
+                        PoiUtil.paintSheetTab(sheet, redundantSheetColor);
+                    }
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    // nop
                 }
             });
             
