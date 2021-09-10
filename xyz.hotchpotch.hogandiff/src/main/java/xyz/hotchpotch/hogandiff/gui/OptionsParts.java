@@ -32,16 +32,10 @@ public class OptionsParts extends VBox implements ChildController {
     private CheckBox considerColumnGapsCheckBox;
     
     @FXML
-    private CheckBox compareCellContentsCheckBox;
-    
-    @FXML
     private RadioButton compareOnValueRadioButton;
     
     @FXML
     private RadioButton compareOnFormulaRadioButton;
-    
-    @FXML
-    private CheckBox compareCellCommentsCheckBox;
     
     @FXML
     private CheckBox showPaintedSheetsCheckBox;
@@ -68,20 +62,12 @@ public class OptionsParts extends VBox implements ChildController {
         
         considerRowGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         considerColumnGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareCellContentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         compareOnValueRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
         compareOnFormulaRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareCellCommentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         showPaintedSheetsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         saveMemoryCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        
-        // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
-        compareOnValueRadioButton.disableProperty().bind(
-                compareCellContentsCheckBox.selectedProperty().not());
-        compareOnFormulaRadioButton.disableProperty().bind(
-                compareCellContentsCheckBox.selectedProperty().not());
     }
     
     @Override
