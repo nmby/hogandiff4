@@ -58,8 +58,6 @@ class SheetLoaderWithPoiUserApiTest {
         
         assertTrue(
                 SheetLoaderWithPoiUserApi.of(saveMemory, converter) instanceof SheetLoaderWithPoiUserApi);
-        assertTrue(
-                SheetLoaderWithPoiUserApi.of(saveMemory, null) instanceof SheetLoaderWithPoiUserApi);
     }
     
     @Test
