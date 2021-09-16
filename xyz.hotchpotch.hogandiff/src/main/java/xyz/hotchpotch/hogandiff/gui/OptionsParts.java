@@ -32,16 +32,10 @@ public class OptionsParts extends VBox implements ChildController {
     private CheckBox considerColumnGapsCheckBox;
     
     @FXML
-    private CheckBox compareCellContentsCheckBox;
-    
-    @FXML
     private RadioButton compareOnValueRadioButton;
     
     @FXML
     private RadioButton compareOnFormulaRadioButton;
-    
-    @FXML
-    private CheckBox compareCellCommentsCheckBox;
     
     @FXML
     private CheckBox showPaintedSheetsCheckBox;
@@ -68,20 +62,12 @@ public class OptionsParts extends VBox implements ChildController {
         
         considerRowGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         considerColumnGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareCellContentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         compareOnValueRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
         compareOnFormulaRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareCellCommentsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         showPaintedSheetsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         saveMemoryCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        
-        // 「セル内容を比較する」が選択された場合のみ、「値／数式」の選択を有効にする。
-        compareOnValueRadioButton.disableProperty().bind(
-                compareCellContentsCheckBox.selectedProperty().not());
-        compareOnFormulaRadioButton.disableProperty().bind(
-                compareCellContentsCheckBox.selectedProperty().not());
     }
     
     @Override
@@ -96,8 +82,6 @@ public class OptionsParts extends VBox implements ChildController {
         
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.COMPARE_CELL_CONTENTS, compareCellContentsCheckBox::setSelected);
-        applicator.accept(SettingKeys.COMPARE_CELL_COMMENTS, compareCellCommentsCheckBox::setSelected);
         applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
@@ -111,8 +95,6 @@ public class OptionsParts extends VBox implements ChildController {
         
         builder.set(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox.isSelected());
         builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_CONTENTS, compareCellContentsCheckBox.isSelected());
-        builder.set(SettingKeys.COMPARE_CELL_COMMENTS, compareCellCommentsCheckBox.isSelected());
         builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected());
         builder.set(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox.isSelected());
         builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());

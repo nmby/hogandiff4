@@ -33,10 +33,6 @@ public class AppArgsParser {
             + "    --consider-column-gaps=[true|false]  : default value is "
             + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
             + "    --compare-cell-contents=[true|false] : default value is "
-            + SettingKeys.COMPARE_CELL_CONTENTS.defaultValueSupplier().get() + BR
-            + "    --compare-cell-comments=[true|false] : default value is "
-            + SettingKeys.COMPARE_CELL_COMMENTS.defaultValueSupplier().get() + BR
-            + "    --compare-on-formulas=[true|false]   : default value is "
             + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
             + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR
@@ -51,8 +47,6 @@ public class AppArgsParser {
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
             "--consider-row-gaps", SettingKeys.CONSIDER_ROW_GAPS,
             "--consider-column-gaps", SettingKeys.CONSIDER_COLUMN_GAPS,
-            "--compare-cell-contents", SettingKeys.COMPARE_CELL_CONTENTS,
-            "--compare-cell-comments", SettingKeys.COMPARE_CELL_COMMENTS,
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,

@@ -251,8 +251,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param extractContents セル内容物を抽出する場合は {@code true}
-     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
@@ -268,8 +266,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
     public static SheetLoader of(
-            boolean extractContents,
-            boolean extractComments,
             boolean extractCachedValue,
             boolean saveMemory,
             Path bookPath)
@@ -281,8 +277,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 BookType.of(bookPath));
         
         return new XSSFSheetLoaderWithSax(
-                extractContents,
-                extractComments,
                 extractCachedValue,
                 saveMemory,
                 bookPath);
@@ -290,8 +284,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     
     // [instance members] ******************************************************
     
-    private final boolean extractContents;
-    private final boolean extractComments;
     private final boolean extractCachedValue;
     private final boolean saveMemory;
     private final Path bookPath;
@@ -299,8 +291,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     private final List<String> sst;
     
     private XSSFSheetLoaderWithSax(
-            boolean extractContents,
-            boolean extractComments,
             boolean extractCachedValue,
             boolean saveMemory,
             Path bookPath)
@@ -309,8 +299,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         assert bookPath != null;
         assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
         
-        this.extractContents = extractContents;
-        this.extractComments = extractComments;
         this.extractCachedValue = extractCachedValue;
         this.saveMemory = saveMemory;
         this.bookPath = bookPath;
@@ -318,9 +306,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = extractContents
-                ? SaxUtil.loadSharedStrings(bookPath)
-                : null;
+        this.sst = SaxUtil.loadSharedStrings(bookPath);
     }
     
     /**
@@ -352,10 +338,6 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                     this.bookPath, bookPath));
         }
         
-        if (!extractContents && !extractComments) {
-            return Set.of();
-        }
-        
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
             
             if (!nameToInfo.containsKey(sheetName)) {
@@ -372,17 +354,13 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             SAXParser parser = factory.newSAXParser();
             Set<CellData> cells = null;
             
-            if (extractContents) {
-                Handler1 handler1 = new Handler1(extractCachedValue, saveMemory, sst);
-                try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
-                    parser.parse(is, handler1);
-                }
-                cells = handler1.cells;
-            } else {
-                cells = new HashSet<>();
+            Handler1 handler1 = new Handler1(extractCachedValue, saveMemory, sst);
+            try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
+                parser.parse(is, handler1);
             }
+            cells = handler1.cells;
             
-            if (extractComments && info.commentSource() != null) {
+            if (info.commentSource() != null) {
                 Handler2 handler2 = new Handler2(cells, saveMemory);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
                     parser.parse(is, handler2);

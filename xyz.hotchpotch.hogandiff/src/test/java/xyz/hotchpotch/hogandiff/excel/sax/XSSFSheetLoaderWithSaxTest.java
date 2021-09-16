@@ -48,37 +48,37 @@ class XSSFSheetLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, null));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xls));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xls));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xlsb));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsb));
         
         // ■チェック例外
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, Path.of("dummy\\dummy.xlsx")));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, Path.of("dummy\\dummy.xlsx")));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test2_xlsm));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test2_xlsm));
         
         // ■正常系
         assertTrue(
-                XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xlsx) instanceof XSSFSheetLoaderWithSax);
+                XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsx) instanceof XSSFSheetLoaderWithSax);
         assertTrue(
-                XSSFSheetLoaderWithSax.of(true, true, false, saveMemory, test1_xlsm) instanceof XSSFSheetLoaderWithSax);
+                XSSFSheetLoaderWithSax.of(false, saveMemory, test1_xlsm) instanceof XSSFSheetLoaderWithSax);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xlsm);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsm);
         
         // 対照
         assertDoesNotThrow(
@@ -103,7 +103,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xlsm);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsm);
         
         // 存在しないシート
         assertThrows(
@@ -124,7 +124,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test1_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsx);
         
         assertEquals(
                 Set.of(
@@ -140,7 +140,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test3_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -250,7 +250,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, false, saveMemory, test3_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(false, saveMemory, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -355,7 +355,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, true, saveMemory, test4_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -371,7 +371,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, true, false, saveMemory, test4_xlsx);
+        SheetLoader testee = XSSFSheetLoaderWithSax.of(false, saveMemory, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -383,61 +383,5 @@ class XSSFSheetLoaderWithSaxTest {
                         CellData.of(16, 1, "空コメント", saveMemory).addComment(""),
                         CellData.of(19, 1, " \"セル値\" & \"のみ\"", saveMemory)),
                 testee.loadCells(test4_xlsx, "コメント"));
-    }
-    
-    @Test
-    void testLoadCells_正常系4_コメント関連c() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, false, true, saveMemory, test4_xlsx);
-        
-        assertEquals(
-                Set.of(
-                        CellData.of(13, 1, "セル値あり", saveMemory),
-                        CellData.of(16, 1, "空コメント", saveMemory),
-                        CellData.of(19, 1, "セル値のみ", saveMemory)),
-                testee.loadCells(test4_xlsx, "コメント"));
-    }
-    
-    @Test
-    void testLoadCells_正常系4_コメント関連d() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, false, false, saveMemory, test4_xlsx);
-        
-        assertEquals(
-                Set.of(
-                        CellData.of(13, 1, "セル値あり", saveMemory),
-                        CellData.of(16, 1, "空コメント", saveMemory),
-                        CellData.of(19, 1, " \"セル値\" & \"のみ\"", saveMemory)),
-                testee.loadCells(test4_xlsx, "コメント"));
-    }
-    
-    @Test
-    void testLoadCells_正常系4_コメント関連e() throws ExcelHandlingException {
-        SheetLoader testee1 = XSSFSheetLoaderWithSax.of(false, true, true, saveMemory, test4_xlsx);
-        SheetLoader testee2 = XSSFSheetLoaderWithSax.of(false, true, false, saveMemory, test4_xlsx);
-        
-        assertEquals(
-                Set.of(
-                        CellData.of(1, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
-                        CellData.of(4, 1, "", saveMemory).addComment("Authorなし"),
-                        CellData.of(7, 1, "", saveMemory).addComment("非表示"),
-                        CellData.of(10, 1, "", saveMemory).addComment("書式設定"),
-                        CellData.of(13, 1, "", saveMemory).addComment("コメント"),
-                        CellData.of(16, 1, "", saveMemory).addComment("")),
-                testee1.loadCells(test4_xlsx, "コメント"));
-        assertEquals(
-                testee2.loadCells(test4_xlsx, "コメント"),
-                testee1.loadCells(test4_xlsx, "コメント"));
-    }
-    
-    @Test
-    void testLoadCells_正常系4_コメント関連f() throws ExcelHandlingException {
-        SheetLoader testee1 = XSSFSheetLoaderWithSax.of(false, false, true, saveMemory, test4_xlsx);
-        SheetLoader testee2 = XSSFSheetLoaderWithSax.of(false, false, false, saveMemory, test4_xlsx);
-        
-        assertEquals(
-                Set.of(),
-                testee1.loadCells(test4_xlsx, "コメント"));
-        assertEquals(
-                testee2.loadCells(test4_xlsx, "コメント"),
-                testee1.loadCells(test4_xlsx, "コメント"));
     }
 }
