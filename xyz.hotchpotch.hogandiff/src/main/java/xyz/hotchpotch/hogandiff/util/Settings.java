@@ -300,7 +300,7 @@ public class Settings {
     @Override
     public String toString() {
         return map.keySet().stream()
-                .map(key -> String.format("%s : %s", key.name(), encodeItem(key)))
+                .map(key -> "%s : %s".formatted(key.name(), encodeItem(key)))
                 // 再現性を確保するためにソートすることにする。
                 .sorted()
                 .collect(Collectors.joining(System.lineSeparator()));

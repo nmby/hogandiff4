@@ -82,8 +82,7 @@ import java.util.Objects;
     
     @Override
     public String toString() {
-        return String.format(
-                "%s: %s%s",
+        return "%s: %s%s".formatted(
                 address(),
                 content,
                 comment == null ? "" : " [comment: " + comment + "]");

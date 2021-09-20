@@ -69,7 +69,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     return iA < oA ? -1 : 1;
                 }
                 // ここまで到達しないはず
-                throw new AssertionError(String.format("this:%s, other:%s", this, other));
+                throw new AssertionError("this:%s, other:%s".formatted(this, other));
                 
             } else if (idxs.isPaired() != other.idxs.isPaired()) {
                 // コストが同じで片方のみペアリング済みの場合は、ペアリング済みの方を「小さい」と判断する。
@@ -90,7 +90,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     return i < o ? -1 : 1;
                 }
                 // ここまで到達しないはず
-                throw new AssertionError(String.format("this:%s, other:%s", this, other));
+                throw new AssertionError("this:%s, other:%s".formatted(this, other));
             }
         }
     }

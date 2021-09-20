@@ -38,7 +38,7 @@ public class BResult {
         }
         Objects.requireNonNull(pair, "pair");
         
-        return String.format("    %d) %s vs %s",
+        return "    %d) %s vs %s".formatted(
                 idx + 1,
                 pair.hasA() ? "A[" + pair.a() + "]" : "(比較相手なし)",
                 pair.hasB() ? "B[" + pair.b() + "]" : "(比較相手なし)");
@@ -191,14 +191,14 @@ public class BResult {
             
             Function<Pair<String>, String> sheetPairToStr = sheetPair -> {
                 if (sheetPair.isPaired()) {
-                    return String.format("@@ [%s] -> [%s] @@\n", sheetPair.a(), sheetPair.b())
+                    return "@@ [%s] -> [%s] @@\n".formatted(sheetPair.a(), sheetPair.b())
                             + results.get(sheetPair).get().getDiff();
                     
                 } else if (sheetPair.isOnlyA()) {
-                    return String.format("@@ -[%s] @@\n", sheetPair.a());
+                    return "@@ -[%s] @@\n".formatted(sheetPair.a());
                     
                 } else if (sheetPair.isOnlyB()) {
-                    return String.format("@@ +[%s] @@\n", sheetPair.b());
+                    return "@@ +[%s] @@\n".formatted(sheetPair.b());
                     
                 } else {
                     throw new AssertionError();

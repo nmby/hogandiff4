@@ -78,6 +78,6 @@ import java.util.Objects;
     
     @Override
     public String toString() {
-        return String.format("%s: （省メモリモードでは表示できません）", address());
+        return "%s: （省メモリモードでは表示できません）".formatted(address());
     }
 }
