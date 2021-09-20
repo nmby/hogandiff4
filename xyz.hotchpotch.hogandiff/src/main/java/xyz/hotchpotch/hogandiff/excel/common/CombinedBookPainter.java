@@ -91,16 +91,16 @@ public class CombinedBookPainter implements BookPainter {
         Objects.requireNonNull(diffs, "diffs");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
         if (srcBookPath.equals(dstBookPath)) {
-            throw new IllegalArgumentException(String.format(
-                    "異なるパスを指定する必要があります：%s -> %s", srcBookPath, dstBookPath));
+            throw new IllegalArgumentException(
+                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookPath, dstBookPath));
         }
         if (BookType.of(srcBookPath) != BookType.of(dstBookPath)) {
-            throw new IllegalArgumentException(String.format(
-                    "拡張子が異なります：%s -> %s", srcBookPath, dstBookPath));
+            throw new IllegalArgumentException(
+                    "拡張子が異なります：%s -> %s".formatted(srcBookPath, dstBookPath));
         }
         
-        ExcelHandlingException failed = new ExcelHandlingException(String.format(
-                "処理に失敗しました：%s -> %s", srcBookPath, dstBookPath));
+        ExcelHandlingException failed = new ExcelHandlingException(
+                "処理に失敗しました：%s -> %s".formatted(srcBookPath, dstBookPath));
         
         Iterator<UnsafeSupplier<BookPainter>> itr = suppliers.iterator();
         while (itr.hasNext()) {

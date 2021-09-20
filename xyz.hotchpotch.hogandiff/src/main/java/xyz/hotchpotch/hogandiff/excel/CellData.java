@@ -32,7 +32,7 @@ public interface CellData {
         
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {
-            throw new IndexOutOfBoundsException(String.format("(%d, %d)", row, column));
+            throw new IndexOutOfBoundsException("(%d, %d)".formatted(row, column));
         }
         
         return saveMemory

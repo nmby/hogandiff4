@@ -9,7 +9,7 @@ import java.util.Objects;
  * @param <T> 要素の型
  * @author nmby
  */
-public record Pair<T>(T a, T b) {
+public record Pair<T> (T a, T b) {
     
     // [static members] ********************************************************
     
@@ -72,7 +72,7 @@ public record Pair<T>(T a, T b) {
     
     @Override
     public String toString() {
-        return String.format("(%s, %s)", a, b);
+        return "(%s, %s)".formatted(a, b);
     }
     
     /**

@@ -37,10 +37,10 @@ public class CommonUtil {
         
         BookHandler bookHandler = clazz.getAnnotation(BookHandler.class);
         if (bookHandler == null) {
-            throw new IllegalArgumentException(String.format(
-                    "%s クラスに %s アノテーションが付与されていません。",
-                    clazz.getSimpleName(),
-                    BookHandler.class.getSimpleName()));
+            throw new IllegalArgumentException(
+                    "%s クラスに %s アノテーションが付与されていません。".formatted(
+                            clazz.getSimpleName(),
+                            BookHandler.class.getSimpleName()));
         }
         
         // お行儀の悪い実装による重複にも耐えられるように Set ではなく List にしている。
@@ -90,10 +90,10 @@ public class CommonUtil {
         
         SheetHandler sheetHandler = clazz.getAnnotation(SheetHandler.class);
         if (sheetHandler == null) {
-            throw new IllegalArgumentException(String.format(
-                    "%s クラスに %s アノテーションが付与されていません。",
-                    clazz.getSimpleName(),
-                    SheetHandler.class.getSimpleName()));
+            throw new IllegalArgumentException(
+                    "%s クラスに %s アノテーションが付与されていません。".formatted(
+                            clazz.getSimpleName(),
+                            SheetHandler.class.getSimpleName()));
         }
         
         // お行儀の悪い実装による重複に耐えうるように Set ではなく List にしている。

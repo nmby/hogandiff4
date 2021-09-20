@@ -510,8 +510,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             return Set.copyOf(listener1.cells.values());
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(String.format(
-                    "処理に失敗しました：%s - %s", bookPath, sheetName), e);
+            throw new ExcelHandlingException(
+                    "処理に失敗しました：%s - %s".formatted(bookPath, sheetName), e);
         }
     }
 }

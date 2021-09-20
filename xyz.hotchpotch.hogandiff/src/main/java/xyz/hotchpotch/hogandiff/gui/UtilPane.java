@@ -71,7 +71,7 @@ public class UtilPane extends HBox implements ChildController {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "作業用フォルダの表示に失敗しました。\n" + workDir,
+                        "作業用フォルダの表示に失敗しました。%n%s".formatted(workDir),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -80,7 +80,7 @@ public class UtilPane extends HBox implements ChildController {
         deleteOldWorkDirButton.setOnAction(event -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    "次のフォルダの内容物を全て削除します。よろしいですか？\n" + workDir)
+                    "次のフォルダの内容物を全て削除します。よろしいですか？%n%s".formatted(workDir))
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -134,7 +134,7 @@ public class UtilPane extends HBox implements ChildController {
                         e.printStackTrace();
                         new Alert(
                                 AlertType.WARNING,
-                                "作業用フォルダの変更に失敗しました。\n" + newPath,
+                                "作業用フォルダの変更に失敗しました。%n%s".formatted(newPath),
                                 ButtonType.OK)
                                         .showAndWait();
                         return;
@@ -144,8 +144,8 @@ public class UtilPane extends HBox implements ChildController {
                 parent.hasSettingsChanged.set(true);
                 new Alert(
                         AlertType.INFORMATION,
-                        "作業用フォルダを一時的に変更しました。\n"
-                                + "変更を保存するには「設定を保存」ボタンを押してください。",
+                        "作業用フォルダを一時的に変更しました。%n"
+                                + "変更を保存するには「設定を保存」ボタンを押してください。".formatted(),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -159,8 +159,8 @@ public class UtilPane extends HBox implements ChildController {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "Webページの表示に失敗しました。ご利用のブラウザでお試しください。\n"
-                                + AppMain.WEB_URL,
+                        "Webページの表示に失敗しました。ご利用のブラウザでお試しください。%n"
+                                .formatted(AppMain.WEB_URL),
                         ButtonType.OK)
                                 .showAndWait();
             }
