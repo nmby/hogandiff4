@@ -163,7 +163,7 @@ public class MainController {
             reportingPane.unbind();
             new Alert(
                     AlertType.WARNING,
-                    "予期せぬ例外が発生しました。\n%s\n%s".formatted(
+                    "予期せぬ例外が発生しました。%n%s%n%s".formatted(
                             e.getClass().getName(),
                             e.getMessage()),
                     ButtonType.OK)

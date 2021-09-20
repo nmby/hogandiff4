@@ -300,7 +300,7 @@ public record SResult(
             str.append("Diff Cells :").append(BR);
             
             str.append(diffCells.stream()
-                    .map(diffCell -> "- %s\n+ %s\n".formatted(diffCell.a(), diffCell.b()))
+                    .map(diffCell -> "- %s%n+ %s%n".formatted(diffCell.a(), diffCell.b()))
                     .collect(Collectors.joining(BR)));
             
         }

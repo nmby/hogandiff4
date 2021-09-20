@@ -207,7 +207,7 @@ public class TargetBookSheetParts extends GridPane {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.WARNING,
-                    "パスワード付きファイルには対応していません：\n" + newBookPath,
+                    "パスワード付きファイルには対応していません：%n%s".formatted(newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -218,7 +218,7 @@ public class TargetBookSheetParts extends GridPane {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
-                    "ファイルを読み込めません：\n" + newBookPath,
+                    "ファイルを読み込めません：%n%s".formatted(newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -234,7 +234,7 @@ public class TargetBookSheetParts extends GridPane {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "シートが見つかりません：\n" + sheetName,
+                    "シートが見つかりません：%n%s".formatted(sheetName),
                     ButtonType.OK)
                             .showAndWait();
         }

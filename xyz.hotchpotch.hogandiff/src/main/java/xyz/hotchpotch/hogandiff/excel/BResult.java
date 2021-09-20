@@ -191,14 +191,14 @@ public class BResult {
             
             Function<Pair<String>, String> sheetPairToStr = sheetPair -> {
                 if (sheetPair.isPaired()) {
-                    return "@@ [%s] -> [%s] @@\n".formatted(sheetPair.a(), sheetPair.b())
+                    return "@@ [%s] -> [%s] @@%n".formatted(sheetPair.a(), sheetPair.b())
                             + results.get(sheetPair).get().getDiff();
                     
                 } else if (sheetPair.isOnlyA()) {
-                    return "@@ -[%s] @@\n".formatted(sheetPair.a());
+                    return "@@ -[%s] @@%n".formatted(sheetPair.a());
                     
                 } else if (sheetPair.isOnlyB()) {
-                    return "@@ +[%s] @@\n".formatted(sheetPair.b());
+                    return "@@ +[%s] @@%n".formatted(sheetPair.b());
                     
                 } else {
                     throw new AssertionError();

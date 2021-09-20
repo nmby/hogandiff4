@@ -112,7 +112,7 @@ public class AppTask extends Task<Void> {
         Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
         
         if (menu == AppMenu.COMPARE_BOOKS) {
-            str.append("ブック同士の比較を開始します。\n[A] %s\n[B] %s\n\n"
+            str.append("ブック同士の比較を開始します。%n[A] %s%n[B] %s%n%n"
                     .formatted(bookPath1, bookPath2));
             
         } else {
@@ -120,10 +120,10 @@ public class AppTask extends Task<Void> {
             String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
             if (bookPath1.equals(bookPath2)) {
-                str.append("シート同士の比較を開始します。\n%s\n[A] %s\n[B] %s\n\n"
+                str.append("シート同士の比較を開始します。%n%s%n[A] %s%n[B] %s%n%n"
                         .formatted(bookPath1, sheetName1, sheetName2));
             } else {
-                str.append("シート同士の比較を開始します。\n[A] %s - %s\n[B] %s - %s\n\n"
+                str.append("シート同士の比較を開始します。%n[A] %s - %s%n[B] %s - %s%n%n"
                         .formatted(bookPath1, sheetName1, bookPath2, sheetName2));
             }
         }
@@ -141,7 +141,7 @@ public class AppTask extends Task<Void> {
             updateProgress(progressBefore, PROGRESS_MAX);
             workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                     .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
-            str.append("作業用フォルダを作成しています...\n    - %s\n\n".formatted(workDir));
+            str.append("作業用フォルダを作成しています...%n    - %s%n%n".formatted(workDir));
             updateMessage(str.toString());
             
             workDir = Files.createDirectories(workDir);
@@ -150,11 +150,12 @@ public class AppTask extends Task<Void> {
             return workDir;
             
         } catch (Exception e) {
-            str.append("作業用フォルダの作成に失敗しました。\n\n".formatted());
+            str.append("作業用フォルダの作成に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "作業用フォルダの作成に失敗しました。\n" + workDir, e);
+                    "作業用フォルダの作成に失敗しました。%n%s".formatted(workDir),
+                    e);
         }
     }
     
@@ -167,7 +168,7 @@ public class AppTask extends Task<Void> {
             
             List<Pair<String>> pairs;
             if (menu == AppMenu.COMPARE_BOOKS) {
-                str.append("比較するシートの組み合わせを決定しています...\n");
+                str.append("比較するシートの組み合わせを決定しています...").append(BR);
                 updateMessage(str.toString());
                 
                 pairs = menu.getSheetNamePairs(settings, factory);
@@ -188,7 +189,7 @@ public class AppTask extends Task<Void> {
             
         } catch (Exception e) {
             // TODO: サポート対象外の .xlsb やパスワード付きファイルの場合の考慮が必要
-            str.append("シートの組み合わせ決定に失敗しました。\n\n");
+            str.append("シートの組み合わせ決定に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
@@ -252,7 +253,7 @@ public class AppTask extends Task<Void> {
             return BResult.of(bookPath1, bookPath2, pairs, results);
             
         } catch (Exception e) {
-            str.append("シートの比較に失敗しました。\n\n".formatted());
+            str.append("シートの比較に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException("シートの比較に失敗しました。", e);
@@ -272,14 +273,14 @@ public class AppTask extends Task<Void> {
             
             textPath = workDir.resolve("result.txt");
             
-            str.append("比較結果テキストを保存しています...\n    - %s\n\n".formatted(textPath));
+            str.append("比較結果テキストを保存しています...%n    - %s%n%n".formatted(textPath));
             updateMessage(str.toString());
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(results.toString());
             }
             if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
-                str.append("比較結果テキストを表示しています...\n\n");
+                str.append("比較結果テキストを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(textPath.toFile());
             }
@@ -287,11 +288,12 @@ public class AppTask extends Task<Void> {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("比較結果テキストの保存と表示に失敗しました。\n\n".formatted());
+            str.append("比較結果テキストの保存と表示に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "比較結果テキストの保存と表示に失敗しました。\n" + textPath, e);
+                    "比較結果テキストの保存と表示に失敗しました。%n%s".formatted(textPath),
+                    e);
         }
     }
     
@@ -323,12 +325,12 @@ public class AppTask extends Task<Void> {
             updateProgress(progressBefore, PROGRESS_MAX);
             int progressTotal = progressAfter - progressBefore;
             
-            str.append("Excelブックに比較結果の色を付けて保存しています...\n");
+            str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             Path src = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst = workDir.resolve(src.getFileName());
             BookPainter painter = factory.painter(settings, dst);
-            str.append("    - %s\n\n".formatted(dst));
+            str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
             Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
@@ -337,7 +339,7 @@ public class AppTask extends Task<Void> {
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append("比較結果のExcelブックを表示しています...\n\n");
+                str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst.toFile());
             }
@@ -345,7 +347,7 @@ public class AppTask extends Task<Void> {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックへの着色、保存、表示に失敗しました。\n\n".formatted());
+            str.append("Excelブックへの着色、保存、表示に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
@@ -363,13 +365,13 @@ public class AppTask extends Task<Void> {
             updateProgress(progressBefore, PROGRESS_MAX);
             int progressTotal = progressAfter - progressBefore;
             
-            str.append("Excelブックに比較結果の色を付けて保存しています...\n");
+            str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             
             Path src1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
             Path dst1 = workDir.resolve("【A】" + src1.getFileName());
             BookPainter painter1 = factory.painter(settings, dst1);
-            str.append("    - %s\n".formatted(dst1));
+            str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
             painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
             updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
@@ -377,13 +379,13 @@ public class AppTask extends Task<Void> {
             Path src2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
             Path dst2 = workDir.resolve("【B】" + src2.getFileName());
             BookPainter painter2 = factory.painter(settings, dst2);
-            str.append("    - %s\n\n".formatted(dst2));
+            str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append("比較結果のExcelブックを表示しています...\n\n");
+                str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst1.toFile());
                 Desktop.getDesktop().open(dst2.toFile());
@@ -392,7 +394,7 @@ public class AppTask extends Task<Void> {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックへの着色、保存、表示に失敗しました。\n\n".formatted());
+            str.append("Excelブックへの着色、保存、表示に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
