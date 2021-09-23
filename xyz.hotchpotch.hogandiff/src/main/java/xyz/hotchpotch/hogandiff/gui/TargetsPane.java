@@ -22,10 +22,10 @@ public class TargetsPane extends VBox implements ChildController {
     // [instance members] ******************************************************
     
     @FXML
-    private TargetBookSheetParts targetBookSheetParts1;
+    private TargetSelectionParts targetSelectionParts1;
     
     @FXML
-    private TargetBookSheetParts targetBookSheetParts2;
+    private TargetSelectionParts targetSelectionParts2;
     
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"));
@@ -38,8 +38,8 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        targetBookSheetParts1.init(parent, "A");
-        targetBookSheetParts2.init(parent, "B");
+        targetSelectionParts1.init(parent, "A");
+        targetSelectionParts2.init(parent, "B");
         
         disableProperty().bind(parent.isRunning);
     }
@@ -48,10 +48,10 @@ public class TargetsPane extends VBox implements ChildController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        targetBookSheetParts1.applySettings(
+        targetSelectionParts1.applySettings(
                 settings, SettingKeys.CURR_BOOK_PATH1,
                 SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheetParts2.applySettings(
+        targetSelectionParts2.applySettings(
                 settings, SettingKeys.CURR_BOOK_PATH2,
                 SettingKeys.CURR_SHEET_NAME2);
     }
@@ -60,11 +60,11 @@ public class TargetsPane extends VBox implements ChildController {
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
-        targetBookSheetParts1.gatherSettings(
+        targetSelectionParts1.gatherSettings(
                 builder,
                 SettingKeys.CURR_BOOK_PATH1,
                 SettingKeys.CURR_SHEET_NAME1);
-        targetBookSheetParts2.gatherSettings(
+        targetSelectionParts2.gatherSettings(
                 builder,
                 SettingKeys.CURR_BOOK_PATH2,
                 SettingKeys.CURR_SHEET_NAME2);
@@ -72,6 +72,6 @@ public class TargetsPane extends VBox implements ChildController {
     
     @Override
     public BooleanExpression isReady() {
-        return targetBookSheetParts1.isReady.and(targetBookSheetParts2.isReady);
+        return targetSelectionParts1.isReady.and(targetSelectionParts2.isReady);
     }
 }

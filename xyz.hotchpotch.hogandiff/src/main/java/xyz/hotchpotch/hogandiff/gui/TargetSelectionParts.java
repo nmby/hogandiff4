@@ -42,7 +42,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
  * 
  * @author nmby
  */
-public class TargetBookSheetParts extends GridPane {
+public class TargetSelectionParts extends GridPane {
     
     // [static members] ********************************************************
     
@@ -73,8 +73,8 @@ public class TargetBookSheetParts extends GridPane {
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
     
-    public TargetBookSheetParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetBookSheetParts.fxml"));
+    public TargetSelectionParts() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"));
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
