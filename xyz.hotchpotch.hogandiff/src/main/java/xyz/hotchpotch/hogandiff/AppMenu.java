@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
@@ -100,9 +101,6 @@ public enum AppMenu {
     
     // [instance members] ******************************************************
     
-    private AppMenu() {
-    }
-    
     /**
      * 処理対象のExcelブック／シートの指定が妥当なものかを確認します。<br>
      * 具体的には、2つの比較対象が同じものの場合は {@code false} を、
@@ -127,4 +125,22 @@ public enum AppMenu {
      */
     public abstract List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
             throws ExcelHandlingException;
+    
+    /**
+     * このメニューを実行するためのタスクを生成して返します。<br>
+     * 
+     * @param settings 設定
+     * @param factory ファクトリ
+     * @return 新しいタスク
+     * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
+     */
+    public Task<Void> getTask(
+            Settings settings,
+            Factory factory) {
+        
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(factory, "factory");
+        
+        return new AppTask(settings, factory);
+    }
 }

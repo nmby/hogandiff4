@@ -18,7 +18,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.AppMenu;
-import xyz.hotchpotch.hogandiff.AppTask;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -141,7 +140,7 @@ public class MainController {
         
         isRunning.set(true);
         
-        Task<Void> task = AppTask.of(settings, factory);
+        Task<Void> task = menu.getTask(settings, factory);
         reportingPane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);
