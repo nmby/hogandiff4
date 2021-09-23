@@ -397,9 +397,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     return null;
                 }
                 
-                @SuppressWarnings("deprecation")
-                // FIXME: [No.91 内部実装改善] これが deprecated なら、どうすりゃいいのさ...
-                CellType type = CellType.forInt(fRec.getCachedResultType());
+                CellType type = fRec.getCachedResultTypeEnum();
                 
                 switch (type) {
                 case NUMERIC:
