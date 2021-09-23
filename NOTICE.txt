@@ -3,7 +3,11 @@ Copyright 2018-2021 nmby
 
 This product includes software developed by nmby.
 
-This product contains parts of AdoptOpenJDK and OpenJFX binaries.
+This product contains parts of Eclipse Temurin Java SE binaries.
+Copyright (C) Eclipse Foundation, Inc. All Rights Reserved.
+<https://projects.eclipse.org/projects/adoptium>
+
+This product contains parts of OpenJFX binaries.
 OpenJDK code itself is licensed under GPL v2 with Classpath Exception.
 Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 <https://openjdk.java.net/legal/gplv2+ce.html>
