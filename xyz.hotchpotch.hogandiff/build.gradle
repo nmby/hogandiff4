@@ -10,8 +10,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.poi:poi-ooxml:4.1.2'
-    implementation 'org.apache.poi:poi-ooxml-schemas:4.1.2'
+    implementation ('org.apache.poi:poi-ooxml:5.0.0') {
+        exclude group:'xml-apis', module:'xml-apis'
+    }
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
