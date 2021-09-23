@@ -50,7 +50,6 @@ def classPath = '' \
     + libBase + 'poi-5_0_0/ooxml-lib/commons-compress-1.20.jar' \
     + libBase + 'poi-5_0_0/ooxml-lib/xmlbeans-4.0.0.jar'
 
-
 jar {
     manifest {
         attributes (
