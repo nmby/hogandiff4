@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -147,22 +145,34 @@ public class TargetSelectionParts extends GridPane {
     }
     
     private void onDragOver(DragEvent event) {
-        if (event.getDragboard().hasFiles()) {
-            event.acceptTransferModes(TransferMode.LINK);
-        }
         event.consume();
+        
+        if (!event.getDragboard().hasFiles()) {
+            return;
+        }
+        File file = event.getDragboard().getFiles().get(0);
+        if (!file.isFile()) {
+            return;
+        }
+        // ファイルの拡張子は確認しないことにする。
+        
+        event.acceptTransferModes(TransferMode.LINK);
     }
     
     private void onDragDropped(DragEvent event) {
-        Dragboard db = event.getDragboard();
-        if (db.hasFiles()) {
-            Path dropped = db.getFiles().get(0).toPath();
-            if (!Files.isDirectory(dropped)) {
-                validateAndSetTarget(dropped, null);
-            }
-        }
-        event.setDropCompleted(db.hasFiles());
         event.consume();
+        
+        if (!event.getDragboard().hasFiles()) {
+            event.setDropCompleted(false);
+            return;
+        }
+        File file = event.getDragboard().getFiles().get(0);
+        if (!file.isFile()) {
+            event.setDropCompleted(false);
+            return;
+        }
+        
+        event.setDropCompleted(validateAndSetTarget(file.toPath(), null));
     }
     
     private void chooseBook(ActionEvent event) {
@@ -187,11 +197,11 @@ public class TargetSelectionParts extends GridPane {
         }
     }
     
-    private void validateAndSetTarget(Path newBookPath, String sheetName) {
+    private boolean validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
             bookPathTextField.setText("");
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
-            return;
+            return true;
         }
         
         try {
@@ -210,7 +220,7 @@ public class TargetSelectionParts extends GridPane {
                     "パスワード付きファイルには対応していません：%n%s".formatted(newBookPath),
                     ButtonType.OK)
                             .showAndWait();
-            return;
+            return false;
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,7 +231,7 @@ public class TargetSelectionParts extends GridPane {
                     "ファイルを読み込めません：%n%s".formatted(newBookPath),
                     ButtonType.OK)
                             .showAndWait();
-            return;
+            return false;
         }
         
         if (sheetName == null) {
@@ -237,6 +247,9 @@ public class TargetSelectionParts extends GridPane {
                     "シートが見つかりません：%n%s".formatted(sheetName),
                     ButtonType.OK)
                             .showAndWait();
+            return false;
         }
+        
+        return true;
     }
 }
