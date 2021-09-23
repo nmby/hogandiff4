@@ -33,31 +33,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-public class AppTask extends Task<Void> {
+/*package*/ class AppTask extends Task<Void> {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
     private static final int PROGRESS_MAX = 100;
-    
-    /**
-     * 新しいタスクを生成して返します。<br>
-     * 
-     * @param <T> ファクトリの型
-     * @param settings 設定
-     * @param factory ファクトリ
-     * @return 新しいタスク
-     * 
-     */
-    public static Task<Void> of(
-            Settings settings,
-            Factory factory) {
-        
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(factory, "factory");
-        
-        return new AppTask(settings, factory);
-    }
     
     // [instance members] ******************************************************
     
@@ -66,7 +47,7 @@ public class AppTask extends Task<Void> {
     private final AppMenu menu;
     private final StringBuilder str = new StringBuilder();
     
-    private AppTask(
+    /*package*/ AppTask(
             Settings settings,
             Factory factory) {
         

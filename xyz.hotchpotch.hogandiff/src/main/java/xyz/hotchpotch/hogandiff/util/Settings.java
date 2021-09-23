@@ -73,8 +73,6 @@ public class Settings {
         
         // [instance members] --------------------------------------------------
         
-        // Map<Key<?>, Object> と Map<Key<?>, ?> の違いがいまいち良く分からん...
-        // FIXME: [No.91 内部実装改善] 要お勉強
         private final Map<Key<?>, Object> map;
         
         private Builder(Map<Key<?>, ?> original) {
