@@ -91,6 +91,7 @@ public class MainController {
     /*package*/ Settings gatherSettings() {
         Settings.Builder builder = Settings.builder();
         
+        builder.setDefaultValue(SettingKeys.MATCH_NAMES_STRICTLY);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
         builder.setDefaultValue(SettingKeys.DIFF_COLOR);
         builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);

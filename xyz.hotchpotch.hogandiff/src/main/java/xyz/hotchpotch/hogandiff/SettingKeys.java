@@ -126,6 +126,17 @@ public class SettingKeys {
             true);
     
     /**
+     * シート名同士の対応付けにおいて完全一致（{@code true}）でマッチングするか
+     * ある程度の揺らぎを許容する（{@code flase}）かを表します。<br>
+     */
+    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<Boolean>(
+            "compare.matchNamesStrictly",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            false);
+    
+    /**
      * 比較結果のレポートにおいて、余剰行・余剰列に着ける色のインデックス値を表します。<br>
      */
     public static final Key<Short> REDUNDANT_COLOR = new Key<Short>(

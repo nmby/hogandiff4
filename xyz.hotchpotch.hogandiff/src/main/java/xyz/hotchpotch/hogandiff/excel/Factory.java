@@ -173,9 +173,11 @@ public class Factory {
     public Matcher<String> sheetNameMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        return Matcher.nerutonMatcherOf(
-                String::length,
-                StringDiffUtil::levenshteinDistance);
+        return settings.get(SettingKeys.MATCH_NAMES_STRICTLY)
+                ? Matcher.identityMatcher()
+                : Matcher.nerutonMatcherOf(
+                        String::length,
+                        StringDiffUtil::levenshteinDistance);
     }
     
     /**
