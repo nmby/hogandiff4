@@ -13,7 +13,8 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 <https://openjdk.java.net/legal/gplv2+ce.html>
 
 This product contains parts of Apache POI libraries.
-Copyright 2003-2020 The Apache Software Foundation (https://www.apache.org/).
+Copyright 2003-2021 The Apache Software Foundation.
+<https://www.apache.org/>
 
     Apache POI contains parts that were originally based on software from BEA.
     Copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/> (dead link),
@@ -21,15 +22,15 @@ Copyright 2003-2020 The Apache Software Foundation (https://www.apache.org/).
     <http://www.oracle.com/us/corporate/Acquisitions/bea/index.html>
     <https://en.wikipedia.org/wiki/BEA_Systems>
     
-    Apache POI product contains W3C XML Schema documents. Copyright 2001-2003 (c)
+    Apache POI contains W3C XML Schema documents. Copyright 2001-2003 (c)
     World Wide Web Consortium (Massachusetts Institute of Technology, European
     Research Consortium for Informatics and Mathematics, Keio University)
     
-    Apache POI product contains the chunks_parse_cmds.tbl file from the vsdump program.
+    Apache POI contains the chunks_parse_cmds.tbl file from the vsdump program.
     Copyright (C) 2006-2007 Valek Filippov (frob@df.ru)
     
-    Apache POI product contains parts of the eID Applet project
+    Apache POI contains parts of the eID Applet project
     <http://eid-applet.googlecode.com> and <https://github.com/e-Contract/eid-applet>.
-    Copyright (c) 2009-2014
+    Copyright (c) 2009-2018
     FedICT (federal ICT department of Belgium), e-Contract.be BVBA (https://www.e-contract.be),
     Bart Hanssens from FedICT
