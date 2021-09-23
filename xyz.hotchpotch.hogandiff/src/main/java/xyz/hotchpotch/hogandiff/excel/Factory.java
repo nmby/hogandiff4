@@ -11,6 +11,8 @@ import java.util.function.Function;
 import org.apache.poi.ss.usermodel.Cell;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
@@ -159,6 +161,21 @@ public class Factory {
         default:
             throw new AssertionError("unknown book type: " + bookType);
         }
+    }
+    
+    /**
+     * 2つのExcelブックに含まれるシート名の対応付けを行うマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return シート名の対応付けを行うマッチャー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
+    public Matcher<String> sheetNameMatcher(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        return Matcher.nerutonMatcherOf(
+                String::length,
+                StringDiffUtil::levenshteinDistance);
     }
     
     /**

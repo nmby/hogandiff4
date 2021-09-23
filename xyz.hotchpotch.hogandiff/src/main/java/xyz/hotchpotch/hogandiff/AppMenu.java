@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -54,10 +53,7 @@ public enum AppMenu {
             List<String> sheetNames1 = bookLoader1.loadSheetNames(bookPath1);
             List<String> sheetNames2 = bookLoader2.loadSheetNames(bookPath2);
             
-            Matcher<String> matcher = Matcher.nerutonMatcherOf(
-                    String::length,
-                    StringDiffUtil::levenshteinDistance);
-            
+            Matcher<String> matcher = factory.sheetNameMatcher(settings);
             List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
             
             return pairs.stream()
