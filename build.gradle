@@ -24,17 +24,17 @@ final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
 
 final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
 
-final def poi = 'poi-4.1.2'
+final def poi = 'poi-5.0.0'
 final def poiJars = [
-    'poi-4.1.2.jar',
-    'poi-ooxml-4.1.2.jar',
-    'poi-ooxml-schemas-4.1.2.jar',
-    'lib/commons-codec-1.13.jar',
+    'poi-5.0.0.jar',
+    'poi-ooxml-5.0.0.jar',
+    'poi-ooxml-lite-5.0.0.jar',
+    'lib/commons-codec-1.15.jar',
     'lib/commons-collections4-4.4.jar',
-    'lib/commons-compress-1.19.jar',
     'lib/commons-math3-3.6.1.jar',
     'lib/SparseBitSet-1.2.jar',
-    'ooxml-lib/xmlbeans-3.1.0.jar'
+    'ooxml-lib/commons-compress-1.20.jar',
+    'ooxml-lib/xmlbeans-4.0.0.jar'
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
