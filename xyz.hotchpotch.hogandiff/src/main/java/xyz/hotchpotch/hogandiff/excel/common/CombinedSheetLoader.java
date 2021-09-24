@@ -79,8 +79,8 @@ public class CombinedSheetLoader implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        ExcelHandlingException failed = new ExcelHandlingException(String.format(
-                "処理に失敗しました：%s - %s", bookPath, sheetName));
+        ExcelHandlingException failed = new ExcelHandlingException(
+                "処理に失敗しました：%s - %s".formatted(bookPath, sheetName));
         
         Iterator<UnsafeSupplier<SheetLoader>> itr = suppliers.iterator();
         while (itr.hasNext()) {

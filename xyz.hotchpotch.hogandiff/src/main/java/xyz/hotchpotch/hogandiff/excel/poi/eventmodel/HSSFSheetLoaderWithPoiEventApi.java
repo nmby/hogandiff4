@@ -397,9 +397,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                     return null;
                 }
                 
-                @SuppressWarnings("deprecation")
-                // FIXME: [No.91 内部実装改善] これが deprecated なら、どうすりゃいいのさ...
-                CellType type = CellType.forInt(fRec.getCachedResultType());
+                CellType type = fRec.getCachedResultTypeEnum();
                 
                 switch (type) {
                 case NUMERIC:
@@ -510,8 +508,8 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             return Set.copyOf(listener1.cells.values());
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(String.format(
-                    "処理に失敗しました：%s - %s", bookPath, sheetName), e);
+            throw new ExcelHandlingException(
+                    "処理に失敗しました：%s - %s".formatted(bookPath, sheetName), e);
         }
     }
 }

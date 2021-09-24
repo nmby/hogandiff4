@@ -218,7 +218,7 @@ public record SResult(
             for (Side side : Side.values()) {
                 int[] rows = redundantRows.get(side);
                 if (0 < rows.length) {
-                    str.append(String.format("シート%s上の余剰行 : ", side)).append(BR);
+                    str.append("シート%s上の余剰行 : ".formatted(side)).append(BR);
                     for (int row : rows) {
                         str.append("    行").append(row + 1).append(BR);
                     }
@@ -230,7 +230,7 @@ public record SResult(
             for (Side side : Side.values()) {
                 int[] cols = redundantColumns.get(side);
                 if (0 < cols.length) {
-                    str.append(String.format("シート%s上の余剰列 : ", side)).append(BR);
+                    str.append("シート%s上の余剰列 : ".formatted(side)).append(BR);
                     for (int col : cols) {
                         str.append("    ").append(CellsUtil.columnIdxToStr(col)).append("列").append(BR);
                     }
@@ -300,7 +300,7 @@ public record SResult(
             str.append("Diff Cells :").append(BR);
             
             str.append(diffCells.stream()
-                    .map(diffCell -> String.format("- %s\n+ %s\n", diffCell.a(), diffCell.b()))
+                    .map(diffCell -> "- %s%n+ %s%n".formatted(diffCell.a(), diffCell.b()))
                     .collect(Collectors.joining(BR)));
             
         }

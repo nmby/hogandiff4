@@ -273,12 +273,12 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Objects.requireNonNull(diffs, "diffs");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
         if (srcBookPath.equals(dstBookPath)) {
-            throw new IllegalArgumentException(String.format(
-                    "異なるパスを指定する必要があります：%s -> %s", srcBookPath, dstBookPath));
+            throw new IllegalArgumentException(
+                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookPath, dstBookPath));
         }
         if (BookType.of(srcBookPath) != BookType.of(dstBookPath)) {
-            throw new IllegalArgumentException(String.format(
-                    "拡張子が異なります：%s -> %s", srcBookPath, dstBookPath));
+            throw new IllegalArgumentException(
+                    "拡張子が異なります：%s -> %s".formatted(srcBookPath, dstBookPath));
         }
         
         // 1. 目的のブックをコピーする。
@@ -327,8 +327,9 @@ public class XSSFBookPainterWithStax implements BookPainter {
             dst.toFile().setWritable(true, false);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(String.format(
-                    "Excelファイルのコピーに失敗しました：%s -> %s", src, dst), e);
+            throw new ExcelHandlingException(
+                    "Excelファイルのコピーに失敗しました：%s -> %s".formatted(src, dst),
+                    e);
         }
     }
     

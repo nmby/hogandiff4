@@ -36,7 +36,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.11.0";
+    private static final String VERSION = "v0.11.1";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -81,7 +81,7 @@ public class AppMain extends Application {
             e.printStackTrace();
             new Alert(
                     AlertType.ERROR,
-                    "設定の保存に失敗しました。\n" + APP_PROP_PATH,
+                    "設定の保存に失敗しました。%n%s".formatted(APP_PROP_PATH),
                     ButtonType.OK)
                             .showAndWait();
         }

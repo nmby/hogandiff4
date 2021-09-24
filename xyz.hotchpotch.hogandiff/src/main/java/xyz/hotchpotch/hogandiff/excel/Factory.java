@@ -11,6 +11,8 @@ import java.util.function.Function;
 import org.apache.poi.ss.usermodel.Cell;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
@@ -111,11 +113,6 @@ public class Factory {
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
-        // 実装メモ：
-        // COMPARE_CELL_CONTENTS == true の場合だけでなく、
-        // CONSIDER_ROW_GAPS == true, CONSIDER_COLUMN_GAPS == true の場合も
-        // 行同士・列同士の対応関係決定のためにセル内容を抽出することにする。
-        // TODO: 上記方針でよいかどこかで見直す。上記撤回した方が処理としては早くなるので。
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
         
@@ -159,6 +156,23 @@ public class Factory {
         default:
             throw new AssertionError("unknown book type: " + bookType);
         }
+    }
+    
+    /**
+     * 2つのExcelブックに含まれるシート名の対応付けを行うマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return シート名の対応付けを行うマッチャー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
+    public Matcher<String> sheetNameMatcher(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        return settings.get(SettingKeys.MATCH_NAMES_STRICTLY)
+                ? Matcher.identityMatcher()
+                : Matcher.nerutonMatcherOf(
+                        String::length,
+                        StringDiffUtil::levenshteinDistance);
     }
     
     /**

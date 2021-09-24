@@ -73,8 +73,6 @@ public class Settings {
         
         // [instance members] --------------------------------------------------
         
-        // Map<Key<?>, Object> と Map<Key<?>, ?> の違いがいまいち良く分からん...
-        // FIXME: [No.91 内部実装改善] 要お勉強
         private final Map<Key<?>, Object> map;
         
         private Builder(Map<Key<?>, ?> original) {
@@ -300,7 +298,7 @@ public class Settings {
     @Override
     public String toString() {
         return map.keySet().stream()
-                .map(key -> String.format("%s : %s", key.name(), encodeItem(key)))
+                .map(key -> "%s : %s".formatted(key.name(), encodeItem(key)))
                 // 再現性を確保するためにソートすることにする。
                 .sorted()
                 .collect(Collectors.joining(System.lineSeparator()));

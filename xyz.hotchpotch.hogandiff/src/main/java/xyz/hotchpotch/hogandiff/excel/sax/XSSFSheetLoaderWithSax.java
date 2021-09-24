@@ -333,9 +333,9 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         Objects.requireNonNull(bookPath, "bookPath");
         Objects.requireNonNull(sheetName, "sheetName");
         if (!this.bookPath.equals(bookPath)) {
-            throw new IllegalArgumentException(String.format(
-                    "このローダーは %s 用に構成されています。別ブック（%s）には利用できません。",
-                    this.bookPath, bookPath));
+            throw new IllegalArgumentException(
+                    "このローダーは %s 用に構成されています。別ブック（%s）には利用できません。"
+                            .formatted(this.bookPath, bookPath));
         }
         
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
@@ -370,8 +370,9 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             return Set.copyOf(cells);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(String.format(
-                    "処理に失敗しました：%s - %s", bookPath, sheetName), e);
+            throw new ExcelHandlingException(
+                    "処理に失敗しました：%s - %s".formatted(bookPath, sheetName),
+                    e);
         }
     }
 }

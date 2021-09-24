@@ -26,7 +26,7 @@ public class CellsUtil {
      */
     public static String idxToAddress(int row, int column) {
         if (row < 0 || column < 0) {
-            throw new IndexOutOfBoundsException(String.format("row:%d, column:%d", row, column));
+            throw new IndexOutOfBoundsException("row:%d, column:%d".formatted(row, column));
         }
         return new CellAddress(row, column).formatAsString();
     }
@@ -55,7 +55,7 @@ public class CellsUtil {
      */
     public static String columnIdxToStr(int column) {
         if (column < 0) {
-            throw new IndexOutOfBoundsException(String.format("column:%d", column));
+            throw new IndexOutOfBoundsException("column:%d".formatted(column));
         }
         
         String address = new CellAddress(0, column).formatAsString();

@@ -32,7 +32,7 @@ public class AppArgsParser {
             + SettingKeys.CONSIDER_ROW_GAPS.defaultValueSupplier().get() + BR
             + "    --consider-column-gaps=[true|false]  : default value is "
             + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
-            + "    --compare-cell-contents=[true|false] : default value is "
+            + "    --compare-on-formulas=[true|false]   : default value is "
             + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
             + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR

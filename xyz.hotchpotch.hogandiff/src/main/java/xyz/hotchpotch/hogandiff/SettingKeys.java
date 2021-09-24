@@ -126,6 +126,17 @@ public class SettingKeys {
             true);
     
     /**
+     * シート名同士の対応付けにおいて完全一致（{@code true}）でマッチングするか
+     * ある程度の揺らぎを許容する（{@code flase}）かを表します。<br>
+     */
+    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<Boolean>(
+            "compare.matchNamesStrictly",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            false);
+    
+    /**
      * 比較結果のレポートにおいて、余剰行・余剰列に着ける色のインデックス値を表します。<br>
      */
     public static final Key<Short> REDUNDANT_COLOR = new Key<Short>(
@@ -151,7 +162,7 @@ public class SettingKeys {
     public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<Color>(
             "report.redundantCommentColor",
             () -> new Color(255, 128, 128),
-            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -161,7 +172,7 @@ public class SettingKeys {
     public static final Key<Color> DIFF_COMMENT_COLOR = new Key<Color>(
             "report.diffCommentColor",
             () -> Color.YELLOW,
-            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -171,7 +182,7 @@ public class SettingKeys {
     public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<Color>(
             "report.redundantSheetColor",
             () -> Color.RED,
-            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -181,7 +192,7 @@ public class SettingKeys {
     public static final Key<Color> DIFF_SHEET_COLOR = new Key<Color>(
             "report.diffSheetColor",
             () -> Color.YELLOW,
-            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -191,7 +202,7 @@ public class SettingKeys {
     public static final Key<Color> SAME_SHEET_COLOR = new Key<Color>(
             "report.sameSheetColor",
             () -> Color.CYAN,
-            color -> String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     

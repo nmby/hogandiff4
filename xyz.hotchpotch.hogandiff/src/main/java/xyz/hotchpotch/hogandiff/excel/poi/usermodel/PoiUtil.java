@@ -228,7 +228,7 @@ public class PoiUtil {
         });
         
         // フォントに対する処理
-        IntStream.range(0, book.getNumberOfFontsAsInt()).mapToObj(book::getFontAt).forEach(font -> {
+        IntStream.range(0, book.getNumberOfFonts()).mapToObj(book::getFontAt).forEach(font -> {
             font.setColor(null);
             // FIXME: [No.3 着色関連] 文字列内の部分着色の消し方が分からない
         });
@@ -285,7 +285,7 @@ public class PoiUtil {
         });
         
         // フォントに対する処理
-        IntStream.range(0, book.getNumberOfFontsAsInt()).mapToObj(book::getFontAt).forEach(font -> {
+        IntStream.range(0, book.getNumberOfFonts()).mapToObj(book::getFontAt).forEach(font -> {
             font.setColor(HSSFFont.COLOR_NORMAL);
             // FIXME: [No.3 着色関連] 非インデックスフォント色の消し方が分からない
         });
@@ -538,8 +538,9 @@ public class PoiUtil {
         Objects.requireNonNull(color, "color");
         
         if (sheet instanceof XSSFSheet xSheet) {
-            // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
-            xSheet.setTabColor(new XSSFColor(color));
+            xSheet.setTabColor(new XSSFColor(
+                    new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
+                    new DefaultIndexedColorMap()));
             
         } else if (sheet instanceof HSSFSheet hSheet) {
             // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない

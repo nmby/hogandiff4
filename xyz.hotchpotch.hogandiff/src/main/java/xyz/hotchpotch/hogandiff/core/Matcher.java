@@ -70,6 +70,17 @@ public interface Matcher<T> {
         return new NerutonMatcher<>(gapEvaluator, diffEvaluator);
     }
     
+    /**
+     * リスト内における要素の順番に関わりなく
+     * 2つのリストの等しい要素同士を対応付けるマッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @return 新しいマッチャー
+     */
+    public static <T> Matcher<T> identityMatcher() {
+        return new IdentityMatcher<>();
+    }
+    
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     /**

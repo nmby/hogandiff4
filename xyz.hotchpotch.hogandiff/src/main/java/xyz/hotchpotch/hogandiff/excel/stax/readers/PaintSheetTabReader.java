@@ -60,7 +60,7 @@ public class PaintSheetTabReader extends BufferingReader {
         
         assert color != null;
         
-        this.rgb = String.format("FF%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue())
+        this.rgb = "FF%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue())
                 .toUpperCase();
     }
     
