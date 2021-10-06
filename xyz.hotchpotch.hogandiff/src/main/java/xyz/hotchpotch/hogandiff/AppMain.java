@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.apache.poi.openxml4j.util.ZipSecureFile;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -36,7 +38,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.11.1";
+    private static final String VERSION = "v0.11.2";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
@@ -91,6 +93,10 @@ public class AppMain extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
+        // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
+        ZipSecureFile.setMinInflateRatio(0.001);
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/MainView.fxml"));
         Parent root = loader.load();
         String cssPath = getClass().getResource("gui/application.css").toExternalForm();
