@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.apache.poi.openxml4j.util.ZipSecureFile;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -91,6 +93,10 @@ public class AppMain extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
+        // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
+        ZipSecureFile.setMinInflateRatio(0.001);
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/MainView.fxml"));
         Parent root = loader.load();
         String cssPath = getClass().getResource("gui/application.css").toExternalForm();
