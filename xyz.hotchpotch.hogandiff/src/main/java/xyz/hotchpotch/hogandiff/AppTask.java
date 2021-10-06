@@ -302,6 +302,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
+        Path dst = null;
+        
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             int progressTotal = progressAfter - progressBefore;
@@ -309,16 +311,25 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             Path src = settings.get(SettingKeys.CURR_BOOK_PATH1);
-            Path dst = workDir.resolve(src.getFileName());
-            BookPainter painter = factory.painter(settings, dst);
+            dst = workDir.resolve(src.getFileName());
             str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
             Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
             result.putAll(results.getPiece(Side.B));
+            BookPainter painter = factory.painter(settings, dst);
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
+        } catch (Exception e) {
+            str.append("Excelブックの着色・保存に失敗しました。").append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "Excelブックの着色・保存に失敗しました。", e);
+        }
+        
+        try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
@@ -328,11 +339,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックへの着色、保存、表示に失敗しました。").append(BR).append(BR);
+            str.append("Excelブックの表示に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "Excelブックへの着色、保存、表示に失敗しました。", e);
+                    "Excelブックの表示に失敗しました。", e);
         }
     }
     
@@ -342,29 +353,49 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
+        int progressTotal = progressAfter - progressBefore;
+        Path dst1 = null;
+        Path dst2 = null;
+        
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            int progressTotal = progressAfter - progressBefore;
-            
             str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             
             Path src1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
-            Path dst1 = workDir.resolve("【A】" + src1.getFileName());
-            BookPainter painter1 = factory.painter(settings, dst1);
+            dst1 = workDir.resolve("【A】" + src1.getFileName());
             str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
+            BookPainter painter1 = factory.painter(settings, dst1);
             painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
             updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
             
+        } catch (Exception e) {
+            str.append("ExcelブックAの着色・保存に失敗しました。").append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "ExcelブックAの着色・保存に失敗しました。", e);
+        }
+        
+        try {
             Path src2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
-            Path dst2 = workDir.resolve("【B】" + src2.getFileName());
-            BookPainter painter2 = factory.painter(settings, dst2);
+            dst2 = workDir.resolve("【B】" + src2.getFileName());
             str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
+            BookPainter painter2 = factory.painter(settings, dst2);
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
+        } catch (Exception e) {
+            str.append("ExcelブックBの着色・保存に失敗しました。").append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "ExcelブックBの着色・保存に失敗しました。", e);
+        }
+        
+        try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
@@ -375,11 +406,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックへの着色、保存、表示に失敗しました。").append(BR).append(BR);
+            str.append("Excelブックの表示に失敗しました。").append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "Excelブックへの着色、保存、表示に失敗しました。", e);
+                    "Excelブックの表示に失敗しました。", e);
         }
     }
     
