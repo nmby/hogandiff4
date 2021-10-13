@@ -50,11 +50,6 @@ public abstract sealed class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, %d)".formatted(x, x);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof Same p) {
                 return x == p.x;
@@ -63,11 +58,6 @@ public abstract sealed class IntPair {
                 return x == p.a && x == p.b;
             }
             return false;
-        }
-        
-        @Override
-        public int hashCode() {
-            return 31 * x + x;
         }
     }
     
@@ -108,11 +98,6 @@ public abstract sealed class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, %d)".formatted(a, b);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof Both p) {
                 return a == p.a && b == p.b;
@@ -121,11 +106,6 @@ public abstract sealed class IntPair {
                 return a == p.x && b == p.x;
             }
             return false;
-        }
-        
-        @Override
-        public int hashCode() {
-            return 31 * a + b;
         }
     }
     
@@ -154,21 +134,11 @@ public abstract sealed class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, null)".formatted(a);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof OnlyA p) {
                 return a == p.a;
             }
             return false;
-        }
-        
-        @Override
-        public int hashCode() {
-            return 31 * a;
         }
     }
     
@@ -197,39 +167,19 @@ public abstract sealed class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(null, %d)".formatted(b);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof OnlyB p) {
                 return b == p.b;
             }
             return false;
         }
-        
-        @Override
-        public int hashCode() {
-            return b;
-        }
     }
     
     private static final class Empty extends IntPair {
         
         @Override
-        public String toString() {
-            return "(null, null)";
-        }
-        
-        @Override
         public boolean equals(Object o) {
             return o instanceof Empty;
-        }
-        
-        @Override
-        public int hashCode() {
-            return 0;
         }
     }
     
@@ -356,5 +306,17 @@ public abstract sealed class IntPair {
         Objects.requireNonNull(mapper, "mapper");
         
         return this;
+    }
+    
+    @Override
+    public String toString() {
+        return "(%s, %s)".formatted(
+                hasA() ? a() : null,
+                hasB() ? b() : null);
+    }
+    
+    @Override
+    public int hashCode() {
+        return (hasA() ? 31 * a() : 0) + (hasB() ? b() : 0);
     }
 }
