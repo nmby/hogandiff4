@@ -11,11 +11,11 @@ import java.util.function.IntUnaryOperator;
  */
 // 実装メモ：
 // このクラスは記憶領域の節約に主眼を置いて設計されています。
-public abstract class IntPair {
+public abstract sealed class IntPair {
     
     // [static members] ********************************************************
     
-    private static class Same extends IntPair {
+    private static final class Same extends IntPair {
         private final int x;
         
         private Same(int x) {
@@ -71,7 +71,7 @@ public abstract class IntPair {
         }
     }
     
-    private static class Both extends IntPair {
+    private static final class Both extends IntPair {
         private final int a;
         private final int b;
         
@@ -129,7 +129,7 @@ public abstract class IntPair {
         }
     }
     
-    private static class OnlyA extends IntPair {
+    private static final class OnlyA extends IntPair {
         private final int a;
         
         private OnlyA(int a) {
@@ -172,7 +172,7 @@ public abstract class IntPair {
         }
     }
     
-    private static class OnlyB extends IntPair {
+    private static final class OnlyB extends IntPair {
         private final int b;
         
         private OnlyB(int b) {
@@ -215,7 +215,7 @@ public abstract class IntPair {
         }
     }
     
-    private static class Empty extends IntPair {
+    private static final class Empty extends IntPair {
         
         @Override
         public String toString() {
