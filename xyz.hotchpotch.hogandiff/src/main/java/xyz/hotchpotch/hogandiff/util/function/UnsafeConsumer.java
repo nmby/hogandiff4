@@ -32,49 +32,6 @@ public interface UnsafeConsumer<T> {
         return safer::accept;
     }
     
-    /**
-     * {@link UnsafeConsumer} を {@link Consumer} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
-     * {@link RuntimeException} にラップされます。<br>
-     * 
-     * @param <T> 引数の型
-     * @param unsafer コンシューマ
-     * @return スローする例外が変換されたコンシューマ
-     * @throws NullPointerException {@code unsafer} が {@code null} の場合
-     */
-    public static <T> Consumer<T> toConsumer(UnsafeConsumer<T> unsafer) {
-        return toConsumer(unsafer, RuntimeException::new);
-    }
-    
-    /**
-     * {@link UnsafeConsumer} を {@link Consumer} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
-     * 指定されたラッパーで非チェック例外にラップされます。<br>
-     * 
-     * @param <T> 引数の型
-     * @param unsafer コンシューマ
-     * @param wrapper チェック例外を非チェック例外に変換するラッパー
-     * @return スローする例外が変換されたコンシューマ
-     * @throws NullPointerException {@code unsafer}, {@code wrapper} のいずれかが {@code null} の場合
-     */
-    public static <T> Consumer<T> toConsumer(
-            UnsafeConsumer<T> unsafer,
-            Function<? super Exception, ? extends RuntimeException> wrapper) {
-        
-        Objects.requireNonNull(unsafer, "unsafer");
-        Objects.requireNonNull(wrapper, "wrapper");
-        
-        return t -> {
-            try {
-                unsafer.accept(t);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw wrapper.apply(e);
-            }
-        };
-    }
-    
     // [instance members] ******************************************************
     
     /**
@@ -84,5 +41,41 @@ public interface UnsafeConsumer<T> {
      * @param t 入力値
      * @throws Exception 何らかのチェック例外
      */
-    public void accept(T t) throws Exception;
+    void accept(T t) throws Exception;
+    
+    /**
+     * この {@link UnsafeConsumer} を {@link Consumer} に変換します。<br>
+     * {@code unsafer} がスローするチェック例外は、
+     * {@link RuntimeException} にラップされます。<br>
+     * 
+     * @return スローする例外が変換されたコンシューマ
+     */
+    default Consumer<T> toConsumer() {
+        return toConsumer(RuntimeException::new);
+    }
+    
+    /**
+     * この {@link UnsafeConsumer} を {@link Consumer} に変換します。<br>
+     * {@code unsafer} がスローするチェック例外は、
+     * 指定されたラッパーで非チェック例外にラップされます。<br>
+     * 
+     * @param wrapper チェック例外を非チェック例外に変換するラッパー
+     * @return スローする例外が変換されたコンシューマ
+     * @throws NullPointerException {@code wrapper} が {@code null} の場合
+     */
+    default Consumer<T> toConsumer(
+            Function<? super Exception, ? extends RuntimeException> wrapper) {
+        
+        Objects.requireNonNull(wrapper, "wrapper");
+        
+        return t -> {
+            try {
+                accept(t);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw wrapper.apply(e);
+            }
+        };
+    }
 }
