@@ -62,12 +62,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
-        if (listA == listB) {
-            return IntStream.range(0, listA.size())
-                    .mapToObj(n -> IntPair.of(n, n))
-                    .toList();
-        }
-        
         Map<? extends T, Integer> mapA = IntStream.range(0, listA.size())
                 .collect(
                         HashMap::new,
@@ -81,6 +75,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         if (listA.size() != mapA.size() || listB.size() != mapB.size()) {
             throw new IllegalArgumentException("list has duplicate values.");
+        }
+        
+        if (listA == listB) {
+            return IntStream.range(0, listA.size())
+                    .mapToObj(n -> IntPair.of(n, n))
+                    .toList();
         }
         
         List<IntPair> result = new ArrayList<>();
