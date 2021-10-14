@@ -43,51 +43,6 @@ public interface UnsafeFunction<T, R> {
         return safer::apply;
     }
     
-    /**
-     * {@link UnsafeFunction} を {@link Function} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
-     * {@link RuntimeException} にラップされます。<br>
-     * 
-     * @param <T> 入力の型
-     * @param <R> 出力の型
-     * @param unsafer 関数
-     * @return 型だけが変換された関数
-     * @throws NullPointerException {@code unsafer} が {@code null} の場合
-     */
-    public static <T, R> Function<T, R> toFunction(UnsafeFunction<T, R> unsafer) {
-        return toFunction(unsafer, RuntimeException::new);
-    }
-    
-    /**
-     * {@link UnsafeFunction} を {@link Function} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
-     * 指定されたラッパーで非チェック例外にラップされます。<br>
-     * 
-     * @param <T> 入力の型
-     * @param <R> 出力の型
-     * @param unsafer 関数
-     * @param wrapper チェック例外を非チェック例外に変換するラッパー
-     * @return スローする例外が変換された関数
-     * @throws NullPointerException {@code unsafer}, {@code wrapper} のいずれかが {@code null} の場合
-     */
-    public static <T, R> Function<T, R> toFunction(
-            UnsafeFunction<T, R> unsafer,
-            Function<? super Exception, ? extends RuntimeException> wrapper) {
-        
-        Objects.requireNonNull(unsafer, "unsafer");
-        Objects.requireNonNull(wrapper, "wrapper");
-        
-        return t -> {
-            try {
-                return unsafer.apply(t);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw wrapper.apply(e);
-            }
-        };
-    }
-    
     // [instance members] ******************************************************
     
     /**
@@ -153,5 +108,41 @@ public interface UnsafeFunction<T, R> {
         Objects.requireNonNull(after, "after");
         
         return t -> after.apply(apply(t));
+    }
+    
+    /**
+     * この {@link UnsafeFunction} を {@link Function} に変換します。<br>
+     * {@code unsafer} がスローするチェック例外は、
+     * {@link RuntimeException} にラップされます。<br>
+     * 
+     * @return 型だけが変換された関数
+     */
+    default Function<T, R> toFunction() {
+        return toFunction(RuntimeException::new);
+    }
+    
+    /**
+     * この {@link UnsafeFunction} を {@link Function} に変換します。<br>
+     * {@code unsafer} がスローするチェック例外は、
+     * 指定されたラッパーで非チェック例外にラップされます。<br>
+     * 
+     * @param wrapper チェック例外を非チェック例外に変換するラッパー
+     * @return スローする例外が変換された関数
+     * @throws NullPointerException {@code wrapper} が {@code null} の場合
+     */
+    default Function<T, R> toFunction(
+            Function<? super Exception, ? extends RuntimeException> wrapper) {
+        
+        Objects.requireNonNull(wrapper, "wrapper");
+        
+        return t -> {
+            try {
+                return apply(t);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw wrapper.apply(e);
+            }
+        };
     }
 }
