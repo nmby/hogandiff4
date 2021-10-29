@@ -60,6 +60,9 @@ public class PaintDiffCellsReader extends BufferingReader {
      * @param diffCells 差分セル
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
+     * @throws NullPointerException
+     *      {@code source}, {@code stylesManager}, {@code diffCellContents} のいずれかが {@code null} の場合
+     * @throws IllegalArgumentException {@code diffCellContents} が空の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
@@ -70,6 +73,9 @@ public class PaintDiffCellsReader extends BufferingReader {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(stylesManager, "stylesManager");
         Objects.requireNonNull(diffCellContents, "diffCellContents");
+        if (diffCellContents.isEmpty()) {
+            throw new IllegalArgumentException("no target cells");
+        }
         
         return new PaintDiffCellsReader(
                 source,
@@ -84,7 +90,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     private final Map<Integer, Queue<String>> diffAddresses;
     private final Queue<Integer> targetRows;
     private final short colorIdx;
-    private boolean auto;
+    private boolean auto = false;
     
     private PaintDiffCellsReader(
             XMLEventReader source,
@@ -96,6 +102,7 @@ public class PaintDiffCellsReader extends BufferingReader {
         
         assert stylesManager != null;
         assert diffCellContents != null;
+        assert !diffCellContents.isEmpty();
         
         this.stylesManager = stylesManager;
         this.diffAddresses = diffCellContents.stream()
@@ -109,10 +116,6 @@ public class PaintDiffCellsReader extends BufferingReader {
                 .sorted()
                 .collect(Collectors.toCollection(ArrayDeque::new));
         this.colorIdx = colorIdx;
-        
-        if (diffCellContents.isEmpty()) {
-            auto = true;
-        }
     }
     
     @Override
