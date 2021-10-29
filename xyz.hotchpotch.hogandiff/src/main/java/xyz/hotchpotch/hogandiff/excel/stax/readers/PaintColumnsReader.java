@@ -49,6 +49,9 @@ public class PaintColumnsReader extends BufferingReader {
      * @param targetColumns 着色対象の列インデックス（0 開始）
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
+     * @throws NullPointerException
+     *      {@code source}, {@code stylesManager}, {@code targetColumns} のいずれかが {@code null} の場合
+     * @throws IllegalArgumentException {@code targetColumns} の長さが 0 の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
@@ -59,6 +62,9 @@ public class PaintColumnsReader extends BufferingReader {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(stylesManager, "stylesManager");
         Objects.requireNonNull(targetColumns, "targetColumns");
+        if (targetColumns.length == 0) {
+            throw new IllegalArgumentException("no target columns");
+        }
         
         return new PaintColumnsReader(
                 source,
@@ -72,7 +78,7 @@ public class PaintColumnsReader extends BufferingReader {
     private final StylesManager stylesManager;
     private final Deque<IntPair> targetRanges = new ArrayDeque<>();
     private final short colorIdx;
-    private boolean auto;
+    private boolean auto = false;
     
     private PaintColumnsReader(
             XMLEventReader source,
@@ -84,31 +90,28 @@ public class PaintColumnsReader extends BufferingReader {
         
         assert stylesManager != null;
         assert targetColumns != null;
+        assert 0 < targetColumns.length;
         
         this.stylesManager = stylesManager;
         this.colorIdx = colorIdx;
         
-        if (targetColumns.length == 0) {
-            auto = true;
-        } else {
-            int start = -1;
-            int end = -1;
-            for (int i : targetColumns) {
-                if (start == -1) {
-                    start = i;
-                    end = i;
-                } else if (end + 1 == i) {
-                    end = i;
-                } else if (end + 1 < i) {
-                    targetRanges.add(IntPair.of(start, end));
-                    start = i;
-                    end = i;
-                } else {
-                    throw new AssertionError();
-                }
+        int start = -1;
+        int end = -1;
+        for (int i : targetColumns) {
+            if (start == -1) {
+                start = i;
+                end = i;
+            } else if (end + 1 == i) {
+                end = i;
+            } else if (end + 1 < i) {
+                targetRanges.add(IntPair.of(start, end));
+                start = i;
+                end = i;
+            } else {
+                throw new AssertionError();
             }
-            targetRanges.add(IntPair.of(start, end));
         }
+        targetRanges.add(IntPair.of(start, end));
     }
     
     @Override
