@@ -75,7 +75,10 @@ import java.util.Objects;
         if (cell instanceof CellStringData cd) {
             return !contentEquals(cell)
                     ? content.compareTo(cd.content)
-                    : Objects.compare(comment, cd.comment, Comparator.naturalOrder());
+                    : Objects.compare(
+                            comment,
+                            cd.comment,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
         }
         throw new IllegalArgumentException();
     }
