@@ -78,7 +78,7 @@ import java.util.Objects;
                     : Objects.compare(
                             comment,
                             cd.comment,
-                            Comparator.nullsLast(Comparator.naturalOrder()));
+                            Comparator.nullsFirst(Comparator.naturalOrder()));
         }
         throw new IllegalArgumentException();
     }
