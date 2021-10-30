@@ -11,11 +11,11 @@ import java.util.function.IntUnaryOperator;
  */
 // 実装メモ：
 // このクラスは記憶領域の節約に主眼を置いて設計されています。
-public abstract class IntPair {
+public abstract sealed class IntPair {
     
     // [static members] ********************************************************
     
-    private static class Same extends IntPair {
+    private static final class Same extends IntPair {
         private final int x;
         
         private Same(int x) {
@@ -50,11 +50,6 @@ public abstract class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, %d)".formatted(x, x);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof Same p) {
                 return x == p.x;
@@ -64,14 +59,9 @@ public abstract class IntPair {
             }
             return false;
         }
-        
-        @Override
-        public int hashCode() {
-            return 31 * x + x;
-        }
     }
     
-    private static class Both extends IntPair {
+    private static final class Both extends IntPair {
         private final int a;
         private final int b;
         
@@ -108,11 +98,6 @@ public abstract class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, %d)".formatted(a, b);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof Both p) {
                 return a == p.a && b == p.b;
@@ -122,14 +107,9 @@ public abstract class IntPair {
             }
             return false;
         }
-        
-        @Override
-        public int hashCode() {
-            return 31 * a + b;
-        }
     }
     
-    private static class OnlyA extends IntPair {
+    private static final class OnlyA extends IntPair {
         private final int a;
         
         private OnlyA(int a) {
@@ -154,25 +134,15 @@ public abstract class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(%d, null)".formatted(a);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof OnlyA p) {
                 return a == p.a;
             }
             return false;
         }
-        
-        @Override
-        public int hashCode() {
-            return 31 * a;
-        }
     }
     
-    private static class OnlyB extends IntPair {
+    private static final class OnlyB extends IntPair {
         private final int b;
         
         private OnlyB(int b) {
@@ -197,39 +167,19 @@ public abstract class IntPair {
         }
         
         @Override
-        public String toString() {
-            return "(null, %d)".formatted(b);
-        }
-        
-        @Override
         public boolean equals(Object o) {
             if (o instanceof OnlyB p) {
                 return b == p.b;
             }
             return false;
         }
-        
-        @Override
-        public int hashCode() {
-            return b;
-        }
     }
     
-    private static class Empty extends IntPair {
-        
-        @Override
-        public String toString() {
-            return "(null, null)";
-        }
+    private static final class Empty extends IntPair {
         
         @Override
         public boolean equals(Object o) {
             return o instanceof Empty;
-        }
-        
-        @Override
-        public int hashCode() {
-            return 0;
         }
     }
     
@@ -356,5 +306,17 @@ public abstract class IntPair {
         Objects.requireNonNull(mapper, "mapper");
         
         return this;
+    }
+    
+    @Override
+    public String toString() {
+        return "(%s, %s)".formatted(
+                hasA() ? a() : null,
+                hasB() ? b() : null);
+    }
+    
+    @Override
+    public int hashCode() {
+        return (hasA() ? 31 * a() : 0) + (hasB() ? b() : 0);
     }
 }

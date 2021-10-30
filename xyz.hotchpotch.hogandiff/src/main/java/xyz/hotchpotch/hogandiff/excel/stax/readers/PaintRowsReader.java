@@ -47,6 +47,9 @@ public class PaintRowsReader extends BufferingReader {
      * @param targetRows 着色対象の行インデックス（0 開始）
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
+     * @throws NullPointerException
+     *      {@code source}, {@code stylesManager}, {@code targetRows} のいずれかが {@code null} の場合
+     * @throws IllegalArgumentException {@code targetRows} の長さが 0 の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
@@ -57,6 +60,9 @@ public class PaintRowsReader extends BufferingReader {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(stylesManager, "stylesManager");
         Objects.requireNonNull(targetRows, "targetRows");
+        if (targetRows.length == 0) {
+            throw new IllegalArgumentException("no target rows");
+        }
         
         return new PaintRowsReader(
                 source,
@@ -70,7 +76,7 @@ public class PaintRowsReader extends BufferingReader {
     private final StylesManager stylesManager;
     private final Queue<Integer> targetRows;
     private final short colorIdx;
-    private boolean auto;
+    private boolean auto = false;
     
     private PaintRowsReader(
             XMLEventReader source,
@@ -82,6 +88,7 @@ public class PaintRowsReader extends BufferingReader {
         
         assert stylesManager != null;
         assert targetRows != null;
+        assert 0 < targetRows.length;
         
         this.stylesManager = stylesManager;
         this.targetRows = Arrays.stream(targetRows).boxed().collect(Collectors.toCollection(ArrayDeque::new));

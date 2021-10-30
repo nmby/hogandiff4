@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -596,16 +597,21 @@ public class XSSFBookPainterWithStax implements BookPainter {
             if (piece.isPresent()) {
                 Piece p = piece.get();
                 
-                reader = PaintDiffOrRedundantCommentsReader.of(
-                        reader,
-                        p.diffCellComments().stream()
-                                .map(CellData::address)
-                                .collect(Collectors.toSet()),
-                        p.redundantCellComments().stream()
-                                .map(CellData::address)
-                                .collect(Collectors.toSet()),
-                        diffCommentColor,
-                        redundantCommentColor);
+                Set<String> diffCommentAddrs = p.diffCellComments().stream()
+                        .map(CellData::address)
+                        .collect(Collectors.toSet());
+                Set<String> redundantCommentAddrs = p.redundantCellComments().stream()
+                        .map(CellData::address)
+                        .collect(Collectors.toSet());
+                
+                if (!diffCommentAddrs.isEmpty() || !redundantCommentAddrs.isEmpty()) {
+                    reader = PaintDiffOrRedundantCommentsReader.of(
+                            reader,
+                            diffCommentAddrs,
+                            redundantCommentAddrs,
+                            diffCommentColor,
+                            redundantCommentColor);
+                }
             }
             
             writer.add(reader);

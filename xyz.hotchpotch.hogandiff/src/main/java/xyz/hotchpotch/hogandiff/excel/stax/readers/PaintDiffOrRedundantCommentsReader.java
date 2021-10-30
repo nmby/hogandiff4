@@ -43,6 +43,11 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
      * @param diffCommentAddrs 差分セルコメントの位置
      * @param redundantCommentAddrs 余剰セルコメントの位置
      * @return 新しいリーダー
+     * @throws NullPointerException
+     *      {@code source}, {@code diffCommentAddrs}, {@code redundantCommentAddrs},
+     *      {@code diffCommentColor}, {@code redundantCommentColor} のいずれかが {@code null} の場合
+     *@throws IllegalArgumentException
+     *      {@code diffCommentAddrs}, {@code redundantCommentAddrs} がいずれも空の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
@@ -56,6 +61,9 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
         Objects.requireNonNull(redundantCommentAddrs, "redundantCommentAddrs");
         Objects.requireNonNull(diffCommentColor, "diffCommentColor");
         Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
+        if (diffCommentAddrs.isEmpty() && redundantCommentAddrs.isEmpty()) {
+            throw new IllegalArgumentException("no target comments");
+        }
         
         return new PaintDiffOrRedundantCommentsReader(
                 source,
@@ -90,6 +98,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
         assert redundantCommentAddrs != null;
         assert diffCommentColor != null;
         assert redundantCommentColor != null;
+        assert !diffCommentAddrs.isEmpty() || !redundantCommentAddrs.isEmpty();
         
         this.diffCommentAddrs = diffCommentAddrs;
         this.redundantCommentAddrs = redundantCommentAddrs;
