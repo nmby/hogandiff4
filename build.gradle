@@ -24,17 +24,20 @@ final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
 
 final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
 
-final def poi = 'poi-5.0.0'
+final def poi = 'poi-bin-5.1.0'
 final def poiJars = [
-    'poi-5.0.0.jar',
-    'poi-ooxml-5.0.0.jar',
-    'poi-ooxml-lite-5.0.0.jar',
+    'poi-5.1.0.jar',
+    'poi-ooxml-5.1.0.jar',
+    'poi-ooxml-lite-5.1.0.jar',
     'lib/commons-codec-1.15.jar',
     'lib/commons-collections4-4.4.jar',
+    'lib/commons-io-2.11.0.jar',
     'lib/commons-math3-3.6.1.jar',
+    'lib/log4j-api-2.14.1.jar',
     'lib/SparseBitSet-1.2.jar',
-    'ooxml-lib/commons-compress-1.20.jar',
-    'ooxml-lib/xmlbeans-4.0.0.jar'
+    'ooxml-lib/commons-compress-1.21.jar',
+    'ooxml-lib/curvesapi-1.06.jar',
+    'ooxml-lib/xmlbeans-5.0.2.jar'
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
@@ -76,9 +79,7 @@ task jlinkForWinX64 {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.win.x64']}",
+                    '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-win-x64'),
                     '--strip-debug',
@@ -97,9 +98,7 @@ task jlinkForMacX64 {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.mac.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.mac.x64']}",
+                    '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
                     '--strip-debug',
@@ -270,8 +269,8 @@ task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]
     group 'distribution_win_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-win-x64"
-    destinationDir = file(outputDir)
+    archiveBaseName = "hogandiff-${version}-win-x64"
+    destinationDirectory = file(outputDir)
     from outputDirWinX64
     into outputDirWinX64.getFileName().toString()
 }
@@ -281,8 +280,8 @@ task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
     group 'distribution_mac_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-mac-x64"
-    destinationDir = file(outputDir)
+    archiveBaseName = "hogandiff-${version}-mac-x64"
+    destinationDirectory = file(outputDir)
     from outputDirMacX64
     into outputDirMacX64.getFileName().toString()
 }
@@ -310,16 +309,13 @@ task checkDependencies {
         Path poiDir = Path.of(project['myprop.userlib']).resolve(poi)
         String poiMods = ''
         poiJars.each {
-            poiMods += poiDir.resolve(it).toString().replace('\\', '/') \
-                        + "${project['myprop.common.pathseparator']}"
+            poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ";"
         }
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.lib.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
+                    '--module-path', "${project['myprop.jre.mod.win.x64']};" \
+                                    + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods}",
                     '-s', targetJar
         }
