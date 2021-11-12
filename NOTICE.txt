@@ -34,3 +34,7 @@ Copyright 2003-2021 The Apache Software Foundation.
     Copyright (c) 2009-2018
     FedICT (federal ICT department of Belgium), e-Contract.be BVBA (https://www.e-contract.be),
     Bart Hanssens from FedICT
+
+This product contains parts of Apache Log4j 2 libraries.
+Copyright 1999-2021 The Apache Software Foundation.
+<https://www.apache.org/>
