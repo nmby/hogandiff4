@@ -41,10 +41,17 @@ final def poiJars = [
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
+final def log4j = 'apache-log4j-2.14.1-bin'
+final def log4jJars = [
+    'log4j-core-2.14.1.jar'
+]
+final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
+
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
     + 'java.xml,' \
+    + 'java.management,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
@@ -61,6 +68,11 @@ task pickUpJars {
             from project['myprop.userlib'] +"/${poi}"
             include poiFiles
             into outputDir.resolve("tmp/jars/${poi}")
+        }
+        copy {
+            from project['myprop.userlib'] +"/${log4j}"
+            include log4jFiles
+            into outputDir.resolve("tmp/jars/${log4j}")
         }
         copy {
             from targetJar
@@ -226,6 +238,11 @@ task gatherFilesForWinX64(dependsOn: jlinkForWinX64) {
             into outputDirWinX64.resolve("lib/${poi}")
         }
         copy {
+            from project['myprop.userlib'] + "/${log4j}"
+            include log4jFiles
+            into outputDirWinX64.resolve("lib/${log4j}")
+        }
+        copy {
             from outputDir.resolve('tmp/jre-min-win-x64')
             into outputDirWinX64.resolve("jre-min")
         }
@@ -256,6 +273,12 @@ task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
             from project['myprop.userlib'] + "/${poi}"
             include poiFiles
             into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
+        }
+        copy {
+            String log4jMod = log4j.replace('.', '_')
+            from project['myprop.userlib'] + "/${log4j}"
+            include log4jFiles
+            into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${log4jMod}")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
@@ -312,11 +335,18 @@ task checkDependencies {
             poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ";"
         }
 
+        Path log4jDir = Path.of(project['myprop.userlib']).resolve(log4j)
+        String log4jMods = ''
+        log4jJars.each {
+            log4jMods += log4jDir.resolve(it).toString().replace('\\', '/') + ";"
+        }
+
         exec {
             commandLine project['myprop.cmd.jdeps'],
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
-                                    + "${poiMods}",
+                                    + "${poiMods};" \
+                                    + "${log4jMods}",
                     '-s', targetJar
         }
     }
