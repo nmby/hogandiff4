@@ -79,9 +79,7 @@ task jlinkForWinX64 {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.win.x64']}",
+                    '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-win-x64'),
                     '--strip-debug',
@@ -100,9 +98,7 @@ task jlinkForMacX64 {
                     '--no-header-files',
                     '--no-man-pages',
                     '--compress=2',
-                    '--module-path', "${project['myprop.jre.mod.mac.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.mod.mac.x64']}",
+                    '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
                     '--strip-debug',
@@ -273,8 +269,8 @@ task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]
     group 'distribution_win_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-win-x64"
-    destinationDir = file(outputDir)
+    archiveBaseName = "hogandiff-${version}-win-x64"
+    destinationDirectory = file(outputDir)
     from outputDirWinX64
     into outputDirWinX64.getFileName().toString()
 }
@@ -284,8 +280,8 @@ task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
     group 'distribution_mac_x64'
 
     metadataCharset='UTF-8'
-    baseName = "hogandiff-${version}-mac-x64"
-    destinationDir = file(outputDir)
+    archiveBaseName = "hogandiff-${version}-mac-x64"
+    destinationDirectory = file(outputDir)
     from outputDirMacX64
     into outputDirMacX64.getFileName().toString()
 }
@@ -313,16 +309,13 @@ task checkDependencies {
         Path poiDir = Path.of(project['myprop.userlib']).resolve(poi)
         String poiMods = ''
         poiJars.each {
-            poiMods += poiDir.resolve(it).toString().replace('\\', '/') \
-                        + "${project['myprop.common.pathseparator']}"
+            poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ";"
         }
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--module-path', "${project['myprop.jre.mod.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
-                                    + "${project['myprop.jfx.lib.win.x64']}" \
-                                    + "${project['myprop.common.pathseparator']}" \
+                    '--module-path', "${project['myprop.jre.mod.win.x64']};" \
+                                    + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods}",
                     '-s', targetJar
         }
