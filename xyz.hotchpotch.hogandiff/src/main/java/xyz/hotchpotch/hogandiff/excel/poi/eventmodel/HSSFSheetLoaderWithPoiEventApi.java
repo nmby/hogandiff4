@@ -357,9 +357,9 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 
                 if (cells.containsKey(address)) {
                     CellData original = cells.get(address);
-                    cells.put(address, original.addComment(comment));
+                    cells.put(address, original.withComment(comment));
                 } else {
-                    cells.put(address, CellData.of(address, "", saveMemory).addComment(comment));
+                    cells.put(address, CellData.of(address, "", saveMemory).withComment(comment));
                 }
                 break;
             
