@@ -130,7 +130,7 @@ public interface CellData {
      * @param comment セルコメント
      * @return 新たなセルデータ
      */
-    CellData addComment(String comment);
+    CellData withComment(String comment);
     
     /**
      * このセルデータと指定されたセルデータのセル内容が等価か否かを返します。<br>

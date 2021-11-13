@@ -38,7 +38,7 @@ import java.util.Objects;
      * @throws IllegalStateException このセルデータが既にセルコメントを保持する場合
      */
     @Override
-    public CellData addComment(String comment) {
+    public CellData withComment(String comment) {
         Objects.requireNonNull(comment, "comment");
         if (this.comment != null) {
             throw new IllegalStateException();

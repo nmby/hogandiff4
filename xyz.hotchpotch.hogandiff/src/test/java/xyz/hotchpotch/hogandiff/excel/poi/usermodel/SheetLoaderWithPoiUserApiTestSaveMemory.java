@@ -174,21 +174,21 @@ class SheetLoaderWithPoiUserApiTestSaveMemory {
         
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
-                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
-                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
-                        CellData.of(18, 1, "セル値あり", saveMemory).addComment("コメント"),
-                        CellData.of(22, 1, "空コメント", saveMemory).addComment("")),
+                        CellData.of(2, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).withComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).withComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).withComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり", saveMemory).withComment("コメント"),
+                        CellData.of(22, 1, "空コメント", saveMemory).withComment("")),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", saveMemory).addComment("Authorなし"),
-                        CellData.of(10, 1, "", saveMemory).addComment("非表示"),
-                        CellData.of(14, 1, "", saveMemory).addComment("書式設定"),
-                        CellData.of(18, 1, "セル値あり", saveMemory).addComment("コメント"),
-                        CellData.of(22, 1, "空コメント", saveMemory).addComment("")),
+                        CellData.of(2, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
+                        CellData.of(6, 1, "", saveMemory).withComment("Authorなし"),
+                        CellData.of(10, 1, "", saveMemory).withComment("非表示"),
+                        CellData.of(14, 1, "", saveMemory).withComment("書式設定"),
+                        CellData.of(18, 1, "セル値あり", saveMemory).withComment("コメント"),
+                        CellData.of(22, 1, "空コメント", saveMemory).withComment("")),
                 testee1.loadCells(test4_xlsx, "コメント"));
     }
 }
