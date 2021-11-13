@@ -78,6 +78,6 @@ import java.util.Objects;
     
     @Override
     public String toString() {
-        return "%s: （省メモリモードでは表示できません）".formatted(address());
+        return "%s: （省メモリモードではセル内容を表示できません）".formatted(address());
     }
 }
