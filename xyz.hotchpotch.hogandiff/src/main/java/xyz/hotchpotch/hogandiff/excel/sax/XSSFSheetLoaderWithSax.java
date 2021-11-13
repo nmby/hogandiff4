@@ -237,9 +237,9 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 if (cellsMap.containsKey(address)) {
                     CellData original = cellsMap.get(address);
                     cells.remove(original);
-                    cells.add(original.addComment(comment.toString()));
+                    cells.add(original.withComment(comment.toString()));
                 } else {
-                    cells.add(CellData.of(address, "", saveMemory).addComment(comment.toString()));
+                    cells.add(CellData.of(address, "", saveMemory).withComment(comment.toString()));
                 }
                 
                 address = null;

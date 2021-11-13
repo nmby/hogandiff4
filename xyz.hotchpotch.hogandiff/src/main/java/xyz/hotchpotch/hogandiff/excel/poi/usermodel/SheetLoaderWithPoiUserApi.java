@@ -132,9 +132,9 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                 if (cellsMap.containsKey(address)) {
                     CellData original = cellsMap.get(address);
                     cells.remove(original);
-                    cells.add(original.addComment(comment));
+                    cells.add(original.withComment(comment));
                 } else {
-                    cells.add(CellData.of(address, "", saveMemory).addComment(comment));
+                    cells.add(CellData.of(address, "", saveMemory).withComment(comment));
                 }
             });
             

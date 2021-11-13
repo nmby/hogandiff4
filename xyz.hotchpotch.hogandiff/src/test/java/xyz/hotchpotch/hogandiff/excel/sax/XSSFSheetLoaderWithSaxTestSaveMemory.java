@@ -359,12 +359,12 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
         
         assertEquals(
                 Set.of(
-                        CellData.of(1, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
-                        CellData.of(4, 1, "", saveMemory).addComment("Authorなし"),
-                        CellData.of(7, 1, "", saveMemory).addComment("非表示"),
-                        CellData.of(10, 1, "", saveMemory).addComment("書式設定"),
-                        CellData.of(13, 1, "セル値あり", saveMemory).addComment("コメント"),
-                        CellData.of(16, 1, "空コメント", saveMemory).addComment(""),
+                        CellData.of(1, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
+                        CellData.of(4, 1, "", saveMemory).withComment("Authorなし"),
+                        CellData.of(7, 1, "", saveMemory).withComment("非表示"),
+                        CellData.of(10, 1, "", saveMemory).withComment("書式設定"),
+                        CellData.of(13, 1, "セル値あり", saveMemory).withComment("コメント"),
+                        CellData.of(16, 1, "空コメント", saveMemory).withComment(""),
                         CellData.of(19, 1, "セル値のみ", saveMemory)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
@@ -375,12 +375,12 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
         
         assertEquals(
                 Set.of(
-                        CellData.of(1, 1, "", saveMemory).addComment("Author:\nComment\nComment"),
-                        CellData.of(4, 1, "", saveMemory).addComment("Authorなし"),
-                        CellData.of(7, 1, "", saveMemory).addComment("非表示"),
-                        CellData.of(10, 1, "", saveMemory).addComment("書式設定"),
-                        CellData.of(13, 1, "セル値あり", saveMemory).addComment("コメント"),
-                        CellData.of(16, 1, "空コメント", saveMemory).addComment(""),
+                        CellData.of(1, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
+                        CellData.of(4, 1, "", saveMemory).withComment("Authorなし"),
+                        CellData.of(7, 1, "", saveMemory).withComment("非表示"),
+                        CellData.of(10, 1, "", saveMemory).withComment("書式設定"),
+                        CellData.of(13, 1, "セル値あり", saveMemory).withComment("コメント"),
+                        CellData.of(16, 1, "空コメント", saveMemory).withComment(""),
                         CellData.of(19, 1, " \"セル値\" & \"のみ\"", saveMemory)),
                 testee.loadCells(test4_xlsx, "コメント"));
     }
