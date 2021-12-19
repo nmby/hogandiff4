@@ -126,9 +126,6 @@ LICENSE.txt ファイルをご参照ください。
 - Apache POI
     - Apache License, Version 2.0 ライセンスにより提供されています。
     - 詳細は LICENSE.txt, NOTICE.txt 両ファイルおよび[Apache POIのWebサイト](https://poi.apache.org/)をご参照ください。
-- Apache Log4j 2
-    - Apache License, Version 2.0 ライセンスにより提供されています。
-    - 詳細は LICENSE.txt, NOTICE.txt 両ファイルおよび[Apache Log4j 2のWebサイト](https://logging.apache.org/log4j/2.x/license.html)をご参照ください。
 
 あなたが方眼Diffを利用する場合は以上の全てのライセンスに従う必要があります。
 
