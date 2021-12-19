@@ -38,7 +38,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.11.5";
+    private static final String VERSION = "v0.11.6";
     
     /** プロパティファイルの相対パス */
     private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
