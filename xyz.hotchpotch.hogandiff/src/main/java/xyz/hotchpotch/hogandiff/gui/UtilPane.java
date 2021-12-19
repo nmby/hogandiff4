@@ -144,8 +144,8 @@ public class UtilPane extends HBox implements ChildController {
                 parent.hasSettingsChanged.set(true);
                 new Alert(
                         AlertType.INFORMATION,
-                        "作業用フォルダを一時的に変更しました。%n"
-                                + "変更を保存するには「設定を保存」ボタンを押してください。".formatted(),
+                        ("作業用フォルダを一時的に変更しました。%n"
+                                + "変更を保存するには「設定を保存」ボタンを押してください。").formatted(),
                         ButtonType.OK)
                                 .showAndWait();
             }
