@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
@@ -49,7 +50,8 @@ def classPath = '' \
     + libBase + 'poi-bin-5_2_0/lib/SparseBitSet-1.2.jar ' \
     + libBase + 'poi-bin-5_2_0/ooxml-lib/commons-compress-1.21.jar ' \
     + libBase + 'poi-bin-5_2_0/ooxml-lib/curvesapi-1.06.jar ' \
-    + libBase + 'poi-bin-5_2_0/ooxml-lib/xmlbeans-5.0.3.jar'
+    + libBase + 'poi-bin-5_2_0/ooxml-lib/xmlbeans-5.0.3.jar' \
+    + libBase + 'apache-log4j-2_17_1-bin/log4j-core-2.17.1.jar'
 
 jar {
     manifest {
