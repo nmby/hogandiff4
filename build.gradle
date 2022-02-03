@@ -50,8 +50,9 @@ final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.xml,' \
     + 'java.management,' \
+    + 'java.naming,' \
+    + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
