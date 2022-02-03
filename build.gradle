@@ -130,7 +130,7 @@ task jpackageForWinX64(dependsOn: [pickUpJars, jlinkForWinX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'msi',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2021 nmby',
+                    '--copyright', '(c) 2018-2022 nmby',
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
@@ -173,7 +173,7 @@ task jpackageForMacX64(dependsOn: [pickUpJars, jlinkForMacX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'pkg',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2021 nmby',
+                    '--copyright', '(c) 2018-2022 nmby',
                     '--description', 'Excelファイル比較ツール',
                     '--name', '方眼Diff',
                     '--dest', outputDir,
@@ -210,7 +210,7 @@ task exewrapForWinX64 {
                     '-V', version,
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
-                    '-c', '(c) 2018-2021 nmby',
+                    '-c', '(c) 2018-2022 nmby',
                     '-j', targetJar,
                     '-o', outputDirWinX64.resolve('方眼Diff.exe')
         }
