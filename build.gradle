@@ -343,6 +343,7 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
+                    '--multi-release', 17,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods};" \
