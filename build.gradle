@@ -50,8 +50,9 @@ final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.xml,' \
     + 'java.management,' \
+    + 'java.naming,' \
+    + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
@@ -343,6 +344,7 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
+                    '--multi-release', 17,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods};" \
