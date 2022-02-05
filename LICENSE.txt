@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018-2021 nmby
+Copyright (c) 2018-2022 nmby
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ license terms. Your use of these subcomponents is subject to the terms
 and conditions of the following licenses:
 
 
-Eclipse Temurin Java SE and Apache POI:
+Eclipse Temurin Java SE, Apache POI, and Apache Log4j 2:
 
                                      Apache License
                                Version 2.0, January 2004

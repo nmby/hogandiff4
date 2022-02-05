@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.11.6'
+final def version = '0.11.7'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -24,28 +24,35 @@ final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
 
 final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
 
-final def poi = 'poi-bin-5.1.0'
+final def poi = 'poi-bin-5.2.0'
 final def poiJars = [
-    'poi-5.1.0.jar',
-    'poi-ooxml-5.1.0.jar',
-    'poi-ooxml-lite-5.1.0.jar',
+    'poi-5.2.0.jar',
+    'poi-ooxml-5.2.0.jar',
+    'poi-ooxml-lite-5.2.0.jar',
     'lib/commons-codec-1.15.jar',
     'lib/commons-collections4-4.4.jar',
     'lib/commons-io-2.11.0.jar',
     'lib/commons-math3-3.6.1.jar',
-    'lib/log4j-api-2.14.1.jar',
+    'lib/log4j-api-2.17.1.jar',
     'lib/SparseBitSet-1.2.jar',
     'ooxml-lib/commons-compress-1.21.jar',
     'ooxml-lib/curvesapi-1.06.jar',
-    'ooxml-lib/xmlbeans-5.0.2.jar'
+    'ooxml-lib/xmlbeans-5.0.3.jar'
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
+
+final def log4j = 'apache-log4j-2.17.1-bin'
+final def log4jJars = [
+    'log4j-core-2.17.1.jar'
+]
+final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.xml,' \
     + 'java.management,' \
+    + 'java.naming,' \
+    + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
@@ -62,6 +69,11 @@ task pickUpJars {
             from project['myprop.userlib'] +"/${poi}"
             include poiFiles
             into outputDir.resolve("tmp/jars/${poi}")
+        }
+        copy {
+            from project['myprop.userlib'] +"/${log4j}"
+            include log4jFiles
+            into outputDir.resolve("tmp/jars/${log4j}")
         }
         copy {
             from targetJar
@@ -119,7 +131,7 @@ task jpackageForWinX64(dependsOn: [pickUpJars, jlinkForWinX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'msi',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2021 nmby',
+                    '--copyright', '(c) 2018-2022 nmby',
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
@@ -162,7 +174,7 @@ task jpackageForMacX64(dependsOn: [pickUpJars, jlinkForMacX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'pkg',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2021 nmby',
+                    '--copyright', '(c) 2018-2022 nmby',
                     '--description', 'Excelファイル比較ツール',
                     '--name', '方眼Diff',
                     '--dest', outputDir,
@@ -199,7 +211,7 @@ task exewrapForWinX64 {
                     '-V', version,
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
-                    '-c', '(c) 2018-2021 nmby',
+                    '-c', '(c) 2018-2022 nmby',
                     '-j', targetJar,
                     '-o', outputDirWinX64.resolve('方眼Diff.exe')
         }
@@ -225,6 +237,11 @@ task gatherFilesForWinX64(dependsOn: jlinkForWinX64) {
             from project['myprop.userlib'] + "/${poi}"
             include poiFiles
             into outputDirWinX64.resolve("lib/${poi}")
+        }
+        copy {
+            from project['myprop.userlib'] + "/${log4j}"
+            include log4jFiles
+            into outputDirWinX64.resolve("lib/${log4j}")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-win-x64')
@@ -257,6 +274,12 @@ task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
             from project['myprop.userlib'] + "/${poi}"
             include poiFiles
             into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
+        }
+        copy {
+            String log4jMod = log4j.replace('.', '_')
+            from project['myprop.userlib'] + "/${log4j}"
+            include log4jFiles
+            into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${log4jMod}")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
@@ -312,12 +335,20 @@ task checkDependencies {
         poiJars.each {
             poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ";"
         }
+        
+        Path log4jDir = Path.of(project['myprop.userlib']).resolve(log4j)
+        String log4jMods = ''
+        log4jJars.each {
+            log4jMods += log4jDir.resolve(it).toString().replace('\\', '/') + ";"
+        }
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
+                    '--multi-release', 17,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
-                                    + "${poiMods}",
+                                    + "${poiMods};" \
+                                    + "${log4jMods}",
                     '-s', targetJar
         }
     }

@@ -142,7 +142,7 @@ public class BResult {
      * @return 比較結果の差分詳細
      */
     public String getDiffDetail() {
-        return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8));
+        return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
     }
     
     @Override
