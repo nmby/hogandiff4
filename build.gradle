@@ -205,7 +205,7 @@ task exewrapForWinX64 {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '17',
+                    '-t', '18',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
@@ -344,7 +344,7 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--multi-release', 17,
+                    '--multi-release', 18,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods};" \
