@@ -24,26 +24,26 @@ final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
 
 final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
 
-final def poi = 'poi-bin-5.2.0'
+final def poi = 'poi-bin-5.2.2'
 final def poiJars = [
-    'poi-5.2.0.jar',
-    'poi-ooxml-5.2.0.jar',
-    'poi-ooxml-lite-5.2.0.jar',
+    'poi-5.2.2.jar',
+    'poi-ooxml-5.2.2.jar',
+    'poi-ooxml-lite-5.2.2.jar',
     'lib/commons-codec-1.15.jar',
     'lib/commons-collections4-4.4.jar',
     'lib/commons-io-2.11.0.jar',
     'lib/commons-math3-3.6.1.jar',
-    'lib/log4j-api-2.17.1.jar',
+    'lib/log4j-api-2.17.2.jar',
     'lib/SparseBitSet-1.2.jar',
     'ooxml-lib/commons-compress-1.21.jar',
-    'ooxml-lib/curvesapi-1.06.jar',
+    'ooxml-lib/curvesapi-1.07.jar',
     'ooxml-lib/xmlbeans-5.0.3.jar'
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
-final def log4j = 'apache-log4j-2.17.1-bin'
+final def log4j = 'apache-log4j-2.17.2-bin'
 final def log4jJars = [
-    'log4j-core-2.17.1.jar'
+    'log4j-core-2.17.2.jar'
 ]
 final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 
@@ -205,7 +205,7 @@ task exewrapForWinX64 {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '17',
+                    '-t', '18',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
@@ -344,7 +344,7 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--multi-release', 17,
+                    '--multi-release', 18,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods};" \
