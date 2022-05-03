@@ -70,6 +70,7 @@ public class TargetSelectionParts extends GridPane {
     
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
+    private TargetSelectionParts opposite;
     
     public TargetSelectionParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"));
@@ -80,13 +81,16 @@ public class TargetSelectionParts extends GridPane {
     
     /*package*/ void init(
             MainController parent,
-            String title) {
+            String title,
+            TargetSelectionParts opposite) {
         
         assert parent != null;
         assert title != null;
+        assert opposite != null && opposite != this;
         
         factory = parent.factory;
         menu = parent.menu;
+        this.opposite = opposite;
         
         titleLabel.setText(title);
         bookPathTextField.setOnDragOver(this::onDragOver);
@@ -166,13 +170,17 @@ public class TargetSelectionParts extends GridPane {
             event.setDropCompleted(false);
             return;
         }
-        File file = event.getDragboard().getFiles().get(0);
-        if (!file.isFile()) {
+        List<File> files = event.getDragboard().getFiles();
+        if (!files.get(0).isFile()) {
             event.setDropCompleted(false);
             return;
         }
+        boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
+        event.setDropCompleted(dropCompleted);
         
-        event.setDropCompleted(validateAndSetTarget(file.toPath(), null));
+        if (dropCompleted && 1 < files.size() && files.get(1).isFile()) {
+            opposite.validateAndSetTarget(files.get(1).toPath(), null);
+        }
     }
     
     private void chooseBook(ActionEvent event) {

@@ -38,8 +38,8 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        targetSelectionParts1.init(parent, "A");
-        targetSelectionParts2.init(parent, "B");
+        targetSelectionParts1.init(parent, "A", targetSelectionParts2);
+        targetSelectionParts2.init(parent, "B", targetSelectionParts1);
         
         disableProperty().bind(parent.isRunning);
     }
