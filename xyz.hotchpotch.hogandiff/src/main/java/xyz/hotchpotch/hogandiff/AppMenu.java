@@ -1,11 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -33,10 +33,10 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
+            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
             
-            return !Objects.equals(bookPath1, bookPath2);
+            return !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath());
         }
         
         @Override
@@ -46,12 +46,12 @@ public enum AppMenu {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(factory, "factory");
             
-            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
-            BookLoader bookLoader1 = factory.bookLoader(bookPath1);
-            BookLoader bookLoader2 = factory.bookLoader(bookPath2);
-            List<String> sheetNames1 = bookLoader1.loadSheetNames(bookPath1);
-            List<String> sheetNames2 = bookLoader2.loadSheetNames(bookPath2);
+            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            BookLoader bookLoader1 = factory.bookLoader(bookInfo1.bookPath());
+            BookLoader bookLoader2 = factory.bookLoader(bookInfo2.bookPath());
+            List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1.bookPath());
+            List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2.bookPath());
             
             Matcher<String> matcher = factory.sheetNameMatcher(settings);
             List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
@@ -73,12 +73,12 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            Path bookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
-            Path bookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
+            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
             String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
             String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
-            return !Objects.equals(bookPath1, bookPath2)
+            return !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())
                     || !Objects.equals(sheetName1, sheetName2);
         }
         

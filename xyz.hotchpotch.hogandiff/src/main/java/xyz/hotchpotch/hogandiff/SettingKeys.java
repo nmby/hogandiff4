@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -51,24 +52,24 @@ public class SettingKeys {
             AppMenu::valueOf,
             false);
     
-    /** 今回の実行における比較対象Excelブック1のパス */
-    public static final Key<Path> CURR_BOOK_PATH1 = new Key<Path>(
-            "application.current.bookPath1",
+    /** 今回の実行における比較対象Excelブック1の情報 */
+    public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<BookInfo>(
+            "application.current.bookInfo1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            Path::toString,
-            Path::of,
+            BookInfo::toString,
+            null,
             false);
     
-    /** 今回の実行における比較対象Excelブック2のパス */
-    public static final Key<Path> CURR_BOOK_PATH2 = new Key<Path>(
-            "application.current.bookPath2",
+    /** 今回の実行における比較対象Excelブック2の情報 */
+    public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<BookInfo>(
+            "application.current.bookInfo2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            Path::toString,
-            Path::of,
+            BookInfo::toString,
+            null,
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
