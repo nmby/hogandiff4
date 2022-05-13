@@ -54,23 +54,22 @@ public class Factory {
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
+     *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} が不明な形式のファイルの場合
+     *              {@code bookInfo} が不明な形式のファイルの場合
      * @throws UnsupportedOperationException
-     *              {@code bookPath} がサポートされないブック形式の場合
+     *              {@code bookInfo} がサポートされないブック形式の場合
      */
-    public BookLoader bookLoader(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
+    public BookLoader bookLoader(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
-        BookType bookType = BookType.of(bookPath);
-        switch (bookType) {
+        switch (bookInfo.bookType()) {
         case XLS:
             return CombinedBookLoader.of(List.of(
                     () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
@@ -87,7 +86,7 @@ public class Factory {
             throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
         
         default:
-            throw new AssertionError("unknown book type: " + bookType);
+            throw new AssertionError("unknown book type: " + bookInfo.bookType());
         }
     }
     

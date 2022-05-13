@@ -48,10 +48,10 @@ public enum AppMenu {
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
             BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            BookLoader bookLoader1 = factory.bookLoader(bookInfo1.bookPath());
-            BookLoader bookLoader2 = factory.bookLoader(bookInfo2.bookPath());
-            List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1.bookPath());
-            List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2.bookPath());
+            BookLoader bookLoader1 = factory.bookLoader(bookInfo1);
+            BookLoader bookLoader2 = factory.bookLoader(bookInfo2);
+            List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
+            List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
             
             Matcher<String> matcher = factory.sheetNameMatcher(settings);
             List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);

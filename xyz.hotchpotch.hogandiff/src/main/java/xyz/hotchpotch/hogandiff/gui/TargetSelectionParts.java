@@ -214,8 +214,9 @@ public class TargetSelectionParts extends GridPane {
         }
         
         try {
-            BookLoader loader = factory.bookLoader(newBookPath);
-            List<String> sheetNames = loader.loadSheetNames(newBookPath);
+            BookInfo bookInfo = BookInfo.of(newBookPath);
+            BookLoader loader = factory.bookLoader(bookInfo);
+            List<String> sheetNames = loader.loadSheetNames(bookInfo);
             
             bookPathTextField.setText(newBookPath.toString());
             sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));

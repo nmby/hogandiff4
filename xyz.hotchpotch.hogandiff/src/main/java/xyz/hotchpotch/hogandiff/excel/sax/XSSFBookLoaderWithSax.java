@@ -1,11 +1,11 @@
 package xyz.hotchpotch.hogandiff.excel.sax;
 
-import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -57,9 +57,9 @@ public class XSSFBookLoaderWithSax implements BookLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
+     *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -69,12 +69,12 @@ public class XSSFBookLoaderWithSax implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookPath);
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookInfo.bookPath());
             
             return sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
@@ -82,7 +82,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
                     .toList();
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：" + bookPath, e);
+            throw new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath(), e);
         }
     }
 }

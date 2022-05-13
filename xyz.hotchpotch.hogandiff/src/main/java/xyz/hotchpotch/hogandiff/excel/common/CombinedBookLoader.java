@@ -1,13 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
@@ -59,9 +58,9 @@ public class CombinedBookLoader implements BookLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
+     *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -71,9 +70,9 @@ public class CombinedBookLoader implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
         List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<BookLoader>> itr = suppliers.iterator();
@@ -81,7 +80,7 @@ public class CombinedBookLoader implements BookLoader {
         while (itr.hasNext()) {
             try {
                 BookLoader loader = itr.next().get();
-                return loader.loadSheetNames(bookPath);
+                return loader.loadSheetNames(bookInfo);
                 
             } catch (PasswordHandlingException e) {
                 e.printStackTrace();
@@ -94,7 +93,7 @@ public class CombinedBookLoader implements BookLoader {
             }
         }
         
-        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：" + bookPath);
+        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath());
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }
