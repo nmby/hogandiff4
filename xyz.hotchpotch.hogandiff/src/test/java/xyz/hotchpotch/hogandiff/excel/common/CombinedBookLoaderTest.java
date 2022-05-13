@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 
@@ -61,12 +62,12 @@ class CombinedBookLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadSheetNames(Path.of("dummy.xlsx")));
+                () -> testeeF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadSheetNames(Path.of("dummy.xlsx")));
+                () -> testeeFFF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
     }
     
     @Test
@@ -81,11 +82,11 @@ class CombinedBookLoaderTest {
         // 成功１つ
         assertEquals(
                 List.of("success"),
-                testeeS.loadSheetNames(Path.of("dummy.xlsx")));
+                testeeS.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 List.of("success"),
-                testeeFFSF.loadSheetNames(Path.of("dummy.xlsx")));
+                testeeFFSF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
     }
 }
