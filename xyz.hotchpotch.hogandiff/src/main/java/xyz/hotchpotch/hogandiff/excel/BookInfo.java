@@ -1,7 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -14,9 +12,7 @@ public class BookInfo {
         
         Objects.requireNonNull(bookPath, "bookPath");
         
-        return new BookInfo(
-                bookPath,
-                BookType.of(bookPath));
+        return new BookInfo(bookPath);
     }
     
     // [instance members] ******************************************************
@@ -25,14 +21,12 @@ public class BookInfo {
     private final BookType bookType;
     
     private BookInfo(
-            Path bookPath,
-            BookType bookType) {
+            Path bookPath) {
         
-        assert bookPath != null && Files.isRegularFile(bookPath, LinkOption.NOFOLLOW_LINKS);
-        assert bookType != null && bookType == BookType.of(bookPath);
+        assert bookPath != null;
         
         this.bookPath = bookPath;
-        this.bookType = bookType;
+        this.bookType = BookType.of(bookPath);
     }
     
     public Path bookPath() {
