@@ -1,11 +1,10 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.nio.file.Path;
 import java.util.List;
 
 /**
  * Excelブックからシート名の一覧を抽出するローダーを表します。<br>
- * これは、{@link #loadSheetNames(Path)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadSheetNames(BookInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
