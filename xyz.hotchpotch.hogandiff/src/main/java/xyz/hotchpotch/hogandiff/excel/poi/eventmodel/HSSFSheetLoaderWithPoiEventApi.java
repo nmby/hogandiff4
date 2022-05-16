@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
@@ -475,9 +475,9 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -487,14 +487,14 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
-        try (FileInputStream fin = new FileInputStream(bookPath.toFile());
+        try (FileInputStream fin = new FileInputStream(bookInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -509,7 +509,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookPath, sheetName), e);
+                    "処理に失敗しました：%s - %s".formatted(bookInfo.bookPath(), sheetName), e);
         }
     }
 }
