@@ -94,19 +94,19 @@ public class Factory {
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     *              {@code settings}, {@code bookInfo} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} が不明な形式のファイルの場合
+     *              {@code bookInfo} が不明な形式のファイルの場合
      * @throws UnsupportedOperationException
-     *              {@code bookPath} がサポートされないブック形式の場合
+     *              {@code bookInfo} がサポートされないブック形式の場合
      */
-    public SheetLoader sheetLoader(Settings settings, Path bookPath) throws ExcelHandlingException {
+    public SheetLoader sheetLoader(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -126,8 +126,7 @@ public class Factory {
                             saveMemory);
         };
         
-        BookType bookType = BookType.of(bookPath);
-        switch (bookType) {
+        switch (bookInfo.bookType()) {
         case XLS:
             return CombinedSheetLoader.of(List.of(
                     () -> HSSFSheetLoaderWithPoiEventApi.of(
@@ -143,7 +142,7 @@ public class Factory {
                     () -> XSSFSheetLoaderWithSax.of(
                             useCachedValue,
                             saveMemory,
-                            bookPath),
+                            bookInfo),
                     () -> SheetLoaderWithPoiUserApi.of(
                             saveMemory,
                             converter)));
@@ -153,7 +152,7 @@ public class Factory {
             throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
         
         default:
-            throw new AssertionError("unknown book type: " + bookType);
+            throw new AssertionError("unknown book type: " + bookInfo.bookType());
         }
     }
     

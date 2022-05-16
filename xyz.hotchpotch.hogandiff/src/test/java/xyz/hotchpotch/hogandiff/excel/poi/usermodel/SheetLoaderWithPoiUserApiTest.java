@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
@@ -27,25 +28,27 @@ class SheetLoaderWithPoiUserApiTest {
             PoiUtil.getCellContentAsString(cell, false),
             saveMemory);
     
-    private static Path test1_xls;
-    private static Path test1_xlsb;
-    private static Path test1_xlsm;
-    private static Path test1_xlsx;
-    private static Path test2_xls;
-    private static Path test2_xlsx;
-    private static Path test4_xls;
-    private static Path test4_xlsx;
+    private static BookInfo test1_xls;
+    private static BookInfo test1_xlsb;
+    private static BookInfo test1_xlsm;
+    private static BookInfo test1_xlsx;
+    private static BookInfo test2_xls;
+    private static BookInfo test2_xlsx;
+    private static BookInfo test4_xls;
+    private static BookInfo test4_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-        test4_xls = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI());
-        test4_xlsx = Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI());
+        test1_xls = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI()));
+        test1_xlsb = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI()));
+        test1_xlsm = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI()));
+        test1_xlsx = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI()));
+        test2_xls = BookInfo
+                .of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI()));
+        test2_xlsx = BookInfo
+                .of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()));
+        test4_xls = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI()));
+        test4_xlsx = BookInfo.of(Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI()));
     }
     
     // [instance members] ******************************************************
@@ -96,7 +99,7 @@ class SheetLoaderWithPoiUserApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(Path.of("X:\\dummy\\dummy.xlsx"), "A1_ワークシート"));
+                () -> testee.loadCells(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx")), "A1_ワークシート"));
         
         // 存在しないシート
         assertThrows(

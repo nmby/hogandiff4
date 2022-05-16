@@ -190,10 +190,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
             BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            SheetLoader loader1 = factory.sheetLoader(settings, bookInfo1.bookPath());
+            SheetLoader loader1 = factory.sheetLoader(settings, bookInfo1);
             SheetLoader loader2 = Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())
                     ? loader1
-                    : factory.sheetLoader(settings, bookInfo2.bookPath());
+                    : factory.sheetLoader(settings, bookInfo2);
             SComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
             
@@ -211,8 +211,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(BResult.formatSheetNamesPair(i, pair));
                 updateMessage(str.toString());
                 
-                Set<CellData> cells1 = loader1.loadCells(bookInfo1.bookPath(), pair.a());
-                Set<CellData> cells2 = loader2.loadCells(bookInfo2.bookPath(), pair.b());
+                Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
                 SResult result = comparator.compare(cells1, cells2);
                 results.put(pair, Optional.of(result));
                 
