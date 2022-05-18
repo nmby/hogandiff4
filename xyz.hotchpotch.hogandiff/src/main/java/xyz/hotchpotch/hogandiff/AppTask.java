@@ -303,7 +303,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
-        Path dst = null;
+        BookInfo dst = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -311,9 +311,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
-            Path src = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
-            dst = workDir.resolve(src.getFileName());
-            str.append("    - %s%n%n".formatted(dst));
+            BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            dst = BookInfo.of(workDir.resolve(src.bookPath().getFileName()));
+            str.append("    - %s%n%n".formatted(dst.bookPath()));
             updateMessage(str.toString());
             
             Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
@@ -334,7 +334,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst.toFile());
+                Desktop.getDesktop().open(dst.bookPath().toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -355,17 +355,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         int progressTotal = progressAfter - progressBefore;
-        Path dst1 = null;
-        Path dst2 = null;
+        BookInfo dst1 = null;
+        BookInfo dst2 = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             
-            Path src1 = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
-            dst1 = workDir.resolve("【A】" + src1.getFileName());
-            str.append("    - %s%n".formatted(dst1));
+            BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            dst1 = BookInfo.of(workDir.resolve("【A】" + src1.bookPath().getFileName()));
+            str.append("    - %s%n".formatted(dst1.bookPath()));
             updateMessage(str.toString());
             BookPainter painter1 = factory.painter(settings, dst1);
             painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
@@ -380,9 +380,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            Path src2 = settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath();
-            dst2 = workDir.resolve("【B】" + src2.getFileName());
-            str.append("    - %s%n%n".formatted(dst2));
+            BookInfo src2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            dst2 = BookInfo.of(workDir.resolve("【B】" + src2.bookPath().getFileName()));
+            str.append("    - %s%n%n".formatted(dst2.bookPath()));
             updateMessage(str.toString());
             BookPainter painter2 = factory.painter(settings, dst2);
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
@@ -400,8 +400,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst1.toFile());
-                Desktop.getDesktop().open(dst2.toFile());
+                Desktop.getDesktop().open(dst1.bookPath().toFile());
+                Desktop.getDesktop().open(dst2.bookPath().toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
