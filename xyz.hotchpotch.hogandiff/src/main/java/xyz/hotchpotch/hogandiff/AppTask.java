@@ -95,7 +95,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         if (menu == AppMenu.COMPARE_BOOKS) {
             str.append("ブック同士の比較を開始します。%n[A] %s%n[B] %s%n%n"
-                    .formatted(bookInfo1.bookPath(), bookInfo2.bookPath()));
+                    .formatted(bookInfo1, bookInfo2));
             
         } else {
             String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
@@ -103,10 +103,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             if (Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())) {
                 str.append("シート同士の比較を開始します。%n%s%n[A] %s%n[B] %s%n%n"
-                        .formatted(bookInfo1.bookPath(), sheetName1, sheetName2));
+                        .formatted(bookInfo1, sheetName1, sheetName2));
             } else {
                 str.append("シート同士の比較を開始します。%n[A] %s - %s%n[B] %s - %s%n%n"
-                        .formatted(bookInfo1.bookPath(), sheetName1, bookInfo2.bookPath(), sheetName2));
+                        .formatted(bookInfo1, sheetName1, bookInfo2, sheetName2));
             }
         }
         updateMessage(str.toString());
@@ -313,7 +313,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
             dst = BookInfo.of(workDir.resolve(src.bookPath().getFileName()));
-            str.append("    - %s%n%n".formatted(dst.bookPath()));
+            str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
             Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
@@ -365,7 +365,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
             dst1 = BookInfo.of(workDir.resolve("【A】" + src1.bookPath().getFileName()));
-            str.append("    - %s%n".formatted(dst1.bookPath()));
+            str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
             BookPainter painter1 = factory.painter(settings, dst1);
             painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
@@ -382,7 +382,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             BookInfo src2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
             dst2 = BookInfo.of(workDir.resolve("【B】" + src2.bookPath().getFileName()));
-            str.append("    - %s%n%n".formatted(dst2.bookPath()));
+            str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
             BookPainter painter2 = factory.painter(settings, dst2);
             painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));

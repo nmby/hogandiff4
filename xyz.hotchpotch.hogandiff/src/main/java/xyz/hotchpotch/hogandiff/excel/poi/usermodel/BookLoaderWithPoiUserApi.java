@@ -106,14 +106,14 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             // 本当は読み取り専用で読み込めてほしいが
             // サポート対象外であるとユーザーに案内することにする。
             throw new PasswordHandlingException(
-                    "パスワード付きファイルには対応していません：" + bookInfo.bookPath(), e);
+                    "パスワード付きファイルには対応していません：%s".formatted(bookInfo), e);
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    "パスワード付きファイルには対応していません：" + bookInfo.bookPath(), e);
+                    "パスワード付きファイルには対応していません：%s".formatted(bookInfo), e);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath(), e);
+            throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
         }
     }
 }

@@ -82,7 +82,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
                     .toList();
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath(), e);
+            throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
         }
     }
 }
