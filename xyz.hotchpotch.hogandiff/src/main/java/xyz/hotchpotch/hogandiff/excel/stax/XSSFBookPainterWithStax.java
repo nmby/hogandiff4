@@ -304,7 +304,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             //          - xl/worksheets/sheet?.xml
             //          - xl/drawings/vmlDrawing?.vml
             //          - xl/comments?.xml
-            processWorksheetEntries(inFs, outFs, dstBookInfo.bookPath(), diffs);
+            processWorksheetEntries(inFs, outFs, dstBookInfo, diffs);
             
         } catch (ExcelHandlingException e) {
             throw e;
@@ -423,14 +423,14 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * 
      * @param inFs
      * @param outFs
-     * @param bookPath
+     * @param bookInfo
      * @param diffs
      * @throws ExcelHandlingException
      */
     private void processWorksheetEntries(
             FileSystem inFs,
             FileSystem outFs,
-            Path bookPath,
+            BookInfo bookInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
@@ -453,7 +453,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
         }
         
         // 次に、比較対象シートに対する着色処理を行う。
-        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
+        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookInfo).stream()
                 .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
         
         for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {
