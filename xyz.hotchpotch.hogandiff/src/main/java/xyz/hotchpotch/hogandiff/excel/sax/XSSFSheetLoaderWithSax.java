@@ -302,11 +302,11 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         this.extractCachedValue = extractCachedValue;
         this.saveMemory = saveMemory;
         this.bookInfo = bookInfo;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookInfo.bookPath()).stream()
+        this.nameToInfo = SaxUtil.loadSheetInfo(bookInfo).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookInfo.bookPath());
+        this.sst = SaxUtil.loadSharedStrings(bookInfo);
     }
     
     /**

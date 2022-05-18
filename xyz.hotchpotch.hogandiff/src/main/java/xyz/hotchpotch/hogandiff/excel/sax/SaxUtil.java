@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -20,6 +19,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -314,17 +314,17 @@ public class SaxUtil {
     /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return シート情報の一覧
-     * @throws NullPointerException {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} がサポートされない形式や不明な形式の場合
+     * @throws NullPointerException {@code bookInfo} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookInfo} がサポートされない形式や不明な形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    public static List<SheetInfo> loadSheetInfo(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, BookType.of(bookPath));
+    public static List<SheetInfo> loadSheetInfo(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookInfo.bookType());
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
@@ -351,24 +351,24 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの読み込みに失敗しました：" + bookPath, e);
+                    "Excelブックの読み込みに失敗しました：" + bookInfo.bookPath(), e);
         }
     }
     
     /**
      * .xlsx/.xlsm 形式のExcelブックから Shared Strings を読み取ります。<br>
      * 
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return Shared Strings
-     * @throws NullPointerException {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} がサポートされない形式や不明な形式の場合
+     * @throws NullPointerException {@code bookInfo} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookInfo} がサポートされない形式や不明な形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    public static List<String> loadSharedStrings(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, BookType.of(bookPath));
+    public static List<String> loadSharedStrings(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookInfo.bookType());
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
@@ -385,7 +385,7 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの読み込みに失敗しました：" + bookPath, e);
+                    "Excelブックの読み込みに失敗しました：" + bookInfo.bookPath(), e);
         }
     }
     

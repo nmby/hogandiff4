@@ -74,7 +74,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookInfo.bookPath());
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookInfo);
             
             return sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
