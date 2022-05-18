@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
-import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -198,13 +197,13 @@ public class Factory {
      * ペインターを返します。<br>
      * 
      * @param settings 設定
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    public BookPainter painter(Settings settings, Path bookPath) throws ExcelHandlingException {
+    public BookPainter painter(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         
         short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
@@ -217,8 +216,7 @@ public class Factory {
         Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
         
-        BookType bookType = BookType.of(bookPath);
-        switch (bookType) {
+        switch (bookInfo.bookType()) {
         case XLS:
             return CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
@@ -256,7 +254,7 @@ public class Factory {
             throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
         
         default:
-            throw new AssertionError("unknown book type: " + bookType);
+            throw new AssertionError("unknown book type: " + bookInfo.bookType());
         }
     }
 }
