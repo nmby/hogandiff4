@@ -276,13 +276,11 @@ public class XSSFBookPainterWithStax implements BookPainter {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
         if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "異なるパスを指定する必要があります：%s -> %s"
-                            .formatted(srcBookInfo.bookPath(), dstBookInfo.bookPath()));
+                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "拡張子が異なります：%s -> %s"
-                            .formatted(srcBookInfo.bookPath(), dstBookInfo.bookPath()));
+                    "拡張子が異なります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         
         // 1. 目的のブックをコピーする。

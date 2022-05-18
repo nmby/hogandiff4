@@ -509,7 +509,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookInfo.bookPath(), sheetName), e);
+                    "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName), e);
         }
     }
 }

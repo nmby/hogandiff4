@@ -191,7 +191,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
             return listener1.getSheetNames(targetTypes);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath(), e);
+            throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
         }
     }
 }

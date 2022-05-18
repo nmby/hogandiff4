@@ -93,7 +93,7 @@ public class CombinedBookLoader implements BookLoader {
             }
         }
         
-        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：" + bookInfo.bookPath());
+        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo));
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }
