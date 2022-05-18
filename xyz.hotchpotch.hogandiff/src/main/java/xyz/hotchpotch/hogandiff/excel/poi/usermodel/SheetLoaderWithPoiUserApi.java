@@ -81,7 +81,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
      * @throws NullPointerException
      *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */

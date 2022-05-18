@@ -65,7 +65,7 @@ public class CombinedBookPainter implements BookPainter {
      *              {@code srcBookInfo}, {@code dstBookInfo}, {@code diffs}
      *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookInfo} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code srcBookInfo} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
      *              {@code srcBookInfo} と {@code dstBookInfo} が同じパスの場合
      * @throws IllegalArgumentException

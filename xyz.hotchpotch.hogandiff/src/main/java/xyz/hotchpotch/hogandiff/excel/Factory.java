@@ -58,10 +58,8 @@ public class Factory {
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
      *              {@code bookInfo} が {@code null} の場合
-     * @throws IllegalArgumentException
-     *              {@code bookInfo} が不明な形式のファイルの場合
      * @throws UnsupportedOperationException
-     *              {@code bookInfo} がサポートされないブック形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      */
     public BookLoader bookLoader(BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(bookInfo, "bookInfo");
@@ -98,10 +96,8 @@ public class Factory {
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
      *              {@code settings}, {@code bookInfo} のいずれかが {@code null} の場合
-     * @throws IllegalArgumentException
-     *              {@code bookInfo} が不明な形式のファイルの場合
      * @throws UnsupportedOperationException
-     *              {@code bookInfo} がサポートされないブック形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      */
     public SheetLoader sheetLoader(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");
@@ -200,6 +196,10 @@ public class Factory {
      * @param bookInfo Excelブックの情報
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException
+     *              {@code settings}, {@code bookInfo} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException
+     *              {@code bookInfo} がサポート対象外の形式の場合
      */
     public BookPainter painter(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");

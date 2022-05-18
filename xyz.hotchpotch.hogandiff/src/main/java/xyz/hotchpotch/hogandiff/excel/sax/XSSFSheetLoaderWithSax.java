@@ -260,7 +260,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      * @throws NullPointerException
      *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
@@ -317,7 +317,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      * @throws IllegalArgumentException
      *              {@code bookInfo} が構成時に指定されたExcelブックと異なる場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */

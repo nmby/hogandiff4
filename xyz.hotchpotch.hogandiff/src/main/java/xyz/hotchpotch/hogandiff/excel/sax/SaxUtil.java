@@ -317,7 +317,7 @@ public class SaxUtil {
      * @param bookInfo Excelブックの情報
      * @return シート情報の一覧
      * @throws NullPointerException {@code bookInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookInfo} がサポートされない形式や不明な形式の場合
+     * @throws IllegalArgumentException {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     public static List<SheetInfo> loadSheetInfo(BookInfo bookInfo) throws ExcelHandlingException {
@@ -361,7 +361,7 @@ public class SaxUtil {
      * @param bookInfo Excelブックの情報
      * @return Shared Strings
      * @throws NullPointerException {@code bookInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookInfo} がサポートされない形式や不明な形式の場合
+     * @throws IllegalArgumentException {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     public static List<String> loadSharedStrings(BookInfo bookInfo) throws ExcelHandlingException {

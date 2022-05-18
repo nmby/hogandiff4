@@ -70,7 +70,7 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * @throws NullPointerException
      *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
