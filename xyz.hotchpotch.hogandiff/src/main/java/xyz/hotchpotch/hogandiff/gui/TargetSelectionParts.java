@@ -49,6 +49,9 @@ public class TargetSelectionParts extends GridPane {
     // [instance members] ******************************************************
     
     @FXML
+    private GridPane basePane;
+    
+    @FXML
     private Label titleLabel;
     
     @FXML
@@ -93,8 +96,8 @@ public class TargetSelectionParts extends GridPane {
         this.opposite = opposite;
         
         titleLabel.setText(title);
-        bookPathTextField.setOnDragOver(this::onDragOver);
-        bookPathTextField.setOnDragDropped(this::onDragDropped);
+        basePane.setOnDragOver(this::onDragOver);
+        basePane.setOnDragDropped(this::onDragDropped);
         bookPathButton.setOnAction(this::chooseBook);
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
