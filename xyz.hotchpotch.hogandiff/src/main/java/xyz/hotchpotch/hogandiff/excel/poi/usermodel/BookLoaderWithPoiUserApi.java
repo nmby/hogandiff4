@@ -86,7 +86,10 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
         Objects.requireNonNull(bookInfo, "bookInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
-        try (Workbook wb = WorkbookFactory.create(bookInfo.bookPath().toFile(), null, true)) {
+        try (Workbook wb = WorkbookFactory.create(
+                bookInfo.bookPath().toFile(),
+                bookInfo.getReadPassword(),
+                true)) {
             
             return StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
