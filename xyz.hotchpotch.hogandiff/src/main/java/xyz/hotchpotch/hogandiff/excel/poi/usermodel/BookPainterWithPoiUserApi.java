@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,6 +15,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -117,14 +117,14 @@ public class BookPainterWithPoiUserApi implements BookPainter {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code srcBookPath}, {@code dstBookPath}, {@code diffs}
+     *              {@code srcBookInfo}, {@code dstBookInfo}, {@code diffs}
      *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code srcBookInfo} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} と {@code dstBookPath} が同じパスの場合
+     *              {@code srcBookInfo} と {@code dstBookInfo} が同じパスの場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} と {@code dstBookPath} の形式が異なる場合
+     *              {@code srcBookInfo} と {@code dstBookInfo} の形式が異なる場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
@@ -133,38 +133,38 @@ public class BookPainterWithPoiUserApi implements BookPainter {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public void paintAndSave(
-            Path srcBookPath,
-            Path dstBookPath,
+            BookInfo srcBookInfo,
+            BookInfo dstBookInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookPath, "srcBookPath");
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
+        Objects.requireNonNull(srcBookInfo, "srcBookInfo");
+        Objects.requireNonNull(dstBookInfo, "dstBookInfo");
         Objects.requireNonNull(diffs, "diffs");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
-        if (srcBookPath.equals(dstBookPath)) {
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
+        if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookPath, dstBookPath));
+                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
-        if (BookType.of(srcBookPath) != BookType.of(dstBookPath)) {
+        if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "拡張子が異なります：%s -> %s".formatted(srcBookPath, dstBookPath));
+                    "拡張子が異なります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         
         // 1. 目的のブックをコピーする。
         try {
-            Files.copy(srcBookPath, dstBookPath);
-            dstBookPath.toFile().setReadable(true, false);
-            dstBookPath.toFile().setWritable(true, false);
+            Files.copy(srcBookInfo.bookPath(), dstBookInfo.bookPath());
+            dstBookInfo.bookPath().toFile().setReadable(true, false);
+            dstBookInfo.bookPath().toFile().setWritable(true, false);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelファイルのコピーに失敗しました：%s -> %s".formatted(srcBookPath, dstBookPath),
+                    "Excelファイルのコピーに失敗しました：%s -> %s".formatted(srcBookInfo, dstBookInfo),
                     e);
         }
         
         // 2. コピーしたファイルをExcelブックとしてロードする。
-        try (InputStream is = Files.newInputStream(dstBookPath);
+        try (InputStream is = Files.newInputStream(dstBookInfo.bookPath());
                 Workbook book = WorkbookFactory.create(is)) {
             
             // 例外が発生した場合もその部分だけをスキップして処理継続した方が
@@ -216,13 +216,13 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             });
             
             // 5. Excelブックを上書き保存する。
-            try (OutputStream os = Files.newOutputStream(dstBookPath)) {
+            try (OutputStream os = Files.newOutputStream(dstBookInfo.bookPath())) {
                 book.write(os);
             }
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの着色と保存に失敗しました：" + dstBookPath, e);
+                    "Excelブックの着色と保存に失敗しました：%s".formatted(dstBookInfo), e);
         }
     }
 }

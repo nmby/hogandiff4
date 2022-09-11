@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -264,30 +265,30 @@ public class XSSFBookPainterWithStax implements BookPainter {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public void paintAndSave(
-            Path srcBookPath,
-            Path dstBookPath,
+            BookInfo srcBookInfo,
+            BookInfo dstBookInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookPath, "srcBookPath");
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
+        Objects.requireNonNull(srcBookInfo, "srcBookInfo");
+        Objects.requireNonNull(dstBookInfo, "dstBookInfo");
         Objects.requireNonNull(diffs, "diffs");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
-        if (srcBookPath.equals(dstBookPath)) {
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
+        if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookPath, dstBookPath));
+                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
-        if (BookType.of(srcBookPath) != BookType.of(dstBookPath)) {
+        if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "拡張子が異なります：%s -> %s".formatted(srcBookPath, dstBookPath));
+                    "拡張子が異なります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         
         // 1. 目的のブックをコピーする。
-        copyFile(srcBookPath, dstBookPath);
+        copyFile(srcBookInfo.bookPath(), dstBookInfo.bookPath());
         
         // 2. 対象のExcelファイルをZipファイルとして扱い各種処理を行う。
-        try (FileSystem inFs = FileSystems.newFileSystem(srcBookPath);
-                FileSystem outFs = FileSystems.newFileSystem(dstBookPath)) {
+        try (FileSystem inFs = FileSystems.newFileSystem(srcBookInfo.bookPath());
+                FileSystem outFs = FileSystems.newFileSystem(dstBookInfo.bookPath())) {
             
             // TODO: 空のシートに着色されないというバグがあるので直す。
             
@@ -301,7 +302,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             //          - xl/worksheets/sheet?.xml
             //          - xl/drawings/vmlDrawing?.vml
             //          - xl/comments?.xml
-            processWorksheetEntries(inFs, outFs, dstBookPath, diffs);
+            processWorksheetEntries(inFs, outFs, dstBookInfo, diffs);
             
         } catch (ExcelHandlingException e) {
             throw e;
@@ -420,14 +421,14 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * 
      * @param inFs
      * @param outFs
-     * @param bookPath
+     * @param bookInfo
      * @param diffs
      * @throws ExcelHandlingException
      */
     private void processWorksheetEntries(
             FileSystem inFs,
             FileSystem outFs,
-            Path bookPath,
+            BookInfo bookInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
@@ -450,7 +451,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
         }
         
         // 次に、比較対象シートに対する着色処理を行う。
-        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
+        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookInfo).stream()
                 .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
         
         for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {

@@ -26,14 +26,14 @@ public interface BookPainter {
      * 元のExcelブックの差分個所に色を付けたものを
      * 指定されたパスに保存します。<br>
      * 
-     * @param srcBookPath 元のExcelブックのパス
-     * @param dstBookPath 保存先パス（ファイル名を含む）
+     * @param srcBookInfo 元のExcelブックの情報
+     * @param dstBookInfo 保存先Excelブックの情報
      * @param diffs シート名とその差分個所のマップ
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     void paintAndSave(
-            Path srcBookPath,
-            Path dstBookPath,
+            BookInfo srcBookInfo,
+            BookInfo dstBookInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException;
 }

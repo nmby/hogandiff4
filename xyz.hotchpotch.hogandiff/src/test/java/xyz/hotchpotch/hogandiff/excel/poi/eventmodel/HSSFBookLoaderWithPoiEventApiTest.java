@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -19,23 +20,23 @@ class HSSFBookLoaderWithPoiEventApiTest {
     
     // [static members] ********************************************************
     
-    private static Path test1_xls;
-    private static Path test1_xlsb;
-    private static Path test1_xlsm;
-    private static Path test1_xlsx;
-    private static Path test2_xls;
-    private static Path test2_xlsx;
-    private static Path test4_xls;
+    private static BookInfo test1_xls;
+    private static BookInfo test1_xlsb;
+    private static BookInfo test1_xlsm;
+    private static BookInfo test1_xlsx;
+    private static BookInfo test2_xls;
+    private static BookInfo test2_xlsx;
+    private static BookInfo test4_xls;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-        test4_xls = Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls").toURI());
+        test1_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()));
+        test1_xlsb = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()));
+        test1_xlsm = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()));
+        test1_xlsx = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()));
+        test2_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()));
+        test2_xlsx = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()));
+        test4_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls").toURI()));
     }
     
     // [instance members] ******************************************************
@@ -87,7 +88,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(Path.of("X:\\dummy\\dummy.xls")));
+                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xls"))));
         
         // 暗号化ファイル
         assertThrows(

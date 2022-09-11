@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
-import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -68,9 +68,9 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * ごめんなさい m(_ _)m <br>
      * 
      * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
+     *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -82,18 +82,21 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(Path bookPath) throws ExcelHandlingException {
-        Objects.requireNonNull(bookPath, "bookPath");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
+        Objects.requireNonNull(bookInfo, "bookInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
-        try (Workbook wb = WorkbookFactory.create(bookPath.toFile(), null, true)) {
+        try (Workbook wb = WorkbookFactory.create(
+                bookInfo.bookPath().toFile(),
+                bookInfo.getReadPassword(),
+                true)) {
             
             return StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
                     .toList();
             
-        } catch(LeftoverDataException e) {
+        } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
             // 
             // 書き込みpw有り/読み込みpw無しのxlsファイルを開こうとすると
@@ -106,14 +109,14 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             // 本当は読み取り専用で読み込めてほしいが
             // サポート対象外であるとユーザーに案内することにする。
             throw new PasswordHandlingException(
-                    "パスワード付きファイルには対応していません：" + bookPath, e);
+                    "パスワード付きファイルには対応していません：%s".formatted(bookInfo), e);
             
-        } catch(EncryptedDocumentException e) {
+        } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    "パスワード付きファイルには対応していません：" + bookPath, e);
+                    "パスワード付きファイルには対応していません：%s".formatted(bookInfo), e);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：" + bookPath, e);
+            throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
         }
     }
 }

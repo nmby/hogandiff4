@@ -58,7 +58,7 @@ public class CommonUtil {
      * @throws IllegalArgumentException
      *              指定されたクラスに {@link BookHandler} アノテーションが付与されていない場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポートされない形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      */
     public static void ifNotSupportedBookTypeThenThrow(
             Class<?> clazz,

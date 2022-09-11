@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -25,6 +24,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -255,12 +255,12 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
      * @param saveMemory 省メモリモードの場合は {@code true}
-     * @param bookPath Excelブックのパス
+     * @param bookInfo Excelブックの情報
      * @return 新しいローダー
      * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
+     *              {@code bookInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
@@ -268,56 +268,56 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     public static SheetLoader of(
             boolean extractCachedValue,
             boolean saveMemory,
-            Path bookPath)
+            BookInfo bookInfo)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(
                 XSSFSheetLoaderWithSax.class,
-                BookType.of(bookPath));
+                bookInfo.bookType());
         
         return new XSSFSheetLoaderWithSax(
                 extractCachedValue,
                 saveMemory,
-                bookPath);
+                bookInfo);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
     private final boolean saveMemory;
-    private final Path bookPath;
+    private final BookInfo bookInfo;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFSheetLoaderWithSax(
             boolean extractCachedValue,
             boolean saveMemory,
-            Path bookPath)
+            BookInfo bookInfo)
             throws ExcelHandlingException {
         
-        assert bookPath != null;
-        assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
+        assert bookInfo != null;
+        assert CommonUtil.isSupportedBookType(getClass(), bookInfo.bookType());
         
         this.extractCachedValue = extractCachedValue;
         this.saveMemory = saveMemory;
-        this.bookPath = bookPath;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookPath).stream()
+        this.bookInfo = bookInfo;
+        this.nameToInfo = SaxUtil.loadSheetInfo(bookInfo).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookPath);
+        this.sst = SaxUtil.loadSharedStrings(bookInfo);
     }
     
     /**
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} が構成時に指定されたExcelブックと異なる場合
+     *              {@code bookInfo} が構成時に指定されたExcelブックと異なる場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -327,18 +327,18 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        if (!this.bookPath.equals(bookPath)) {
+        if (!Objects.equals(this.bookInfo.bookPath(), bookInfo.bookPath())) {
             throw new IllegalArgumentException(
                     "このローダーは %s 用に構成されています。別ブック（%s）には利用できません。"
-                            .formatted(this.bookPath, bookPath));
+                            .formatted(this.bookInfo, bookInfo));
         }
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
             
             if (!nameToInfo.containsKey(sheetName)) {
                 // 例外カスケードポリシーに従い、
@@ -371,8 +371,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookPath, sheetName),
-                    e);
+                    "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName), e);
         }
     }
 }
