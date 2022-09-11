@@ -43,7 +43,8 @@ final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
 final def log4j = 'apache-log4j-2.18.0-bin'
 final def log4jJars = [
-    'log4j-core-2.18.0.jar'
+    'log4j-core-2.18.0.jar',
+    'log4j-api-2.18.0.jar'
 ]
 final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 
