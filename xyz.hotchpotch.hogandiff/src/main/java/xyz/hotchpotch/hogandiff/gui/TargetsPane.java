@@ -49,10 +49,10 @@ public class TargetsPane extends VBox implements ChildController {
         Objects.requireNonNull(settings, "settings");
         
         targetSelectionParts1.applySettings(
-                settings, SettingKeys.CURR_BOOK_PATH1,
+                settings, SettingKeys.CURR_BOOK_INFO1,
                 SettingKeys.CURR_SHEET_NAME1);
         targetSelectionParts2.applySettings(
-                settings, SettingKeys.CURR_BOOK_PATH2,
+                settings, SettingKeys.CURR_BOOK_INFO2,
                 SettingKeys.CURR_SHEET_NAME2);
     }
     
@@ -62,11 +62,11 @@ public class TargetsPane extends VBox implements ChildController {
         
         targetSelectionParts1.gatherSettings(
                 builder,
-                SettingKeys.CURR_BOOK_PATH1,
+                SettingKeys.CURR_BOOK_INFO1,
                 SettingKeys.CURR_SHEET_NAME1);
         targetSelectionParts2.gatherSettings(
                 builder,
-                SettingKeys.CURR_BOOK_PATH2,
+                SettingKeys.CURR_BOOK_INFO2,
                 SettingKeys.CURR_SHEET_NAME2);
     }
     

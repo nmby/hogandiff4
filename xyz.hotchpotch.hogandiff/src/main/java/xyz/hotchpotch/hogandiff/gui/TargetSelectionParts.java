@@ -29,6 +29,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -47,6 +48,9 @@ public class TargetSelectionParts extends GridPane {
     private static Path prevSelectedBookPath;
     
     // [instance members] ******************************************************
+    
+    @FXML
+    private GridPane basePane;
     
     @FXML
     private Label titleLabel;
@@ -93,8 +97,8 @@ public class TargetSelectionParts extends GridPane {
         this.opposite = opposite;
         
         titleLabel.setText(title);
-        bookPathTextField.setOnDragOver(this::onDragOver);
-        bookPathTextField.setOnDragDropped(this::onDragDropped);
+        basePane.setOnDragOver(this::onDragOver);
+        basePane.setOnDragDropped(this::onDragDropped);
         bookPathButton.setOnAction(this::chooseBook);
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
@@ -115,16 +119,16 @@ public class TargetSelectionParts extends GridPane {
     
     /*package*/ void applySettings(
             Settings settings,
-            Key<Path> keyBookPath,
+            Key<BookInfo> keyBookInfo,
             Key<String> keySheetName) {
         
         assert settings != null;
-        assert keyBookPath != null;
+        assert keyBookInfo != null;
         assert keySheetName != null;
         
-        if (settings.containsKey(keyBookPath)) {
+        if (settings.containsKey(keyBookInfo)) {
             validateAndSetTarget(
-                    settings.get(keyBookPath),
+                    settings.get(keyBookInfo).bookPath(),
                     settings.containsKey(keySheetName)
                             ? settings.get(keySheetName)
                             : null);
@@ -133,15 +137,15 @@ public class TargetSelectionParts extends GridPane {
     
     /*package*/ void gatherSettings(
             Settings.Builder builder,
-            Key<Path> keyBookPath,
+            Key<BookInfo> keyBookInfo,
             Key<String> keySheetName) {
         
         assert builder != null;
-        assert keyBookPath != null;
+        assert keyBookInfo != null;
         assert keySheetName != null;
         
         if (bookPath.getValue() != null) {
-            builder.set(keyBookPath, bookPath.getValue());
+            builder.set(keyBookInfo, BookInfo.of(bookPath.getValue()));
         }
         if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
             builder.set(keySheetName, sheetName.getValue());
@@ -213,8 +217,9 @@ public class TargetSelectionParts extends GridPane {
         }
         
         try {
-            BookLoader loader = factory.bookLoader(newBookPath);
-            List<String> sheetNames = loader.loadSheetNames(newBookPath);
+            BookInfo bookInfo = BookInfo.of(newBookPath);
+            BookLoader loader = factory.bookLoader(bookInfo);
+            List<String> sheetNames = loader.loadSheetNames(bookInfo);
             
             bookPathTextField.setText(newBookPath.toString());
             sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));

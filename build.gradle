@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.11.9'
+final def version = '0.11.10'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -41,9 +41,10 @@ final def poiJars = [
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
-final def log4j = 'apache-log4j-2.17.2-bin'
+final def log4j = 'apache-log4j-2.18.0-bin'
 final def log4jJars = [
-    'log4j-core-2.17.2.jar'
+    'log4j-core-2.18.0.jar',
+    'log4j-api-2.18.0.jar'
 ]
 final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 

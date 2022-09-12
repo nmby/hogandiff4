@@ -1,12 +1,11 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookType;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
@@ -60,9 +59,9 @@ public class CombinedSheetLoader implements SheetLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookpath} がサポート対象外の形式もしくは不明な形式の場合
+     *              {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -72,21 +71,21 @@ public class CombinedSheetLoader implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(Path bookPath, String sheetName)
+    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookInfo, "bookInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "処理に失敗しました：%s - %s".formatted(bookPath, sheetName));
+                "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName));
         
         Iterator<UnsafeSupplier<SheetLoader>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 SheetLoader loader = itr.next().get();
-                return loader.loadCells(bookPath, sheetName);
+                return loader.loadCells(bookInfo, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();
                 failed.addSuppressed(e);

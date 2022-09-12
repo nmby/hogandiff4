@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
@@ -21,23 +22,24 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
     
     private static final boolean saveMemory = true;
     
-    private static Path test1_xls;
-    private static Path test1_xlsb;
-    private static Path test1_xlsm;
-    private static Path test1_xlsx;
-    private static Path test2_xlsm;
-    private static Path test3_xlsx;
-    private static Path test4_xlsx;
+    private static BookInfo test1_xls;
+    private static BookInfo test1_xlsb;
+    private static BookInfo test1_xlsm;
+    private static BookInfo test1_xlsx;
+    private static BookInfo test2_xlsm;
+    private static BookInfo test3_xlsx;
+    private static BookInfo test4_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsx").toURI());
-        test2_xlsm = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test2_passwordAAA.xlsm").toURI());
-        test3_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test3.xlsx").toURI());
-        test4_xlsx = Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test4.xlsx").toURI());
+        test1_xls = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xls").toURI()));
+        test1_xlsb = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsb").toURI()));
+        test1_xlsm = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsm").toURI()));
+        test1_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsx").toURI()));
+        test2_xlsm = BookInfo
+                .of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test2_passwordAAA.xlsm").toURI()));
+        test3_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test3.xlsx").toURI()));
+        test4_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test4.xlsx").toURI()));
     }
     
     // [instance members] ******************************************************
@@ -62,7 +64,7 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, Path.of("dummy\\dummy.xlsx")));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, BookInfo.of(Path.of("dummy\\dummy.xlsx"))));
         
         // 暗号化ファイル
         assertThrows(

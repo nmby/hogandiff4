@@ -66,6 +66,8 @@ public abstract sealed class IntPair {
         private final int b;
         
         private Both(int a, int b) {
+            assert a != b;
+            
             this.a = a;
             this.b = b;
         }
@@ -94,16 +96,18 @@ public abstract sealed class IntPair {
         public IntPair map(IntUnaryOperator mapper) {
             Objects.requireNonNull(mapper, "mapper");
             
-            return new Both(mapper.applyAsInt(a), mapper.applyAsInt(b));
+            int aa = mapper.applyAsInt(a);
+            int bb = mapper.applyAsInt(b);
+            
+            return aa == bb
+                    ? new Same(aa)
+                    : new Both(aa, bb);
         }
         
         @Override
         public boolean equals(Object o) {
             if (o instanceof Both p) {
                 return a == p.a && b == p.b;
-            }
-            if (o instanceof Same p) {
-                return a == p.x && b == p.x;
             }
             return false;
         }

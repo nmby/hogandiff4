@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
@@ -60,13 +61,13 @@ class CombinedSheetLoaderTest {
                 () -> testee.loadCells(null, "dummy"));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(Path.of("dummy.xlsx"), null));
+                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx")), null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.loadCells(null, null));
         
         assertDoesNotThrow(
-                () -> testee.loadCells(Path.of("dummy.xlsx"), "dummy"));
+                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
     }
     
     @Test
@@ -81,12 +82,12 @@ class CombinedSheetLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadCells(Path.of("dummy.xlsx"), "dummy"));
+                () -> testeeF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadCells(Path.of("dummy.xlsx"), "dummy"));
+                () -> testeeFFF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
     }
     
     @Test
@@ -102,11 +103,11 @@ class CombinedSheetLoaderTest {
         // 成功１つ
         assertEquals(
                 Set.of(cell1),
-                testeeS.loadCells(Path.of("dummy.xlsx"), "dummy"));
+                testeeS.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 Set.of(cell1),
-                testeeFFSF.loadCells(Path.of("dummy.xlsx"), "dummy"));
+                testeeFFSF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
     }
 }
