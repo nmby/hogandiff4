@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -49,6 +50,15 @@ public class OptionsParts extends VBox implements ChildController {
     @FXML
     private CheckBox saveMemoryCheckBox;
     
+    @FXML
+    private Pane speedOrPrecisionPane;
+    
+    @FXML
+    private RadioButton speedFirstRadioButton;
+    
+    @FXML
+    private RadioButton precisionFirstRadioButton;
+    
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"));
         loader.setRoot(this);
@@ -68,6 +78,10 @@ public class OptionsParts extends VBox implements ChildController {
         showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
         saveMemoryCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        speedFirstRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        precisionFirstRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
+        
+        speedOrPrecisionPane.disableProperty().bind(compareOnValueRadioButton.selectedProperty());
     }
     
     @Override
@@ -87,6 +101,7 @@ public class OptionsParts extends VBox implements ChildController {
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
         applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
+        applicator.accept(SettingKeys.SPEED_FIRST, speedFirstRadioButton::setSelected);
     }
     
     @Override
@@ -100,5 +115,6 @@ public class OptionsParts extends VBox implements ChildController {
         builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());
         builder.set(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox.isSelected());
         builder.set(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox.isSelected());
+        builder.set(SettingKeys.SPEED_FIRST, speedFirstRadioButton.isSelected());
     }
 }

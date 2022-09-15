@@ -109,6 +109,7 @@ public class Factory {
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
+        boolean speedFirst = settings.get(SettingKeys.SPEED_FIRST);
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
@@ -133,14 +134,18 @@ public class Factory {
         
         case XLSX:
         case XLSM:
-            return CombinedSheetLoader.of(List.of(
-                    () -> XSSFSheetLoaderWithSax.of(
-                            useCachedValue,
+            return speedFirst
+                    ? CombinedSheetLoader.of(List.of(
+                            () -> XSSFSheetLoaderWithSax.of(
+                                    useCachedValue,
+                                    saveMemory,
+                                    bookInfo),
+                            () -> SheetLoaderWithPoiUserApi.of(
+                                    saveMemory,
+                                    converter)))
+                    : SheetLoaderWithPoiUserApi.of(
                             saveMemory,
-                            bookInfo),
-                    () -> SheetLoaderWithPoiUserApi.of(
-                            saveMemory,
-                            converter)));
+                            converter);
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
