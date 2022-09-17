@@ -32,14 +32,27 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xls").toURI()));
-        test1_xlsb = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsb").toURI()));
-        test1_xlsm = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsm").toURI()));
-        test1_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsx").toURI()));
-        test2_xlsm = BookInfo
-                .of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test2_passwordAAA.xlsm").toURI()));
-        test3_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test3.xlsx").toURI()));
-        test4_xlsx = BookInfo.of(Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test4.xlsx").toURI()));
+        test1_xls = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xls").toURI()),
+                null);
+        test1_xlsb = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsb").toURI()),
+                null);
+        test1_xlsm = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsm").toURI()),
+                null);
+        test1_xlsx = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test1.xlsx").toURI()),
+                null);
+        test2_xlsm = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test2_passwordAAA.xlsm").toURI()),
+                null);
+        test3_xlsx = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test3.xlsx").toURI()),
+                null);
+        test4_xlsx = BookInfo.of(
+                Path.of(XSSFSheetLoaderWithSaxTestSaveMemory.class.getResource("Test4.xlsx").toURI()),
+                null);
     }
     
     // [instance members] ******************************************************
@@ -64,7 +77,7 @@ class XSSFSheetLoaderWithSaxTestSaveMemory {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, BookInfo.of(Path.of("dummy\\dummy.xlsx"))));
+                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, BookInfo.of(Path.of("dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル
         assertThrows(

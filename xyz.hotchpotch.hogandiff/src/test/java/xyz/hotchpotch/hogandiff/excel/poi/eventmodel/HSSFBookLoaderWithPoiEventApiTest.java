@@ -30,13 +30,27 @@ class HSSFBookLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()));
-        test1_xlsb = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()));
-        test1_xlsm = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()));
-        test1_xlsx = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()));
-        test2_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()));
-        test2_xlsx = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()));
-        test4_xls = BookInfo.of(Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls").toURI()));
+        test1_xls = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()),
+                null);
+        test1_xlsb = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()),
+                null);
+        test1_xlsm = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()),
+                null);
+        test1_xlsx = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()),
+                null);
+        test2_xls = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
+                null);
+        test2_xlsx = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
+                null);
+        test4_xls = BookInfo.of(
+                Path.of(HSSFBookLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls").toURI()),
+                null);
     }
     
     // [instance members] ******************************************************
@@ -88,7 +102,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xls"))));
+                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xls"), null)));
         
         // 暗号化ファイル
         assertThrows(

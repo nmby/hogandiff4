@@ -16,20 +16,6 @@ public class BookInfo {
      * 新たなExcelブック情報を生成して返します。<br>
      * 
      * @param bookPath Excelブックのパス
-     * @return Excelブック情報
-     * @throws NullPointerException {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} の拡張子が不正な形式の場合
-     */
-    public static BookInfo of(
-            Path bookPath) {
-        
-        return of(bookPath, null);
-    }
-    
-    /**
-     * 新たなExcelブック情報を生成して返します。<br>
-     * 
-     * @param bookPath Excelブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブック情報
      * @throws NullPointerException {@code bookPath} が {@code null} の場合

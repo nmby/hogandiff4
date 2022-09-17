@@ -62,12 +62,12 @@ class CombinedBookLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
+                () -> testeeF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"), null)));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
+                () -> testeeFFF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"), null)));
     }
     
     @Test
@@ -82,11 +82,11 @@ class CombinedBookLoaderTest {
         // 成功１つ
         assertEquals(
                 List.of("success"),
-                testeeS.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
+                testeeS.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"), null)));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 List.of("success"),
-                testeeFFSF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"))));
+                testeeFFSF.loadSheetNames(BookInfo.of(Path.of("dummy.xlsx"), null)));
     }
 }
