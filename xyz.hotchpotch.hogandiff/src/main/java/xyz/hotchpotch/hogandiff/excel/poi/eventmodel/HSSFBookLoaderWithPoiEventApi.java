@@ -203,6 +203,9 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
                     e);
         } catch (Exception e) {
             throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
+            
+        } finally {
+            Biff8EncryptionKey.setCurrentUserPassword(null);
         }
     }
 }
