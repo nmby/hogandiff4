@@ -41,12 +41,12 @@ class BookLoaderWithPoiUserApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(Path.of(me.getResource("Test1.xls").toURI()));
-        test1_xlsb = BookInfo.of(Path.of(me.getResource("Test1.xlsb").toURI()));
-        test1_xlsm = BookInfo.of(Path.of(me.getResource("Test1.xlsm").toURI()));
-        test1_xlsx = BookInfo.of(Path.of(me.getResource("Test1.xlsx").toURI()));
-        test2_xls = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xls").toURI()));
-        test2_xlsx = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI()));
+        test1_xls = BookInfo.of(Path.of(me.getResource("Test1.xls").toURI()), null);
+        test1_xlsb = BookInfo.of(Path.of(me.getResource("Test1.xlsb").toURI()), null);
+        test1_xlsm = BookInfo.of(Path.of(me.getResource("Test1.xlsm").toURI()), null);
+        test1_xlsx = BookInfo.of(Path.of(me.getResource("Test1.xlsx").toURI()), null);
+        test2_xls = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xls").toURI()), null);
+        test2_xlsx = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI()), null);
         
         bookPwTest1_xls = Path.of(me.getResource("BookPwTest1.xls").toURI());
         bookPwTest1_xlsx = Path.of(me.getResource("BookPwTest1.xlsx").toURI());
@@ -98,7 +98,7 @@ class BookLoaderWithPoiUserApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx"))));
+                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル - 読み取りPW指定なし
         assertThrows(

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.eventusermodel.HSSFEventFactory;
 import org.apache.poi.hssf.eventusermodel.HSSFListener;
 import org.apache.poi.hssf.eventusermodel.HSSFRequest;
@@ -14,12 +15,14 @@ import org.apache.poi.hssf.record.BOFRecord;
 import org.apache.poi.hssf.record.BoundSheetRecord;
 import org.apache.poi.hssf.record.Record;
 import org.apache.poi.hssf.record.WSBoolRecord;
+import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -180,6 +183,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
         Objects.requireNonNull(bookInfo, "bookInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
+        Biff8EncryptionKey.setCurrentUserPassword(bookInfo.getReadPassword());
         try (FileInputStream fin = new FileInputStream(bookInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
@@ -190,8 +194,18 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
             factory.abortableProcessWorkbookEvents(req, poifs);
             return listener1.getSheetNames(targetTypes);
             
+        } catch (EncryptedDocumentException e) {
+            throw new PasswordHandlingException(
+                    (bookInfo.getReadPassword() == null
+                            ? "パスワードで保護されています。：%s"
+                            : "パスワードが異なります：%s")
+                                    .formatted(bookInfo),
+                    e);
         } catch (Exception e) {
             throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
+            
+        } finally {
+            Biff8EncryptionKey.setCurrentUserPassword(null);
         }
     }
 }

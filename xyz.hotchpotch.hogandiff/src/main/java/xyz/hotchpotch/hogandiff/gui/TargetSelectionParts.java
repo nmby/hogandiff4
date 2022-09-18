@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -69,7 +70,7 @@ public class TargetSelectionParts extends GridPane {
     
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty();
     
-    private final Property<Path> bookPath = new SimpleObjectProperty<>();
+    private final Property<BookInfo> bookInfo = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
     
     private Factory factory;
@@ -107,14 +108,14 @@ public class TargetSelectionParts extends GridPane {
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
                 menu));
         
-        bookPath.bind(Bindings.createObjectBinding(
-                () -> bookPathTextField.getText().isEmpty() ? null : Path.of(bookPathTextField.getText()),
-                bookPathTextField.textProperty()));
+        bookPathTextField.textProperty().bind(Bindings.createStringBinding(
+                () -> bookInfo.getValue() == null ? null : bookInfo.getValue().bookPath().toString(),
+                bookInfo));
         sheetName.bind(sheetNameChoiceBox.valueProperty());
         isReady.bind(Bindings.createBooleanBinding(
-                () -> bookPath.getValue() != null
+                () -> bookInfo.getValue() != null
                         && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
-                bookPath, sheetName, menu));
+                bookInfo, sheetName, menu));
     }
     
     /*package*/ void applySettings(
@@ -144,8 +145,8 @@ public class TargetSelectionParts extends GridPane {
         assert keyBookInfo != null;
         assert keySheetName != null;
         
-        if (bookPath.getValue() != null) {
-            builder.set(keyBookInfo, BookInfo.of(bookPath.getValue()));
+        if (bookInfo.getValue() != null) {
+            builder.set(keyBookInfo, bookInfo.getValue());
         }
         if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
             builder.set(keySheetName, sheetName.getValue());
@@ -191,9 +192,10 @@ public class TargetSelectionParts extends GridPane {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("比較対象ブックの選択");
         
-        if (bookPath.getValue() != null) {
-            chooser.setInitialDirectory(bookPath.getValue().toFile().getParentFile());
-            chooser.setInitialFileName(bookPath.getValue().toFile().getName());
+        if (bookInfo.getValue() != null) {
+            File book = bookInfo.getValue().bookPath().toFile();
+            chooser.setInitialDirectory(book.getParentFile());
+            chooser.setInitialFileName(book.getName());
             
         } else if (prevSelectedBookPath != null) {
             chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
@@ -211,33 +213,40 @@ public class TargetSelectionParts extends GridPane {
     
     private boolean validateAndSetTarget(Path newBookPath, String sheetName) {
         if (newBookPath == null) {
-            bookPathTextField.setText("");
+            bookInfo.setValue(null);
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             return true;
         }
         
         try {
-            BookInfo bookInfo = BookInfo.of(newBookPath);
-            BookLoader loader = factory.bookLoader(bookInfo);
-            List<String> sheetNames = loader.loadSheetNames(bookInfo);
+            List<String> sheetNames = null;
+            BookInfo newBookInfo = BookInfo.of(newBookPath, null);
             
-            bookPathTextField.setText(newBookPath.toString());
+            while (true) {
+                BookLoader loader = factory.bookLoader(newBookInfo);
+                
+                try {
+                    sheetNames = loader.loadSheetNames(newBookInfo);
+                    break;
+                    
+                } catch (PasswordHandlingException e) {
+                    PasswordDialog dialog = new PasswordDialog(newBookInfo);
+                    Optional<String> newPassword = dialog.showAndWait();
+                    if (newPassword.isPresent()) {
+                        newBookInfo = newBookInfo.withReadPassword(newPassword.get());
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+            
+            bookInfo.setValue(newBookInfo);
             sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));
             prevSelectedBookPath = newBookPath;
             
-        } catch (PasswordHandlingException e) {
-            bookPathTextField.setText("");
-            sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
-            new Alert(
-                    AlertType.WARNING,
-                    "パスワード付きファイルには対応していません：%n%s".formatted(newBookPath),
-                    ButtonType.OK)
-                            .showAndWait();
-            return false;
-            
         } catch (Exception e) {
             e.printStackTrace();
-            bookPathTextField.setText("");
+            bookInfo.setValue(null);
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,

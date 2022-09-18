@@ -98,7 +98,10 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
-        try (Workbook wb = WorkbookFactory.create(bookInfo.bookPath().toFile())) {
+        try (Workbook wb = WorkbookFactory.create(
+                bookInfo.bookPath().toFile(),
+                bookInfo.getReadPassword(),
+                true)) {
             
             Sheet sheet = wb.getSheet(sheetName);
             if (sheet == null) {
