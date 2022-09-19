@@ -149,6 +149,20 @@ public class MainController {
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
             reportingPane.unbind();
+            
+            if (settings.get(SettingKeys.CURR_BOOK_INFO1).getReadPassword() != null
+                    || settings.get(SettingKeys.CURR_BOOK_INFO2).getReadPassword() != null) {
+                
+                new Alert(
+                        AlertType.WARNING,
+                        "比較が完了しました。\n"
+                                + "比較結果Excelは ★パスワードが解除された状態で★ 作業用フォルダに保存されています。\n"
+                                + "セキュリティ上の必要性に応じて、アプリ左下のボタンから"
+                                + "作業用フォルダ内の比較結果Excelファイルをご自身で削除してください。",
+                        ButtonType.OK)
+                                .showAndWait();
+            }
+            
             if (settings.get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
