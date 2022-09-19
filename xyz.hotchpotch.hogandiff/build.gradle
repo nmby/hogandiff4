@@ -51,7 +51,8 @@ def classPath = '' \
     + libBase + 'poi-bin-5_2_2/ooxml-lib/commons-compress-1.21.jar ' \
     + libBase + 'poi-bin-5_2_2/ooxml-lib/curvesapi-1.07.jar ' \
     + libBase + 'poi-bin-5_2_2/ooxml-lib/xmlbeans-5.0.3.jar ' \
-    + libBase + 'apache-log4j-2_18_0-bin/log4j-core-2.18.0.jar'
+    + libBase + 'apache-log4j-2_18_0-bin/log4j-core-2.18.0.jar ' \
+    + libBase + 'apache-log4j-2_18_0-bin/log4j-api-2.18.0.jar'
 
 jar {
     manifest {
