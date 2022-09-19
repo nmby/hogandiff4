@@ -312,7 +312,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
             updateMessage(str.toString());
             BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst = BookInfo.of(workDir.resolve(src.bookPath().getFileName()));
+            dst = BookInfo.of(
+                    workDir.resolve(src.bookPath().getFileName()),
+                    src.getReadPassword());
             str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
@@ -364,7 +366,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst1 = BookInfo.of(workDir.resolve("【A】" + src1.bookPath().getFileName()));
+            dst1 = BookInfo.of(
+                    workDir.resolve("【A】" + src1.bookPath().getFileName()),
+                    src1.getReadPassword());
             str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
             BookPainter painter1 = factory.painter(settings, dst1);
@@ -381,7 +385,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             BookInfo src2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            dst2 = BookInfo.of(workDir.resolve("【B】" + src2.bookPath().getFileName()));
+            dst2 = BookInfo.of(
+                    workDir.resolve("【B】" + src2.bookPath().getFileName()),
+                    src2.getReadPassword());
             str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
             BookPainter painter2 = factory.painter(settings, dst2);

@@ -35,9 +35,9 @@ class CombinedBookPainterTest {
         }
     };
     
-    private static final BookInfo dummy1_xlsx = BookInfo.of(Path.of("dummy1.xlsx"));
-    private static final BookInfo dummy1_xls = BookInfo.of(Path.of("dummy1.xls"));
-    private static final BookInfo dummy2_xlsx = BookInfo.of(Path.of("dummy2.xlsx"));
+    private static final BookInfo dummy1_xlsx = BookInfo.of(Path.of("dummy1.xlsx"), null);
+    private static final BookInfo dummy1_xls = BookInfo.of(Path.of("dummy1.xls"), null);
+    private static final BookInfo dummy2_xlsx = BookInfo.of(Path.of("dummy2.xlsx"), null);
     
     // [instance members] ******************************************************
     
@@ -68,13 +68,13 @@ class CombinedBookPainterTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(null, BookInfo.of(Path.of("dummy2.xlsx")), Map.of()));
+                () -> testee.paintAndSave(null, BookInfo.of(Path.of("dummy2.xlsx"), null), Map.of()));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(dummy1_xlsx, null, Map.of()));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, BookInfo.of(Path.of("dummy2.xlsx")), null));
+                () -> testee.paintAndSave(dummy1_xlsx, BookInfo.of(Path.of("dummy2.xlsx"), null), null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(null, null, null));

@@ -61,13 +61,13 @@ class CombinedSheetLoaderTest {
                 () -> testee.loadCells(null, "dummy"));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx")), null));
+                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.loadCells(null, null));
         
         assertDoesNotThrow(
-                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
+                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
     
     @Test
@@ -82,12 +82,12 @@ class CombinedSheetLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
+                () -> testeeF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
+                () -> testeeFFF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
     
     @Test
@@ -103,11 +103,11 @@ class CombinedSheetLoaderTest {
         // 成功１つ
         assertEquals(
                 Set.of(cell1),
-                testeeS.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
+                testeeS.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 Set.of(cell1),
-                testeeFFSF.loadCells(BookInfo.of(Path.of("dummy.xlsx")), "dummy"));
+                testeeFFSF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
 }

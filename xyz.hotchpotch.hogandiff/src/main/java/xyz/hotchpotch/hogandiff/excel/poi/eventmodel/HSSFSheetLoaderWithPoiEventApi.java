@@ -31,6 +31,7 @@ import org.apache.poi.hssf.record.StringRecord;
 import org.apache.poi.hssf.record.TextObjectRecord;
 import org.apache.poi.hssf.record.WSBoolRecord;
 import org.apache.poi.hssf.record.common.UnicodeString;
+import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.CellType;
@@ -494,6 +495,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
         
+        Biff8EncryptionKey.setCurrentUserPassword(bookInfo.getReadPassword());
         try (FileInputStream fin = new FileInputStream(bookInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
@@ -510,6 +512,9 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
         } catch (Exception e) {
             throw new ExcelHandlingException(
                     "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName), e);
+            
+        } finally {
+            Biff8EncryptionKey.setCurrentUserPassword(null);
         }
     }
 }

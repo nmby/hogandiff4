@@ -165,7 +165,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
         
         // 2. コピーしたファイルをExcelブックとしてロードする。
         try (InputStream is = Files.newInputStream(dstBookInfo.bookPath());
-                Workbook book = WorkbookFactory.create(is)) {
+                Workbook book = WorkbookFactory.create(is, dstBookInfo.getReadPassword())) {
             
             // 例外が発生した場合もその部分だけをスキップして処理継続した方が
             // ユーザーにとっては有益であると考え、小刻みに try-catch で囲うことにする。

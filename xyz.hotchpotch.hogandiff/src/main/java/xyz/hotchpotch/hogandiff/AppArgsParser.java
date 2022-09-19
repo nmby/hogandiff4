@@ -43,6 +43,8 @@ public class AppArgsParser {
             + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
             + "    --save-memory=[true|false]           : default value is "
             + SettingKeys.SAVE_MEMORY.defaultValueSupplier().get() + BR
+            + "    --speed-first=[true|false]           : default value is "
+            + SettingKeys.SPEED_FIRST.defaultValueSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
@@ -52,7 +54,8 @@ public class AppArgsParser {
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
-            "--save-memory", SettingKeys.SAVE_MEMORY);
+            "--save-memory", SettingKeys.SAVE_MEMORY,
+            "--speed-first", SettingKeys.SPEED_FIRST);
     
     /**
      * {@link #parseArgs(List)} と同じ。<br>
@@ -86,8 +89,8 @@ public class AppArgsParser {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
                     .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.of(Path.of(args.get(0))))
-                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.of(Path.of(args.get(1))));
+                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.of(Path.of(args.get(0)), null))
+                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.of(Path.of(args.get(1)), null));
             
             // オプションのパース
             Deque<String> remainingParams = new ArrayDeque<>(args.subList(2, args.size()));

@@ -76,6 +76,7 @@ public class CombinedBookLoader implements BookLoader {
         
         List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<BookLoader>> itr = suppliers.iterator();
+        boolean passwordIssue = false;
         
         while (itr.hasNext()) {
             try {
@@ -83,9 +84,9 @@ public class CombinedBookLoader implements BookLoader {
                 return loader.loadSheetNames(bookInfo);
                 
             } catch (PasswordHandlingException e) {
+                passwordIssue = true;
                 e.printStackTrace();
-                suppressed.forEach(e::addSuppressed);
-                throw e;
+                suppressed.add(e);
                 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -93,7 +94,9 @@ public class CombinedBookLoader implements BookLoader {
             }
         }
         
-        ExcelHandlingException failed = new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo));
+        ExcelHandlingException failed = passwordIssue
+                ? new PasswordHandlingException("処理に失敗しました：%s".formatted(bookInfo))
+                : new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo));
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }
