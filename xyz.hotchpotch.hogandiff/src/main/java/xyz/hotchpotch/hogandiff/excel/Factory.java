@@ -124,13 +124,17 @@ public class Factory {
         
         switch (bookInfo.bookType()) {
         case XLS:
-            return CombinedSheetLoader.of(List.of(
-                    () -> HSSFSheetLoaderWithPoiEventApi.of(
-                            useCachedValue,
-                            saveMemory),
-                    () -> SheetLoaderWithPoiUserApi.of(
+            return useCachedValue
+                    ? CombinedSheetLoader.of(List.of(
+                            () -> HSSFSheetLoaderWithPoiEventApi.of(
+                                    useCachedValue,
+                                    saveMemory),
+                            () -> SheetLoaderWithPoiUserApi.of(
+                                    saveMemory,
+                                    converter)))
+                    : SheetLoaderWithPoiUserApi.of(
                             saveMemory,
-                            converter)));
+                            converter);
         
         case XLSX:
         case XLSM:
