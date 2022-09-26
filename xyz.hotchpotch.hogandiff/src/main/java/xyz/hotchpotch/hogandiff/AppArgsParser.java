@@ -35,8 +35,6 @@ public class AppArgsParser {
             + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
             + "    --compare-on-formulas=[true|false]   : default value is "
             + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
-            + "    --speed-first=[true|false]           : default value is "
-            + SettingKeys.SPEED_FIRST.defaultValueSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
             + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR
             + "    --show-result-text=[true|false]      : default value is "
@@ -51,7 +49,6 @@ public class AppArgsParser {
             "--consider-row-gaps", SettingKeys.CONSIDER_ROW_GAPS,
             "--consider-column-gaps", SettingKeys.CONSIDER_COLUMN_GAPS,
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
-            "--speed-first", SettingKeys.SPEED_FIRST,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,

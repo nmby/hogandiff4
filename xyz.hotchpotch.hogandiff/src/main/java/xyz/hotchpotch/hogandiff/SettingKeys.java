@@ -126,14 +126,6 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
-    /** 実行オプション：速度と精度のどちらを優先させるか */
-    public static final Key<Boolean> SPEED_FIRST = new Key<Boolean>(
-            "application.execution.speedFirst",
-            () -> true,
-            String::valueOf,
-            Boolean::valueOf,
-            true);
-    
     /**
      * シート名同士の対応付けにおいて完全一致（{@code true}）でマッチングするか
      * ある程度の揺らぎを許容する（{@code flase}）かを表します。<br>
