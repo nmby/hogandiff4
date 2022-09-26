@@ -13,7 +13,7 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 <https://openjdk.java.net/legal/gplv2+ce.html>
 
 This product contains parts of Apache POI libraries.
-Copyright 2003-2021 The Apache Software Foundation.
+Copyright 2003-2022 The Apache Software Foundation.
 <https://www.apache.org/>
 
     Apache POI contains parts that were originally based on software from BEA.
@@ -21,6 +21,8 @@ Copyright 2003-2021 The Apache Software Foundation.
     which was acquired by Oracle Corporation in 2008.
     <http://www.oracle.com/us/corporate/Acquisitions/bea/index.html>
     <https://en.wikipedia.org/wiki/BEA_Systems>
+    Note: The ASF Secretary has on hand a Software Grant Agreement (SGA) from
+    BEA Systems, Inc. dated 9 Sep 2003 for XMLBeans signed by their EVP/CFO.
     
     Apache POI contains W3C XML Schema documents. Copyright 2001-2003 (c)
     World Wide Web Consortium (Massachusetts Institute of Technology, European
