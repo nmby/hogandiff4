@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Properties;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,8 +49,7 @@ public class SettingsPane extends HBox implements ChildController {
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
             Settings settings = parent.gatherSettings();
-            Properties properties = settings.toProperties();
-            AppMain.storeProperties(properties);
+            AppMain.appResource.storeSettings(settings);
             parent.hasSettingsChanged.set(false);
         });
         
