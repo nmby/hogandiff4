@@ -4,9 +4,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -102,6 +104,7 @@ public class AppResource {
     
     private Properties properties;
     private Settings settings;
+    private ResourceBundle resourceBundle;
     
     private AppResource(
             Properties properties,
@@ -112,10 +115,17 @@ public class AppResource {
         
         this.properties = properties;
         this.settings = settings;
+        
+        Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
+        this.resourceBundle = ResourceBundle.getBundle("messages", appLocale);
     }
     
     public Settings settings() {
         return settings;
+    }
+    
+    public String msg(String key) {
+        return resourceBundle.getString(key);
     }
     
     public void storeSettings(Settings settings) {
