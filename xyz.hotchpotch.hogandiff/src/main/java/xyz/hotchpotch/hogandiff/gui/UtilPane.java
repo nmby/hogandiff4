@@ -50,7 +50,9 @@ public class UtilPane extends HBox implements ChildController {
     private Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
     
     public UtilPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("UtilPane.fxml"),
+                AppMain.appResource.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

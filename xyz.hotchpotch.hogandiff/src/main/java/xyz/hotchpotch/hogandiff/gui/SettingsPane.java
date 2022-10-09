@@ -31,7 +31,9 @@ public class SettingsPane extends HBox implements ChildController {
     private Button executeButton;
     
     public SettingsPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("SettingsPane.fxml"),
+                AppMain.appResource.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

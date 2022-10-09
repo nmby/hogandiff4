@@ -29,6 +29,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
@@ -78,7 +79,9 @@ public class TargetSelectionParts extends GridPane {
     private TargetSelectionParts opposite;
     
     public TargetSelectionParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("TargetSelectionParts.fxml"),
+                AppMain.appResource.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

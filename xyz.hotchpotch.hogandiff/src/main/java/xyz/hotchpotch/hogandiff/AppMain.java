@@ -49,7 +49,9 @@ public class AppMain extends Application {
         // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
         ZipSecureFile.setMinInflateRatio(0.001);
         
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("gui/MainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("gui/MainView.fxml"),
+                appResource.get());
         Parent root = loader.load();
         String cssPath = getClass().getResource("gui/application.css").toExternalForm();
         root.getStylesheets().add(cssPath.replace(" ", "%20"));

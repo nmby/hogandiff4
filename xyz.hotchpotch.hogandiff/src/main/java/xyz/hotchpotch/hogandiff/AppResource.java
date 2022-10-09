@@ -104,7 +104,7 @@ public class AppResource {
     
     private Properties properties;
     private Settings settings;
-    private ResourceBundle resourceBundle;
+    private ResourceBundle resource;
     
     private AppResource(
             Properties properties,
@@ -117,15 +117,15 @@ public class AppResource {
         this.settings = settings;
         
         Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
-        this.resourceBundle = ResourceBundle.getBundle("messages", appLocale);
+        this.resource = ResourceBundle.getBundle("messages", appLocale);
     }
     
     public Settings settings() {
         return settings;
     }
     
-    public String msg(String key) {
-        return resourceBundle.getString(key);
+    public ResourceBundle get() {
+        return resource;
     }
     
     public void storeSettings(Settings settings) {
