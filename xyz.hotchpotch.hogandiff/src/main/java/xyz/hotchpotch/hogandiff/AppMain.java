@@ -57,7 +57,10 @@ public class AppMain extends Application {
         root.getStylesheets().add(cssPath.replace(" ", "%20"));
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         primaryStage.getIcons().add(icon);
-        primaryStage.setTitle("方眼Diff  -  " + VERSION);
+        primaryStage.setTitle(
+                appResource.get().getString("fx.AppMain.appTitle")
+                        + "  -  "
+                        + VERSION);
         primaryStage.setScene(new Scene(root, 500, 464));
         primaryStage.setMinWidth(500);
         primaryStage.setMinHeight(464);

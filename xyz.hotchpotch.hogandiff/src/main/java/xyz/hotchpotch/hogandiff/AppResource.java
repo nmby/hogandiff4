@@ -40,31 +40,10 @@ public class AppResource {
                 properties.load(r);
                 return properties;
             } catch (Exception e) {
-                // nop
+                e.printStackTrace();
             }
         }
         return new Properties();
-    }
-    
-    /**
-     * 指定されたプロパティセットをプロパティファイルに保存します。<br>
-     * 
-     * @param properties プロパティセット
-     * @throws NullPointerException {@code properties} が {@code null} の場合
-     */
-    private static void storeProperties(Properties properties) {
-        Objects.requireNonNull(properties, "properties");
-        
-        try (Writer w = Files.newBufferedWriter(APP_PROP_PATH)) {
-            properties.store(w, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            new Alert(
-                    AlertType.ERROR,
-                    "設定の保存に失敗しました。%n%s".formatted(APP_PROP_PATH),
-                    ButtonType.OK)
-                            .showAndWait();
-        }
     }
     
     public static AppResource from(String[] args) {
@@ -128,13 +107,30 @@ public class AppResource {
         return resource;
     }
     
-    public void storeSettings(Settings settings) {
+    public boolean storeSettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         Properties properties = settings.toProperties();
-        storeProperties(properties);
         
         this.properties = properties;
         this.settings = settings;
+        
+        return storeProperties();
+    }
+    
+    private boolean storeProperties() {
+        try (Writer w = Files.newBufferedWriter(APP_PROP_PATH)) {
+            properties.store(w, null);
+            return true;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(
+                    AlertType.ERROR,
+                    "%s%n%s".formatted(resource.getString("AppResource.010"), APP_PROP_PATH),
+                    ButtonType.OK)
+                            .showAndWait();
+            return false;
+        }
     }
 }

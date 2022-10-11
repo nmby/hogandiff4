@@ -51,8 +51,9 @@ public class SettingsPane extends HBox implements ChildController {
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
             Settings settings = parent.gatherSettings();
-            AppMain.appResource.storeSettings(settings);
-            parent.hasSettingsChanged.set(false);
+            if (AppMain.appResource.storeSettings(settings)) {
+                parent.hasSettingsChanged.set(false);
+            }
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。
