@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -25,6 +26,8 @@ public class OptionsParts extends VBox implements ChildController {
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
+    
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     @FXML
     private CheckBox considerRowGapsCheckBox;
@@ -51,9 +54,7 @@ public class OptionsParts extends VBox implements ChildController {
     private CheckBox saveMemoryCheckBox;
     
     public OptionsParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("OptionsParts.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

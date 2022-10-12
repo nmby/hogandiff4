@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
@@ -35,6 +36,8 @@ public class UtilPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private Button showWorkDirButton;
     
@@ -50,9 +53,7 @@ public class UtilPane extends HBox implements ChildController {
     private Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
     
     public UtilPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("UtilPane.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -73,7 +74,7 @@ public class UtilPane extends HBox implements ChildController {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "作業用フォルダの表示に失敗しました。%n%s".formatted(workDir),
+                        "%s%n%s".formatted(rb.getString("gui.UtilPane.010"), workDir),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -82,7 +83,7 @@ public class UtilPane extends HBox implements ChildController {
         deleteOldWorkDirButton.setOnAction(event -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    "次のフォルダの内容物を全て削除します。よろしいですか？%n%s".formatted(workDir))
+                    "%s%n%s".formatted(rb.getString("gui.UtilPane.020"), workDir))
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -110,7 +111,7 @@ public class UtilPane extends HBox implements ChildController {
         changeWorkDirButton.setOnAction(event -> {
             DirectoryChooser dirChooser = new DirectoryChooser();
             
-            dirChooser.setTitle("作業用フォルダの変更");
+            dirChooser.setTitle(rb.getString("fx.UtilPane.dialogTitle"));
             dirChooser.setInitialDirectory(workDir.toFile());
             
             File newDir = null;
@@ -136,7 +137,7 @@ public class UtilPane extends HBox implements ChildController {
                         e.printStackTrace();
                         new Alert(
                                 AlertType.WARNING,
-                                "作業用フォルダの変更に失敗しました。%n%s".formatted(newPath),
+                                "%s%n%s".formatted(rb.getString("gui.UtilPane.030"), newPath),
                                 ButtonType.OK)
                                         .showAndWait();
                         return;
@@ -146,8 +147,7 @@ public class UtilPane extends HBox implements ChildController {
                 parent.hasSettingsChanged.set(true);
                 new Alert(
                         AlertType.INFORMATION,
-                        ("作業用フォルダを一時的に変更しました。%n"
-                                + "変更を保存するには「設定を保存」ボタンを押してください。").formatted(),
+                        rb.getString("gui.UtilPane.040"),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -161,8 +161,7 @@ public class UtilPane extends HBox implements ChildController {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "Webページの表示に失敗しました。ご利用のブラウザでお試しください。%n"
-                                .formatted(AppMain.WEB_URL),
+                        "%s%n%s".formatted(rb.getString("gui.UtilPane.050"), AppMain.WEB_URL),
                         ButtonType.OK)
                                 .showAndWait();
             }

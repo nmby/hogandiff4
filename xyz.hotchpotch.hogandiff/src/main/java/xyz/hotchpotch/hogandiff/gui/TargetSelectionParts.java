@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -51,6 +52,8 @@ public class TargetSelectionParts extends GridPane {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private GridPane basePane;
     
@@ -79,9 +82,7 @@ public class TargetSelectionParts extends GridPane {
     private TargetSelectionParts opposite;
     
     public TargetSelectionParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("TargetSelectionParts.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -193,7 +194,7 @@ public class TargetSelectionParts extends GridPane {
     
     private void chooseBook(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("比較対象ブックの選択");
+        chooser.setTitle(rb.getString("fx.TargetSelectionParts.dialogTitle"));
         
         if (bookInfo.getValue() != null) {
             File book = bookInfo.getValue().bookPath().toFile();
@@ -205,7 +206,8 @@ public class TargetSelectionParts extends GridPane {
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "Excel ブック", "*.xls", "*.xlsx", "*.xlsm"));
+                rb.getString("fx.TargetSelectionParts.filterDescription"),
+                "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
         
@@ -253,7 +255,7 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
-                    "ファイルを読み込めません：%n%s".formatted(newBookPath),
+                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.010"), newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -269,7 +271,7 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "シートが見つかりません：%n%s".formatted(sheetName),
+                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.020"), sheetName),
                     ButtonType.OK)
                             .showAndWait();
             return false;

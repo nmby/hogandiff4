@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +22,8 @@ public class SettingsPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private OptionsParts optionsParts;
     
@@ -31,9 +34,7 @@ public class SettingsPane extends HBox implements ChildController {
     private Button executeButton;
     
     public SettingsPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("SettingsPane.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

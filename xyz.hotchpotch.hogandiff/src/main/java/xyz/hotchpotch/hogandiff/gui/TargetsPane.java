@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
@@ -22,6 +23,8 @@ public class TargetsPane extends VBox implements ChildController {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private TargetSelectionParts targetSelectionParts1;
     
@@ -29,9 +32,7 @@ public class TargetsPane extends VBox implements ChildController {
     private TargetSelectionParts targetSelectionParts2;
     
     public TargetsPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("TargetsPane.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

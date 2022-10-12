@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ public class MenuPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private RadioButton compareBooksRadioButton;
     
@@ -31,9 +34,7 @@ public class MenuPane extends HBox implements ChildController {
     private RadioButton compareSheetsRadioButton;
     
     public MenuPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("MenuPane.fxml"),
-                AppMain.appResource.get());
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
