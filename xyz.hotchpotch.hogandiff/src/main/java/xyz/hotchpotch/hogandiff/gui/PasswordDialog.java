@@ -32,7 +32,7 @@ public class PasswordDialog extends Dialog<String> {
         me.lookupButton(ButtonType.OK).disableProperty()
                 .bind(passwordDialogPane.passwordField.textProperty().isEmpty());
         
-        this.setTitle(rb.getString("fx.PasswordDialog.dialogTitle"));
+        this.setTitle(rb.getString("gui.PasswordDialog.010"));
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? passwordDialogPane.passwordField.getText()
                 : null);

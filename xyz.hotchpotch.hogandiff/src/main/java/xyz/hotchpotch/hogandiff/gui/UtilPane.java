@@ -111,7 +111,7 @@ public class UtilPane extends HBox implements ChildController {
         changeWorkDirButton.setOnAction(event -> {
             DirectoryChooser dirChooser = new DirectoryChooser();
             
-            dirChooser.setTitle(rb.getString("fx.UtilPane.dialogTitle"));
+            dirChooser.setTitle(rb.getString("gui.UtilPane.060"));
             dirChooser.setInitialDirectory(workDir.toFile());
             
             File newDir = null;

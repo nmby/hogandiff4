@@ -58,7 +58,7 @@ public class AppMain extends Application {
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle(
-                appResource.get().getString("fx.AppMain.appTitle")
+                appResource.get().getString("AppMain.010")
                         + "  -  "
                         + VERSION);
         primaryStage.setScene(new Scene(root, 500, 464));

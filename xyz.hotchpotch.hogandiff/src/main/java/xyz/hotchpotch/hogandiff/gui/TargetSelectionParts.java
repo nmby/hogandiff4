@@ -194,7 +194,7 @@ public class TargetSelectionParts extends GridPane {
     
     private void chooseBook(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(rb.getString("fx.TargetSelectionParts.dialogTitle"));
+        chooser.setTitle(rb.getString("gui.TargetSelectionParts.030"));
         
         if (bookInfo.getValue() != null) {
             File book = bookInfo.getValue().bookPath().toFile();
@@ -206,7 +206,7 @@ public class TargetSelectionParts extends GridPane {
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                rb.getString("fx.TargetSelectionParts.filterDescription"),
+                rb.getString("gui.TargetSelectionParts.040"),
                 "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
