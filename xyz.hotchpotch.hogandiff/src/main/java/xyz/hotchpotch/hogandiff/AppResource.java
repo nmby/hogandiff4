@@ -83,7 +83,7 @@ public class AppResource {
     
     private Properties properties;
     private Settings settings;
-    private ResourceBundle resource;
+    private ResourceBundle rb;
     
     private AppResource(
             Properties properties,
@@ -96,7 +96,7 @@ public class AppResource {
         this.settings = settings;
         
         Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
-        this.resource = ResourceBundle.getBundle("messages", appLocale);
+        this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     
     public Settings settings() {
@@ -104,7 +104,7 @@ public class AppResource {
     }
     
     public ResourceBundle get() {
-        return resource;
+        return rb;
     }
     
     public boolean storeSettings(Settings settings) {
@@ -127,7 +127,7 @@ public class AppResource {
             e.printStackTrace();
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(resource.getString("AppResource.010"), APP_PROP_PATH),
+                    "%s%n%s".formatted(rb.getString("AppResource.010"), APP_PROP_PATH),
                     ButtonType.OK)
                             .showAndWait();
             return false;

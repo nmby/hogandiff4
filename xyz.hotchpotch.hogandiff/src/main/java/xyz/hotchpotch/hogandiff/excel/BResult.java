@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -22,6 +24,7 @@ public class BResult {
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * シート名ペアをユーザー表示用に整形して返します。<br>
@@ -40,8 +43,8 @@ public class BResult {
         
         return "    %d) %s vs %s".formatted(
                 idx + 1,
-                pair.hasA() ? "A[" + pair.a() + "]" : "(比較相手なし)",
-                pair.hasB() ? "B[" + pair.b() + "]" : "(比較相手なし)");
+                pair.hasA() ? "A[" + pair.a() + "]" : rb.getString("excel.BResult.010"),
+                pair.hasB() ? "B[" + pair.b() + "]" : rb.getString("excel.BResult.010"));
     }
     
     /**
@@ -124,7 +127,7 @@ public class BResult {
             str.append(BR);
         }
         
-        return str.isEmpty() ? "    (差分なし)" + BR : str.toString();
+        return str.isEmpty() ? "    " + rb.getString("excel.BResult.020") + BR : str.toString();
     }
     
     /**
@@ -150,10 +153,10 @@ public class BResult {
         StringBuilder str = new StringBuilder();
         
         if (bookPath.isIdentical()) {
-            str.append("ブック : ").append(bookPath.a()).append(BR);
+            str.append(rb.getString("excel.BResult.030").formatted("")).append(bookPath.a()).append(BR);
         } else {
-            str.append("ブックA : ").append(bookPath.a()).append(BR);
-            str.append("ブックB : ").append(bookPath.b()).append(BR);
+            str.append(rb.getString("excel.BResult.030").formatted("A")).append(bookPath.a()).append(BR);
+            str.append(rb.getString("excel.BResult.030").formatted("B")).append(bookPath.b()).append(BR);
         }
         
         for (int i = 0; i < sheetPairs.size(); i++) {
@@ -162,9 +165,9 @@ public class BResult {
         }
         
         str.append(BR);
-        str.append("■差分サマリ ---------------------------------------------------").append(BR);
+        str.append(rb.getString("excel.BResult.040")).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append("■差分詳細 -----------------------------------------------------").append(BR);
+        str.append(rb.getString("excel.BResult.050")).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();
