@@ -24,7 +24,6 @@ public class BResult {
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * シート名ペアをユーザー表示用に整形して返します。<br>
@@ -40,6 +39,8 @@ public class BResult {
             throw new IndexOutOfBoundsException(idx);
         }
         Objects.requireNonNull(pair, "pair");
+        
+        ResourceBundle rb = AppMain.appResource.get();
         
         return "    %d) %s vs %s".formatted(
                 idx + 1,
@@ -78,6 +79,7 @@ public class BResult {
     private final Pair<Path> bookPath;
     private final List<Pair<String>> sheetPairs;
     private final Map<Pair<String>, Optional<SResult>> results;
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     private BResult(
             Path bookPath1,

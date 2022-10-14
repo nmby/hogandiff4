@@ -19,7 +19,13 @@ import xyz.hotchpotch.hogandiff.AppMain;
     // [static members] ********************************************************
     
     // パフォーマンス劣化を防ぐためにクラス変数に予め文字列を読み込んでおく
-    static final String msg010 = AppMain.appResource.get().getString("excel.CellHashData.010");
+    static final String msg010;
+    static {
+        // JVM実装により万一リソースバンドル読み込み前にこのクラスロードされた場合は
+        // 日本語の固定文言を設定する。
+        String tmp = AppMain.appResource.get().getString("excel.CellHashData.010");
+        msg010 = (tmp != null) ? tmp : "（省メモリモードではセル内容を表示できません）";
+    }
     
     // [instance members] ******************************************************
     

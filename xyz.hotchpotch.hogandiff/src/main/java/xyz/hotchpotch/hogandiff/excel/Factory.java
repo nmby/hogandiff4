@@ -4,13 +4,11 @@ import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
@@ -49,8 +47,6 @@ public class Factory {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
-    
     private Factory() {
     }
     
@@ -84,7 +80,8 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -156,7 +153,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -263,7 +260,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
