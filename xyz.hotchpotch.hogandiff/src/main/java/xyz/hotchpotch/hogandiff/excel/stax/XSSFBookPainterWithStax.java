@@ -276,11 +276,11 @@ public class XSSFBookPainterWithStax implements BookPainter {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
         if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "different book paths are required : %s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "拡張子が異なります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "extentions must be the same : %s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         
         // 1. 目的のブックをコピーする。
@@ -330,7 +330,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelファイルのコピーに失敗しました：%s -> %s".formatted(src, dst),
+                    "failed to copy the book : %s -> %s".formatted(src, dst),
                     e);
         }
     }
@@ -364,7 +364,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                 writer.add(reader);
                 
             } catch (Exception e) {
-                throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+                throw new ExcelHandlingException("failed to process the entry : " + targetEntry, e);
             }
         }
     }
@@ -410,7 +410,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             writer.add(reader);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(targetEntry + " エントリの処理に失敗しました。", e);
+            throw new ExcelHandlingException("failed to process the entry : " + targetEntry, e);
         }
     }
     
@@ -447,7 +447,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    stylesEntry + " エントリの読み込みに失敗しました。", e);
+                    "failed to load the entry : " + stylesEntry, e);
         }
         
         // 次に、比較対象シートに対する着色処理を行う。
@@ -486,7 +486,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             StreamResult result = new StreamResult(os);
             transformer.transform(source, result);
         } catch (Exception e) {
-            throw new ExcelHandlingException(stylesEntry + " エントリの保存に失敗しました。", e);
+            throw new ExcelHandlingException("failed to save the entry : " + stylesEntry, e);
         }
     }
     
@@ -573,7 +573,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             writer.add(reader);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(source + " エントリの処理に失敗しました。", e);
+            throw new ExcelHandlingException("failed to process the entry : " + source, e);
         }
     }
     
@@ -618,7 +618,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             writer.add(reader);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(vmlDrawingSource + " エントリの処理に失敗しました。", e);
+            throw new ExcelHandlingException("failed to process the entry : " + vmlDrawingSource, e);
         }
     }
     
@@ -643,7 +643,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             writer.add(reader);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException(commentSource + " エントリの処理に失敗しました。", e);
+            throw new ExcelHandlingException("failed to process the entry : " + commentSource, e);
         }
     }
 }
