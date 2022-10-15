@@ -181,7 +181,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 
             } else if (record instanceof EOFRecord) {
                 throw new NoSuchElementException(
-                        "指定された名前のシートが見つかりません：" + sheetName);
+                        "no such sheet : " + sheetName);
             }
         }
         
@@ -225,7 +225,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
                 case BOFRecord.TYPE_EXCEL_4_MACRO:
                     if (currIdx == sheetIdx) {
                         throw new UnsupportedOperationException(
-                                "このシート形式はサポートされません：type==" + bofRec.getType());
+                                "unsupported sheet type : " + bofRec.getType());
                     } else {
                         currIdx++;
                         break;
@@ -254,8 +254,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             if (record instanceof WSBoolRecord wsbRec) {
                 if (wsbRec.getDialog()) {
                     // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートも何故か getDialog() == false が返されるっぽい。
-                    throw new UnsupportedOperationException(
-                            "ダイアログシートはサポートされません。");
+                    throw new UnsupportedOperationException("dialog sheets are not supported");
                 }
                 step = ProcessingStep.READING_CELL_CONTENTS_AND_COMMENTS;
                 
@@ -434,7 +433,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             } else {
                 // FIXME: [No.4 数式サポート改善] 数式文字列もサポートできるようにする
                 throw new UnsupportedOperationException(
-                        "数式文字列の抽出はサポートされません。");
+                        "extraction of formula strings is not supported");
             }
         }
     }
@@ -511,7 +510,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookInfo, sheetName), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

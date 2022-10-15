@@ -197,12 +197,12 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
                     (bookInfo.getReadPassword() == null
-                            ? "パスワードで保護されています。：%s"
-                            : "パスワードが異なります：%s")
+                            ? "book is encrypted : %s"
+                            : "password is incorrect : %s")
                                     .formatted(bookInfo),
                     e);
         } catch (Exception e) {
-            throw new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookInfo), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
