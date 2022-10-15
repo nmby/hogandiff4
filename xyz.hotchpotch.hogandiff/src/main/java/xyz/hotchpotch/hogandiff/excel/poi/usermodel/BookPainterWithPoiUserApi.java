@@ -144,11 +144,11 @@ public class BookPainterWithPoiUserApi implements BookPainter {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
         if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "異なるパスを指定する必要があります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "different book paths are required : %s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "拡張子が異なります：%s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "extentions must be the same : %s -> %s".formatted(srcBookInfo, dstBookInfo));
         }
         
         // 1. 目的のブックをコピーする。
@@ -159,7 +159,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelファイルのコピーに失敗しました：%s -> %s".formatted(srcBookInfo, dstBookInfo),
+                    "failed to copy the book : %s -> %s".formatted(srcBookInfo, dstBookInfo),
                     e);
         }
         
@@ -222,7 +222,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの着色と保存に失敗しました：%s".formatted(dstBookInfo), e);
+                    "failed to paint and save the book : %s".formatted(dstBookInfo), e);
         }
     }
 }
