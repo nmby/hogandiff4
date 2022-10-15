@@ -80,7 +80,8 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -152,7 +153,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -259,7 +260,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());

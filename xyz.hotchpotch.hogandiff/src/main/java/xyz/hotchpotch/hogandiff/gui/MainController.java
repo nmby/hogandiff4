@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -55,6 +57,8 @@ public class MainController {
     /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
@@ -124,7 +128,7 @@ public class MainController {
      */
     public void execute() {
         if (!isReady.getValue()) {
-            throw new IllegalStateException("I'm not ready.");
+            throw new IllegalStateException();
         }
         
         Settings settings = gatherSettings();
@@ -133,7 +137,7 @@ public class MainController {
         if (!menu.isValidTargets(settings)) {
             new Alert(
                     AlertType.WARNING,
-                    "同じブック同士／シート同士を比較することはできません。",
+                    rb.getString("gui.MainController.010"),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -155,10 +159,7 @@ public class MainController {
                 
                 new Alert(
                         AlertType.WARNING,
-                        "比較が完了しました。\n"
-                                + "比較結果Excelは ★パスワードが解除された状態で★ 作業用フォルダに保存されています。\n"
-                                + "セキュリティ上の必要性に応じて、アプリ左下のボタンから"
-                                + "作業用フォルダ内の比較結果Excelファイルをご自身で削除してください。",
+                        rb.getString("gui.MainController.020"),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -177,7 +178,8 @@ public class MainController {
             reportingPane.unbind();
             new Alert(
                     AlertType.WARNING,
-                    "予期せぬ例外が発生しました。%n%s%n%s".formatted(
+                    "%s%n%s%n%s".formatted(
+                            rb.getString("gui.MainController.030"),
                             e.getClass().getName(),
                             e.getMessage()),
                     ButtonType.OK)

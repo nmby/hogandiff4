@@ -40,7 +40,7 @@ public enum BookType {
                 .filter(type -> bookPath.toString().endsWith(type.extension))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "不明な形式のファイルです：" + bookPath));
+                        "Unknown BookType: " + bookPath));
     }
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++

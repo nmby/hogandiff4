@@ -334,7 +334,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         if (!Objects.equals(this.bookInfo.bookPath(), bookInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "このローダーは %s 用に構成されています。別ブック（%s）には利用できません。"
+                    "This loader is configured for %s. Not available for another book (%s)."
                             .formatted(this.bookInfo, bookInfo));
         }
         
@@ -344,7 +344,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
                 // 例外カスケードポリシーに従い、
                 // 後続の catch でさらに ExcelHandlingException にラップする。
                 // ちょっと気持ち悪い気もするけど。
-                throw new NoSuchElementException("シートが存在しません：" + sheetName);
+                throw new NoSuchElementException("no such sheet : " + sheetName);
             }
             SheetInfo info = nameToInfo.get(sheetName);
             // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
@@ -371,7 +371,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookInfo, sheetName), e);
         }
     }
 }

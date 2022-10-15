@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -47,6 +48,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private final Factory factory;
     private final AppMenu menu;
     private final StringBuilder str = new StringBuilder();
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     /*package*/ AppTask(
             Settings settings,
@@ -94,19 +96,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
         
         if (menu == AppMenu.COMPARE_BOOKS) {
-            str.append("ブック同士の比較を開始します。%n[A] %s%n[B] %s%n%n"
-                    .formatted(bookInfo1, bookInfo2));
+            str.append("%s%n[A] %s%n[B] %s%n%n"
+                    .formatted(rb.getString("AppTask.010"), bookInfo1, bookInfo2));
             
         } else {
             String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
             String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
             if (Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())) {
-                str.append("シート同士の比較を開始します。%n%s%n[A] %s%n[B] %s%n%n"
-                        .formatted(bookInfo1, sheetName1, sheetName2));
+                str.append("%s%n%s%n[A] %s%n[B] %s%n%n"
+                        .formatted(rb.getString("AppTask.020"), bookInfo1, sheetName1, sheetName2));
             } else {
-                str.append("シート同士の比較を開始します。%n[A] %s - %s%n[B] %s - %s%n%n"
-                        .formatted(bookInfo1, sheetName1, bookInfo2, sheetName2));
+                str.append("%s%n[A] %s - %s%n[B] %s - %s%n%n"
+                        .formatted(rb.getString("AppTask.020"), bookInfo1, sheetName1, bookInfo2, sheetName2));
             }
         }
         updateMessage(str.toString());
@@ -123,7 +125,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                     .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
-            str.append("作業用フォルダを作成しています...%n    - %s%n%n".formatted(workDir));
+            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTask.030"), workDir));
             updateMessage(str.toString());
             
             workDir = Files.createDirectories(workDir);
@@ -132,11 +134,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return workDir;
             
         } catch (Exception e) {
-            str.append("作業用フォルダの作成に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.040")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "作業用フォルダの作成に失敗しました。%n%s".formatted(workDir),
+                    "%s%n%s".formatted(rb.getString("AppTask.040"), workDir),
                     e);
         }
     }
@@ -150,7 +152,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             List<Pair<String>> pairs;
             if (menu == AppMenu.COMPARE_BOOKS) {
-                str.append("比較するシートの組み合わせを決定しています...").append(BR);
+                str.append(rb.getString("AppTask.050")).append(BR);
                 updateMessage(str.toString());
                 
                 pairs = menu.getSheetNamePairs(settings, factory);
@@ -170,12 +172,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return pairs;
             
         } catch (Exception e) {
-            // TODO: サポート対象外の .xlsb やパスワード付きファイルの場合の考慮が必要
-            str.append("シートの組み合わせ決定に失敗しました。").append(BR).append(BR);
+            // TODO: サポート対象外の .xlsb の場合の考慮が必要
+            str.append(rb.getString("AppTask.060")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "シートの組み合わせ決定に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.060"), e);
         }
     }
     
@@ -197,7 +198,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             SComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
             
-            str.append("シートを比較しています...").append(BR);
+            str.append(rb.getString("AppTask.070")).append(BR);
             updateMessage(str.toString());
             int total = progressAfter - progressBefore;
             int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
@@ -235,10 +236,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return BResult.of(bookInfo1.bookPath(), bookInfo2.bookPath(), pairs, results);
             
         } catch (Exception e) {
-            str.append("シートの比較に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.080")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException("シートの比較に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.080"), e);
         }
     }
     
@@ -255,14 +256,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             textPath = workDir.resolve("result.txt");
             
-            str.append("比較結果テキストを保存しています...%n    - %s%n%n".formatted(textPath));
+            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTask.090"), textPath));
             updateMessage(str.toString());
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(results.toString());
             }
             if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
-                str.append("比較結果テキストを表示しています...").append(BR).append(BR);
+                str.append(rb.getString("AppTask.100")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(textPath.toFile());
             }
@@ -270,11 +271,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("比較結果テキストの保存と表示に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.110")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "比較結果テキストの保存と表示に失敗しました。%n%s".formatted(textPath),
+                    "%s%n%s".formatted(rb.getString("AppTask.110"), textPath),
                     e);
         }
     }
@@ -309,7 +310,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             int progressTotal = progressAfter - progressBefore;
             
-            str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
+            str.append(rb.getString("AppTask.120")).append(BR);
             updateMessage(str.toString());
             BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
             dst = BookInfo.of(
@@ -325,16 +326,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックの着色・保存に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.130")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "Excelブックの着色・保存に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.130"), e);
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
+                str.append(rb.getString("AppTask.140")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst.bookPath().toFile());
             }
@@ -342,11 +342,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックの表示に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.150")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "Excelブックの表示に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.150"), e);
         }
     }
     
@@ -362,7 +361,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append("Excelブックに比較結果の色を付けて保存しています...").append(BR);
+            str.append(rb.getString("AppTask.120")).append(BR);
             updateMessage(str.toString());
             
             BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
@@ -376,11 +375,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("ExcelブックAの着色・保存に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.160")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "ExcelブックAの着色・保存に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.160"), e);
         }
         
         try {
@@ -395,16 +393,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("ExcelブックBの着色・保存に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.170")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "ExcelブックBの着色・保存に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.170"), e);
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append("比較結果のExcelブックを表示しています...").append(BR).append(BR);
+                str.append(rb.getString("AppTask.140")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst1.bookPath().toFile());
                 Desktop.getDesktop().open(dst2.bookPath().toFile());
@@ -413,17 +410,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("Excelブックの表示に失敗しました。").append(BR).append(BR);
+            str.append(rb.getString("AppTask.150")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(
-                    "Excelブックの表示に失敗しました。", e);
+            throw new ApplicationException(rb.getString("AppTask.150"), e);
         }
     }
     
     // 6. 処理終了のアナウンス
     private void announceEnd() {
-        str.append("処理が完了しました。");
+        str.append(rb.getString("AppTask.180"));
         updateMessage(str.toString());
         updateProgress(PROGRESS_MAX, PROGRESS_MAX);
     }

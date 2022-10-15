@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,7 +26,15 @@ public class SettingKeys {
     // [static members] ********************************************************
     
     /** 作業用フォルダの作成場所のパス */
-    public static final Key<Path> WORK_DIR_BASE = new Key<>(
+    public static final Key<Locale> APP_LOCALE = new Key<>(
+            "application.system.appLocale",
+            () -> Locale.JAPANESE,
+            Locale::toLanguageTag,
+            Locale::forLanguageTag,
+            true);
+    
+    /** 作業用フォルダの作成場所のパス */
+    public static final Key<Path> WORK_DIR_BASE = new Key<Path>(
             "application.system.workDirBase",
             () -> Path.of(
                     System.getProperty("user.home"),

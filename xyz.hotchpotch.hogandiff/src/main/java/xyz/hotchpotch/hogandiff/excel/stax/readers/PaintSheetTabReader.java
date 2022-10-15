@@ -70,7 +70,7 @@ public class PaintSheetTabReader extends BufferingReader {
             return;
         }
         if (!source.hasNext()) {
-            throw new XMLStreamException("ファイルが壊れています。");
+            throw new XMLStreamException("file may be corrupted");
         }
         
         XMLEvent event = source.peek();

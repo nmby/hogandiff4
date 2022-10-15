@@ -109,7 +109,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
                 // 後続の catch でさらに ExcelHandlingException にラップする。
                 // ちょっと気持ち悪い気もするけど。
                 throw new NoSuchElementException(
-                        "シートが存在しません：%s - %s".formatted(bookInfo, sheetName));
+                        "no such sheet : %s - %s".formatted(bookInfo, sheetName));
             }
             
             Set<SheetType> possibleTypes = PoiUtil.possibleTypes(sheet);
@@ -145,7 +145,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "処理に失敗しました：%s - %s".formatted(bookInfo, sheetName),
+                    "processing failed : %s - %s".formatted(bookInfo, sheetName),
                     e);
         }
     }

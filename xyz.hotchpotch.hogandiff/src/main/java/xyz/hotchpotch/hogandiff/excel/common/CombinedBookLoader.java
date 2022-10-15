@@ -95,8 +95,8 @@ public class CombinedBookLoader implements BookLoader {
         }
         
         ExcelHandlingException failed = passwordIssue
-                ? new PasswordHandlingException("処理に失敗しました：%s".formatted(bookInfo))
-                : new ExcelHandlingException("処理に失敗しました：%s".formatted(bookInfo));
+                ? new PasswordHandlingException("processing failed : %s".formatted(bookInfo))
+                : new ExcelHandlingException("processing failed : %s".formatted(bookInfo));
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }
