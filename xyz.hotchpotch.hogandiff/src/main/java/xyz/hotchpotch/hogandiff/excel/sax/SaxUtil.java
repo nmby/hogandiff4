@@ -351,7 +351,7 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの読み込みに失敗しました：%s".formatted(bookInfo), e);
+                    "failed to load the book : %s".formatted(bookInfo), e);
         }
     }
     
@@ -385,7 +385,7 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "Excelブックの読み込みに失敗しました：%s".formatted(bookInfo), e);
+                    "failed to load the book : %s".formatted(bookInfo), e);
         }
     }
     
