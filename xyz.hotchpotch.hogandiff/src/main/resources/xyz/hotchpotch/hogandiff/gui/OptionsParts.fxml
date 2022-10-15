@@ -24,7 +24,7 @@
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.compareOptions" GridPane.rowSpan="3" />
+				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.compareOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3" />
 				<CheckBox fx:id="considerRowGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.compareOptions.considerRowGaps" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
@@ -60,7 +60,7 @@
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.reportOptions" GridPane.rowSpan="2" />
+				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.reportOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
 				<CheckBox fx:id="showPaintedSheetsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.reportOptions.showPaintedSheets" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
@@ -86,7 +86,7 @@
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.executionOptions" GridPane.rowSpan="2" />
+				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelSettingsTitle" text="%fx.OptionsParts.executionOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
 				<CheckBox fx:id="exitWhenFinishedCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.OptionsParts.executionOptions.exitWhenFinished" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
