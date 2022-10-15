@@ -22,13 +22,13 @@
 .labelTargetTitle {
 	-fx-font-size: 18.0px;
 	-fx-text-fill: white;
-	-fx-pref-width: 30.0px;
+	-fx-pref-width: 28.0px;
 	-fx-alignment: center;
 	-fx-background-color: rgb(33.0, 115.0, 70.0);
 }
 
 .labelTargetItem {
-	-fx-pref-width: 75.0px;
+	-fx-pref-width: 77.0px;
 	-fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
