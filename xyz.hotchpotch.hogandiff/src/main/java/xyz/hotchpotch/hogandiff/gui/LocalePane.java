@@ -5,8 +5,13 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -43,9 +48,33 @@ public class LocalePane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        //
-        
         disableProperty().bind(parent.isRunning);
+        
+        EventHandler<ActionEvent> handler = event -> {
+            Locale newLocale;
+            if (localeJaRadioButton.isSelected()) {
+                newLocale = Locale.JAPANESE;
+            } else if (localeEnRadioButton.isSelected()) {
+                newLocale = Locale.ENGLISH;
+            } else {
+                throw new AssertionError();
+            }
+            
+            if (AppMain.appResource.storeLocale(newLocale)) {
+                new Alert(
+                        AlertType.INFORMATION,
+                        "%s%n%n%s".formatted(
+                                rb.getString("gui.LocalePane.010"),
+                                rb.getString("gui.LocalePane.011")),
+                        ButtonType.OK)
+                                .showAndWait();
+            } else {
+                parent.hasSettingsChanged.set(true);
+            }
+        };
+        
+        localeJaRadioButton.setOnAction(handler);
+        localeEnRadioButton.setOnAction(handler);
     }
     
     @Override
