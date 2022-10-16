@@ -29,7 +29,7 @@ public class AppResource {
     static {
         String osName = System.getProperty("os.name").toLowerCase();
         APP_PROP_PATH = osName.startsWith("mac")
-                ? Path.of(System.getProperty("user.home"), "xyz.hotchpotch.hogandiff", "hogandiff.properties")
+                ? Path.of(System.getProperty("user.home"), "xyz.hotchpotch.hogandiff.properties")
                 : Path.of("hogandiff.properties");
     }
     
