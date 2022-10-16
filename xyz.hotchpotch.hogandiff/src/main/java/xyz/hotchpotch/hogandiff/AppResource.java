@@ -133,4 +133,14 @@ public class AppResource {
             return false;
         }
     }
+    
+    public boolean storeLocale(Locale locale) {
+        Objects.requireNonNull(locale, "locale");
+        
+        Settings.Key<Locale> key = SettingKeys.APP_LOCALE;
+        
+        properties.setProperty(key.name(), key.encoder().apply(locale));
+        
+        return storeProperties();
+    }
 }

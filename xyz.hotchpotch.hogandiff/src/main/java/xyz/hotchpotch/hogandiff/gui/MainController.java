@@ -39,6 +39,9 @@ public class MainController {
     private MenuPane menuPane;
     
     @FXML
+    private LocalePane localePane;
+    
+    @FXML
     private TargetsPane targetsPane;
     
     @FXML
@@ -66,6 +69,7 @@ public class MainController {
     public void initialize() {
         children = List.of(
                 menuPane,
+                localePane,
                 targetsPane,
                 settingsPane,
                 reportingPane,
