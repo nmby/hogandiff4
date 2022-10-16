@@ -90,9 +90,9 @@ public class LocalePane extends HBox implements ChildController {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s%n%n%s".formatted(
-                                rb.getString("gui.LocalePane.010"),
                                 rb.getString("gui.LocalePane.011"),
-                                rb.getString("gui.LocalePane.012")),
+                                rb.getString("gui.LocalePane.012"),
+                                rb.getString("gui.LocalePane.013")),
                         ButtonType.OK)
                                 .showAndWait();
             } else {
