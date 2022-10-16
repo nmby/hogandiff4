@@ -1,13 +1,17 @@
 
 .root {
     -fx-font-size: 12.0px;
-	-fx-padding: 10.0px;
+	-fx-padding: 0.0px 10.0px 10.0px 10.0px;
 	-fx-background-color: white;
 }
 
 #menuPane {
 	-fx-spacing: 15.0px;
-	-fx-padding: 3.0px 0.0px 10.0px 0.0px;
+	-fx-padding: 13.0px 0.0px 10.0px 0.0px;
+}
+
+#localePane {
+    -fx-padding: 0.0px;
 }
 
 #targetsPane {

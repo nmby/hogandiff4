@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,7 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -27,15 +29,45 @@ public class LocalePane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
+    private static enum LocaleItem {
+        
+        // [static members] ----------------------------------------------------
+        
+        JA("日本語", Locale.JAPANESE),
+        EN("English", Locale.ENGLISH);
+        
+        public static LocaleItem of(Locale locale) {
+            Objects.requireNonNull(locale, "locale");
+            
+            return Stream.of(values())
+                    .filter(item -> item.locale == locale)
+                    .findFirst()
+                    .orElseThrow();
+        }
+        
+        // [instance members] --------------------------------------------------
+        
+        private final String name;
+        private final Locale locale;
+        
+        LocaleItem(String name, Locale locale) {
+            this.name = name;
+            this.locale = locale;
+        }
+        
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+    
     // [instance members] ******************************************************
     
     private final ResourceBundle rb = AppMain.appResource.get();
+    private EventHandler<ActionEvent> handler;
     
     @FXML
-    private RadioButton localeJaRadioButton;
-    
-    @FXML
-    private RadioButton localeEnRadioButton;
+    private ChoiceBox<LocaleItem> localeChoiceBox;
     
     public LocalePane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LocalePane.fxml"), rb);
@@ -50,17 +82,10 @@ public class LocalePane extends HBox implements ChildController {
         
         disableProperty().bind(parent.isRunning);
         
-        EventHandler<ActionEvent> handler = event -> {
-            Locale newLocale;
-            if (localeJaRadioButton.isSelected()) {
-                newLocale = Locale.JAPANESE;
-            } else if (localeEnRadioButton.isSelected()) {
-                newLocale = Locale.ENGLISH;
-            } else {
-                throw new AssertionError();
-            }
-            
-            if (AppMain.appResource.storeLocale(newLocale)) {
+        localeChoiceBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
+        
+        handler = event -> {
+            if (AppMain.appResource.storeLocale(localeChoiceBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s".formatted(
@@ -72,40 +97,29 @@ public class LocalePane extends HBox implements ChildController {
                 parent.hasSettingsChanged.set(true);
             }
         };
-        
-        localeJaRadioButton.setOnAction(handler);
-        localeEnRadioButton.setOnAction(handler);
+        localeChoiceBox.setOnAction(handler);
     }
     
     @Override
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
+        localeChoiceBox.setOnAction(null);
+        
         if (settings.containsKey(SettingKeys.APP_LOCALE)) {
             Locale locale = settings.get(SettingKeys.APP_LOCALE);
-            if (locale == Locale.JAPANESE) {
-                localeJaRadioButton.setSelected(true);
-            } else if (locale == Locale.ENGLISH) {
-                localeEnRadioButton.setSelected(true);
-            } else {
-                throw new AssertionError("unsupported locale : " + locale);
-            }
-            
+            localeChoiceBox.setValue(LocaleItem.of(locale));
         } else {
-            localeJaRadioButton.setSelected(true);
+            localeChoiceBox.setValue(LocaleItem.of(Locale.JAPANESE));
         }
+        
+        localeChoiceBox.setOnAction(handler);
     }
     
     @Override
     public void gatherSettings(Settings.Builder builder) {
         Objects.requireNonNull(builder, "builder");
         
-        if (localeJaRadioButton.isSelected()) {
-            builder.set(SettingKeys.APP_LOCALE, Locale.JAPANESE);
-        } else if (localeEnRadioButton.isSelected()) {
-            builder.set(SettingKeys.APP_LOCALE, Locale.ENGLISH);
-        } else {
-            throw new AssertionError("none is selected");
-        }
+        builder.set(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale);
     }
 }

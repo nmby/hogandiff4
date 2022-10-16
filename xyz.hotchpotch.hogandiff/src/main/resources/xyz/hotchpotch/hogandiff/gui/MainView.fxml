@@ -1,50 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="1.7976931348623157E308"
-	maxWidth="1.7976931348623157E308" prefHeight="430.0" prefWidth="500.0"
-	styleClass="root" stylesheets="@application.css"
-	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="xyz.hotchpotch.hogandiff.gui.MainController">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="430.0" prefWidth="500.0" styleClass="root" stylesheets="@application.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.hotchpotch.hogandiff.gui.MainController">
 	<children>
-		<GridPane>
+		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
 			<columnConstraints>
-				<ColumnConstraints fillWidth="false"
-					halignment="LEFT" hgrow="NEVER" maxWidth="-Infinity"
-					minWidth="-Infinity" />
-				<ColumnConstraints hgrow="ALWAYS"
-					maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-				<ColumnConstraints fillWidth="false"
-					halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity"
-					minWidth="-Infinity" />
+				<ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+				<ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints fillHeight="false"
-					maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+				<RowConstraints fillHeight="false" maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<xyz.hotchpotch.hogandiff.gui.MenuPane
-					fx:id="menuPane" />
-				<xyz.hotchpotch.hogandiff.gui.LocalePane
-					fx:id="localePane" GridPane.columnIndex="2" />
+				<xyz.hotchpotch.hogandiff.gui.MenuPane fx:id="menuPane" />
+				<xyz.hotchpotch.hogandiff.gui.LocalePane fx:id="localePane" GridPane.columnIndex="2" />
 			</children>
 		</GridPane>
-		<xyz.hotchpotch.hogandiff.gui.TargetsPane
-			fx:id="targetsPane" VBox.vgrow="NEVER" />
-		<xyz.hotchpotch.hogandiff.gui.SettingsPane
-			fx:id="settingsPane" maxHeight="-Infinity"
-			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			minWidth="-Infinity" />
-		<xyz.hotchpotch.hogandiff.gui.ReportingPane
-			fx:id="reportingPane" maxHeight="1.7976931348623157E308"
-			maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0"
-			VBox.vgrow="ALWAYS" />
-		<xyz.hotchpotch.hogandiff.gui.UtilPane
-			fx:id="utilPane" />
+		<xyz.hotchpotch.hogandiff.gui.TargetsPane fx:id="targetsPane" VBox.vgrow="NEVER" />
+		<xyz.hotchpotch.hogandiff.gui.SettingsPane fx:id="settingsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />
+		<xyz.hotchpotch.hogandiff.gui.ReportingPane fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" VBox.vgrow="ALWAYS" />
+		<xyz.hotchpotch.hogandiff.gui.UtilPane fx:id="utilPane" />
 	</children>
 </VBox>
