@@ -35,7 +35,7 @@
 						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
 				</CheckBox>
-				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
 					<GridPane.margin>
 						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>

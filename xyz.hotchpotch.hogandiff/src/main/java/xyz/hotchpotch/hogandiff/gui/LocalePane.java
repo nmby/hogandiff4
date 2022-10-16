@@ -34,7 +34,8 @@ public class LocalePane extends HBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         JA("日本語", Locale.JAPANESE),
-        EN("English", Locale.ENGLISH);
+        EN("English", Locale.ENGLISH),
+        ZH("簡体中文", Locale.SIMPLIFIED_CHINESE);
         
         public static LocaleItem of(Locale locale) {
             Objects.requireNonNull(locale, "locale");
@@ -88,9 +89,10 @@ public class LocalePane extends HBox implements ChildController {
             if (AppMain.appResource.storeLocale(localeChoiceBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
-                        "%s%n%n%s".formatted(
+                        "%s%n%n%s%n%n%s".formatted(
                                 rb.getString("gui.LocalePane.010"),
-                                rb.getString("gui.LocalePane.011")),
+                                rb.getString("gui.LocalePane.011"),
+                                rb.getString("gui.LocalePane.012")),
                         ButtonType.OK)
                                 .showAndWait();
             } else {
