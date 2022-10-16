@@ -25,7 +25,13 @@ public class AppResource {
     // static members **********************************************************
     
     /** プロパティファイルの相対パス */
-    private static final Path APP_PROP_PATH = Path.of("hogandiff.properties");
+    private static final Path APP_PROP_PATH;
+    static {
+        String osName = System.getProperty("os.name").toLowerCase();
+        APP_PROP_PATH = osName.startsWith("mac")
+                ? Path.of(System.getProperty("user.home"), "xyz.hotchpotch.hogandiff", "hogandiff.properties")
+                : Path.of("hogandiff.properties");
+    }
     
     /**
      * プロパティファイルを読み込み、プロパティセットを返します。<br>
