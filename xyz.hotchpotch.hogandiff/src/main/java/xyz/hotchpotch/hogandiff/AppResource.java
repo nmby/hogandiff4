@@ -52,7 +52,24 @@ public class AppResource {
         return new Properties();
     }
     
-    public static AppResource from(String[] args) {
+    public static AppResource fromProperties() {
+        Properties properties = loadProperties();
+        Settings settings;
+        
+        try {
+            // プロパティファイルから設定を抽出する。
+            Settings.Builder builder = Settings.builder(properties, SettingKeys.storableKeys);
+            settings = builder.build();
+            
+        } catch (RuntimeException e) {
+            // 何らかの実行時例外が発生した場合は空の設定を返すことにする。
+            settings = Settings.builder().build();
+        }
+        
+        return new AppResource(properties, settings);
+    }
+    
+    public static AppResource fromPropertiesAndArgs(String[] args) {
         Objects.requireNonNull(args, "args");
         
         Properties properties = loadProperties();

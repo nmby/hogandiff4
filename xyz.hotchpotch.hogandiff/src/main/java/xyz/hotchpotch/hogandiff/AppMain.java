@@ -28,7 +28,7 @@ public class AppMain extends Application {
     /** このアプリケーションのWebサイトのURL */
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
-    public static AppResource appResource;
+    public static AppResource appResource = AppResource.fromProperties();
     
     /**
      * このアプリケーションのエントリポイントです。<br>
@@ -36,7 +36,7 @@ public class AppMain extends Application {
      * @param args アプリケーション実行時引数
      */
     public static void main(String[] args) {
-        appResource = AppResource.from(args);
+        appResource = AppResource.fromPropertiesAndArgs(args);
         
         launch(args);
     }
