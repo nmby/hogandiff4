@@ -228,7 +228,7 @@ public class Settings {
                 .collect(Collectors.joining(", "));
         
         if (0 < duplicatedNames.length()) {
-            throw exceptionSupplier.apply("次の名前が重複定義されています：" + duplicatedNames);
+            throw exceptionSupplier.apply("duplicated names : " + duplicatedNames);
         }
     }
     
@@ -260,7 +260,7 @@ public class Settings {
         if (map.containsKey(key)) {
             return (T) map.get(key);
         } else {
-            throw new NoSuchElementException("設定されていません：" + key.name());
+            throw new NoSuchElementException("no such key : " + key.name());
         }
     }
     

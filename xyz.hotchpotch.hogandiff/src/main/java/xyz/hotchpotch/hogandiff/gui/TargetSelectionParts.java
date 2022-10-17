@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -29,6 +30,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
@@ -49,6 +51,8 @@ public class TargetSelectionParts extends GridPane {
     private static Path prevSelectedBookPath;
     
     // [instance members] ******************************************************
+    
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     @FXML
     private GridPane basePane;
@@ -78,7 +82,7 @@ public class TargetSelectionParts extends GridPane {
     private TargetSelectionParts opposite;
     
     public TargetSelectionParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -190,7 +194,7 @@ public class TargetSelectionParts extends GridPane {
     
     private void chooseBook(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("比較対象ブックの選択");
+        chooser.setTitle(rb.getString("gui.TargetSelectionParts.030"));
         
         if (bookInfo.getValue() != null) {
             File book = bookInfo.getValue().bookPath().toFile();
@@ -202,7 +206,8 @@ public class TargetSelectionParts extends GridPane {
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                "Excel ブック", "*.xls", "*.xlsx", "*.xlsm"));
+                rb.getString("gui.TargetSelectionParts.040"),
+                "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
         
@@ -250,7 +255,7 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
-                    "ファイルを読み込めません：%n%s".formatted(newBookPath),
+                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.010"), newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -266,7 +271,7 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "シートが見つかりません：%n%s".formatted(sheetName),
+                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.020"), sheetName),
                     ButtonType.OK)
                             .showAndWait();
             return false;

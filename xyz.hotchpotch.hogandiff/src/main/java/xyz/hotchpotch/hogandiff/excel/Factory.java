@@ -80,7 +80,8 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -109,7 +110,6 @@ public class Factory {
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
-        boolean speedFirst = settings.get(SettingKeys.SPEED_FIRST);
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
@@ -124,17 +124,21 @@ public class Factory {
         
         switch (bookInfo.bookType()) {
         case XLS:
-            return CombinedSheetLoader.of(List.of(
-                    () -> HSSFSheetLoaderWithPoiEventApi.of(
-                            useCachedValue,
-                            saveMemory),
-                    () -> SheetLoaderWithPoiUserApi.of(
+            return useCachedValue
+                    ? CombinedSheetLoader.of(List.of(
+                            () -> HSSFSheetLoaderWithPoiEventApi.of(
+                                    useCachedValue,
+                                    saveMemory),
+                            () -> SheetLoaderWithPoiUserApi.of(
+                                    saveMemory,
+                                    converter)))
+                    : SheetLoaderWithPoiUserApi.of(
                             saveMemory,
-                            converter)));
+                            converter);
         
         case XLSX:
         case XLSM:
-            return speedFirst
+            return useCachedValue
                     ? CombinedSheetLoader.of(List.of(
                             () -> XSSFSheetLoaderWithSax.of(
                                     useCachedValue,
@@ -149,7 +153,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
@@ -256,7 +260,7 @@ public class Factory {
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException(".xlsb 形式はサポート対象外です。");
+            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
         
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());

@@ -101,7 +101,7 @@ public class PaintRowsReader extends BufferingReader {
             return;
         }
         if (!source.hasNext()) {
-            throw new XMLStreamException("ファイルが壊れています。");
+            throw new XMLStreamException("faile may be corrupted");
         }
         
         XMLEvent event = source.peek();

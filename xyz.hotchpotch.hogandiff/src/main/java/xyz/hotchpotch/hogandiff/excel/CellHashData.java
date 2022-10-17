@@ -2,6 +2,8 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.Objects;
 
+import xyz.hotchpotch.hogandiff.AppMain;
+
 /**
  * セルデータ（セル内容、セルコメント）をハッシュ値で持つ {@link CellData} の実装です。<br>
  *
@@ -15,6 +17,15 @@ import java.util.Objects;
         implements CellData {
     
     // [static members] ********************************************************
+    
+    // パフォーマンス劣化を防ぐためにクラス変数に予め文字列を読み込んでおく
+    static final String msg010;
+    static {
+        // JVM実装により万一リソースバンドル読み込み前にこのクラスロードされた場合は
+        // 日本語の固定文言を設定する。
+        String tmp = AppMain.appResource.get().getString("excel.CellHashData.010");
+        msg010 = (tmp != null) ? tmp : "（省メモリモードではセル内容を表示できません）";
+    }
     
     // [instance members] ******************************************************
     
@@ -78,6 +89,6 @@ import java.util.Objects;
     
     @Override
     public String toString() {
-        return "%s: （省メモリモードではセル内容を表示できません）".formatted(address());
+        return "%s: %s".formatted(address(), msg010);
     }
 }

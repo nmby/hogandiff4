@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Properties;
+import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +22,8 @@ public class SettingsPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
+    private final ResourceBundle rb = AppMain.appResource.get();
+    
     @FXML
     private OptionsParts optionsParts;
     
@@ -32,7 +34,7 @@ public class SettingsPane extends HBox implements ChildController {
     private Button executeButton;
     
     public SettingsPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -50,9 +52,9 @@ public class SettingsPane extends HBox implements ChildController {
         // 「設定を保存」ボタンのイベントハンドラを登録する。
         saveSettingsButton.setOnAction(event -> {
             Settings settings = parent.gatherSettings();
-            Properties properties = settings.toProperties();
-            AppMain.storeProperties(properties);
-            parent.hasSettingsChanged.set(false);
+            if (AppMain.appResource.storeSettings(settings)) {
+                parent.hasSettingsChanged.set(false);
+            }
         });
         
         // 各種設定状況に応じて「実行」ボタンの有効／無効を切り替える。

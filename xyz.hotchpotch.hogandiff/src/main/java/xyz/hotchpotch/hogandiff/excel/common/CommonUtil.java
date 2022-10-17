@@ -38,7 +38,7 @@ public class CommonUtil {
         BookHandler bookHandler = clazz.getAnnotation(BookHandler.class);
         if (bookHandler == null) {
             throw new IllegalArgumentException(
-                    "%s クラスに %s アノテーションが付与されていません。".formatted(
+                    "the class [%s] does not have the annotation [%s]".formatted(
                             clazz.getSimpleName(),
                             BookHandler.class.getSimpleName()));
         }
@@ -65,7 +65,7 @@ public class CommonUtil {
             BookType bookType) {
         
         if (!isSupportedBookType(clazz, bookType)) {
-            throw new IllegalArgumentException("サポートされない形式です：" + bookType);
+            throw new IllegalArgumentException("unsupported book type : " + bookType);
         }
     }
     
@@ -91,7 +91,7 @@ public class CommonUtil {
         SheetHandler sheetHandler = clazz.getAnnotation(SheetHandler.class);
         if (sheetHandler == null) {
             throw new IllegalArgumentException(
-                    "%s クラスに %s アノテーションが付与されていません。".formatted(
+                    "the class [%s] does not have the annotation [%s]".formatted(
                             clazz.getSimpleName(),
                             SheetHandler.class.getSimpleName()));
         }
@@ -118,7 +118,7 @@ public class CommonUtil {
             Set<SheetType> possibleTypes) {
         
         if (!isSupportedSheetType(clazz, possibleTypes)) {
-            throw new IllegalArgumentException("サポートされない種類です："
+            throw new IllegalArgumentException("unsupported sheet type : "
                     + possibleTypes.stream()
                             .map(SheetType::description)
                             .collect(Collectors.joining(", ")));

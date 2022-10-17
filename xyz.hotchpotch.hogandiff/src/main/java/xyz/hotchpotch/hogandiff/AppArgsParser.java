@@ -43,8 +43,6 @@ public class AppArgsParser {
             + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
             + "    --save-memory=[true|false]           : default value is "
             + SettingKeys.SAVE_MEMORY.defaultValueSupplier().get() + BR
-            + "    --speed-first=[true|false]           : default value is "
-            + SettingKeys.SPEED_FIRST.defaultValueSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
@@ -54,21 +52,7 @@ public class AppArgsParser {
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
-            "--save-memory", SettingKeys.SAVE_MEMORY,
-            "--speed-first", SettingKeys.SPEED_FIRST);
-    
-    /**
-     * {@link #parseArgs(List)} と同じ。<br>
-     * 詳しくは {@link #parseArgs(List)} の説明を参照してください。<br>
-     * 
-     * @param args アプリケーション実行時引数
-     * @return アプリケーション設定。解析できない場合は空の {@link Optional}
-     * @throws NullPointerException {@code args} が {@code null} の場合
-     */
-    public static Optional<Settings> parseArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
-        return parseArgs(List.of(args));
-    }
+            "--save-memory", SettingKeys.SAVE_MEMORY);
     
     /**
      * アプリケーション実行時引数を解析してアプリケーション設定に変換します。<br>
@@ -79,9 +63,10 @@ public class AppArgsParser {
      * @return アプリケーション設定。解析できない場合は空の {@link Optional}
      * @throws NullPointerException {@code args} が {@code null} の場合
      */
-    public static Optional<Settings> parseArgs(List<String> args) {
+    public static Optional<Settings> parseArgs(String[] args) {
         Objects.requireNonNull(args, "args");
-        if (args.size() < 2) {
+        
+        if (args.length < 2) {
             return Optional.empty();
         }
         
@@ -89,12 +74,16 @@ public class AppArgsParser {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
                     .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.of(Path.of(args.get(0)), null))
-                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.of(Path.of(args.get(1)), null));
+                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.of(Path.of(args[0]), null))
+                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.of(Path.of(args[1]), null));
+            
+            Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
+            remainingParams.remove();
+            remainingParams.remove();
+            
+            Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
             
             // オプションのパース
-            Deque<String> remainingParams = new ArrayDeque<>(args.subList(2, args.size()));
-            Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
             while (!remainingParams.isEmpty() && !remainingOptions.isEmpty()) {
                 String[] keyValue = remainingParams.removeFirst().split("=", 2);
                 if (!remainingOptions.containsKey(keyValue[0])) {

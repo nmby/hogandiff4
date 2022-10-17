@@ -3,9 +3,11 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -24,6 +26,7 @@ public record SResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
@@ -175,7 +178,7 @@ public record SResult(
      */
     public String getDiffSummary() {
         if (!hasDiff()) {
-            return "(差分なし)";
+            return rb.getString("excel.SResult.010");
         }
         
         int rows = redundantRows.a().length + redundantRows.b().length;
@@ -184,19 +187,19 @@ public record SResult(
         
         StringBuilder str = new StringBuilder();
         if (0 < rows) {
-            str.append("余剰行").append(rows);
+            str.append(rb.getString("excel.SResult.020").formatted(rows));
         }
         if (0 < cols) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append("余剰列").append(cols);
+            str.append(rb.getString("excel.SResult.030").formatted(cols));
         }
         if (0 < cells) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append("差分セル").append(cells);
+            str.append(rb.getString("excel.SResult.040").formatted(cells));
         }
         
         return str.toString();
@@ -209,7 +212,7 @@ public record SResult(
      */
     public String getDiffDetail() {
         if (!hasDiff()) {
-            return "(差分なし)";
+            return rb.getString("excel.SResult.010");
         }
         
         StringBuilder str = new StringBuilder();
@@ -218,9 +221,11 @@ public record SResult(
             for (Side side : Side.values()) {
                 int[] rows = redundantRows.get(side);
                 if (0 < rows.length) {
-                    str.append("シート%s上の余剰行 : ".formatted(side)).append(BR);
+                    str.append(rb.getString("excel.SResult.050").formatted(side)).append(BR);
                     for (int row : rows) {
-                        str.append("    行").append(row + 1).append(BR);
+                        str.append("    ")
+                                .append(rb.getString("excel.SResult.060").formatted(row + 1))
+                                .append(BR);
                     }
                 }
             }
@@ -230,20 +235,22 @@ public record SResult(
             for (Side side : Side.values()) {
                 int[] cols = redundantColumns.get(side);
                 if (0 < cols.length) {
-                    str.append("シート%s上の余剰列 : ".formatted(side)).append(BR);
+                    str.append(rb.getString("excel.SResult.070").formatted(side)).append(BR);
                     for (int col : cols) {
-                        str.append("    ").append(CellsUtil.columnIdxToStr(col)).append("列").append(BR);
+                        str.append("    ")
+                                .append(rb.getString("excel.SResult.080").formatted(CellsUtil.columnIdxToStr(col)))
+                                .append(BR);
                     }
                 }
             }
             str.append(BR);
         }
         if (!diffCells.isEmpty()) {
-            str.append("差分セル : ");
+            str.append(rb.getString("excel.SResult.090"));
             diffCells.forEach(pair -> {
                 str.append(BR);
-                str.append("    ").append(pair.a()).append(BR);
-                str.append("    ").append(pair.b()).append(BR);
+                str.append("    [A] ").append(pair.a()).append(BR);
+                str.append("    [B] ").append(pair.b()).append(BR);
             });
         }
         

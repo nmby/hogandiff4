@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root fx:id="basePane" styleClass="targetPane" type="GridPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="basePane" styleClass="targetPane" type="GridPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
       <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
@@ -22,8 +22,8 @@
    </rowConstraints>
    <children>
       <Label fx:id="titleLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="20.0" styleClass="labelTargetTitle" text="X" GridPane.hgrow="NEVER" GridPane.rowSpan="2" />
-      <Label alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelTargetItem" text="ブックパス：" textAlignment="RIGHT" GridPane.columnIndex="1" />
-      <Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelTargetItem" text="シート名：" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelTargetItem" text="%fx.TargetSelectionParts.bookPath" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" />
+      <Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelTargetItem" text="%fx.TargetSelectionParts.sheetName" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TextField fx:id="bookPathTextField" editable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
          <GridPane.margin>
             <Insets bottom="1.0" top="3.0" />

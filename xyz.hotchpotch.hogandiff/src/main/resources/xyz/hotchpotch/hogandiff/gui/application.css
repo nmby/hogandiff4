@@ -1,13 +1,17 @@
 
 .root {
     -fx-font-size: 12.0px;
-	-fx-padding: 10.0px;
+	-fx-padding: 0.0px 10.0px 10.0px 10.0px;
 	-fx-background-color: white;
 }
 
 #menuPane {
 	-fx-spacing: 15.0px;
-	-fx-padding: 3.0px 0.0px 10.0px 0.0px;
+	-fx-padding: 13.0px 0.0px 10.0px 0.0px;
+}
+
+#localePane {
+    -fx-padding: 0.0px;
 }
 
 #targetsPane {
@@ -22,13 +26,13 @@
 .labelTargetTitle {
 	-fx-font-size: 18.0px;
 	-fx-text-fill: white;
-	-fx-pref-width: 30.0px;
+	-fx-pref-width: 28.0px;
 	-fx-alignment: center;
 	-fx-background-color: rgb(33.0, 115.0, 70.0);
 }
 
 .labelTargetItem {
-	-fx-pref-width: 75.0px;
+	-fx-pref-width: 77.0px;
 	-fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
@@ -50,7 +54,7 @@
 
 #saveSettingsButton {
 	-fx-pref-width: 100.0px;
-	-fx-pref-height: 55.0px;
+	-fx-pref-height: 40.0px;
 }
 
 .paneExecute {
