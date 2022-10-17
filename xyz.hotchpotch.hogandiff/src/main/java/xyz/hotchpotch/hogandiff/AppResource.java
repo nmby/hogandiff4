@@ -69,39 +69,6 @@ public class AppResource {
         return new AppResource(properties, settings);
     }
     
-    public static AppResource fromPropertiesAndArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
-        
-        Properties properties = loadProperties();
-        Settings settings;
-        
-        try {
-            // 1. プロパティファイルから設定を抽出する。
-            Settings.Builder builder = Settings.builder(properties, SettingKeys.storableKeys);
-            
-            // 2. アプリケーション実行時引数から設定を抽出する。
-            Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
-            if (0 < args.length && fromArgs.isEmpty()) {
-                System.err.println(AppArgsParser.USAGE);
-            }
-            
-            // 3. アプリケーション実行時引数から設定を抽出できた場合は、
-            //    その内容でプロパティファイルからの内容を上書きする。
-            //    つまり、アプリケーション実行時引数で指定された内容を優先させる。
-            if (fromArgs.isPresent()) {
-                builder.setAll(fromArgs.get());
-            }
-            
-            settings = builder.build();
-            
-        } catch (RuntimeException e) {
-            // 何らかの実行時例外が発生した場合は空の設定を返すことにする。
-            settings = Settings.builder().build();
-        }
-        
-        return new AppResource(properties, settings);
-    }
-    
     // instance members ********************************************************
     
     private Properties properties;
@@ -165,5 +132,24 @@ public class AppResource {
         properties.setProperty(key.name(), key.encoder().apply(locale));
         
         return storeProperties();
+    }
+    
+    public void reflectArgs(String[] args) {
+        Objects.requireNonNull(args, "args");
+        
+        // アプリケーション実行時引数から設定を抽出する。
+        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
+        
+        // アプリケーション実行時引数から設定を抽出できた場合は、
+        // その内容で既存の内容を上書きする。
+        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
+        if (fromArgs.isPresent()) {
+            Settings.Builder builder = Settings.builder(settings);
+            builder.setAll(fromArgs.get());
+            this.settings = builder.build();
+            
+        } else if (0 < args.length) {
+            System.err.println(AppArgsParser.USAGE);
+        }
     }
 }

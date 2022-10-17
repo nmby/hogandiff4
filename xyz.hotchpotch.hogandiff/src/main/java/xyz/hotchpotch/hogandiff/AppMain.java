@@ -36,7 +36,7 @@ public class AppMain extends Application {
      * @param args アプリケーション実行時引数
      */
     public static void main(String[] args) {
-        appResource = AppResource.fromPropertiesAndArgs(args);
+        appResource.reflectArgs(args);
         
         launch(args);
     }
