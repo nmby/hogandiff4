@@ -82,6 +82,15 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     .mapToObj(n -> IntPair.of(n, n))
                     .toList();
         }
+        if (listA.isEmpty() && listB.isEmpty()) {
+            return List.of();
+        }
+        if (listA.isEmpty()) {
+            return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
+        }
+        if (listB.isEmpty()) {
+            return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
+        }
         
         List<IntPair> result = new ArrayList<>();
         

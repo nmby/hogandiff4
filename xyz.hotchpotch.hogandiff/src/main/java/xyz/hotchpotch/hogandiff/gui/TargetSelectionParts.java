@@ -81,6 +81,11 @@ public class TargetSelectionParts extends GridPane {
     private ReadOnlyProperty<AppMenu> menu;
     private TargetSelectionParts opposite;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public TargetSelectionParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"), rb);
         loader.setRoot(this);

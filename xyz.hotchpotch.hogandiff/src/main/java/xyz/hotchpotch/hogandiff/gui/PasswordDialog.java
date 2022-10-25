@@ -10,6 +10,11 @@ import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 
+/**
+ * ユーザーにパスワード入力を求めるダイアログボックスです。<br>
+ * 
+ * @author nmby
+ */
 public class PasswordDialog extends Dialog<String> {
     
     // static members **********************************************************
@@ -18,6 +23,12 @@ public class PasswordDialog extends Dialog<String> {
     
     private final ResourceBundle rb = AppMain.appResource.get();
     
+    /**
+     * 新しいダイアログを構成します。<br>
+     * 
+     * @param bookInfo 開こうとしているExcelブック
+     * @throws IOException 子要素の構成に失敗した場合
+     */
     public PasswordDialog(BookInfo bookInfo) throws IOException {
         Objects.requireNonNull(bookInfo, "bookInfo");
         

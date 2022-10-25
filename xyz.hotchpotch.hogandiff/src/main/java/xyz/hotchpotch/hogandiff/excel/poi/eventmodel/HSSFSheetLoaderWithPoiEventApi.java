@@ -441,8 +441,6 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param extractContents セル内容物を抽出する場合は {@code true}
-     * @param extractComments セルコメントを抽出する場合は {@code true}
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}

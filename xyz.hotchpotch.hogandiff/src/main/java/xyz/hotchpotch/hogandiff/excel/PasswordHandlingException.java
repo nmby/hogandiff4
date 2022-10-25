@@ -1,5 +1,10 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+/**
+ * Excelブック／シートのパスワードにまつわる例外を著します。<br>
+ * 
+ * @author nmby
+ */
 public class PasswordHandlingException extends ExcelHandlingException {
     
     // [static members] ********************************************************

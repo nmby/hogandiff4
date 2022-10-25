@@ -28,6 +28,7 @@ public class AppMain extends Application {
     /** このアプリケーションのWebサイトのURL */
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
+    /** このアプリケーションで利用するリソース */
     public static AppResource appResource = AppResource.fromProperties();
     
     /**

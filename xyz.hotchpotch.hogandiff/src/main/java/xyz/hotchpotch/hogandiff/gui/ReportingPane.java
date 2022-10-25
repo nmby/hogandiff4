@@ -31,6 +31,11 @@ public class ReportingPane extends VBox implements ChildController {
     @FXML
     private TextArea reportTextArea;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public ReportingPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportingPane.fxml"), rb);
         loader.setRoot(this);

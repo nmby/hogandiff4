@@ -26,6 +26,11 @@ public class Settings {
      * 設定項目を表す不変クラスです。<br>
      *
      * @param <T> 設定値の型
+     * @param name キーの名前
+     * @param defaultValueSupplier デフォルト値のサプライヤ
+     * @param encoder 設定値を文字列に変換するエンコーダ
+     * @param decoder 文字列を設定値に変換するデコーダ
+     * @param storable 設定値をプロパティファイルに保存する場合は {@code true}
      * @author nmby
      */
     // java16で正式導入されたRecordを使ってみる。
