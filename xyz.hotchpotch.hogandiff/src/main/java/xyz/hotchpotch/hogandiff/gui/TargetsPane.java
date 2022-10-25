@@ -31,6 +31,11 @@ public class TargetsPane extends VBox implements ChildController {
     @FXML
     private TargetSelectionParts targetSelectionParts2;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), rb);
         loader.setRoot(this);

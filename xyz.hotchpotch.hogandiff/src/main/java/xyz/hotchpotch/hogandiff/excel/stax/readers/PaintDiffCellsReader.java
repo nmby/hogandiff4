@@ -57,7 +57,7 @@ public class PaintDiffCellsReader extends BufferingReader {
      * 
      * @param source ソースリーダー
      * @param stylesManager スタイルマネージャ
-     * @param diffCells 差分セル
+     * @param diffCellContents 差分セル
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
      * @throws NullPointerException

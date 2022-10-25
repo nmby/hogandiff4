@@ -53,6 +53,11 @@ public class OptionsParts extends VBox implements ChildController {
     @FXML
     private CheckBox saveMemoryCheckBox;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public OptionsParts() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"), rb);
         loader.setRoot(this);

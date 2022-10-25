@@ -33,6 +33,11 @@ public class SettingsPane extends HBox implements ChildController {
     @FXML
     private Button executeButton;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public SettingsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane.fxml"), rb);
         loader.setRoot(this);

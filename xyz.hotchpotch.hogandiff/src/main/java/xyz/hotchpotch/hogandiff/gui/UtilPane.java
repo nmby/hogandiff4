@@ -52,6 +52,11 @@ public class UtilPane extends HBox implements ChildController {
     
     private Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public UtilPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("UtilPane.fxml"), rb);
         loader.setRoot(this);

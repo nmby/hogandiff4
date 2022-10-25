@@ -52,6 +52,11 @@ public class AppResource {
         return new Properties();
     }
     
+    /**
+     * このアプリケーションで利用するリソースをプロパティファイルから構成します。<br>
+     * 
+     * @return このアプリケーションで利用するリソース
+     */
     public static AppResource fromProperties() {
         Properties properties = loadProperties();
         Settings settings;
@@ -89,14 +94,31 @@ public class AppResource {
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     
+    /**
+     * 設定セットを返します。<br>
+     * 
+     * @return 設定セット
+     */
     public Settings settings() {
         return settings;
     }
     
+    /**
+     * リソースバンドルを返します。<br>
+     * 
+     * @return リソースバンドル
+     */
     public ResourceBundle get() {
         return rb;
     }
     
+    /**
+     * 設定セットの内容をプロパティファイルに保存します。<br>
+     * 
+     * @param settings 保存すべき設定セット
+     * @return 保存に成功した場合は {@code true}
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
     public boolean storeSettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
@@ -124,6 +146,13 @@ public class AppResource {
         }
     }
     
+    /**
+     * ロケールをプロパティファイルに保存します。<br>
+     * 
+     * @param locale 保存すべきロケール
+     * @return 保存に成功した場合は {@code true}
+     * @throws NullPointerException {@code locale} が {@code null} の場合
+     */
     public boolean storeLocale(Locale locale) {
         Objects.requireNonNull(locale, "locale");
         
@@ -134,6 +163,12 @@ public class AppResource {
         return storeProperties();
     }
     
+    /**
+     * このリソースにアプリケーション実行時引数の内容を反映させます。<br>
+     * 
+     * @param args アプリケーション実行時引数
+     * @throws NullPointerException {@code args} が {@code null} の場合
+     */
     public void reflectArgs(String[] args) {
         Objects.requireNonNull(args, "args");
         

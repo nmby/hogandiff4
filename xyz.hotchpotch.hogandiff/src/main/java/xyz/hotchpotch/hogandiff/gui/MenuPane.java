@@ -33,6 +33,11 @@ public class MenuPane extends HBox implements ChildController {
     @FXML
     private RadioButton compareSheetsRadioButton;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public MenuPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"), rb);
         loader.setRoot(this);

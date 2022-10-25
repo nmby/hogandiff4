@@ -70,6 +70,11 @@ public class LocalePane extends HBox implements ChildController {
     @FXML
     private ChoiceBox<LocaleItem> localeChoiceBox;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public LocalePane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LocalePane.fxml"), rb);
         loader.setRoot(this);

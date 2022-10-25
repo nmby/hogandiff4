@@ -42,6 +42,8 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
      * @param source ソースリーダー
      * @param diffCommentAddrs 差分セルコメントの位置
      * @param redundantCommentAddrs 余剰セルコメントの位置
+     * @param diffCommentColor 差分セルコメントに適用する色
+     * @param redundantCommentColor 余剰セルコメントに適用する色
      * @return 新しいリーダー
      * @throws NullPointerException
      *      {@code source}, {@code diffCommentAddrs}, {@code redundantCommentAddrs},
