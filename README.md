@@ -32,8 +32,8 @@
 
 次の環境で動作確認済みです。
 
-- Windows 10 (x64)
-- macOS Big Sur (x64)
+- Windows 11 (x64)
+- macOS Ventura (x64)
 
 方眼Diffは比較結果をテキストファイル（\*.txt）とExcelブック（\*.xls/\*.xlsx/\*.xlsm）として出力します。  
 これらのファイルを表示するためのアプリケーションがお使いのPCに必要です。
