@@ -174,7 +174,7 @@ public class AppResource {
     }
     
     /**
-     * 与えられた設定値をプロパティファイルに記録します。<br>
+     * 設定値を変更しプロパティファイルに記録します。<br>
      * 
      * @param <T> 設定値の型
      * @param key 設定キー
@@ -182,9 +182,10 @@ public class AppResource {
      * @return 保存に成功した場合は {@code true}
      * @throws NullPointerException {@code key} が {@code null} の場合
      */
-    public <T> boolean storeSetting(Key<T> key, T value) {
+    public <T> boolean changeSetting(Key<T> key, T value) {
         Objects.requireNonNull(key, "key");
         
+        settings = settings.getAltered(key, value);
         properties.setProperty(key.name(), key.encoder().apply(value));
         
         return storeProperties();

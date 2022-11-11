@@ -91,7 +91,7 @@ public class LocalePane extends HBox implements ChildController {
         localeChoiceBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
         
         handler = event -> {
-            if (AppMain.appResource.storeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
+            if (AppMain.appResource.changeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s%n%n%s".formatted(
