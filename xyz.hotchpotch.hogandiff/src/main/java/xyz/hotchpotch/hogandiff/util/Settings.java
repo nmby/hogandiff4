@@ -336,4 +336,20 @@ public class Settings {
         
         return properties;
     }
+    
+    /**
+     * この設定に変更を加えた新たな設定を返します。
+     * （このオブジェクト自体は変更されません。）<br>
+     * 
+     * @param <T> 設定値の型
+     * @param key 設定項目
+     * @param value 設定値
+     * @return 新たな設定
+     * @throws NullPointerException {@code key} が {@code null} の場合
+     */
+    public <T> Settings getAltered(Key<T> key, T value) {
+        Objects.requireNonNull(key, "key");
+        
+        return Settings.builder(this).set(key, value).build();
+    }
 }
