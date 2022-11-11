@@ -189,22 +189,4 @@ public class AppResource {
         
         return storeProperties();
     }
-    
-    /**
-     * ロケールをプロパティファイルに保存します。<br>
-     * 
-     * @param locale 保存すべきロケール
-     * @return 保存に成功した場合は {@code true}
-     * @throws NullPointerException {@code locale} が {@code null} の場合
-     */
-    @Deprecated
-    public boolean storeLocale(Locale locale) {
-        Objects.requireNonNull(locale, "locale");
-        
-        Settings.Key<Locale> key = SettingKeys.APP_LOCALE;
-        
-        properties.setProperty(key.name(), key.encoder().apply(locale));
-        
-        return storeProperties();
-    }
 }
