@@ -14,7 +14,6 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * 処理内容選択メニュー部分の画面部品です。<br>
@@ -55,27 +54,28 @@ public class MenuPane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning);
+        
+        // 2.項目ごとの各種設定
         compareBooksRadioButton.setUserData(AppMenu.COMPARE_BOOKS);
         compareSheetsRadioButton.setUserData(AppMenu.COMPARE_SHEETS);
-        
-        compareBooksOrSheets.selectedToggleProperty().addListener(
-                (target, oldValue, newValue) -> ar
-                        .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
         
         parent.menu.bind(Bindings.createObjectBinding(
                 () -> (AppMenu) compareBooksOrSheets.getSelectedToggle().getUserData(),
                 compareBooksOrSheets.selectedToggleProperty()));
         
-        disableProperty().bind(parent.isRunning);
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        if (settings.containsKey(SettingKeys.CURR_MENU)) {
-            compareBooksRadioButton.setSelected(
-                    settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
+        // 3.初期値の設定
+        if (!ar.settings().containsKey(SettingKeys.CURR_MENU)) {
+            ar.changeSetting(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS);
         }
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        compareBooksOrSheets.selectToggle(
+                menu == AppMenu.COMPARE_BOOKS ? compareBooksRadioButton : compareSheetsRadioButton);
+        
+        // 4.値変更時のイベントハンドラの設定
+        compareBooksOrSheets.selectedToggleProperty().addListener(
+                (target, oldValue, newValue) -> ar
+                        .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
     }
 }

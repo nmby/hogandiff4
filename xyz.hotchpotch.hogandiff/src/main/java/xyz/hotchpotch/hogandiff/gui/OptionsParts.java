@@ -15,7 +15,6 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -75,6 +74,25 @@ public class OptionsParts extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning);
+        
+        // 2.項目ごとの各種設定
+        // nop
+        
+        // 3.初期値の設定
+        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter
+                .accept(ar.settings().getOrDefault(key));
+        
+        applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
+        applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
+        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton::setSelected);
+        applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
+        applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
+        applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
+        applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
+        
+        // 4.値変更時のイベントハンドラの設定
         BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
                 .setOnAction(event -> ar.changeSetting(key, target.isSelected()));
         
@@ -87,24 +105,5 @@ public class OptionsParts extends VBox implements ChildController {
         
         compareValueOrFormula.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected()));
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> {
-            if (settings.containsKey(key)) {
-                setter.accept(settings.get(key));
-            }
-        };
-        
-        applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton::setSelected);
-        applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
-        applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
-        applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
-        applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
     }
 }

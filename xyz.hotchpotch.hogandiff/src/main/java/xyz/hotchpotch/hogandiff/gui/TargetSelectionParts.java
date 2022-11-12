@@ -38,7 +38,6 @@ import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.gui.TargetsPane.Side;
-import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * ブック・シート選択部分の画面部品です。<br>
@@ -81,7 +80,6 @@ public class TargetSelectionParts extends GridPane {
     
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
-    private Side side;
     private TargetSelectionParts opposite;
     
     /**
@@ -107,9 +105,17 @@ public class TargetSelectionParts extends GridPane {
         
         this.factory = parent.factory;
         this.menu = parent.menu;
-        this.side = side;
         this.opposite = opposite;
         
+        // 1.disableプロパティのバインディング
+        sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
+                menu));
+        sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
+                menu));
+        
+        // 2.項目ごとの各種設定
         titleLabel.setText(side.title);
         basePane.setOnDragOver(this::onDragOver);
         basePane.setOnDragDropped(this::onDragDropped);
@@ -120,30 +126,23 @@ public class TargetSelectionParts extends GridPane {
         bookPathButton.setOnAction(this::chooseBook);
         
         sheetName.bind(sheetNameChoiceBox.valueProperty());
-        sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
-                menu));
-        sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
-                menu));
         
         isReady.bind(Bindings.createBooleanBinding(
                 () -> bookInfo.getValue() != null
                         && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
                 bookInfo, sheetName, menu));
         
+        // 4.値変更時のイベントハンドラの設定
+        // ※このコントローラだけ特殊なので3と4を入れ替える
         bookInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.bookInfoKey, newValue));
         sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
-    }
-    
-    /*package*/ void applySettings(Settings settings) {
-        assert settings != null;
         
-        if (settings.containsKey(side.bookInfoKey)) {
+        // 3.初期値の設定
+        if (ar.settings().containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
-                    settings.get(side.bookInfoKey).bookPath(),
-                    settings.containsKey(side.sheetNameKey)
-                            ? settings.get(side.sheetNameKey)
+                    ar.settings().get(side.bookInfoKey).bookPath(),
+                    ar.settings().containsKey(side.sheetNameKey)
+                            ? ar.settings().get(side.sheetNameKey)
                             : null);
         }
     }
@@ -219,6 +218,7 @@ public class TargetSelectionParts extends GridPane {
             BookInfo newBookInfo = BookInfo.of(newBookPath, null);
             
             while (true) {
+                // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
                 BookLoader loader = factory.bookLoader(newBookInfo);
                 
                 try {

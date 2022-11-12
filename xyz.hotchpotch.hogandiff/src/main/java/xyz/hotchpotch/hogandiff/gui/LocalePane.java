@@ -7,8 +7,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -19,7 +17,6 @@ import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * 処理内容選択メニュー部分の画面部品です。<br>
@@ -87,9 +84,17 @@ public class LocalePane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning);
         
+        // 2.項目ごとの各種設定
         localeChoiceBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
+        
+        // 3.初期値の設定
+        Locale locale = ar.settings().getOrDefault(SettingKeys.APP_LOCALE);
+        localeChoiceBox.setValue(LocaleItem.of(locale));
+        
+        // 4.値変更時のイベントハンドラの設定
         localeChoiceBox.setOnAction(event -> {
             if (ar.changeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
                 new Alert(
@@ -102,18 +107,5 @@ public class LocalePane extends HBox implements ChildController {
                                 .showAndWait();
             }
         });
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        EventHandler<ActionEvent> handler = localeChoiceBox.getOnAction();
-        localeChoiceBox.setOnAction(null);
-        
-        Locale locale = settings.getOrDefault(SettingKeys.APP_LOCALE);
-        localeChoiceBox.setValue(LocaleItem.of(locale));
-        
-        localeChoiceBox.setOnAction(handler);
     }
 }

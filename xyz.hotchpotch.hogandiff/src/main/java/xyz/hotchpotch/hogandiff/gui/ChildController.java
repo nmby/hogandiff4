@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.SimpleBooleanProperty;
-import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * 画面部品クラスの共通的な振舞いを規定するインタフェースです。<br>
@@ -21,14 +20,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param parent このアプリケーションのコントローラ
      */
     default void init(MainController parent) {
-    }
-    
-    /**
-     * 与えられた設定値を画面部品に反映させます。<br>
-     * 
-     * @param settings 設定値
-     */
-    default void applySettings(Settings settings) {
     }
     
     /**

@@ -25,7 +25,6 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
 /**
@@ -72,9 +71,10 @@ public class UtilPane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        workDirBase.addListener(
-                (target, oldValue, newValue) -> ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase.getValue()));
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning);
         
+        // 2.項目ごとの各種設定
         showWorkDirButton.setOnAction(event -> {
             try {
                 if (!Files.isDirectory(workDirBase.getValue())) {
@@ -173,13 +173,11 @@ public class UtilPane extends HBox implements ChildController {
             }
         });
         
-        disableProperty().bind(parent.isRunning);
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        // 3.初期値の設定
+        workDirBase.setValue(ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE));
         
-        workDirBase.setValue(settings.getOrDefault(SettingKeys.WORK_DIR_BASE));
+        // 4.値変更時のイベントハンドラの設定
+        workDirBase.addListener(
+                (target, oldValue, newValue) -> ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase.getValue()));
     }
 }

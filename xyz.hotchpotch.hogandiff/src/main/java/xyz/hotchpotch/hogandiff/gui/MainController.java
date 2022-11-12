@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -84,18 +83,6 @@ public class MainController {
                         .get());
         
         children.forEach(child -> child.init(this));
-    }
-    
-    /**
-     * 指定された設定の内容で各種コントローラの状態を変更します。<br>
-     * 
-     * @param settings 設定
-     * @throws NullPointerException {@code settings} が {@code null} の場合
-     */
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        children.forEach(child -> child.applySettings(settings));
     }
     
     /**

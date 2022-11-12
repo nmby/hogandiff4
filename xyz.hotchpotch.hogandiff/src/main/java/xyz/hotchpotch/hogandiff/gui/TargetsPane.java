@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -82,18 +81,18 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning);
+        
+        // 2.項目ごとの各種設定
         targetSelectionParts1.init(parent, Side.A, targetSelectionParts2);
         targetSelectionParts2.init(parent, Side.B, targetSelectionParts1);
         
-        disableProperty().bind(parent.isRunning);
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        // 3.初期値の設定
+        // nop
         
-        targetSelectionParts1.applySettings(settings);
-        targetSelectionParts2.applySettings(settings);
+        // 4.値変更時のイベントハンドラの設定
+        // nop
     }
     
     @Override
