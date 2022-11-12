@@ -10,7 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * 比較対象選択部分の画面部品です。<br>
@@ -20,6 +21,39 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 public class TargetsPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
+    
+    /**
+     * 比較対象A, Bのどちら側かを著す列挙型です。<br>
+     * 
+     * @author nmby
+     */
+    public static enum Side {
+        
+        // [static members] ----------------------------------------------------
+        
+        /** 比較対象A */
+        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1),
+        
+        /** 比較対象B */
+        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2);
+        
+        // [instance members] --------------------------------------------------
+        
+        /** どちら側かを著すタイトル */
+        public final String title;
+        
+        /** ブックパス設定項目 */
+        public final Key<BookInfo> bookInfoKey;
+        
+        /** シート名設定項目 */
+        public final Key<String> sheetNameKey;
+        
+        Side(String title, Key<BookInfo> bookInfoKey, Key<String> sheetNameKey) {
+            this.title = title;
+            this.bookInfoKey = bookInfoKey;
+            this.sheetNameKey = sheetNameKey;
+        }
+    }
     
     // [instance members] ******************************************************
     
@@ -47,36 +81,18 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        targetSelectionParts1.init(parent, "A", targetSelectionParts2);
-        targetSelectionParts2.init(parent, "B", targetSelectionParts1);
-        
+        // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning);
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
         
-        targetSelectionParts1.applySettings(
-                settings, SettingKeys.CURR_BOOK_INFO1,
-                SettingKeys.CURR_SHEET_NAME1);
-        targetSelectionParts2.applySettings(
-                settings, SettingKeys.CURR_BOOK_INFO2,
-                SettingKeys.CURR_SHEET_NAME2);
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
+        // 2.項目ごとの各種設定
+        targetSelectionParts1.init(parent, Side.A, targetSelectionParts2);
+        targetSelectionParts2.init(parent, Side.B, targetSelectionParts1);
         
-        targetSelectionParts1.gatherSettings(
-                builder,
-                SettingKeys.CURR_BOOK_INFO1,
-                SettingKeys.CURR_SHEET_NAME1);
-        targetSelectionParts2.gatherSettings(
-                builder,
-                SettingKeys.CURR_BOOK_INFO2,
-                SettingKeys.CURR_SHEET_NAME2);
+        // 3.初期値の設定
+        // nop
+        
+        // 4.値変更時のイベントハンドラの設定
+        // nop
     }
     
     @Override

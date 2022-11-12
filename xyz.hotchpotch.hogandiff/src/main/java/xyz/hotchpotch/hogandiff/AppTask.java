@@ -123,8 +123,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Path workDir = null;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            workDir = settings.get(SettingKeys.WORK_DIR_BASE)
-                    .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
+            workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
+                    .resolve(settings.getOrDefault(SettingKeys.CURR_TIMESTAMP));
             str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTask.030"), workDir));
             updateMessage(str.toString());
             
@@ -262,7 +262,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(results.toString());
             }
-            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
+            if (settings.getOrDefault(SettingKeys.SHOW_RESULT_TEXT)) {
                 str.append(rb.getString("AppTask.100")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(textPath.toFile());
@@ -333,7 +333,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTask.140")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst.bookPath().toFile());
@@ -400,7 +400,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTask.140")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dst1.bookPath().toFile());

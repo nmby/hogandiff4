@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * アプリケーションのリソースを保持するクラスです。<br>
@@ -90,7 +91,7 @@ public class AppResource {
         this.properties = properties;
         this.settings = settings;
         
-        Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
+        Locale appLocale = settings.getOrDefault(SettingKeys.APP_LOCALE);
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     
@@ -113,12 +114,38 @@ public class AppResource {
     }
     
     /**
+     * このリソースにアプリケーション実行時引数の内容を反映させます。<br>
+     * 
+     * @param args アプリケーション実行時引数
+     * @throws NullPointerException {@code args} が {@code null} の場合
+     */
+    public void reflectArgs(String[] args) {
+        Objects.requireNonNull(args, "args");
+        
+        // アプリケーション実行時引数から設定を抽出する。
+        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
+        
+        // アプリケーション実行時引数から設定を抽出できた場合は、
+        // その内容で既存の内容を上書きする。
+        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
+        if (fromArgs.isPresent()) {
+            Settings.Builder builder = Settings.builder(settings);
+            builder.setAll(fromArgs.get());
+            this.settings = builder.build();
+            
+        } else if (0 < args.length) {
+            System.err.println(AppArgsParser.USAGE);
+        }
+    }
+    
+    /**
      * 設定セットの内容をプロパティファイルに保存します。<br>
      * 
      * @param settings 保存すべき設定セット
      * @return 保存に成功した場合は {@code true}
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
+    @Deprecated
     public boolean storeSettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
@@ -147,44 +174,24 @@ public class AppResource {
     }
     
     /**
-     * ロケールをプロパティファイルに保存します。<br>
+     * 設定値を変更しプロパティファイルに記録します。<br>
      * 
-     * @param locale 保存すべきロケール
+     * @param <T> 設定値の型
+     * @param key 設定キー
+     * @param value 設定値
      * @return 保存に成功した場合は {@code true}
-     * @throws NullPointerException {@code locale} が {@code null} の場合
+     * @throws NullPointerException {@code key} が {@code null} の場合
      */
-    public boolean storeLocale(Locale locale) {
-        Objects.requireNonNull(locale, "locale");
+    public <T> boolean changeSetting(Key<T> key, T value) {
+        Objects.requireNonNull(key, "key");
         
-        Settings.Key<Locale> key = SettingKeys.APP_LOCALE;
+        settings = settings.getAltered(key, value);
         
-        properties.setProperty(key.name(), key.encoder().apply(locale));
-        
-        return storeProperties();
-    }
-    
-    /**
-     * このリソースにアプリケーション実行時引数の内容を反映させます。<br>
-     * 
-     * @param args アプリケーション実行時引数
-     * @throws NullPointerException {@code args} が {@code null} の場合
-     */
-    public void reflectArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
-        
-        // アプリケーション実行時引数から設定を抽出する。
-        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
-        
-        // アプリケーション実行時引数から設定を抽出できた場合は、
-        // その内容で既存の内容を上書きする。
-        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
-        if (fromArgs.isPresent()) {
-            Settings.Builder builder = Settings.builder(settings);
-            builder.setAll(fromArgs.get());
-            this.settings = builder.build();
-            
-        } else if (0 < args.length) {
-            System.err.println(AppArgsParser.USAGE);
+        if (key.storable()) {
+            properties.setProperty(key.name(), key.encoder().apply(value));
+            return storeProperties();
+        } else {
+            return true;
         }
     }
 }

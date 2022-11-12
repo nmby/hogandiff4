@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +19,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -57,11 +57,11 @@ public class MainController {
     
     /*package*/ final Factory factory = Factory.of();
     /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
-    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
@@ -85,38 +85,6 @@ public class MainController {
     }
     
     /**
-     * 指定された設定の内容で各種コントローラの状態を変更します。<br>
-     * 
-     * @param settings 設定
-     * @throws NullPointerException {@code settings} が {@code null} の場合
-     */
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        children.forEach(child -> child.applySettings(settings));
-    }
-    
-    /*package*/ Settings gatherSettings() {
-        Settings.Builder builder = Settings.builder();
-        
-        builder.setDefaultValue(SettingKeys.MATCH_NAMES_STRICTLY);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
-        
-        builder.set(SettingKeys.CURR_MENU, menu.getValue());
-        
-        children.forEach(child -> child.gatherSettings(builder));
-        
-        return builder.build();
-    }
-    
-    /**
      * 実行の準備が整っているかを返します。<br>
      * 
      * @return 実行の準備が整っている場合は {@code true}
@@ -135,7 +103,7 @@ public class MainController {
             throw new IllegalStateException();
         }
         
-        Settings settings = gatherSettings();
+        Settings settings = ar.settings();
         AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(settings)) {
@@ -168,7 +136,7 @@ public class MainController {
                                 .showAndWait();
             }
             
-            if (settings.get(SettingKeys.EXIT_WHEN_FINISHED)) {
+            if (settings.getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);

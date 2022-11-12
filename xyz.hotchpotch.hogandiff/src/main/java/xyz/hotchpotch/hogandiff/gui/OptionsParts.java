@@ -10,10 +10,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -27,13 +28,17 @@ public class OptionsParts extends VBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     @FXML
     private CheckBox considerRowGapsCheckBox;
     
     @FXML
     private CheckBox considerColumnGapsCheckBox;
+    
+    @FXML
+    private ToggleGroup compareValueOrFormula;
     
     @FXML
     private RadioButton compareOnValueRadioButton;
@@ -69,25 +74,15 @@ public class OptionsParts extends VBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        considerRowGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        considerColumnGapsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareOnValueRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        compareOnFormulaRadioButton.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        showPaintedSheetsCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        showResultTextCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        exitWhenFinishedCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-        saveMemoryCheckBox.setOnAction(event -> parent.hasSettingsChanged.set(true));
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning);
         
-        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> {
-            if (settings.containsKey(key)) {
-                setter.accept(settings.get(key));
-            }
-        };
+        // 2.項目ごとの各種設定
+        // nop
+        
+        // 3.初期値の設定
+        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter
+                .accept(ar.settings().getOrDefault(key));
         
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
@@ -96,18 +91,19 @@ public class OptionsParts extends VBox implements ChildController {
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
         applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
         
-        builder.set(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox.isSelected());
-        builder.set(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox.isSelected());
-        builder.set(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected());
-        builder.set(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox.isSelected());
-        builder.set(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox.isSelected());
-        builder.set(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox.isSelected());
-        builder.set(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox.isSelected());
+        // 4.値変更時のイベントハンドラの設定
+        BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
+                .setOnAction(event -> ar.changeSetting(key, target.isSelected()));
+        
+        addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
+        addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
+        addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
+        addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_TEXT);
+        addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
+        addListener.accept(saveMemoryCheckBox, SettingKeys.SAVE_MEMORY);
+        
+        compareValueOrFormula.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
+                .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected()));
     }
 }

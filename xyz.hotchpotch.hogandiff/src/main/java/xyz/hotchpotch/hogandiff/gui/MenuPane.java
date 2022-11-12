@@ -8,11 +8,12 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * 処理内容選択メニュー部分の画面部品です。<br>
@@ -25,7 +26,11 @@ public class MenuPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
+    
+    @FXML
+    private ToggleGroup compareBooksOrSheets;
     
     @FXML
     private RadioButton compareBooksRadioButton;
@@ -49,29 +54,28 @@ public class MenuPane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
-        parent.menu.bind(Bindings.createObjectBinding(
-                () -> compareBooksRadioButton.isSelected()
-                        ? AppMenu.COMPARE_BOOKS
-                        : AppMenu.COMPARE_SHEETS,
-                compareBooksRadioButton.selectedProperty()));
-        
+        // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning);
-    }
-    
-    @Override
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
         
-        if (settings.containsKey(SettingKeys.CURR_MENU)) {
-            compareBooksRadioButton.setSelected(
-                    settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
+        // 2.項目ごとの各種設定
+        compareBooksRadioButton.setUserData(AppMenu.COMPARE_BOOKS);
+        compareSheetsRadioButton.setUserData(AppMenu.COMPARE_SHEETS);
+        
+        parent.menu.bind(Bindings.createObjectBinding(
+                () -> (AppMenu) compareBooksOrSheets.getSelectedToggle().getUserData(),
+                compareBooksOrSheets.selectedToggleProperty()));
+        
+        // 3.初期値の設定
+        if (!ar.settings().containsKey(SettingKeys.CURR_MENU)) {
+            ar.changeSetting(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS);
         }
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        compareBooksOrSheets.selectToggle(
+                menu == AppMenu.COMPARE_BOOKS ? compareBooksRadioButton : compareSheetsRadioButton);
         
-        // nop
+        // 4.値変更時のイベントハンドラの設定
+        compareBooksOrSheets.selectedToggleProperty().addListener(
+                (target, oldValue, newValue) -> ar
+                        .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
     }
 }
