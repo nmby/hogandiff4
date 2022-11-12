@@ -29,9 +29,6 @@ public class SettingsPane extends HBox implements ChildController {
     private OptionsParts optionsParts;
     
     @FXML
-    private Button saveSettingsButton;
-    
-    @FXML
     private Button executeButton;
     
     /**
@@ -52,7 +49,6 @@ public class SettingsPane extends HBox implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning);
-        saveSettingsButton.disableProperty().bind(parent.hasSettingsChanged.not());
         executeButton.disableProperty().bind(parent.isReady.not());
         
         // 2.項目ごとの各種設定

@@ -57,7 +57,6 @@ public class MainController {
     
     /*package*/ final Factory factory = Factory.of();
     /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
-    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
     /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
