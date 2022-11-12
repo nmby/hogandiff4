@@ -8,9 +8,11 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -25,7 +27,11 @@ public class MenuPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
+    
+    @FXML
+    private ToggleGroup compareBooksOrSheets;
     
     @FXML
     private RadioButton compareBooksRadioButton;
@@ -49,11 +55,16 @@ public class MenuPane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        compareBooksRadioButton.setUserData(AppMenu.COMPARE_BOOKS);
+        compareSheetsRadioButton.setUserData(AppMenu.COMPARE_SHEETS);
+        
+        compareBooksOrSheets.selectedToggleProperty().addListener(
+                (target, oldValue, newValue) -> ar
+                        .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
+        
         parent.menu.bind(Bindings.createObjectBinding(
-                () -> compareBooksRadioButton.isSelected()
-                        ? AppMenu.COMPARE_BOOKS
-                        : AppMenu.COMPARE_SHEETS,
-                compareBooksRadioButton.selectedProperty()));
+                () -> (AppMenu) compareBooksOrSheets.getSelectedToggle().getUserData(),
+                compareBooksOrSheets.selectedToggleProperty()));
         
         disableProperty().bind(parent.isRunning);
     }
@@ -66,12 +77,5 @@ public class MenuPane extends HBox implements ChildController {
             compareBooksRadioButton.setSelected(
                     settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS);
         }
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
-        
-        // nop
     }
 }

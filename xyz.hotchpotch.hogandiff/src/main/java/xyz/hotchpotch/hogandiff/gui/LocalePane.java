@@ -17,6 +17,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -64,8 +65,8 @@ public class LocalePane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
-    private EventHandler<ActionEvent> handler;
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ChoiceBox<LocaleItem> localeChoiceBox;
@@ -89,9 +90,8 @@ public class LocalePane extends HBox implements ChildController {
         disableProperty().bind(parent.isRunning);
         
         localeChoiceBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
-        
-        handler = event -> {
-            if (AppMain.appResource.changeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
+        localeChoiceBox.setOnAction(event -> {
+            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s%n%n%s".formatted(
@@ -100,33 +100,20 @@ public class LocalePane extends HBox implements ChildController {
                                 rb.getString("gui.LocalePane.013")),
                         ButtonType.OK)
                                 .showAndWait();
-            } else {
-                parent.hasSettingsChanged.set(true);
             }
-        };
-        localeChoiceBox.setOnAction(handler);
+        });
     }
     
     @Override
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
+        EventHandler<ActionEvent> handler = localeChoiceBox.getOnAction();
         localeChoiceBox.setOnAction(null);
         
-        if (settings.containsKey(SettingKeys.APP_LOCALE)) {
-            Locale locale = settings.get(SettingKeys.APP_LOCALE);
-            localeChoiceBox.setValue(LocaleItem.of(locale));
-        } else {
-            localeChoiceBox.setValue(LocaleItem.of(Locale.JAPANESE));
-        }
+        Locale locale = settings.getOrDefault(SettingKeys.APP_LOCALE);
+        localeChoiceBox.setValue(LocaleItem.of(locale));
         
         localeChoiceBox.setOnAction(handler);
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
-        
-        builder.set(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale);
     }
 }

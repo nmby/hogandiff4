@@ -32,12 +32,13 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
+import xyz.hotchpotch.hogandiff.gui.TargetsPane.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
-import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * ブック・シート選択部分の画面部品です。<br>
@@ -52,7 +53,8 @@ public class TargetSelectionParts extends GridPane {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     @FXML
     private GridPane basePane;
@@ -79,6 +81,7 @@ public class TargetSelectionParts extends GridPane {
     
     private Factory factory;
     private ReadOnlyProperty<AppMenu> menu;
+    private Side side;
     private TargetSelectionParts opposite;
     
     /**
@@ -95,21 +98,28 @@ public class TargetSelectionParts extends GridPane {
     
     /*package*/ void init(
             MainController parent,
-            String title,
+            Side side,
             TargetSelectionParts opposite) {
         
         assert parent != null;
-        assert title != null;
+        assert side != null;
         assert opposite != null && opposite != this;
         
-        factory = parent.factory;
-        menu = parent.menu;
+        this.factory = parent.factory;
+        this.menu = parent.menu;
+        this.side = side;
         this.opposite = opposite;
         
-        titleLabel.setText(title);
+        titleLabel.setText(side.title);
         basePane.setOnDragOver(this::onDragOver);
         basePane.setOnDragDropped(this::onDragDropped);
+        
+        bookPathTextField.textProperty().bind(Bindings.createStringBinding(
+                () -> bookInfo.getValue() == null ? null : bookInfo.getValue().bookPath().toString(),
+                bookInfo));
         bookPathButton.setOnAction(this::chooseBook);
+        
+        sheetName.bind(sheetNameChoiceBox.valueProperty());
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
                 menu));
@@ -117,48 +127,24 @@ public class TargetSelectionParts extends GridPane {
                 () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
                 menu));
         
-        bookPathTextField.textProperty().bind(Bindings.createStringBinding(
-                () -> bookInfo.getValue() == null ? null : bookInfo.getValue().bookPath().toString(),
-                bookInfo));
-        sheetName.bind(sheetNameChoiceBox.valueProperty());
         isReady.bind(Bindings.createBooleanBinding(
                 () -> bookInfo.getValue() != null
                         && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
                 bookInfo, sheetName, menu));
+        
+        bookInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.bookInfoKey, newValue));
+        sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
     }
     
-    /*package*/ void applySettings(
-            Settings settings,
-            Key<BookInfo> keyBookInfo,
-            Key<String> keySheetName) {
-        
+    /*package*/ void applySettings(Settings settings) {
         assert settings != null;
-        assert keyBookInfo != null;
-        assert keySheetName != null;
         
-        if (settings.containsKey(keyBookInfo)) {
+        if (settings.containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
-                    settings.get(keyBookInfo).bookPath(),
-                    settings.containsKey(keySheetName)
-                            ? settings.get(keySheetName)
+                    settings.get(side.bookInfoKey).bookPath(),
+                    settings.containsKey(side.sheetNameKey)
+                            ? settings.get(side.sheetNameKey)
                             : null);
-        }
-    }
-    
-    /*package*/ void gatherSettings(
-            Settings.Builder builder,
-            Key<BookInfo> keyBookInfo,
-            Key<String> keySheetName) {
-        
-        assert builder != null;
-        assert keyBookInfo != null;
-        assert keySheetName != null;
-        
-        if (bookInfo.getValue() != null) {
-            builder.set(keyBookInfo, bookInfo.getValue());
-        }
-        if (menu.getValue() == AppMenu.COMPARE_SHEETS && sheetName.getValue() != null) {
-            builder.set(keySheetName, sheetName.getValue());
         }
     }
     

@@ -8,9 +8,9 @@
    <children>
       <RadioButton fx:id="compareBooksRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.MenuPane.compareBooks" HBox.hgrow="NEVER">
          <toggleGroup>
-            <ToggleGroup fx:id="compareBookOrSheet" />
+            <ToggleGroup fx:id="compareBooksOrSheets" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="compareSheetsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.compareSheets" toggleGroup="$compareBookOrSheet" HBox.hgrow="NEVER" />
+      <RadioButton fx:id="compareSheetsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.compareSheets" toggleGroup="$compareBooksOrSheets" HBox.hgrow="NEVER" />
    </children>
 </fx:root>

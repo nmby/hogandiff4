@@ -109,21 +109,6 @@ public class Settings {
         }
         
         /**
-         * このビルダーに設定をデフォルト値で追加します。<br>
-         * 
-         * @param <T> 設定値の型
-         * @param key 設定項目
-         * @return このビルダー
-         * @throws NullPointerException {@code key} が {@code null} の場合
-         */
-        public <T> Builder setDefaultValue(Key<T> key) {
-            Objects.requireNonNull(key, "key");
-            
-            map.put(key, key.defaultValueSupplier.get());
-            return this;
-        }
-        
-        /**
          * 指定された設定に含まれる設定項目をこのビルダーにすべて追加します。<br>
          * 設定項目がすでに設定されている場合は、上書きします。<br>
          * 
@@ -267,6 +252,24 @@ public class Settings {
         } else {
             throw new NoSuchElementException("no such key : " + key.name());
         }
+    }
+    
+    /**
+     * 指定された設定項目の値を返します。
+     * 設定項目が設定されていない場合はデフォルト値を返します。<br>
+     * 
+     * @param <T> 設定値の型
+     * @param key 設定項目
+     * @return 設定値
+     * @throws NullPointerException {@code item} が {@code null} の場合
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getOrDefault(Key<T> key) {
+        Objects.requireNonNull(key, "key");
+        
+        return map.containsKey(key)
+                ? (T) map.get(key)
+                : key.defaultValueSupplier.get();
     }
     
     /**

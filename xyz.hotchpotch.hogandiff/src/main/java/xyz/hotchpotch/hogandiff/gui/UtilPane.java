@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -21,6 +23,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
@@ -36,7 +39,8 @@ public class UtilPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Button showWorkDirButton;
@@ -50,7 +54,7 @@ public class UtilPane extends HBox implements ChildController {
     @FXML
     private Hyperlink toWebSiteHyperlink;
     
-    private Path workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
+    private Property<Path> workDirBase = new SimpleObjectProperty<>();
     
     /**
      * コンストラクタ<br>
@@ -68,18 +72,21 @@ public class UtilPane extends HBox implements ChildController {
     public void init(MainController parent) {
         Objects.requireNonNull(parent, "parent");
         
+        workDirBase.addListener(
+                (target, oldValue, newValue) -> ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase.getValue()));
+        
         showWorkDirButton.setOnAction(event -> {
             try {
-                if (!Files.isDirectory(workDir)) {
-                    Files.createDirectories(workDir);
+                if (!Files.isDirectory(workDirBase.getValue())) {
+                    Files.createDirectories(workDirBase.getValue());
                 }
-                Desktop.getDesktop().open(workDir.toFile());
+                Desktop.getDesktop().open(workDirBase.getValue().toFile());
                 
             } catch (Exception e) {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "%s%n%s".formatted(rb.getString("gui.UtilPane.010"), workDir),
+                        "%s%n%s".formatted(rb.getString("gui.UtilPane.010"), workDirBase.getValue()),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -88,7 +95,7 @@ public class UtilPane extends HBox implements ChildController {
         deleteOldWorkDirButton.setOnAction(event -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    "%s%n%s".formatted(rb.getString("gui.UtilPane.020"), workDir))
+                    "%s%n%s".formatted(rb.getString("gui.UtilPane.020"), workDirBase.getValue()))
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -97,7 +104,7 @@ public class UtilPane extends HBox implements ChildController {
                         ? path -> desktop.moveToTrash(path.toFile())
                         : Files::deleteIfExists;
                 
-                try (Stream<Path> children = Files.list(workDir)) {
+                try (Stream<Path> children = Files.list(workDirBase.getValue())) {
                     children.forEach(path -> {
                         try {
                             deleteAction.accept(path);
@@ -117,7 +124,7 @@ public class UtilPane extends HBox implements ChildController {
             DirectoryChooser dirChooser = new DirectoryChooser();
             
             dirChooser.setTitle(rb.getString("gui.UtilPane.060"));
-            dirChooser.setInitialDirectory(workDir.toFile());
+            dirChooser.setInitialDirectory(workDirBase.getValue().toFile());
             
             File newDir = null;
             try {
@@ -131,7 +138,7 @@ public class UtilPane extends HBox implements ChildController {
                 if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
                     newPath = newPath.resolve(AppMain.APP_DOMAIN);
                 }
-                if (newPath.equals(workDir)) {
+                if (newPath.equals(workDirBase.getValue())) {
                     return;
                 }
                 
@@ -148,13 +155,7 @@ public class UtilPane extends HBox implements ChildController {
                         return;
                     }
                 }
-                workDir = newPath;
-                parent.hasSettingsChanged.set(true);
-                new Alert(
-                        AlertType.INFORMATION,
-                        rb.getString("gui.UtilPane.040"),
-                        ButtonType.OK)
-                                .showAndWait();
+                workDirBase.setValue(newPath);
             }
         });
         
@@ -179,17 +180,6 @@ public class UtilPane extends HBox implements ChildController {
     public void applySettings(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        if (settings.containsKey(SettingKeys.WORK_DIR_BASE)) {
-            workDir = settings.get(SettingKeys.WORK_DIR_BASE);
-        } else {
-            workDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get();
-        }
-    }
-    
-    @Override
-    public void gatherSettings(Settings.Builder builder) {
-        Objects.requireNonNull(builder, "builder");
-        
-        builder.set(SettingKeys.WORK_DIR_BASE, workDir);
+        workDirBase.setValue(settings.getOrDefault(SettingKeys.WORK_DIR_BASE));
     }
 }

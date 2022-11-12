@@ -91,7 +91,7 @@ public class AppResource {
         this.properties = properties;
         this.settings = settings;
         
-        Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
+        Locale appLocale = settings.getOrDefault(SettingKeys.APP_LOCALE);
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     
@@ -186,8 +186,12 @@ public class AppResource {
         Objects.requireNonNull(key, "key");
         
         settings = settings.getAltered(key, value);
-        properties.setProperty(key.name(), key.encoder().apply(value));
         
-        return storeProperties();
+        if (key.storable()) {
+            properties.setProperty(key.name(), key.encoder().apply(value));
+            return storeProperties();
+        } else {
+            return true;
+        }
     }
 }
