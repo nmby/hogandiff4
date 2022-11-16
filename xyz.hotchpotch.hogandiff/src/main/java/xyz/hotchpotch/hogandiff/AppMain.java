@@ -62,9 +62,10 @@ public class AppMain extends Application {
                 appResource.get().getString("AppMain.010")
                         + "  -  "
                         + VERSION);
-        primaryStage.setScene(new Scene(root, 500, 464));
-        primaryStage.setMinWidth(100);
-        primaryStage.setMinHeight(100);
+        primaryStage.setScene(new Scene(root));
+        //primaryStage.setScene(new Scene(root, 500, 464));
+        //primaryStage.setMinWidth(100);
+        //primaryStage.setMinHeight(100);
         primaryStage.sizeToScene();
         primaryStage.show();
         

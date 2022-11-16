@@ -2,20 +2,9 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 
-<fx:root maxHeight="1.7976931348623157E308"
-	maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-	minWidth="-Infinity" styleClass="row3Pane" type="AnchorPane"
-	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="row3Pane" type="AnchorPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<xyz.hotchpotch.hogandiff.gui.component.ReportingPane
-			fx:id="reportingPane" maxHeight="1.7976931348623157E308"
-			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			minWidth="-Infinity" AnchorPane.bottomAnchor="3.0"
-			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-			AnchorPane.topAnchor="0.0" />
-		<xyz.hotchpotch.hogandiff.gui.component.TogglePane
-			fx:id="togglePane" maxHeight="-Infinity" maxWidth="-Infinity"
-			minHeight="-Infinity" minWidth="-Infinity"
-			AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="2.0" />
+		<xyz.hotchpotch.hogandiff.gui.component.ReportingPane fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+		<xyz.hotchpotch.hogandiff.gui.component.TogglePane fx:id="togglePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="2.0" />
 	</children>
 </fx:root>

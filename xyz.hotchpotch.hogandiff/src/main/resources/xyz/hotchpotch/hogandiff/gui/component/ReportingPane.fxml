@@ -6,7 +6,7 @@
 
 <fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="reportingPane" type="VBox" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<ProgressBar fx:id="reportingProgressBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" progress="0.0" VBox.vgrow="NEVER" />
-		<TextArea fx:id="reportingTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="-Infinity" prefRowCount="3" VBox.vgrow="ALWAYS" />
+		<ProgressBar fx:id="reportingProgressBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" progress="0.0" styleClass="reportingProgressBar" VBox.vgrow="NEVER" />
+		<TextArea fx:id="reportingTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="-Infinity" prefColumnCount="0" prefRowCount="0" styleClass="reportingTextArea" VBox.vgrow="ALWAYS" />
 	</children>
 </fx:root>
