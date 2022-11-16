@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.gui.component.SettingsPane2;
  * 
  * @author nmby
  */
-public class Row4Pane extends AnchorPane implements ChildController {
+public class Row4Pane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
