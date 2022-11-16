@@ -5,31 +5,32 @@
 	-fx-background-color: white;
 }
 
-#row1Pane {
+.row1Pane {
+    -fx-padding: 0.0px 0.0px 7.0px 0.0px;
 }
 
-#menuPane {
+.menuPane {
     -fx-spacing: 15.0px;
-	/* -fx-padding: 3.0px 0.0px 10.0px 0.0px; */
 }
 
-#linkPane {
+.linkPane {
 }
 
-#row2Pane {
+.row2Pane {
     -fx-spacing: 2.0px;
+    -fx-padding: 0.0px 0.0px 3.0px 0.0px;
 }
 
-#targetsPane {
+.targetsPane {
     -fx-spacing: 3.0px;
 }
 
-#basePane {
+.targetSelectionPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
     -fx-padding: 0.0px 12.0px 0.0px 0.0px
 }
 
-#titleLabel {
+.targetTitleLabel {
     -fx-font-size: 18.0px;
     -fx-text-fill: white;
     -fx-pref-width: 28.0px;
@@ -42,32 +43,25 @@
     -fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
-#executePane {
-    /* -fx-background-color: rgb(126.0, 180.0, 150.0); */
+.executePane {
     -fx-background-color: rgb(255.0, 200.0, 200.0);
     -fx-padding: 10.0px 10.0px 10.0px 10.0px;
 }
 
-#executeButton {
+.executeButton {
     -fx-font-size: 18.0px;
     -fx-pref-width: 60.0px;
 }
 
-#row3Pane {
-}
-
-#reportingPane {
-}
-
-#togglePane {
+.togglePane {
     -fx-background-color: rgb(230.0, 240.0, 255.0);
 }
 
-#toggleButton {
+.toggleButton {
     -fx-font-size: 10.0px;
 }
 
-#settingsPane1 {
+.settingsPane1 {
     -fx-background-color: rgb(230.0, 240.0, 255.0);
     -fx-spacing: 3.0px;
 }
@@ -78,7 +72,7 @@
     -fx-pref-width: 95.0px;
 }
 
-#settingsPane2 {
+.settingsPane2 {
     -fx-background-color: rgb(230.0, 240.0, 255.0);
     -fx-spacing: 3.0px;
 }
@@ -86,19 +80,13 @@
 .settingsTitleLabel2 {
     -fx-background-color: rgb(196.0, 219.0, 255.0);
     -fx-padding: 0.0px 7.0px 0.0px 5.0px;
-    -fx-pref-width: 55.0px;
+    -fx-pref-width: 65.0px;
 }
 
-#localePane {
-    -fx-background-color: rgb(196.0, 219.0, 255.0);
-    -fx-padding: 5.0px 10.0px 5.0px 10.0px;
-}
-
-#localeChoiceBox {
+.localeChoiceBox {
     -fx-pref-width: 85.0px;
 }
 
-#workDirPane {
-    -fx-background-color: rgb(196.0, 219.0, 255.0);
-    -fx-padding: 5.0px 10.0px 5.0px 10.0px;
+.workDirButton {
+    -fx-pref-width: 85.0px;
 }

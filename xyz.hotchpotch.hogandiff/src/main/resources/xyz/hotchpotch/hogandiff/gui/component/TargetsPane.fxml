@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+
+<fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="targetsPane"
+	type="VBox" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<xyz.hotchpotch.hogandiff.gui.component.TargetSelectionPane
+			fx:id="targetSelectionPane1" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER" />
+		<xyz.hotchpotch.hogandiff.gui.component.TargetSelectionPane
+			fx:id="targetSelectionPane2" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER" />
+	</children>
+</fx:root>

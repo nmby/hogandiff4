@@ -63,12 +63,13 @@ public class AppMain extends Application {
                         + "  -  "
                         + VERSION);
         primaryStage.setScene(new Scene(root, 500, 464));
-        primaryStage.setMinWidth(500);
-        primaryStage.setMinHeight(464);
+        primaryStage.setMinWidth(100);
+        primaryStage.setMinHeight(100);
+        primaryStage.sizeToScene();
         primaryStage.show();
         
         MainController controller = loader.getController();
-        if (controller.isReady()) {
+        if (controller.isReady().getValue()) {
             controller.execute();
         }
     }

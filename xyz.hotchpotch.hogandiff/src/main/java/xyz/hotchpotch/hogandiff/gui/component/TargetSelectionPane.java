@@ -1,16 +1,17 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,14 +38,17 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.gui.TargetsPane.Side;
+import xyz.hotchpotch.hogandiff.gui.ChildController;
+import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.PasswordDialog;
+import xyz.hotchpotch.hogandiff.gui.component.TargetsPane.Side;
 
 /**
- * ブック・シート選択部分の画面部品です。<br>
+ * 比較対象ファイル／シート選択部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class TargetSelectionParts extends GridPane {
+public class TargetSelectionPane extends GridPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -54,9 +58,6 @@ public class TargetSelectionParts extends GridPane {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
-    
-    @FXML
-    private GridPane basePane;
     
     @FXML
     private Label titleLabel;
@@ -73,52 +74,46 @@ public class TargetSelectionParts extends GridPane {
     @FXML
     private ChoiceBox<String> sheetNameChoiceBox;
     
-    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty();
-    
     private final Property<BookInfo> bookInfo = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
+    private final BooleanProperty isReady = new SimpleBooleanProperty();
     
-    private Factory factory;
-    private ReadOnlyProperty<AppMenu> menu;
-    private TargetSelectionParts opposite;
+    private final Factory factory = Factory.of();
+    private TargetSelectionPane opposite;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public TargetSelectionParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionParts.fxml"), rb);
+    public TargetSelectionPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
     }
     
-    /*package*/ void init(
-            MainController parent,
-            Side side,
-            TargetSelectionParts opposite) {
+    @Override
+    public void init(MainController parent, Object... params) {
+        Objects.requireNonNull(parent, "parent");
         
-        assert parent != null;
-        assert side != null;
-        assert opposite != null && opposite != this;
-        
-        this.factory = parent.factory;
-        this.menu = parent.menu;
-        this.opposite = opposite;
+        Side side = (Side) params[0];
+        opposite = (TargetSelectionPane) params[1];
         
         // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning());
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
-                menu));
+                () -> parent.menu().getValue() == AppMenu.COMPARE_BOOKS,
+                parent.menu()));
         sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> menu.getValue() == AppMenu.COMPARE_BOOKS,
-                menu));
+                () -> parent.menu().getValue() == AppMenu.COMPARE_BOOKS,
+                parent.menu()));
         
         // 2.項目ごとの各種設定
+        setOnDragOver(this::onDragOver);
+        setOnDragDropped(this::onDragDropped);
+        
         titleLabel.setText(side.title);
-        basePane.setOnDragOver(this::onDragOver);
-        basePane.setOnDragDropped(this::onDragDropped);
         
         bookPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> bookInfo.getValue() == null ? null : bookInfo.getValue().bookPath().toString(),
@@ -129,8 +124,8 @@ public class TargetSelectionParts extends GridPane {
         
         isReady.bind(Bindings.createBooleanBinding(
                 () -> bookInfo.getValue() != null
-                        && (sheetName.getValue() != null || menu.getValue() == AppMenu.COMPARE_BOOKS),
-                bookInfo, sheetName, menu));
+                        && (sheetName.getValue() != null || parent.menu().getValue() == AppMenu.COMPARE_BOOKS),
+                bookInfo, sheetName, parent.menu()));
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
@@ -145,6 +140,11 @@ public class TargetSelectionParts extends GridPane {
                             ? ar.settings().get(side.sheetNameKey)
                             : null);
         }
+    }
+    
+    @Override
+    public BooleanExpression isReady() {
+        return isReady;
     }
     
     private void onDragOver(DragEvent event) {
@@ -184,7 +184,7 @@ public class TargetSelectionParts extends GridPane {
     
     private void chooseBook(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(rb.getString("gui.TargetSelectionParts.030"));
+        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.030"));
         
         if (bookInfo.getValue() != null) {
             File book = bookInfo.getValue().bookPath().toFile();
@@ -196,7 +196,7 @@ public class TargetSelectionParts extends GridPane {
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                rb.getString("gui.TargetSelectionParts.040"),
+                rb.getString("gui.component.TargetSelectionPane.040"),
                 "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
@@ -246,7 +246,7 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.010"), newBookPath),
+                    "%s%n%s".formatted(rb.getString("gui.component.TargetSelectionPane.010"), newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -262,12 +262,11 @@ public class TargetSelectionParts extends GridPane {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(rb.getString("gui.TargetSelectionParts.020"), sheetName),
+                    "%s%n%s".formatted(rb.getString("gui.component.TargetSelectionPane.020"), sheetName),
                     ButtonType.OK)
                             .showAndWait();
             return false;
         }
-        
         return true;
     }
 }

@@ -20,266 +20,501 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="417.0" prefWidth="518.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <HBox fx:id="row1Pane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-         <children>
-            <HBox fx:id="menuPane" alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
-               <children>
-                  <RadioButton fx:id="compareBooksRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.MenuPane.compareBooks" HBox.hgrow="NEVER">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="compareBooksOrSheets" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="compareSheetsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.compareSheets" toggleGroup="$compareBooksOrSheets" HBox.hgrow="NEVER" />
-               </children>
-            </HBox>
-            <HBox fx:id="linkPane" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS">
-               <children>
-                  <Hyperlink alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="website" HBox.hgrow="NEVER" />
-               </children>
-            </HBox>
-         </children>
-         <VBox.margin>
-            <Insets bottom="7.0" />
-         </VBox.margin>
-      </HBox>
-      <HBox fx:id="row2Pane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-         <children>
-            <VBox fx:id="targetsPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS">
-               <children>
-                  <GridPane fx:id="basePane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetPane" VBox.vgrow="NEVER">
-                     <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                     </rowConstraints>
-                     <children>
-                        <Label fx:id="titleLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="20.0" styleClass="labelTargetTitle" text="X" GridPane.hgrow="NEVER" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
-                        <Label alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetItemLabel" text="%fx.TargetSelectionParts.bookPath" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" />
-                        <Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetItemLabel" text="%fx.TargetSelectionParts.sheetName" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <TextField fx:id="bookPathTextField" editable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" top="3.0" />
-                           </GridPane.margin>
-                        </TextField>
-                        <Button fx:id="bookPathButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="..." textAlignment="CENTER" GridPane.columnIndex="3" />
-                        <ChoiceBox fx:id="sheetNameChoiceBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="3.0" top="1.0" />
-                           </GridPane.margin>
-                        </ChoiceBox>
-                     </children>
-                  </GridPane>
-                  <GridPane fx:id="basePane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetPane" VBox.vgrow="NEVER">
-                     <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                     </rowConstraints>
-                     <children>
-                        <Label fx:id="titleLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="20.0" styleClass="labelTargetTitle" text="X" GridPane.hgrow="NEVER" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
-                        <Label alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetItemLabel" text="%fx.TargetSelectionParts.bookPath" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" />
-                        <Label fx:id="sheetNameLabel1" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="targetItemLabel" text="%fx.TargetSelectionParts.sheetName" textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <TextField fx:id="bookPathTextField1" editable="false" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" top="3.0" />
-                           </GridPane.margin>
-                        </TextField>
-                        <Button fx:id="bookPathButton1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="..." textAlignment="CENTER" GridPane.columnIndex="3" />
-                        <ChoiceBox fx:id="sheetNameChoiceBox1" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="3.0" top="1.0" />
-                           </GridPane.margin>
-                        </ChoiceBox>
-                     </children>
-                  </GridPane>
-               </children>
-               <opaqueInsets>
-                  <Insets top="10.0" />
-               </opaqueInsets>
-            </VBox>
-            <AnchorPane fx:id="executePane" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
-               <children>
-                  <Button fx:id="executeButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="60.0" text="実行" textAlignment="CENTER" textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-         </children>
-         <VBox.margin>
-            <Insets bottom="3.0" />
-         </VBox.margin>
-      </HBox>
-      <AnchorPane fx:id="row3Pane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
-         <children>
-            <VBox fx:id="reportingPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <ProgressBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" progress="0.0" VBox.vgrow="NEVER" />
-                  <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="-Infinity" prefRowCount="3" VBox.vgrow="ALWAYS" />
-               </children>
-            </VBox>
-            <AnchorPane fx:id="togglePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="2.0">
-               <children>
-                  <ToggleButton fx:id="toggleButton" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" rotate="90.0" text="》" textAlignment="CENTER" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="2.0" />
-               </children>
-            </AnchorPane>
-         </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-      </AnchorPane>
-      <AnchorPane fx:id="row4Pane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
-         <children>
-            <VBox fx:id="settingsPane1" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="paneSettingsArea" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            	<children>
-            		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-            			<columnConstraints>
-            				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-            				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-            			</columnConstraints>
-            			<rowConstraints>
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            			</rowConstraints>
-            			<children>
-            				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel1" text="%fx.OptionsParts.compareOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3" />
-            				<CheckBox fx:id="considerRowGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.compareOptions.considerRowGaps" GridPane.columnIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="1.0" left="7.0" right="7.0" top="5.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            				<CheckBox fx:id="considerColumnGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.OptionsParts.compareOptions.considerColumnGaps" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
-            					<GridPane.margin>
-            						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
-            					</GridPane.margin>
-            					<children>
-            						<RadioButton fx:id="compareOnValueRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.compareOptions.compareOnValue">
-            							<toggleGroup>
-            								<ToggleGroup fx:id="compareValueOrFormula" />
-            							</toggleGroup>
-            						</RadioButton>
-            						<RadioButton fx:id="compareOnFormulaRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.OptionsParts.compareOptions.compareOnFormula" toggleGroup="$compareValueOrFormula" />
-            					</children>
-            				</HBox>
-            			</children>
-            		</GridPane>
-            		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-            			<columnConstraints>
-            				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-            				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-            			</columnConstraints>
-            			<rowConstraints>
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            			</rowConstraints>
-            			<children>
-            				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel1" text="%fx.OptionsParts.reportOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
-            				<CheckBox fx:id="showPaintedSheetsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.reportOptions.showPaintedSheets" GridPane.columnIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            				<CheckBox fx:id="showResultTextCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.OptionsParts.reportOptions.showResultText" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            			</children>
-            			<VBox.margin>
-            				<Insets />
-            			</VBox.margin>
-            		</GridPane>
-            		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-            			<columnConstraints>
-            				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-            				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-            			</columnConstraints>
-            			<rowConstraints>
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-            			</rowConstraints>
-            			<children>
-            				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel1" text="%fx.OptionsParts.executionOptions" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
-            				<CheckBox fx:id="exitWhenFinishedCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.OptionsParts.executionOptions.exitWhenFinished" GridPane.columnIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            				<CheckBox fx:id="saveMemoryCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.OptionsParts.executionOptions.saveMemory" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            					<GridPane.margin>
-            						<Insets bottom="5.0" left="7.0" right="7.0" top="1.0" />
-            					</GridPane.margin>
-            				</CheckBox>
-            			</children>
-            		</GridPane>
-            	</children>
-            </VBox>
-            <VBox fx:id="settingsPane2" prefHeight="100.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <children>
-                  <GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-                     <columnConstraints>
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                     </rowConstraints>
-                     <children>
-                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="言語" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" />
-                        <ChoiceBox fx:id="localeChoiceBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
-                           </GridPane.margin>
-                        </ChoiceBox>
-                     </children>
-                  </GridPane>
-                  <GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-                     <columnConstraints>
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-                     </rowConstraints>
-                     <children>
-                        <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="作業用フォルダ" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3" />
-                        <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="開く" textAlignment="CENTER" GridPane.columnIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="変更..." textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="削除..." textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                           <GridPane.margin>
-                              <Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
-                           </GridPane.margin>
-                        </Button>
-                     </children>
-                  </GridPane>
-               </children>
-            </VBox>
-         </children>
-      </AnchorPane>
-   </children>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="417.0"
+	prefWidth="518.0" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<HBox fx:id="row1Pane" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER">
+			<children>
+				<HBox fx:id="menuPane" alignment="CENTER_LEFT"
+					maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+					minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
+					<children>
+						<RadioButton fx:id="compareBooksRadioButton"
+							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+							minWidth="-Infinity" mnemonicParsing="false" selected="true"
+							text="%fx.MenuPane.compareBooks" HBox.hgrow="NEVER">
+							<toggleGroup>
+								<ToggleGroup fx:id="compareBooksOrSheets" />
+							</toggleGroup>
+						</RadioButton>
+						<RadioButton fx:id="compareSheetsRadioButton"
+							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+							minWidth="-Infinity" mnemonicParsing="false"
+							text="%fx.MenuPane.compareSheets"
+							toggleGroup="$compareBooksOrSheets" HBox.hgrow="NEVER" />
+					</children>
+				</HBox>
+				<HBox fx:id="linkPane" alignment="CENTER_RIGHT"
+					maxHeight="1.7976931348623157E308"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" HBox.hgrow="ALWAYS">
+					<children>
+						<Hyperlink alignment="CENTER" maxHeight="-Infinity"
+							maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+							text="website" HBox.hgrow="NEVER" />
+					</children>
+				</HBox>
+			</children>
+			<VBox.margin>
+				<Insets bottom="7.0" />
+			</VBox.margin>
+		</HBox>
+		<HBox fx:id="row2Pane" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER">
+			<children>
+				<VBox fx:id="targetsPane" maxHeight="-Infinity"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" HBox.hgrow="ALWAYS">
+					<children>
+						<GridPane fx:id="basePane" maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" styleClass="targetPane" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="CENTER"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="NEVER"
+									maxWidth="-Infinity" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label fx:id="titleLabel" alignment="CENTER"
+									maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity" prefWidth="20.0"
+									styleClass="labelTargetTitle" text="X" GridPane.hgrow="NEVER"
+									GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
+								<Label alignment="CENTER_RIGHT" maxHeight="-Infinity"
+									maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+									styleClass="targetItemLabel"
+									text="%fx.TargetSelectionParts.bookPath" textAlignment="RIGHT"
+									textOverrun="CLIP" GridPane.columnIndex="1" />
+								<Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									styleClass="targetItemLabel"
+									text="%fx.TargetSelectionParts.sheetName" textAlignment="RIGHT"
+									textOverrun="CLIP" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<TextField fx:id="bookPathTextField" editable="false"
+									maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+									minHeight="-Infinity" minWidth="-Infinity"
+									GridPane.columnIndex="2">
+									<GridPane.margin>
+										<Insets bottom="1.0" top="3.0" />
+									</GridPane.margin>
+								</TextField>
+								<Button fx:id="bookPathButton" alignment="CENTER"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false" text="..." textAlignment="CENTER"
+									GridPane.columnIndex="3" />
+								<ChoiceBox fx:id="sheetNameChoiceBox"
+									maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+									minHeight="-Infinity" minWidth="-Infinity"
+									GridPane.columnIndex="2" GridPane.columnSpan="2"
+									GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="3.0" top="1.0" />
+									</GridPane.margin>
+								</ChoiceBox>
+							</children>
+						</GridPane>
+						<GridPane fx:id="basePane" maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" styleClass="targetPane" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="CENTER"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="NEVER"
+									maxWidth="-Infinity" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label fx:id="titleLabel" alignment="CENTER"
+									maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity" prefWidth="20.0"
+									styleClass="labelTargetTitle" text="X" GridPane.hgrow="NEVER"
+									GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
+								<Label alignment="CENTER_RIGHT" maxHeight="-Infinity"
+									maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+									styleClass="targetItemLabel"
+									text="%fx.TargetSelectionParts.bookPath" textAlignment="RIGHT"
+									textOverrun="CLIP" GridPane.columnIndex="1" />
+								<Label fx:id="sheetNameLabel1" alignment="CENTER_RIGHT"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									styleClass="targetItemLabel"
+									text="%fx.TargetSelectionParts.sheetName" textAlignment="RIGHT"
+									textOverrun="CLIP" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<TextField fx:id="bookPathTextField1" editable="false"
+									maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+									minHeight="-Infinity" minWidth="-Infinity"
+									GridPane.columnIndex="2">
+									<GridPane.margin>
+										<Insets bottom="1.0" top="3.0" />
+									</GridPane.margin>
+								</TextField>
+								<Button fx:id="bookPathButton1" alignment="CENTER"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false" text="..." textAlignment="CENTER"
+									GridPane.columnIndex="3" />
+								<ChoiceBox fx:id="sheetNameChoiceBox1"
+									maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+									minHeight="-Infinity" minWidth="-Infinity"
+									GridPane.columnIndex="2" GridPane.columnSpan="2"
+									GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="3.0" top="1.0" />
+									</GridPane.margin>
+								</ChoiceBox>
+							</children>
+						</GridPane>
+					</children>
+					<opaqueInsets>
+						<Insets top="10.0" />
+					</opaqueInsets>
+				</VBox>
+				<AnchorPane fx:id="executePane"
+					maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+					minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER">
+					<children>
+						<Button fx:id="executeButton" alignment="CENTER"
+							contentDisplay="CENTER" maxHeight="-Infinity"
+							maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+							mnemonicParsing="false" prefWidth="60.0" text="実行"
+							textAlignment="CENTER" textOverrun="CLIP" wrapText="true"
+							AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+							AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+					</children>
+				</AnchorPane>
+			</children>
+			<VBox.margin>
+				<Insets bottom="3.0" />
+			</VBox.margin>
+		</HBox>
+		<AnchorPane fx:id="row3Pane"
+			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+			minHeight="-Infinity" minWidth="-Infinity">
+			<children>
+				<VBox fx:id="reportingPane" maxHeight="1.7976931348623157E308"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" AnchorPane.bottomAnchor="3.0"
+					AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+					AnchorPane.topAnchor="0.0">
+					<children>
+						<ProgressBar maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" progress="0.0" VBox.vgrow="NEVER" />
+						<TextArea maxHeight="1.7976931348623157E308"
+							maxWidth="1.7976931348623157E308" minHeight="0.0"
+							minWidth="-Infinity" prefRowCount="3" VBox.vgrow="ALWAYS" />
+					</children>
+				</VBox>
+				<AnchorPane fx:id="togglePane" maxHeight="-Infinity"
+					maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+					AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="2.0">
+					<children>
+						<ToggleButton fx:id="toggleButton"
+							contentDisplay="CENTER" maxHeight="-Infinity"
+							maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+							mnemonicParsing="false" rotate="90.0" text="》"
+							textAlignment="CENTER" AnchorPane.bottomAnchor="3.0"
+							AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="7.0"
+							AnchorPane.topAnchor="2.0" />
+					</children>
+				</AnchorPane>
+			</children>
+			<VBox.margin>
+				<Insets />
+			</VBox.margin>
+		</AnchorPane>
+		<AnchorPane fx:id="row4Pane" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="ALWAYS">
+			<children>
+				<VBox fx:id="settingsPane1" maxHeight="-Infinity"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" styleClass="paneSettingsArea"
+					AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+					AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					<children>
+						<GridPane maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label alignment="CENTER_RIGHT"
+									maxHeight="1.7976931348623157E308"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" styleClass="settingsTitleLabel1"
+									text="%fx.OptionsParts.compareOptions" textAlignment="RIGHT"
+									textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3" />
+								<CheckBox fx:id="considerRowGapsCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false" selected="true"
+									text="%fx.OptionsParts.compareOptions.considerRowGaps"
+									GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="7.0" right="7.0" top="5.0" />
+									</GridPane.margin>
+								</CheckBox>
+								<CheckBox fx:id="considerColumnGapsCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false"
+									text="%fx.OptionsParts.compareOptions.considerColumnGaps"
+									GridPane.columnIndex="1" GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
+									</GridPane.margin>
+								</CheckBox>
+								<HBox maxHeight="-Infinity"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1"
+									GridPane.hgrow="ALWAYS" GridPane.rowIndex="2"
+									GridPane.vgrow="NEVER">
+									<GridPane.margin>
+										<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+									</GridPane.margin>
+									<children>
+										<RadioButton fx:id="compareOnValueRadioButton"
+											maxHeight="-Infinity" maxWidth="-Infinity"
+											minHeight="-Infinity" minWidth="-Infinity"
+											mnemonicParsing="false" selected="true"
+											text="%fx.OptionsParts.compareOptions.compareOnValue">
+											<toggleGroup>
+												<ToggleGroup fx:id="compareValueOrFormula" />
+											</toggleGroup>
+										</RadioButton>
+										<RadioButton fx:id="compareOnFormulaRadioButton"
+											maxHeight="-Infinity" maxWidth="-Infinity"
+											minHeight="-Infinity" minWidth="-Infinity"
+											mnemonicParsing="false"
+											text="%fx.OptionsParts.compareOptions.compareOnFormula"
+											toggleGroup="$compareValueOrFormula" />
+									</children>
+								</HBox>
+							</children>
+						</GridPane>
+						<GridPane maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label alignment="CENTER_RIGHT"
+									maxHeight="1.7976931348623157E308"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" styleClass="settingsTitleLabel1"
+									text="%fx.OptionsParts.reportOptions" textAlignment="RIGHT"
+									textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
+								<CheckBox fx:id="showPaintedSheetsCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false" selected="true"
+									text="%fx.OptionsParts.reportOptions.showPaintedSheets"
+									GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
+									</GridPane.margin>
+								</CheckBox>
+								<CheckBox fx:id="showResultTextCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false" selected="true"
+									text="%fx.OptionsParts.reportOptions.showResultText"
+									GridPane.columnIndex="1" GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+									</GridPane.margin>
+								</CheckBox>
+							</children>
+							<VBox.margin>
+								<Insets />
+							</VBox.margin>
+						</GridPane>
+						<GridPane maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label alignment="CENTER_RIGHT"
+									maxHeight="1.7976931348623157E308"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" styleClass="settingsTitleLabel1"
+									text="%fx.OptionsParts.executionOptions" textAlignment="RIGHT"
+									textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
+								<CheckBox fx:id="exitWhenFinishedCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false"
+									text="%fx.OptionsParts.executionOptions.exitWhenFinished"
+									GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
+									</GridPane.margin>
+								</CheckBox>
+								<CheckBox fx:id="saveMemoryCheckBox"
+									maxHeight="-Infinity" maxWidth="-Infinity"
+									minHeight="-Infinity" minWidth="-Infinity"
+									mnemonicParsing="false"
+									text="%fx.OptionsParts.executionOptions.saveMemory"
+									GridPane.columnIndex="1" GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="5.0" left="7.0" right="7.0" top="1.0" />
+									</GridPane.margin>
+								</CheckBox>
+							</children>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox fx:id="settingsPane2" prefHeight="100.0"
+					prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+					AnchorPane.rightAnchor="0.0">
+					<children>
+						<GridPane maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label alignment="CENTER_RIGHT"
+									maxHeight="1.7976931348623157E308"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" styleClass="settingsTitleLabel2" text="言語"
+									textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" />
+								<ChoiceBox fx:id="localeChoiceBox"
+									maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+									minHeight="-Infinity" minWidth="-Infinity"
+									GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
+									</GridPane.margin>
+								</ChoiceBox>
+							</children>
+						</GridPane>
+						<GridPane maxHeight="-Infinity"
+							maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+							minWidth="-Infinity" VBox.vgrow="NEVER">
+							<columnConstraints>
+								<ColumnConstraints halignment="RIGHT"
+									hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+								<ColumnConstraints hgrow="ALWAYS"
+									maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+							</columnConstraints>
+							<rowConstraints>
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+								<RowConstraints maxHeight="-Infinity"
+									minHeight="-Infinity" vgrow="NEVER" />
+							</rowConstraints>
+							<children>
+								<Label alignment="CENTER_RIGHT"
+									maxHeight="1.7976931348623157E308"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" styleClass="settingsTitleLabel2"
+									text="作業用フォルダ" textAlignment="RIGHT" textOverrun="CLIP"
+									wrapText="true" GridPane.rowSpan="3" />
+								<Button alignment="CENTER" maxHeight="-Infinity"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" mnemonicParsing="false" text="開く"
+									textAlignment="CENTER" GridPane.columnIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
+									</GridPane.margin>
+								</Button>
+								<Button alignment="CENTER" maxHeight="-Infinity"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" mnemonicParsing="false" text="変更..."
+									textAlignment="CENTER" GridPane.columnIndex="1"
+									GridPane.rowIndex="1">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
+									</GridPane.margin>
+								</Button>
+								<Button alignment="CENTER" maxHeight="-Infinity"
+									maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+									minWidth="-Infinity" mnemonicParsing="false" text="削除..."
+									textAlignment="CENTER" GridPane.columnIndex="1"
+									GridPane.rowIndex="2">
+									<GridPane.margin>
+										<Insets bottom="1.0" left="5.0" right="5.0" top="1.0" />
+									</GridPane.margin>
+								</Button>
+							</children>
+						</GridPane>
+					</children>
+				</VBox>
+			</children>
+		</AnchorPane>
+	</children>
 </VBox>
