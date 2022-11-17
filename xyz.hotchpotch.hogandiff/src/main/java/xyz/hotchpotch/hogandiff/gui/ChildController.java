@@ -18,6 +18,7 @@ public interface ChildController {
      * この画面部品の内容を初期化します。<br>
      * 
      * @param parent このアプリケーションのコントローラ
+     * @param params 追加パラメータ
      */
     default void init(MainController parent, Object... params) {
     }

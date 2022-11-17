@@ -60,6 +60,11 @@ public class MainController extends VBox {
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
+        
+        // 1.disableプロパティのバインディング
+        // nop
+        
+        // 2.項目ごとの各種設定
         row1Pane.init(this);
         row2Pane.init(this);
         row3Pane.init(this);
@@ -69,6 +74,12 @@ public class MainController extends VBox {
                 .and(row2Pane.isReady())
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
+        
+        // 3.初期値の設定
+        // nop
+        
+        // 4.値変更時のイベントハンドラの設定
+        // nop
     }
     
     /**
@@ -78,6 +89,15 @@ public class MainController extends VBox {
      */
     public ReadOnlyProperty<AppMenu> menu() {
         return row1Pane.menu();
+    }
+    
+    /**
+     * 設定エリアを表示するか否かを返します。<br>
+     * 
+     * @return 設定エリアを表示する場合は {@code true}
+     */
+    public BooleanExpression showSettings() {
+        return row3Pane.showSettings();
     }
     
     /**
