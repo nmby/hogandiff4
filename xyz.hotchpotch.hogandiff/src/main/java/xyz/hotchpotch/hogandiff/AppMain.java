@@ -31,6 +31,9 @@ public class AppMain extends Application {
     /** このアプリケーションで利用するリソース */
     public static AppResource appResource = AppResource.fromProperties();
     
+    /** メインビューの {@link Stage} */
+    public static Stage stage;
+    
     /**
      * このアプリケーションのエントリポイントです。<br>
      * 
@@ -46,6 +49,8 @@ public class AppMain extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
+        
         // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
         // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
         ZipSecureFile.setMinInflateRatio(0.001);
@@ -54,19 +59,22 @@ public class AppMain extends Application {
                 getClass().getResource("gui/MainView.fxml"),
                 appResource.get());
         Parent root = loader.load();
+        Scene scene = new Scene(root);
         String cssPath = getClass().getResource("gui/application.css").toExternalForm();
         root.getStylesheets().add(cssPath.replace(" ", "%20"));
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
+        
+        primaryStage.setScene(scene);
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle(
                 appResource.get().getString("AppMain.010")
                         + "  -  "
                         + VERSION);
-        primaryStage.setScene(new Scene(root));
+        
         //primaryStage.setScene(new Scene(root, 500, 464));
         //primaryStage.setMinWidth(100);
         //primaryStage.setMinHeight(100);
-        primaryStage.sizeToScene();
+        //primaryStage.sizeToScene();
         primaryStage.show();
         
         MainController controller = loader.getController();

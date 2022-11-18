@@ -75,8 +75,18 @@ public class MainController extends VBox {
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
         
+        row3Pane.showSettings().addListener((target, oldValue, newValue) -> {
+            if (newValue) {
+                row4Pane.setVisible2(true);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight());
+            } else {
+                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight());
+                row4Pane.setVisible2(false);
+            }
+        });
+        
         // 3.初期値の設定
-        // nop
+        row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
         // 4.値変更時のイベントハンドラの設定
         // nop
@@ -89,15 +99,6 @@ public class MainController extends VBox {
      */
     public ReadOnlyProperty<AppMenu> menu() {
         return row1Pane.menu();
-    }
-    
-    /**
-     * 設定エリアを表示するか否かを返します。<br>
-     * 
-     * @return 設定エリアを表示する場合は {@code true}
-     */
-    public BooleanExpression showSettings() {
-        return row3Pane.showSettings();
     }
     
     /**
