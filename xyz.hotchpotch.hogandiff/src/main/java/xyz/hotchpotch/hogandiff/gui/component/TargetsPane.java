@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -9,12 +9,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.gui.ChildController;
+import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
- * 比較対象選択部分の画面部品です。<br>
+ * 比較対象指定部分の画面部品です。<br>
  * 
  * @author nmby
  */
@@ -57,13 +60,14 @@ public class TargetsPane extends VBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     @FXML
-    private TargetSelectionParts targetSelectionParts1;
+    private TargetSelectionPane targetSelectionPane1;
     
     @FXML
-    private TargetSelectionParts targetSelectionParts2;
+    private TargetSelectionPane targetSelectionPane2;
     
     /**
      * コンストラクタ<br>
@@ -78,15 +82,15 @@ public class TargetsPane extends VBox implements ChildController {
     }
     
     @Override
-    public void init(MainController parent) {
+    public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
         
         // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning);
+        disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
-        targetSelectionParts1.init(parent, Side.A, targetSelectionParts2);
-        targetSelectionParts2.init(parent, Side.B, targetSelectionParts1);
+        targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
+        targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
         
         // 3.初期値の設定
         // nop
@@ -97,6 +101,6 @@ public class TargetsPane extends VBox implements ChildController {
     
     @Override
     public BooleanExpression isReady() {
-        return targetSelectionParts1.isReady.and(targetSelectionParts2.isReady);
+        return targetSelectionPane1.isReady().and(targetSelectionPane2.isReady());
     }
 }

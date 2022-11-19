@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -15,14 +15,16 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.gui.ChildController;
+import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
- * 各種オプション指定部分の画面部品です。<br>
+ * 比較メニュー部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class OptionsParts extends VBox implements ChildController {
+public class SettingsPane1 extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -38,13 +40,13 @@ public class OptionsParts extends VBox implements ChildController {
     private CheckBox considerColumnGapsCheckBox;
     
     @FXML
-    private ToggleGroup compareValueOrFormula;
+    private ToggleGroup compareValuesOrFormulas;
     
     @FXML
-    private RadioButton compareOnValueRadioButton;
+    private RadioButton compareValuesRadioButton;
     
     @FXML
-    private RadioButton compareOnFormulaRadioButton;
+    private RadioButton compareFormulasRadioButton;
     
     @FXML
     private CheckBox showPaintedSheetsCheckBox;
@@ -63,19 +65,19 @@ public class OptionsParts extends VBox implements ChildController {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public OptionsParts() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("OptionsParts.fxml"), rb);
+    public SettingsPane1() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane1.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
     }
     
     @Override
-    public void init(MainController parent) {
+    public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
         
         // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning);
+        disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
         // nop
@@ -86,7 +88,7 @@ public class OptionsParts extends VBox implements ChildController {
         
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton::setSelected);
+        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
@@ -103,7 +105,7 @@ public class OptionsParts extends VBox implements ChildController {
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
         addListener.accept(saveMemoryCheckBox, SettingKeys.SAVE_MEMORY);
         
-        compareValueOrFormula.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
-                .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareOnFormulaRadioButton.isSelected()));
+        compareValuesOrFormulas.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
+                .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
     }
 }

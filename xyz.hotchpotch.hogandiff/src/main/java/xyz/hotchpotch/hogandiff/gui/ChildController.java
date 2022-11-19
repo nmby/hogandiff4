@@ -8,7 +8,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  * 
  * @author nmby
  */
-/*package*/ interface ChildController {
+public interface ChildController {
     
     // [static members] ********************************************************
     
@@ -18,8 +18,9 @@ import javafx.beans.property.SimpleBooleanProperty;
      * この画面部品の内容を初期化します。<br>
      * 
      * @param parent このアプリケーションのコントローラ
+     * @param params 追加パラメータ
      */
-    default void init(MainController parent) {
+    default void init(MainController parent, Object... params) {
     }
     
     /**

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="executePane"
+	type="AnchorPane" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<Button fx:id="executeButton" alignment="CENTER"
+			contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+			prefWidth="60.0" styleClass="executeButton"
+			text="%fx.ExecutePane.010" textAlignment="CENTER" textOverrun="CLIP"
+			wrapText="true" AnchorPane.bottomAnchor="0.0"
+			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+			AnchorPane.topAnchor="0.0" />
+	</children>
+</fx:root>

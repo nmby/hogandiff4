@@ -59,7 +59,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         this.settings = settings;
         this.factory = factory;
-        this.menu = settings.get(SettingKeys.CURR_MENU);
+        this.menu = settings.getOrDefault(SettingKeys.CURR_MENU);
     }
     
     @Override
