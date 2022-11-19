@@ -176,6 +176,17 @@ public class MainController extends VBox {
             e.printStackTrace();
             executor.shutdown();
             row3Pane.unbind();
+            
+            if (settings.get(SettingKeys.CURR_BOOK_INFO1).getReadPassword() != null
+                    || settings.get(SettingKeys.CURR_BOOK_INFO2).getReadPassword() != null) {
+                
+                new Alert(
+                        AlertType.WARNING,
+                        rb.getString("gui.MainController.020"),
+                        ButtonType.OK)
+                                .showAndWait();
+            }
+            
             new Alert(
                     AlertType.WARNING,
                     "%s%n%s%n%s".formatted(
@@ -184,6 +195,7 @@ public class MainController extends VBox {
                             e.getMessage()),
                     ButtonType.OK)
                             .showAndWait();
+            
             isRunning.set(false);
         });
     }
