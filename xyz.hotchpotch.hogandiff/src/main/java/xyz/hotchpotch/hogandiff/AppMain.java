@@ -34,6 +34,7 @@ public class AppMain extends Application {
     /** メインステージ */
     public static Stage stage;
     
+    // TODO: コンポーネントの実効サイズを動的に取得する方法を見つける
     /** 設定エリアを開いたときのメインステージの最小高さ */
     public static final double STAGE_HEIGHT_OPEN = 390d;
     
