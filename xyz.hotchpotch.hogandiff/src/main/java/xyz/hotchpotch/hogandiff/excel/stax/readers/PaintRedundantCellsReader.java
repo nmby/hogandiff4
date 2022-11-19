@@ -51,7 +51,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
      *      {@code source}, {@code stylesManager}, {@code redundantRows}, {@code redundantColumns}
      *      のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *      {@code redundantRows}, {@code redundantColumns の長さがいずれも 0 の場合
+     *      {@code redundantRows}, {@code redundantColumns} の長さがいずれも 0 の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,

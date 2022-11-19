@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
@@ -8,7 +7,7 @@ import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>
- * これは、{@link #paintAndSave(Path, Path, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #paintAndSave(BookInfo, BookInfo, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */

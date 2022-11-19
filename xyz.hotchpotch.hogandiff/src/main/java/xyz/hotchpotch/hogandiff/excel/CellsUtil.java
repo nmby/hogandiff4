@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.Objects;
 
-import org.apache.poi.ss.util.CellAddress;
+import org.apache.poi.ss.util.CellReference;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
@@ -28,7 +28,7 @@ public class CellsUtil {
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException("row:%d, column:%d".formatted(row, column));
         }
-        return new CellAddress(row, column).formatAsString();
+        return "%S%d".formatted(columnIdxToStr(column), row + 1);
     }
     
     /**
@@ -42,8 +42,22 @@ public class CellsUtil {
     public static IntPair addressToIdx(String address) {
         Objects.requireNonNull(address, "address");
         
-        CellAddress ca = new CellAddress(address);
-        return IntPair.of(ca.getRow(), ca.getColumn());
+        int i = 0;
+        for (; i < address.length(); i++) {
+            if (Character.isDigit(address.charAt(i))) {
+                break;
+            }
+        }
+        if (i == 0 || address.length() <= i) {
+            throw new IllegalArgumentException(address);
+        }
+        
+        String colStr = address.substring(0, i);
+        String rowStr = address.substring(i);
+        
+        return IntPair.of(
+                Integer.parseInt(rowStr) - 1,
+                CellReference.convertColStringToIndex(colStr));
     }
     
     /**
@@ -58,8 +72,7 @@ public class CellsUtil {
             throw new IndexOutOfBoundsException("column:%d".formatted(column));
         }
         
-        String address = new CellAddress(0, column).formatAsString();
-        return address.substring(0, address.length() - 1);
+        return CellReference.convertNumToColString(column);
     }
     
     /**
@@ -72,8 +85,7 @@ public class CellsUtil {
     public static int columnStrToIdx(String columnStr) {
         Objects.requireNonNull(columnStr, "columnStr");
         
-        CellAddress ca = new CellAddress(columnStr + "1");
-        return ca.getColumn();
+        return CellReference.convertColStringToIndex(columnStr);
     }
     
     // [instance members] ******************************************************

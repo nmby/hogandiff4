@@ -11,6 +11,11 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 
+/**
+ * ユーザーにパスワード入力を求めるダイアログボックスの要素です。<br>
+ * 
+ * @author nmby
+ */
 public class PasswordDialogPane extends VBox {
     
     // static members **********************************************************
@@ -28,6 +33,11 @@ public class PasswordDialogPane extends VBox {
     @FXML
     /*package*/ PasswordField passwordField;
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     */
     public PasswordDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PasswordDialogPane.fxml"), rb);
         loader.setRoot(this);

@@ -7,6 +7,8 @@ import java.util.Objects;
  * 同型の2つの要素を保持する不変クラスです。<br>
  *
  * @param <T> 要素の型
+ * @param a 要素a
+ * @param b 要素b
  * @author nmby
  */
 public record Pair<T> (T a, T b) {

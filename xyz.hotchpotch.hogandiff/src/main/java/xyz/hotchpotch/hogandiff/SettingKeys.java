@@ -27,7 +27,7 @@ public class SettingKeys {
     
     /** 作業用フォルダの作成場所のパス */
     public static final Key<Locale> APP_LOCALE = new Key<>(
-            "application.system.appLocale",
+            "application.appLocale",
             () -> Locale.JAPANESE,
             Locale::toLanguageTag,
             Locale::forLanguageTag,
@@ -35,7 +35,7 @@ public class SettingKeys {
     
     /** 作業用フォルダの作成場所のパス */
     public static final Key<Path> WORK_DIR_BASE = new Key<Path>(
-            "application.system.workDirBase",
+            "application.workDirBase",
             () -> Path.of(
                     System.getProperty("user.home"),
                     AppMain.APP_DOMAIN),
@@ -43,9 +43,37 @@ public class SettingKeys {
             Path::of,
             true);
     
+    /** 設定エリアを表示するか */
+    public static final Key<Boolean> SHOW_SETTINGS = new Key<Boolean>(
+            "application.showSettings",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
+    /** メインステージの縦幅 */
+    public static final Key<Double> STAGE_HEIGHT = new Key<Double>(
+            "application.height",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            String::valueOf,
+            Double::valueOf,
+            true);
+    
+    /** メインステージの横幅 */
+    public static final Key<Double> STAGE_WIDTH = new Key<Double>(
+            "application.width",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            String::valueOf,
+            Double::valueOf,
+            true);
+    
     /** 今回の実行を識別するためのタイムスタンプタグ */
     public static final Key<String> CURR_TIMESTAMP = new Key<String>(
-            "application.current.timestamp",
+            "current.timestamp",
             () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
             Function.identity(),
             Function.identity(),
@@ -53,17 +81,15 @@ public class SettingKeys {
     
     /** 今回の実行における比較メニュー */
     public static final Key<AppMenu> CURR_MENU = new Key<AppMenu>(
-            "application.current.menu",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            "current.menu",
+            () -> AppMenu.COMPARE_BOOKS,
             AppMenu::toString,
             AppMenu::valueOf,
             false);
     
     /** 今回の実行における比較対象Excelブック1の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<BookInfo>(
-            "application.current.bookInfo1",
+            "current.bookInfo1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
@@ -73,7 +99,7 @@ public class SettingKeys {
     
     /** 今回の実行における比較対象Excelブック2の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<BookInfo>(
-            "application.current.bookInfo2",
+            "current.bookInfo2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
@@ -83,7 +109,7 @@ public class SettingKeys {
     
     /** 今回の実行における比較対象Excelシート1の名前 */
     public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(
-            "application.current.sheetName1",
+            "current.sheetName1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
@@ -93,7 +119,7 @@ public class SettingKeys {
     
     /** 今回の実行における比較対象Excelシート2の名前 */
     public static final Key<String> CURR_SHEET_NAME2 = new Key<String>(
-            "application.current.sheetName2",
+            "current.sheetName2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
@@ -218,7 +244,7 @@ public class SettingKeys {
     
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
     public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<Boolean>(
-            "application.report.showPaintedSheets",
+            "report.showPaintedSheets",
             () -> true,
             String::valueOf,
             Boolean::valueOf,
@@ -226,7 +252,7 @@ public class SettingKeys {
     
     /** レポートオプション：比較結果が記載されたテキストを表示するか */
     public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<Boolean>(
-            "application.report.showResultText",
+            "report.showResultText",
             () -> true,
             String::valueOf,
             Boolean::valueOf,
@@ -234,7 +260,7 @@ public class SettingKeys {
     
     /** 実行オプション：比較完了時にこのアプリを終了するか */
     public static final Key<Boolean> EXIT_WHEN_FINISHED = new Key<Boolean>(
-            "application.execution.exitWhenFinished",
+            "execution.exitWhenFinished",
             () -> false,
             String::valueOf,
             Boolean::valueOf,
@@ -242,7 +268,7 @@ public class SettingKeys {
     
     /** 実行オプション：省メモリモードで比較するか */
     public static final Key<Boolean> SAVE_MEMORY = new Key<Boolean>(
-            "application.execution.saveMemory",
+            "execution.saveMemory",
             () -> false,
             String::valueOf,
             Boolean::valueOf,

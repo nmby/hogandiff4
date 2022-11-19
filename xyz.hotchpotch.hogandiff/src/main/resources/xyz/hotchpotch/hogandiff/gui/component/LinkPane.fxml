@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root alignment="CENTER_RIGHT"
+	maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="linkPane"
+	type="HBox" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<Hyperlink fx:id="toWebSiteHyperlink" alignment="CENTER"
+			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+			minWidth="-Infinity" text="%fx.LinkPane.010" HBox.hgrow="NEVER" />
+	</children>
+</fx:root>

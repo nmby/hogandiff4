@@ -15,6 +15,11 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
+ * @param considerRowGaps 行の挿入／削除を考慮する場合は {@code true}
+ * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true} 
+ * @param redundantRows 余剰行の配列のペア
+ * @param redundantColumns 余剰列の配列のペア
+ * @param diffCells 差分セルのペアのリスト
  */
 public record SResult(
         boolean considerRowGaps,
@@ -32,6 +37,11 @@ public record SResult(
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
      * @author nmby
+     * @param redundantRows 余剰行の配列
+     * @param redundantColumns 余剰列の配列
+     * @param diffCellContents セル内容に差分のあるセルのリスト
+     * @param diffCellComments セルコメントに差分のあるセルのリスト
+     * @param redundantCellComments セルコメントが余剰であるセルのリスト
      */
     public static record Piece(
             int[] redundantRows,
@@ -44,6 +54,16 @@ public record SResult(
         
         // [instance members] --------------------------------------------------
         
+        /**
+         * コンストラクタ<br>
+         * 
+         * @param redundantRows 余剰行の配列
+         * @param redundantColumns 余剰列の配列
+         * @param diffCellContents セル内容に差分のあるセルのリスト
+         * @param diffCellComments セルコメントに差分のあるセルのリスト
+         * @param redundantCellComments セルコメントが余剰であるセルのリスト
+         * @throws NullPointerException いずれかのパラメータが {@code null} の場合
+         */
         // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
         // 本来はコンストラクタを公開する必要がない。ぐぬぬ
         // recordを使う欲の方が上回ったのでコンストラクタを公開しちゃう。ぐぬぬ
@@ -86,7 +106,6 @@ public record SResult(
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
-     * @return Excelシート同士の比較結果
      * @throws NullPointerException
      *              {@code redundantRows}, {@code redundantColumns}, {@code diffCells}
      *              のいずれかが {@code null} の場合

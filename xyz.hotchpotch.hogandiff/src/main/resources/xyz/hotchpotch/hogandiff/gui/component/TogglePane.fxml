@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="togglePane"
+	type="AnchorPane" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<ToggleButton fx:id="toggleButton"
+			contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+			rotate="90.0" styleClass="toggleButton" text="》"
+			textAlignment="CENTER" AnchorPane.bottomAnchor="3.0"
+			AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="7.0"
+			AnchorPane.topAnchor="2.0" />
+	</children>
+</fx:root>

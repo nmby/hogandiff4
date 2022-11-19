@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.function.IntUnaryOperator;
 
 /**
- * 2つの {@link int} 値を保持する不変クラスです。<br>
+ * 2つの {@code int} 値を保持する不変クラスです。<br>
  * 
  * @author nmby
  */

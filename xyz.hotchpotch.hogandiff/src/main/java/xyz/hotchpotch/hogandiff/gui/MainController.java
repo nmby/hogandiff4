@@ -1,7 +1,5 @@
 package xyz.hotchpotch.hogandiff.gui;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,19 +7,24 @@ import java.util.concurrent.Executors;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
+import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
+import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
+import xyz.hotchpotch.hogandiff.gui.layout.Row4Pane;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -29,100 +32,93 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  *
  * @author nmby
  */
-public class MainController {
+public class MainController extends VBox {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
     @FXML
-    private MenuPane menuPane;
+    private Row1Pane row1Pane;
     
     @FXML
-    private LocalePane localePane;
+    private Row2Pane row2Pane;
     
     @FXML
-    private TargetsPane targetsPane;
+    private Row3Pane row3Pane;
     
     @FXML
-    private SettingsPane settingsPane;
+    private Row4Pane row4Pane;
     
-    @FXML
-    private ReportingPane reportingPane;
+    private final BooleanProperty isReady = new SimpleBooleanProperty(false);
+    private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
-    @FXML
-    private UtilPane utilPane;
-    
-    private List<ChildController> children;
-    
-    /*package*/ final Factory factory = Factory.of();
-    /*package*/ final Property<AppMenu> menu = new SimpleObjectProperty<>();
-    /*package*/ final BooleanProperty hasSettingsChanged = new SimpleBooleanProperty(false);
-    /*package*/ final BooleanProperty isReady = new SimpleBooleanProperty(false);
-    /*package*/ final BooleanProperty isRunning = new SimpleBooleanProperty(false);
-    
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
     public void initialize() {
-        children = List.of(
-                menuPane,
-                localePane,
-                targetsPane,
-                settingsPane,
-                reportingPane,
-                utilPane);
         
-        isReady.bind(
-                children.stream()
-                        .map(ChildController::isReady)
-                        .reduce(BooleanExpression::and)
-                        .get());
+        // 1.disableプロパティのバインディング
+        // nop
         
-        children.forEach(child -> child.init(this));
+        // 2.項目ごとの各種設定
+        row1Pane.init(this);
+        row2Pane.init(this);
+        row3Pane.init(this);
+        row4Pane.init(this);
+        
+        isReady.bind(row1Pane.isReady()
+                .and(row2Pane.isReady())
+                .and(row3Pane.isReady())
+                .and(row4Pane.isReady()));
+        
+        row3Pane.showSettings().addListener((target, oldValue, newValue) -> {
+            if (newValue) {
+                row4Pane.setVisible2(true);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight() + 3);
+                AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_OPEN);
+            } else {
+                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight() - 3);
+                AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
+                row4Pane.setVisible2(false);
+            }
+        });
+        
+        // 3.初期値の設定
+        row4Pane.setVisible2(row3Pane.showSettings().getValue());
+        
+        // 4.値変更時のイベントハンドラの設定
+        // nop
     }
     
     /**
-     * 指定された設定の内容で各種コントローラの状態を変更します。<br>
+     * 比較メニューを返します。<br>
      * 
-     * @param settings 設定
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @return 比較メニュー
      */
-    public void applySettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        children.forEach(child -> child.applySettings(settings));
-    }
-    
-    /*package*/ Settings gatherSettings() {
-        Settings.Builder builder = Settings.builder();
-        
-        builder.setDefaultValue(SettingKeys.MATCH_NAMES_STRICTLY);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_COMMENT_COLOR);
-        builder.setDefaultValue(SettingKeys.REDUNDANT_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.DIFF_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.SAME_SHEET_COLOR);
-        builder.setDefaultValue(SettingKeys.CURR_TIMESTAMP);
-        
-        builder.set(SettingKeys.CURR_MENU, menu.getValue());
-        
-        children.forEach(child -> child.gatherSettings(builder));
-        
-        return builder.build();
+    public ReadOnlyProperty<AppMenu> menu() {
+        return row1Pane.menu();
     }
     
     /**
-     * 実行の準備が整っているかを返します。<br>
+     * 比較処理を実行できる状態か否かを返します。<br>
      * 
-     * @return 実行の準備が整っている場合は {@code true}
+     * @return 比較処理を実行できる状態の場合は {@code true}
      */
-    public boolean isReady() {
-        return isReady.getValue();
+    public BooleanExpression isReady() {
+        return isReady;
+    }
+    
+    /**
+     * 比較処理を実行中か否かを返します。<br>
+     * 
+     * @return 比較処理を実行中の場合は {@code true}
+     */
+    public BooleanExpression isRunning() {
+        return isRunning;
     }
     
     /**
@@ -135,8 +131,8 @@ public class MainController {
             throw new IllegalStateException();
         }
         
-        Settings settings = gatherSettings();
-        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
+        Settings settings = ar.settings();
+        AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(settings)) {
             new Alert(
@@ -149,14 +145,14 @@ public class MainController {
         
         isRunning.set(true);
         
-        Task<Void> task = menu.getTask(settings, factory);
-        reportingPane.bind(task);
+        Task<Void> task = menu.getTask(settings, Factory.of());
+        row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(task);
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
-            reportingPane.unbind();
+            row3Pane.unbind();
             
             if (settings.get(SettingKeys.CURR_BOOK_INFO1).getReadPassword() != null
                     || settings.get(SettingKeys.CURR_BOOK_INFO2).getReadPassword() != null) {
@@ -168,7 +164,7 @@ public class MainController {
                                 .showAndWait();
             }
             
-            if (settings.get(SettingKeys.EXIT_WHEN_FINISHED)) {
+            if (settings.getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);
@@ -179,7 +175,7 @@ public class MainController {
             Throwable e = task.getException();
             e.printStackTrace();
             executor.shutdown();
-            reportingPane.unbind();
+            row3Pane.unbind();
             new Alert(
                     AlertType.WARNING,
                     "%s%n%s%n%s".formatted(

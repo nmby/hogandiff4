@@ -108,8 +108,8 @@ public class Factory {
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
-        boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
-        boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
+        boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
@@ -170,7 +170,7 @@ public class Factory {
     public Matcher<String> sheetNameMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        return settings.get(SettingKeys.MATCH_NAMES_STRICTLY)
+        return settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY)
                 ? Matcher.identityMatcher()
                 : Matcher.nerutonMatcherOf(
                         String::length,
@@ -187,9 +187,9 @@ public class Factory {
     public SComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
-        boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean saveMemory = settings.get(SettingKeys.SAVE_MEMORY);
+        boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
+        boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
         return SComparatorImpl.of(
                 considerRowGaps,
@@ -214,16 +214,16 @@ public class Factory {
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(bookInfo, "bookInfo");
         
-        short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
-        short diffColor = settings.get(SettingKeys.DIFF_COLOR);
-        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
+        short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
+        short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.getOrDefault(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.getOrDefault(SettingKeys.DIFF_COMMENT_COLOR);
         // もうなんか滅茶苦茶や・・・
         String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
         String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
-        Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
-        Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
-        Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
+        Color redundantSheetColor = settings.getOrDefault(SettingKeys.REDUNDANT_SHEET_COLOR);
+        Color diffSheetColor = settings.getOrDefault(SettingKeys.DIFF_SHEET_COLOR);
+        Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
         
         switch (bookInfo.bookType()) {
         case XLS:

@@ -1,79 +1,89 @@
 
 .root {
     -fx-font-size: 12.0px;
-	-fx-padding: 0.0px 10.0px 10.0px 10.0px;
+	-fx-padding: 10.0px 10.0px 7.0px 10.0px;
 	-fx-background-color: white;
 }
 
-#menuPane {
-	-fx-spacing: 15.0px;
-	-fx-padding: 13.0px 0.0px 10.0px 0.0px;
+.row1Pane {
+    -fx-padding: 0.0px 0.0px 7.0px 0.0px;
 }
 
-#localePane {
-    -fx-padding: 0.0px;
+.menuPane {
+    -fx-spacing: 15.0px;
 }
 
-#targetsPane {
-	-fx-spacing: 3.0px;
+.row2Pane {
+    -fx-spacing: 2.0px;
+    -fx-padding: 0.0px 0.0px 3.0px 0.0px;
 }
 
-.paneTarget {
-	-fx-background-color: rgb(219.0, 244.0, 231.0);
-	-fx-padding: 0.0px 15.0px 0.0px 0.0px
+.targetsPane {
+    -fx-spacing: 3.0px;
 }
 
-.labelTargetTitle {
-	-fx-font-size: 18.0px;
-	-fx-text-fill: white;
-	-fx-pref-width: 28.0px;
-	-fx-alignment: center;
-	-fx-background-color: rgb(33.0, 115.0, 70.0);
+.targetSelectionPane {
+    -fx-background-color: rgb(219.0, 244.0, 231.0);
+    -fx-padding: 0.0px 12.0px 0.0px 0.0px
 }
 
-.labelTargetItem {
-	-fx-pref-width: 77.0px;
-	-fx-padding: 0.0px 3.0px 0.0px 0.0px;
+.targetTitleLabel {
+    -fx-font-size: 18.0px;
+    -fx-text-fill: white;
+    -fx-pref-width: 28.0px;
+    -fx-alignment: center;
+    -fx-background-color: rgb(33.0, 115.0, 70.0);
 }
 
-.paneSettingsArea {
-	-fx-background-color: rgb(230.0, 240.0, 255.0);
-	-fx-pref-width: 230.0px;
+.targetItemLabel {
+    -fx-pref-width: 77.0px;
+    -fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
-.labelSettingsTitle {
-	-fx-background-color: rgb(196.0, 219.0, 255.0);
-	-fx-padding: 0.0px 7.0px 0.0px 5.0px;
-	-fx-pref-width: 95.0px;
+.executePane {
+    -fx-background-color: rgb(255.0, 200.0, 200.0);
+    -fx-padding: 10.0px 10.0px 10.0px 10.0px;
 }
 
-.paneSaveSettings {
-	-fx-padding: 10.0px 15.0px 10.0px 25.0px;
-	-fx-background-color: rgb(230.0, 240.0, 255.0);
+.executeButton {
+    -fx-font-size: 18.0px;
+    -fx-pref-width: 60.0px;
 }
 
-#saveSettingsButton {
-	-fx-pref-width: 100.0px;
-	-fx-pref-height: 40.0px;
+.togglePane {
+    -fx-background-color: rgb(230.0, 240.0, 255.0);
 }
 
-.paneExecute {
-	-fx-padding: 10.0px 15.0px 5.0px 15.0px;
-	-fx-background-color: rgb(255.0, 200.0, 200.0);
+.toggleButton {
+    -fx-font-size: 10.0px;
 }
 
-#executeButton {
-	-fx-font-size: 20.0px;
-	-fx-pref-width: 100.0px;
+.settingsPane1 {
+    -fx-background-color: rgb(230.0, 240.0, 255.0);
+    -fx-spacing: 3.0px;
 }
 
-#reportingPane {
-	-fx-background-color: rgb(255.0, 200.0, 200.0);
-	-fx-padding: 10.0px 10.0px 0.0px 10.0px;
+.settingsTitleLabel1 {
+    -fx-background-color: rgb(196.0, 219.0, 255.0);
+    -fx-padding: 0.0px 7.0px 0.0px 5.0px;
+    -fx-pref-width: 95.0px;
 }
 
-#utilPane {
-	-fx-background-color: rgb(255.0, 200.0, 200.0);
-	-fx-padding: 5.0px 10.0px 10.0px 10.0px;
-	-fx-spacing: 1.0px;
+.settingsPane2 {
+    -fx-background-color: rgb(230.0, 240.0, 255.0);
+    -fx-spacing: 3.0px;
+}
+
+.settingsTitleLabel2 {
+    -fx-background-color: rgb(196.0, 219.0, 255.0);
+    -fx-padding: 0.0px 7.0px 0.0px 5.0px;
+    -fx-pref-width: 65.0px;
+}
+
+.localeChoiceBox {
+    -fx-pref-width: 85.0px;
+}
+
+.workDirButton {
+    -fx-pref-width: 85.0px;
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+
+<fx:root alignment="CENTER_LEFT"
+	maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="menuPane"
+	type="HBox" xmlns="http://javafx.com/javafx/18"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<RadioButton fx:id="compareBooksRadioButton"
+			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+			minWidth="-Infinity" mnemonicParsing="false" selected="true"
+			text="%fx.MenuPane.010" HBox.hgrow="NEVER">
+			<toggleGroup>
+				<ToggleGroup fx:id="compareBooksOrSheets" />
+			</toggleGroup>
+		</RadioButton>
+		<RadioButton fx:id="compareSheetsRadioButton"
+			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+			minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.020"
+			toggleGroup="$compareBooksOrSheets" HBox.hgrow="NEVER" />
+	</children>
+</fx:root>
