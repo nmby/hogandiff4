@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
  * このアプリケーションのエントリポイントです。<br>
@@ -41,6 +42,9 @@ public class AppMain extends Application {
     /** 設定エリアを閉じたときのメインステージの最小高さ */
     public static final double STAGE_HEIGHT_CLOSE = 232d;
     
+    /** メインステージの最小幅 */
+    public static final double STAGE_WIDTH = 532d;
+    
     /**
      * このアプリケーションのエントリポイントです。<br>
      * 
@@ -70,6 +74,7 @@ public class AppMain extends Application {
         String cssPath = getClass().getResource("gui/application.css").toExternalForm();
         root.getStylesheets().add(cssPath.replace(" ", "%20"));
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
+        Settings settings = appResource.settings();
         
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(icon);
@@ -78,16 +83,37 @@ public class AppMain extends Application {
                         + "  -  "
                         + VERSION);
         
-        primaryStage.setMinWidth(532);
         primaryStage.setMinHeight(
-                appResource.settings().getOrDefault(SettingKeys.SHOW_SETTINGS)
+                settings.getOrDefault(SettingKeys.SHOW_SETTINGS)
                         ? STAGE_HEIGHT_OPEN
                         : STAGE_HEIGHT_CLOSE);
+        primaryStage.setMinWidth(STAGE_WIDTH);
+        
+        if (settings.containsKey(SettingKeys.STAGE_HEIGHT)) {
+            primaryStage.setHeight(settings.get(SettingKeys.STAGE_HEIGHT));
+        }
+        if (settings.containsKey(SettingKeys.STAGE_WIDTH)) {
+            primaryStage.setWidth(settings.get(SettingKeys.STAGE_WIDTH));
+        }
         primaryStage.show();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.execute();
+        }
+    }
+    
+    @Override
+    public void stop() {
+        Settings settings = appResource.settings();
+        
+        if (!settings.containsKey(SettingKeys.STAGE_HEIGHT)
+                || settings.get(SettingKeys.STAGE_HEIGHT) != stage.getHeight()) {
+            appResource.changeSetting(SettingKeys.STAGE_HEIGHT, stage.getHeight());
+        }
+        if (!settings.containsKey(SettingKeys.STAGE_WIDTH)
+                || settings.get(SettingKeys.STAGE_WIDTH) != stage.getWidth()) {
+            appResource.changeSetting(SettingKeys.STAGE_WIDTH, stage.getWidth());
         }
     }
 }

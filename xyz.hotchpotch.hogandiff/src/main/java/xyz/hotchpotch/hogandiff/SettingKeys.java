@@ -27,7 +27,7 @@ public class SettingKeys {
     
     /** 作業用フォルダの作成場所のパス */
     public static final Key<Locale> APP_LOCALE = new Key<>(
-            "application.system.appLocale",
+            "application.appLocale",
             () -> Locale.JAPANESE,
             Locale::toLanguageTag,
             Locale::forLanguageTag,
@@ -35,7 +35,7 @@ public class SettingKeys {
     
     /** 作業用フォルダの作成場所のパス */
     public static final Key<Path> WORK_DIR_BASE = new Key<Path>(
-            "application.system.workDirBase",
+            "application.workDirBase",
             () -> Path.of(
                     System.getProperty("user.home"),
                     AppMain.APP_DOMAIN),
@@ -49,6 +49,26 @@ public class SettingKeys {
             () -> false,
             String::valueOf,
             Boolean::valueOf,
+            true);
+    
+    /** メインステージの縦幅 */
+    public static final Key<Double> STAGE_HEIGHT = new Key<Double>(
+            "application.height",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            String::valueOf,
+            Double::valueOf,
+            true);
+    
+    /** メインステージの横幅 */
+    public static final Key<Double> STAGE_WIDTH = new Key<Double>(
+            "application.width",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            String::valueOf,
+            Double::valueOf,
             true);
     
     /** 今回の実行を識別するためのタイムスタンプタグ */
