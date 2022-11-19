@@ -20,7 +20,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -78,7 +78,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private ChoiceBox<LocaleItem> localeChoiceBox;
+    private ComboBox<LocaleItem> localeComboBox;
     
     @FXML
     private Button openWorkDirButton;
@@ -111,7 +111,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
-        localeChoiceBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
+        localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
         
         openWorkDirButton.setOnAction(event -> {
             try {
@@ -199,13 +199,13 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         // 3.初期値の設定
         Locale locale = ar.settings().getOrDefault(SettingKeys.APP_LOCALE);
-        localeChoiceBox.setValue(LocaleItem.of(locale));
+        localeComboBox.setValue(LocaleItem.of(locale));
         
         workDirBase.setValue(ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE));
         
         // 4.値変更時のイベントハンドラの設定
-        localeChoiceBox.setOnAction(event -> {
-            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeChoiceBox.getValue().locale)) {
+        localeComboBox.setOnAction(event -> {
+            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s%n%n%s".formatted(
