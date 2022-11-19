@@ -31,8 +31,14 @@ public class AppMain extends Application {
     /** このアプリケーションで利用するリソース */
     public static AppResource appResource = AppResource.fromProperties();
     
-    /** メインビューの {@link Stage} */
+    /** メインステージ */
     public static Stage stage;
+    
+    /** 設定エリアを開いたときのメインステージの最小高さ */
+    public static final double STAGE_HEIGHT_OPEN = 390d;
+    
+    /** 設定エリアを閉じたときのメインステージの最小高さ */
+    public static final double STAGE_HEIGHT_CLOSE = 232d;
     
     /**
      * このアプリケーションのエントリポイントです。<br>
@@ -71,10 +77,11 @@ public class AppMain extends Application {
                         + "  -  "
                         + VERSION);
         
-        //primaryStage.setScene(new Scene(root, 500, 464));
-        //primaryStage.setMinWidth(100);
-        //primaryStage.setMinHeight(100);
-        //primaryStage.sizeToScene();
+        primaryStage.setMinWidth(532);
+        primaryStage.setMinHeight(
+                appResource.settings().getOrDefault(SettingKeys.SHOW_SETTINGS)
+                        ? STAGE_HEIGHT_OPEN
+                        : STAGE_HEIGHT_CLOSE);
         primaryStage.show();
         
         MainController controller = loader.getController();

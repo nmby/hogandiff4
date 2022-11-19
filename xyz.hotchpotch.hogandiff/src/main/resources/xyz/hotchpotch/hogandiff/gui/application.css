@@ -1,7 +1,7 @@
 
 .root {
     -fx-font-size: 12.0px;
-	-fx-padding: 10.0px;
+	-fx-padding: 10.0px 10.0px 7.0px 10.0px;
 	-fx-background-color: white;
 }
 
