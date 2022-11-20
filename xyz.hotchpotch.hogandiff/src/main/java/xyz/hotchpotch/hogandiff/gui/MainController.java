@@ -104,6 +104,15 @@ public class MainController extends VBox {
     }
     
     /**
+     * 設定エリアを表示するか否かを返します。<br>
+     * 
+     * @return 設定エリアを表示する場合は {@code true}
+     */
+    public BooleanExpression showSettings() {
+        return row3Pane.showSettings();
+    }
+    
+    /**
      * 比較処理を実行できる状態か否かを返します。<br>
      * 
      * @return 比較処理を実行できる状態の場合は {@code true}

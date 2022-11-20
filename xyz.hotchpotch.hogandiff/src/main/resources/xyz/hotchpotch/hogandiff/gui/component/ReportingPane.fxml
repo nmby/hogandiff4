@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="reportingPane" type="VBox" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="1.7976931348623157E308"
+	maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+	minWidth="-Infinity" styleClass="reportingPane" type="VBox"
+	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<ProgressBar fx:id="reportingProgressBar" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" progress="0.0" styleClass="reportingProgressBar" VBox.vgrow="NEVER" />
-		<TextArea fx:id="reportingTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="-Infinity" prefColumnCount="0" prefHeight="0.0" prefRowCount="0" styleClass="reportingTextArea" wrapText="true" VBox.vgrow="ALWAYS" />
+		<ProgressBar fx:id="reportingProgressBar"
+			maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+			minHeight="-Infinity" minWidth="-Infinity" progress="0.0"
+			styleClass="reportingProgressBar" VBox.vgrow="NEVER" />
+		<TextArea fx:id="reportingTextArea" editable="false"
+			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+			minHeight="0.0" minWidth="-Infinity" prefColumnCount="0"
+			prefHeight="0.0" prefRowCount="0" styleClass="reportingTextArea"
+			wrapText="true" VBox.vgrow="ALWAYS" />
+		<Separator fx:id="reportingSeparator" maxHeight="3.0"
+			maxWidth="1.7976931348623157E308" minHeight="3.0"
+			minWidth="-Infinity" prefHeight="3.0" styleClass="reportingSeparator"
+			VBox.vgrow="NEVER">
+			<cursor>
+				<Cursor fx:constant="V_RESIZE" />
+			</cursor>
+		</Separator>
 	</children>
 </fx:root>
