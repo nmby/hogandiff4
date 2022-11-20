@@ -7,7 +7,9 @@ import java.util.ResourceBundle;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -35,6 +37,9 @@ public class ReportingPane extends VBox implements ChildController {
     @FXML
     private TextArea reportingTextArea;
     
+    private ScrollBar scrollBar;
+    private MainController parent;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -50,6 +55,8 @@ public class ReportingPane extends VBox implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
+        
+        this.parent = parent;
         
         // 1.disableプロパティのバインディング
         //disableProperty().bind(parent.isRunning().not());
@@ -74,6 +81,25 @@ public class ReportingPane extends VBox implements ChildController {
         
         reportingProgressBar.progressProperty().bind(task.progressProperty());
         reportingTextArea.textProperty().bind(task.messageProperty());
+        
+        if (scrollBar == null) {
+            reportingTextArea.lookupAll(".scroll-bar").stream()
+                    .filter(n -> n instanceof ScrollBar s && s.getOrientation() == Orientation.VERTICAL)
+                    .map(n -> (ScrollBar) n)
+                    .findAny()
+                    .ifPresent(bar -> {
+                        scrollBar = bar;
+                        reportingTextArea.textProperty().addListener((t, o, n) -> bar.setValue(bar.getMax()));
+                        bar.valueProperty().addListener((target, oldValue, newValue) -> {
+                            if (newValue.doubleValue() == 0d
+                                    && oldValue.doubleValue() == bar.getMax()
+                                    && !bar.pressedProperty().get()
+                                    && parent.isRunning().get()) {
+                                bar.setValue(bar.getMax());
+                            }
+                        });
+                    });
+        }
     }
     
     /**
