@@ -43,7 +43,7 @@ public class AppMain extends Application {
     public static final double STAGE_HEIGHT_CLOSE = 232d;
     
     /** メインステージの最小幅 */
-    public static final double STAGE_WIDTH = 532d;
+    public static final double STAGE_WIDTH = 521d;
     
     /**
      * このアプリケーションのエントリポイントです。<br>

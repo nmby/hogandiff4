@@ -8,7 +8,7 @@ import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.gui.component.TogglePane;
  * 
  * @author nmby
  */
-public class Row3Pane extends AnchorPane implements ChildController {
+public class Row3Pane extends StackPane implements ChildController {
     
     // [static members] ********************************************************
     
