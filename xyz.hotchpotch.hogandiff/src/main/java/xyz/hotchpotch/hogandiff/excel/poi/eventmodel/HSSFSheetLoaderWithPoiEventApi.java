@@ -272,7 +272,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             if (record instanceof CellRecord && prevFormulaRec != null) {
                 throw new AssertionError("no following string record");
             }
-            if (record instanceof StringRecord sRec && prevFormulaRec == null) {
+            if (record instanceof StringRecord && prevFormulaRec == null) {
                 throw new AssertionError("unexpected string record");
             }
             

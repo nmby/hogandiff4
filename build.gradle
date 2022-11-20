@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.14.0'
+final def version = '0.14.1'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -206,7 +206,7 @@ task exewrapForWinX64 {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '18',
+                    '-t', '19',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
@@ -345,7 +345,7 @@ task checkDependencies {
 
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--multi-release', 18,
+                    '--multi-release', 19,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};" \
                                     + "${project['myprop.jfx.lib.win.x64']};" \
                                     + "${poiMods};" \
