@@ -203,7 +203,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                     setGraphic(null);
                 } else {
                     ImageView iv = new ImageView(item.image);
-                    iv.setFitHeight(15);
+                    iv.setFitHeight(17);
                     iv.setPreserveRatio(true);
                     setGraphic(iv);
                     
