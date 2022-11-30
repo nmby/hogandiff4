@@ -145,19 +145,6 @@ public class Settings {
     }
     
     /**
-     * 指定された設定で初期化された、このクラスのビルダーを返します。<br>
-     * 
-     * @param original 初期設定
-     * @return 新しいビルダー
-     * @throws NullPointerException {@code original} が {@code null} の場合
-     */
-    public static Builder builder(Settings original) {
-        Objects.requireNonNull(original, "original");
-        
-        return new Builder(original.map);
-    }
-    
-    /**
      * 指定されたプロパティセットと設定項目セットで初期化された、
      * このクラスのビルダーを返します。<br>
      * 具体的には、指定された設定項目セットに含まれる設定項目名のプロパティが
@@ -193,7 +180,7 @@ public class Settings {
     }
     
     /**
-     * 指定された設定項目セットに同じ名前の設定項目が含まれるが調べ、
+     * 指定された設定項目セットに同じ名前の設定項目が含まれるか調べ、
      * 含まれる場合は例外をスローします。<br>
      * 
      * @param keys 設定項目セット
@@ -353,6 +340,6 @@ public class Settings {
     public <T> Settings getAltered(Key<T> key, T value) {
         Objects.requireNonNull(key, "key");
         
-        return Settings.builder(this).set(key, value).build();
+        return Settings.builder().setAll(this).set(key, value).build();
     }
 }

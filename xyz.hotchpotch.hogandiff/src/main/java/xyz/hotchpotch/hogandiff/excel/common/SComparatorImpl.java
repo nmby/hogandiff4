@@ -28,7 +28,7 @@ public class SComparatorImpl implements SComparator {
     
     // [static members] ********************************************************
     
-    private static int[] EMPTY_INT_ARRAY = new int[] {};
+    private static final int[] EMPTY_INT_ARRAY = new int[] {};
     
     /**
      * 行同士または列同士の対応関係を決定するマッパーを表します。<br>

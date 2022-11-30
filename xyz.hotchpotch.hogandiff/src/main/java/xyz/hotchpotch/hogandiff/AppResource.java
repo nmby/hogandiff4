@@ -129,9 +129,10 @@ public class AppResource {
         // その内容で既存の内容を上書きする。
         // つまり、アプリケーション実行時引数で指定された内容を優先させる。
         if (fromArgs.isPresent()) {
-            Settings.Builder builder = Settings.builder(settings);
-            builder.setAll(fromArgs.get());
-            this.settings = builder.build();
+            settings = Settings.builder()
+                    .setAll(settings)
+                    .setAll(fromArgs.get())
+                    .build();
             
         } else if (0 < args.length) {
             System.err.println(AppArgsParser.USAGE);

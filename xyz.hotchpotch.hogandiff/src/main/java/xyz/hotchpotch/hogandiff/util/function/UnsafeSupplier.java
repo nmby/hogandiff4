@@ -45,7 +45,7 @@ public interface UnsafeSupplier<T> {
     
     /**
      * この {@link UnsafeSupplier} を {@link Supplier} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
+     * この {@link UnsafeSupplier} がスローするチェック例外は、
      * {@link RuntimeException} にラップされます。<br>
      * 
      * @return スローする例外が変換されたサプライヤ
@@ -56,7 +56,7 @@ public interface UnsafeSupplier<T> {
     
     /**
      * この {@link UnsafeSupplier} を {@link Supplier} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
+     * この {@link UnsafeSupplier} がスローするチェック例外は、
      * 指定されたラッパーで非チェック例外にラップされます。<br>
      * 
      * @param wrapper チェック例外を非チェック例外に変換するラッパー
