@@ -26,12 +26,24 @@ public class AppResource {
     // static members **********************************************************
     
     /** プロパティファイルの相対パス */
-    private static final Path APP_PROP_PATH;
+    private static Path APP_PROP_PATH;
     static {
         String osName = System.getProperty("os.name").toLowerCase();
-        APP_PROP_PATH = osName.startsWith("mac")
-                ? Path.of(System.getProperty("user.home"), "xyz.hotchpotch.hogandiff.properties")
-                : Path.of("hogandiff.properties");
+        String userHome = System.getProperty("user.home");
+        
+        Path dir = osName.startsWith("mac")
+                ? Path.of(userHome, "xyz.hotchpotch.hogandiff")
+                : Path.of(userHome, "AppData", "Roaming", "xyz.hotchpotch.hogandiff");
+        
+        try {
+            if (Files.notExists(dir)) {
+                Files.createDirectory(dir);
+            }
+            APP_PROP_PATH = dir.resolve("hogandiff.properties");
+            
+        } catch (Exception e) {
+            APP_PROP_PATH = null;
+        }
     }
     
     /**
@@ -41,7 +53,7 @@ public class AppResource {
      * @return プロパティセット
      */
     private static Properties loadProperties() {
-        if (Files.exists(APP_PROP_PATH)) {
+        if (APP_PROP_PATH != null && Files.exists(APP_PROP_PATH)) {
             try (Reader r = Files.newBufferedReader(APP_PROP_PATH)) {
                 Properties properties = new Properties();
                 properties.load(r);
@@ -159,6 +171,9 @@ public class AppResource {
     }
     
     private boolean storeProperties() {
+        if (APP_PROP_PATH == null) {
+            return false;
+        }
         try (Writer w = Files.newBufferedWriter(APP_PROP_PATH)) {
             properties.store(w, null);
             return true;
