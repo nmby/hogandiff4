@@ -42,6 +42,7 @@ public class AppResource {
             APP_PROP_PATH = dir.resolve("hogandiff.properties");
             
         } catch (Exception e) {
+            e.printStackTrace();
             APP_PROP_PATH = null;
         }
     }
@@ -149,25 +150,6 @@ public class AppResource {
         } else if (0 < args.length) {
             System.err.println(AppArgsParser.USAGE);
         }
-    }
-    
-    /**
-     * 設定セットの内容をプロパティファイルに保存します。<br>
-     * 
-     * @param settings 保存すべき設定セット
-     * @return 保存に成功した場合は {@code true}
-     * @throws NullPointerException {@code settings} が {@code null} の場合
-     */
-    @Deprecated
-    public boolean storeSettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        Properties properties = settings.toProperties();
-        
-        this.properties = properties;
-        this.settings = settings;
-        
-        return storeProperties();
     }
     
     private boolean storeProperties() {
