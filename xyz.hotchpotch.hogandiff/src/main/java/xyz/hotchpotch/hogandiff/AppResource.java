@@ -32,8 +32,8 @@ public class AppResource {
         String userHome = System.getProperty("user.home");
         
         Path dir = osName.startsWith("mac")
-                ? Path.of(userHome, "xyz.hotchpotch.hogandiff")
-                : Path.of(userHome, "AppData", "Roaming", "xyz.hotchpotch.hogandiff");
+                ? Path.of(userHome, AppMain.APP_DOMAIN)
+                : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
         
         try {
             if (Files.notExists(dir)) {
