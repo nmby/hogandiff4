@@ -21,7 +21,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.14.1";
+    private static final String VERSION = "v0.15.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
