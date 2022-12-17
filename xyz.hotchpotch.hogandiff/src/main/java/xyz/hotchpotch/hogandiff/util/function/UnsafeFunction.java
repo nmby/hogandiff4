@@ -112,7 +112,7 @@ public interface UnsafeFunction<T, R> {
     
     /**
      * この {@link UnsafeFunction} を {@link Function} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
+     * この {@link UnsafeFunction} がスローするチェック例外は、
      * {@link RuntimeException} にラップされます。<br>
      * 
      * @return 型だけが変換された関数
@@ -123,7 +123,7 @@ public interface UnsafeFunction<T, R> {
     
     /**
      * この {@link UnsafeFunction} を {@link Function} に変換します。<br>
-     * {@code unsafer} がスローするチェック例外は、
+     * この {@link UnsafeFunction} がスローするチェック例外は、
      * 指定されたラッパーで非チェック例外にラップされます。<br>
      * 
      * @param wrapper チェック例外を非チェック例外に変換するラッパー

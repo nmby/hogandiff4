@@ -26,12 +26,25 @@ public class AppResource {
     // static members **********************************************************
     
     /** プロパティファイルの相対パス */
-    private static final Path APP_PROP_PATH;
+    private static Path APP_PROP_PATH;
     static {
         String osName = System.getProperty("os.name").toLowerCase();
-        APP_PROP_PATH = osName.startsWith("mac")
-                ? Path.of(System.getProperty("user.home"), "xyz.hotchpotch.hogandiff.properties")
-                : Path.of("hogandiff.properties");
+        String userHome = System.getProperty("user.home");
+        
+        Path dir = osName.startsWith("mac")
+                ? Path.of(userHome, AppMain.APP_DOMAIN)
+                : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
+        
+        try {
+            if (Files.notExists(dir)) {
+                Files.createDirectory(dir);
+            }
+            APP_PROP_PATH = dir.resolve("hogandiff.properties");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            APP_PROP_PATH = null;
+        }
     }
     
     /**
@@ -41,7 +54,7 @@ public class AppResource {
      * @return プロパティセット
      */
     private static Properties loadProperties() {
-        if (Files.exists(APP_PROP_PATH)) {
+        if (APP_PROP_PATH != null && Files.exists(APP_PROP_PATH)) {
             try (Reader r = Files.newBufferedReader(APP_PROP_PATH)) {
                 Properties properties = new Properties();
                 properties.load(r);
@@ -129,35 +142,20 @@ public class AppResource {
         // その内容で既存の内容を上書きする。
         // つまり、アプリケーション実行時引数で指定された内容を優先させる。
         if (fromArgs.isPresent()) {
-            Settings.Builder builder = Settings.builder(settings);
-            builder.setAll(fromArgs.get());
-            this.settings = builder.build();
+            settings = Settings.builder()
+                    .setAll(settings)
+                    .setAll(fromArgs.get())
+                    .build();
             
         } else if (0 < args.length) {
             System.err.println(AppArgsParser.USAGE);
         }
     }
     
-    /**
-     * 設定セットの内容をプロパティファイルに保存します。<br>
-     * 
-     * @param settings 保存すべき設定セット
-     * @return 保存に成功した場合は {@code true}
-     * @throws NullPointerException {@code settings} が {@code null} の場合
-     */
-    @Deprecated
-    public boolean storeSettings(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        Properties properties = settings.toProperties();
-        
-        this.properties = properties;
-        this.settings = settings;
-        
-        return storeProperties();
-    }
-    
     private boolean storeProperties() {
+        if (APP_PROP_PATH == null) {
+            return false;
+        }
         try (Writer w = Files.newBufferedWriter(APP_PROP_PATH)) {
             properties.store(w, null);
             return true;

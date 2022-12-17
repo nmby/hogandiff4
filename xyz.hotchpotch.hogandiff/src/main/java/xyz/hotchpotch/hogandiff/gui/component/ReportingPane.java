@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -37,8 +38,14 @@ public class ReportingPane extends VBox implements ChildController {
     @FXML
     private TextArea reportingTextArea;
     
+    @FXML
+    private Separator reportingSeparator;
+    
     private ScrollBar scrollBar;
     private MainController parent;
+    private double startY;
+    private double startHeight;
+    private double minHeight;
     
     /**
      * コンストラクタ<br>
@@ -59,9 +66,20 @@ public class ReportingPane extends VBox implements ChildController {
         this.parent = parent;
         
         // 1.disableプロパティのバインディング
-        //disableProperty().bind(parent.isRunning().not());
+        reportingSeparator.disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
+        reportingSeparator.setOnMousePressed(event -> {
+            startY = event.getScreenY();
+            startHeight = AppMain.stage.getHeight();
+            minHeight = parent.showSettings().get()
+                    ? AppMain.STAGE_HEIGHT_OPEN
+                    : AppMain.STAGE_HEIGHT_CLOSE;
+        });
+        reportingSeparator.setOnMouseDragged(event -> {
+            double d = event.getScreenY() - startY;
+            AppMain.stage.setHeight(Math.max(startHeight + d, minHeight));
+        });
         // nop
         
         // 3.初期値の設定

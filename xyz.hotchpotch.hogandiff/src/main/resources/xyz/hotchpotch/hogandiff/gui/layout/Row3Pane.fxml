@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.StackPane?>
 
 <fx:root maxHeight="1.7976931348623157E308"
@@ -11,11 +10,7 @@
 		<xyz.hotchpotch.hogandiff.gui.component.ReportingPane
 			fx:id="reportingPane" maxHeight="1.7976931348623157E308"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			minWidth="-Infinity" styleClass="reportingPane">
-			<padding>
-				<Insets bottom="3.0" />
-			</padding>
-		</xyz.hotchpotch.hogandiff.gui.component.ReportingPane>
+			minWidth="-Infinity" styleClass="reportingPane" />
 		<xyz.hotchpotch.hogandiff.gui.component.TogglePane
 			fx:id="togglePane" maxHeight="-Infinity" maxWidth="-Infinity"
 			minHeight="-Infinity" minWidth="-Infinity" styleClass="togglePane"
