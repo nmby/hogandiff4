@@ -50,7 +50,7 @@ public class TogglePane extends AnchorPane implements ChildController {
         Objects.requireNonNull(parent, "parent");
         
         // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
+        // nop
         
         // 2.項目ごとの各種設定
         toggleButton.textProperty().bind(Bindings.createStringBinding(
