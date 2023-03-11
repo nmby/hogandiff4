@@ -9,16 +9,16 @@
         <string>方眼Diff</string>
         
         <key>NSHumanReadableCopyright</key>
-        <string>(c) 2018-2022 nmby</string>
+        <string>(c) 2018-2023 nmby</string>
         
         <key>CFBundleIdentifier</key>
         <string>xyz.hotchpotch.hogandiff</string>
         
         <key>CFBundleShortVersionString</key>
-        <string>0.15.0</string>
+        <string>0.15.1</string>
         
         <key>CFBundleVersion</key>
-        <string>0.15.0</string>
+        <string>0.15.1</string>
         
         <key>CFBundleExecutable</key>
         <string>Launcher.sh</string>

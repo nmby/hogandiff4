@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 // TODO: 要バージョン確認（jpackageの都合上、1.0.0以上にする必要あり）
-final def version = '0.15.0'
+final def version = '0.15.1'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 
@@ -41,10 +41,10 @@ final def poiJars = [
 ]
 final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
 
-final def log4j = 'apache-log4j-2.19.0-bin'
+final def log4j = 'apache-log4j-2.20.0-bin'
 final def log4jJars = [
-    'log4j-core-2.19.0.jar',
-    'log4j-api-2.19.0.jar'
+    'log4j-core-2.20.0.jar',
+    'log4j-api-2.20.0.jar'
 ]
 final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 
@@ -132,7 +132,7 @@ task jpackageForWinX64(dependsOn: [pickUpJars, jlinkForWinX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'msi',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2022 nmby',
+                    '--copyright', '(c) 2018-2023 nmby',
                     '--dest', outputDir,
                     '--vendor', 'nmby',
                     '--verbose',
@@ -175,7 +175,7 @@ task jpackageForMacX64(dependsOn: [pickUpJars, jlinkForMacX64]) {
             commandLine project['myprop.cmd.jpackage'],
                     '--type', 'pkg',
                     '--app-version', version,
-                    '--copyright', '(c) 2018-2022 nmby',
+                    '--copyright', '(c) 2018-2023 nmby',
                     '--description', 'Excelファイル比較ツール',
                     '--name', '方眼Diff',
                     '--dest', outputDir,
@@ -212,7 +212,7 @@ task exewrapForWinX64 {
                     '-V', version,
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
-                    '-c', '(c) 2018-2022 nmby',
+                    '-c', '(c) 2018-2023 nmby',
                     '-j', targetJar,
                     '-o', outputDirWinX64.resolve('方眼Diff.exe')
         }
