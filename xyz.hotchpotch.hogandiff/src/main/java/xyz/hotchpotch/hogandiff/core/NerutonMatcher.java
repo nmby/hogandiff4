@@ -127,10 +127,19 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
+        if (listA.isEmpty() && listB.isEmpty()) {
+            return List.of();
+        }
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> IntPair.of(n, n))
                     .toList();
+        }
+        if (listA.isEmpty()) {
+            return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
+        }
+        if (listB.isEmpty()) {
+            return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
         }
         
         // まず、全ての組み合わせのコストを計算する。

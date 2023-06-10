@@ -98,13 +98,13 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
+        if (listA.isEmpty() && listB.isEmpty()) {
+            return List.of();
+        }
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> IntPair.of(n, n))
                     .toList();
-        }
-        if (listA.isEmpty() && listB.isEmpty()) {
-            return List.of();
         }
         if (listA.isEmpty()) {
             return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
