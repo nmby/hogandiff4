@@ -54,9 +54,6 @@ public abstract sealed class IntPair {
             if (o instanceof Same p) {
                 return x == p.x;
             }
-            if (o instanceof Both p) {
-                return x == p.a && x == p.b;
-            }
             return false;
         }
     }
@@ -180,6 +177,13 @@ public abstract sealed class IntPair {
     }
     
     private static final class Empty extends IntPair {
+        
+        @Override
+        public IntPair map(IntUnaryOperator mapper) {
+            Objects.requireNonNull(mapper, "mapper");
+            
+            return this;
+        }
         
         @Override
         public boolean equals(Object o) {
@@ -306,11 +310,7 @@ public abstract sealed class IntPair {
      * @return 新たなペア
      * @throws NullPointerException {@code mapper} が {@code null} の場合
      */
-    public IntPair map(IntUnaryOperator mapper) {
-        Objects.requireNonNull(mapper, "mapper");
-        
-        return this;
-    }
+    public abstract IntPair map(IntUnaryOperator mapper);
     
     @Override
     public String toString() {
