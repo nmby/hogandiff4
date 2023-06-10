@@ -2,7 +2,7 @@
 plugins {
     id 'java-library'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
 repositories {
@@ -13,24 +13,24 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.3'
 }
 
 test {
     useJUnitPlatform()
 }
 
-sourceCompatibility = 19
-targetCompatibility = 19
+sourceCompatibility = 20
+targetCompatibility = 20
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 javafx {
-    version = 19
+    version = 20
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
