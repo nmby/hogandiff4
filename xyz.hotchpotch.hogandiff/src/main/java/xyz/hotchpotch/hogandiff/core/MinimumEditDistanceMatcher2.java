@@ -98,13 +98,13 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
+        if (listA.isEmpty() && listB.isEmpty()) {
+            return List.of();
+        }
         if (listA == listB) {
             return IntStream.range(0, listA.size())
                     .mapToObj(n -> IntPair.of(n, n))
                     .toList();
-        }
-        if (listA.isEmpty() && listB.isEmpty()) {
-            return List.of();
         }
         if (listA.isEmpty()) {
             return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
@@ -129,8 +129,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert listA != listB;
         
         // 1. リストA, リストBの要素の余剰コストを計算する。
-        int[] gapCostsA = listA.stream().mapToInt(gapEvaluator::applyAsInt).toArray();
-        int[] gapCostsB = listB.stream().mapToInt(gapEvaluator::applyAsInt).toArray();
+        int[] gapCostsA = listA.parallelStream().mapToInt(gapEvaluator::applyAsInt).toArray();
+        int[] gapCostsB = listB.parallelStream().mapToInt(gapEvaluator::applyAsInt).toArray();
         
         // 2. エディットグラフ上の各点の最小到達コストと最適遷移方向を計算する。
         //    比較対象リストが長くなるほど、すなわちエディットグラフ（探索平面）が広くなるほど
