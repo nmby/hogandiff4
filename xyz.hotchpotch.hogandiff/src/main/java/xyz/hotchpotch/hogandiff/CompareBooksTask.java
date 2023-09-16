@@ -1,29 +1,21 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Desktop;
-import java.io.BufferedWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -35,31 +27,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareBooksTask extends Task<Void> {
+/*package*/ class CompareBooksTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
-    private static final String BR = System.lineSeparator();
-    private static final int PROGRESS_MAX = 100;
-    
     // [instance members] ******************************************************
-    
-    private final Settings settings;
-    private final Factory factory;
-    private final AppMenu menu;
-    private final StringBuilder str = new StringBuilder();
-    private final ResourceBundle rb = AppMain.appResource.get();
     
     /*package*/ CompareBooksTask(
             Settings settings,
             Factory factory) {
         
-        assert settings != null;
-        assert factory != null;
-        
-        this.settings = settings;
-        this.factory = factory;
-        this.menu = settings.getOrDefault(SettingKeys.CURR_MENU);
+        super(settings, factory);
     }
     
     @Override
@@ -102,33 +80,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressAfter, PROGRESS_MAX);
     }
     
-    // 1. 作業用ディレクトリの作成
-    private Path createWorkDir(int progressBefore, int progressAfter)
-            throws ApplicationException {
-        
-        Path workDir = null;
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
-                    .resolve(settings.getOrDefault(SettingKeys.CURR_TIMESTAMP));
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTask.030"), workDir));
-            updateMessage(str.toString());
-            
-            workDir = Files.createDirectories(workDir);
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            return workDir;
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.040")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("AppTask.040"), workDir),
-                    e);
-        }
-    }
-    
     // 2. 比較するシートの組み合わせの決定
     private List<Pair<String>> pairingSheets(int progressBefore, int progressAfter)
             throws ApplicationException {
@@ -139,7 +90,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTask.050")).append(BR);
             updateMessage(str.toString());
             
-            List<Pair<String>> pairs = menu.getSheetNamePairs(settings, factory);
+            List<Pair<String>> pairs = AppMenu.COMPARE_BOOKS.getSheetNamePairs(settings, factory);
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
                 str.append(BResult.formatSheetNamesPair(i, pair)).append(BR);
@@ -174,7 +125,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
             BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
             SheetLoader loader1 = factory.sheetLoader(settings, bookInfo1);
-            SheetLoader loader2 = Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())
+            SheetLoader loader2 = isSameBook()
                     ? loader1
                     : factory.sheetLoader(settings, bookInfo2);
             
@@ -222,186 +173,5 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             e.printStackTrace();
             throw new ApplicationException(rb.getString("AppTask.080"), e);
         }
-    }
-    
-    // 4. 比較結果の表示（テキスト）
-    private void showResultText(
-            Path workDir,
-            BResult results,
-            int progressBefore, int progressAfter)
-            throws ApplicationException {
-        
-        Path textPath = null;
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
-            textPath = workDir.resolve("result.txt");
-            
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTask.090"), textPath));
-            updateMessage(str.toString());
-            
-            try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
-                writer.write(results.toString());
-            }
-            if (settings.getOrDefault(SettingKeys.SHOW_RESULT_TEXT)) {
-                str.append(rb.getString("AppTask.100")).append(BR).append(BR);
-                updateMessage(str.toString());
-                Desktop.getDesktop().open(textPath.toFile());
-            }
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.110")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("AppTask.110"), textPath),
-                    e);
-        }
-    }
-    
-    // 5. 比較結果の表示（Excelブック）
-    private void showPaintedSheets(
-            Path workDir,
-            BResult results,
-            int progressBefore, int progressAfter)
-            throws ApplicationException {
-        
-        boolean isSameBook = Objects.equals(
-                settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
-                settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
-        
-        if (isSameBook) {
-            showPaintedSheets1(workDir, results, progressBefore, progressAfter);
-        } else {
-            showPaintedSheets2(workDir, results, progressBefore, progressAfter);
-        }
-    }
-    
-    private void showPaintedSheets1(
-            Path workDir,
-            BResult results,
-            int progressBefore, int progressAfter)
-            throws ApplicationException {
-        
-        BookInfo dst = null;
-        
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            int progressTotal = progressAfter - progressBefore;
-            
-            str.append(rb.getString("AppTask.120")).append(BR);
-            updateMessage(str.toString());
-            BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst = BookInfo.of(
-                    workDir.resolve(src.bookPath().getFileName()),
-                    src.getReadPassword());
-            str.append("    - %s%n%n".formatted(dst));
-            updateMessage(str.toString());
-            
-            Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
-            result.putAll(results.getPiece(Side.B));
-            BookPainter painter = factory.painter(settings, dst);
-            painter.paintAndSave(src, dst, result);
-            updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.130")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.130"), e);
-        }
-        
-        try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTask.140")).append(BR).append(BR);
-                updateMessage(str.toString());
-                Desktop.getDesktop().open(dst.bookPath().toFile());
-            }
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.150")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.150"), e);
-        }
-    }
-    
-    private void showPaintedSheets2(
-            Path workDir,
-            BResult results,
-            int progressBefore, int progressAfter)
-            throws ApplicationException {
-        
-        int progressTotal = progressAfter - progressBefore;
-        BookInfo dst1 = null;
-        BookInfo dst2 = null;
-        
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("AppTask.120")).append(BR);
-            updateMessage(str.toString());
-            
-            BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst1 = BookInfo.of(
-                    workDir.resolve("【A】" + src1.bookPath().getFileName()),
-                    src1.getReadPassword());
-            str.append("    - %s%n".formatted(dst1));
-            updateMessage(str.toString());
-            BookPainter painter1 = factory.painter(settings, dst1);
-            painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
-            updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.160")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.160"), e);
-        }
-        
-        try {
-            BookInfo src2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            dst2 = BookInfo.of(
-                    workDir.resolve("【B】" + src2.bookPath().getFileName()),
-                    src2.getReadPassword());
-            str.append("    - %s%n%n".formatted(dst2));
-            updateMessage(str.toString());
-            BookPainter painter2 = factory.painter(settings, dst2);
-            painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
-            updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.170")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.170"), e);
-        }
-        
-        try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTask.140")).append(BR).append(BR);
-                updateMessage(str.toString());
-                Desktop.getDesktop().open(dst1.bookPath().toFile());
-                Desktop.getDesktop().open(dst2.bookPath().toFile());
-            }
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.150")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.150"), e);
-        }
-    }
-    
-    // 6. 処理終了のアナウンス
-    private void announceEnd() {
-        str.append(rb.getString("AppTask.180"));
-        updateMessage(str.toString());
-        updateProgress(PROGRESS_MAX, PROGRESS_MAX);
     }
 }
