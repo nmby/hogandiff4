@@ -178,6 +178,25 @@ public class Factory {
     }
     
     /**
+     * 2つのフォルダに含まれるExcelブック名の対応付けを行うマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return Excelブック名の対応付けを行うマッチャー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
+    public Matcher<String> bookNameMatcher(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
+        
+        return settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY)
+                ? Matcher.identityMatcher()
+                : Matcher.nerutonMatcherOf(
+                        String::length,
+                        StringDiffUtil::levenshteinDistance);
+    }
+    
+    /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
      * 
      * @param settings 設定

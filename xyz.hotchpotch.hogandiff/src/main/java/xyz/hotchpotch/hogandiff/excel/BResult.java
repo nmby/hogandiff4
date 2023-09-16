@@ -93,8 +93,8 @@ public class BResult {
         assert results != null;
         
         this.bookPath = Pair.of(bookPath1, bookPath2);
-        this.sheetPairs = sheetPairs;
-        this.results = results;
+        this.sheetPairs = List.copyOf(sheetPairs);
+        this.results = Map.copyOf(results);
     }
     
     /**
