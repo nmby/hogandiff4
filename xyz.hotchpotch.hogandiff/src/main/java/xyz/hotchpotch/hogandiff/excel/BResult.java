@@ -35,10 +35,10 @@ public class BResult {
      * @throws IndexOutOfBoundsException {@code idx} が {@code 0} 未満の場合
      */
     public static String formatSheetNamesPair(int idx, Pair<String> pair) {
+        Objects.requireNonNull(pair, "pair");
         if (idx < 0) {
             throw new IndexOutOfBoundsException(idx);
         }
-        Objects.requireNonNull(pair, "pair");
         
         ResourceBundle rb = AppMain.appResource.get();
         

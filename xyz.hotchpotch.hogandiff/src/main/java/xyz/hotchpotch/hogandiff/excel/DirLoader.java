@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 /**
  * フォルダの情報を抽出するローダーを表します。<br>
- * これは、{@link #loadDirs(Path, boolean)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadDir(Path, boolean)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -23,6 +23,6 @@ public interface DirLoader {
      * @return フォルダの情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    DirData loadDirs(Path path, boolean recursively)
+    DirData loadDir(Path path, boolean recursively)
             throws ExcelHandlingException;
 }

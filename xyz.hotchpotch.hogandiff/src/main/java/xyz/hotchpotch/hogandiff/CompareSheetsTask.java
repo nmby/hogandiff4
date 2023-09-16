@@ -31,10 +31,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareSheetsTask(
-            Settings settings,
-            Factory factory) {
-        
+    /*package*/ CompareSheetsTask(Settings settings, Factory factory) {
         super(settings, factory);
     }
     

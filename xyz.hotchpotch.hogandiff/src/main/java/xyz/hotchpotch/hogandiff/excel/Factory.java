@@ -15,6 +15,7 @@ import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
+import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
 import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
@@ -158,6 +159,15 @@ public class Factory {
         default:
             throw new AssertionError("unknown book type: " + bookInfo.bookType());
         }
+    }
+    
+    /**
+     * フォルダ情報を抽出するローダーを返します。<br>
+     * 
+     * @return フォルダ情報を抽出するローダー
+     */
+    public DirLoader dirLoader() {
+        return DirLoaderImpl.of();
     }
     
     /**

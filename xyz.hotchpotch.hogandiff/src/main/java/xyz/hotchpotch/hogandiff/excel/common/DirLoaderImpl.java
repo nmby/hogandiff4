@@ -44,7 +44,7 @@ public class DirLoaderImpl implements DirLoader {
     }
     
     @Override
-    public DirData loadDirs(Path path, boolean recursively) throws ExcelHandlingException {
+    public DirData loadDir(Path path, boolean recursively) throws ExcelHandlingException {
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
@@ -54,9 +54,10 @@ public class DirLoaderImpl implements DirLoader {
             List<DirData> children = recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDirs(p, true))).convert())
+                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDir(p, true))).convert())
                             .filter(t -> t.item1() != null)
                             .map(Tuple2::item1)
+                            .sorted()
                             .toList()
                     : List.of();
             
@@ -65,6 +66,7 @@ public class DirLoaderImpl implements DirLoader {
                     .filter(DirLoaderImpl::isHandleableExcelBook)
                     .map(Path::getFileName)
                     .map(Path::toString)
+                    .sorted()
                     .toList();
             
             return new DirData(

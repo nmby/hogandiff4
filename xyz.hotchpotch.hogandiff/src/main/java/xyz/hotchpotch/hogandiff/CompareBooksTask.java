@@ -37,10 +37,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareBooksTask(
-            Settings settings,
-            Factory factory) {
-        
+    /*package*/ CompareBooksTask(Settings settings, Factory factory) {
         super(settings, factory);
     }
     
@@ -67,6 +64,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 6. 処理終了のアナウンス
         announceEnd();
+        
         return null;
     }
     
@@ -128,8 +126,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Matcher<String> matcher = factory.sheetNameMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
         
-        return pairs.stream().map(p -> Pair.ofNullable(p.hasA() ? sheetNames1.get(p.a()) : null,
-                p.hasB() ? sheetNames2.get(p.b()) : null)).toList();
+        return pairs.stream()
+                .map(p -> Pair.ofNullable(
+                        p.hasA() ? sheetNames1.get(p.a()) : null,
+                        p.hasB() ? sheetNames2.get(p.b()) : null))
+                .toList();
     }
     
     // 3. シート同士の比較
