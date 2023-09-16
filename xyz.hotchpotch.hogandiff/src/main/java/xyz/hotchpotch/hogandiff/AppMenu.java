@@ -1,16 +1,10 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.util.List;
 import java.util.Objects;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.util.IntPair;
-import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -37,27 +31,6 @@ public enum AppMenu {
             BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
             
             return !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath());
-        }
-        
-        @Override
-        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
-                throws ExcelHandlingException {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            BookLoader bookLoader1 = factory.bookLoader(bookInfo1);
-            BookLoader bookLoader2 = factory.bookLoader(bookInfo2);
-            List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
-            List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
-            
-            Matcher<String> matcher = factory.sheetNameMatcher(settings);
-            List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
-            
-            return pairs.stream().map(p -> Pair.ofNullable(p.hasA() ? sheetNames1.get(p.a()) : null,
-                    p.hasB() ? sheetNames2.get(p.b()) : null)).toList();
         }
         
         @Override
@@ -91,17 +64,6 @@ public enum AppMenu {
         }
         
         @Override
-        public List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
-                throws ExcelHandlingException {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            return List.of(
-                    Pair.of(settings.get(SettingKeys.CURR_SHEET_NAME1), settings.get(SettingKeys.CURR_SHEET_NAME2)));
-        }
-        
-        @Override
         public Task<Void> getTask(
                 Settings settings,
                 Factory factory) {
@@ -125,20 +87,6 @@ public enum AppMenu {
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
     public abstract boolean isValidTargets(Settings settings);
-    
-    /**
-     * 比較対象のシートの組み合わせを決定し、シート名のペアのリストとして返します。<br>
-     * 
-     * @param settings 設定
-     * @param factory ファクトリ
-     * @return シート名のペアのリスト
-     * @throws NullPointerException
-     *              {@code settings}, {@code factory} のいずれかが {@code null} の場合
-     * @throws ExcelHandlingException
-     *              Excelファイルに対する処理に失敗した場合
-     */
-    public abstract List<Pair<String>> getSheetNamePairs(Settings settings, Factory factory)
-            throws ExcelHandlingException;
     
     /**
      * このメニューを実行するためのタスクを生成して返します。<br>
