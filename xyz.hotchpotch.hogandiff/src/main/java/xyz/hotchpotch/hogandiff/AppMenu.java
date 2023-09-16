@@ -56,11 +56,19 @@ public enum AppMenu {
             Matcher<String> matcher = factory.sheetNameMatcher(settings);
             List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
             
-            return pairs.stream()
-                    .map(p -> Pair.ofNullable(
-                            p.hasA() ? sheetNames1.get(p.a()) : null,
-                            p.hasB() ? sheetNames2.get(p.b()) : null))
-                    .toList();
+            return pairs.stream().map(p -> Pair.ofNullable(p.hasA() ? sheetNames1.get(p.a()) : null,
+                    p.hasB() ? sheetNames2.get(p.b()) : null)).toList();
+        }
+        
+        @Override
+        public Task<Void> getTask(
+                Settings settings,
+                Factory factory) {
+            
+            Objects.requireNonNull(settings, "settings");
+            Objects.requireNonNull(factory, "factory");
+            
+            return new CompareBooksTask(settings, factory);
         }
     },
     
@@ -89,9 +97,8 @@ public enum AppMenu {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(factory, "factory");
             
-            return List.of(Pair.of(
-                    settings.get(SettingKeys.CURR_SHEET_NAME1),
-                    settings.get(SettingKeys.CURR_SHEET_NAME2)));
+            return List.of(
+                    Pair.of(settings.get(SettingKeys.CURR_SHEET_NAME1), settings.get(SettingKeys.CURR_SHEET_NAME2)));
         }
         
         @Override
@@ -141,13 +148,5 @@ public enum AppMenu {
      * @return 新しいタスク
      * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
      */
-    public Task<Void> getTask(
-            Settings settings,
-            Factory factory) {
-        
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(factory, "factory");
-        
-        return new AppTask(settings, factory);
-    }
+    public abstract Task<Void> getTask(Settings settings, Factory factory);
 }
