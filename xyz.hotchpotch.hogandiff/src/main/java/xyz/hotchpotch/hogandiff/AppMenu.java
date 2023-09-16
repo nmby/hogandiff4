@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.nio.file.Path;
 import java.util.Objects;
 
 import javafx.concurrent.Task;
@@ -72,6 +73,33 @@ public enum AppMenu {
             Objects.requireNonNull(factory, "factory");
             
             return new CompareSheetsTask(settings, factory);
+        }
+    },
+    
+    /**
+     * 指定されたフォルダに含まれる全Excelブックを比較します。
+     */
+    COMPARE_DIRS {
+        
+        @Override
+        public boolean isValidTargets(Settings settings) {
+            Objects.requireNonNull(settings, "settings");
+            
+            Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
+            Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+            
+            return !Objects.equals(dirPath1, dirPath2);
+        }
+        
+        @Override
+        public Task<Void> getTask(
+                Settings settings,
+                Factory factory) {
+            
+            Objects.requireNonNull(settings, "settings");
+            Objects.requireNonNull(factory, "factory");
+            
+            throw new UnsupportedOperationException();
         }
     };
     
