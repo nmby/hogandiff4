@@ -93,6 +93,17 @@ public enum AppMenu {
                     settings.get(SettingKeys.CURR_SHEET_NAME1),
                     settings.get(SettingKeys.CURR_SHEET_NAME2)));
         }
+        
+        @Override
+        public Task<Void> getTask(
+                Settings settings,
+                Factory factory) {
+            
+            Objects.requireNonNull(settings, "settings");
+            Objects.requireNonNull(factory, "factory");
+            
+            return new CompareSheetsTask(settings, factory);
+        }
     };
     
     // [instance members] ******************************************************
