@@ -25,7 +25,7 @@ public class SettingKeys {
     
     // [static members] ********************************************************
     
-    /** 作業用フォルダの作成場所のパス */
+    /** このアプリケーションのロケール（表示言語） */
     public static final Key<Locale> APP_LOCALE = new Key<>(
             "application.appLocale",
             () -> Locale.JAPANESE,
@@ -127,6 +127,26 @@ public class SettingKeys {
             Function.identity(),
             false);
     
+    /** 今回の実行における比較対象フォルダ1のパス */
+    public static final Key<Path> CURR_DIR_PATH1 = new Key<Path>(
+            "current.dirPath1",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Path::toString,
+            Path::of,
+            true);
+    
+    /** 今回の実行における比較対象フォルダ2のパス */
+    public static final Key<Path> CURR_DIR_PATH2 = new Key<Path>(
+            "current.dirPath2",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Path::toString,
+            Path::of,
+            true);
+    
     /**
      * Excelシート同士の比較において、
      * 行の挿入／削除を考慮する（{@code true}）か考慮しない（{@code false}）かを表します。<br>
@@ -167,6 +187,16 @@ public class SettingKeys {
      */
     public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<Boolean>(
             "compare.matchNamesStrictly",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            false);
+    
+    /**
+     * フォルダ同士の比較において子フォルダも再帰的に比較する（{@code true}）かを表します。
+     */
+    public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<Boolean>(
+            "compare.compareDirsRecursively",
             () -> false,
             String::valueOf,
             Boolean::valueOf,
