@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BResult;
@@ -191,8 +190,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     dst.toFile().setWritable(true, false);
                     
                     results.put(pair, Optional.empty());
-                    str.append(BR);
-                    updateMessage(str.toString());
                     continue;
                 }
                 
@@ -204,7 +201,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 BookInfo dstInfo1 = BookInfo.of(outputDir1.resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
                 BookInfo dstInfo2 = BookInfo.of(outputDir2.resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 
-                BResult result = compareBooks(srcInfo1, srcInfo2);
+                BResult result = compareBooks(
+                        srcInfo1,
+                        srcInfo2,
+                        progressBefore + (progressAfter - progressBefore) * i / pairs.size(),
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size());
                 results.put(pair, Optional.of(result));
                 
                 BookPainter painter1 = factory.painter(settings, srcInfo1);
@@ -218,20 +219,27 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateProgress(
                         progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size(),
                         PROGRESS_MAX);
+                
             } catch (Exception e) {
+                results.putIfAbsent(pair, Optional.empty());
                 str.append("  -  ").append(rb.getString("AppTask.240")).append(BR);
                 updateMessage(str.toString());
                 e.printStackTrace();
             }
         }
         str.append(BR);
-        
+        updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
+        
         return DResult.of(dirData1, dirData2, pairs, results);
     }
     
-    private BResult compareBooks(BookInfo bookInfo1, BookInfo bookInfo2)
+    private BResult compareBooks(
+            BookInfo bookInfo1, BookInfo bookInfo2,
+            int progressBefore, int progressAfter)
             throws ExcelHandlingException {
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
         
         List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookInfo1, bookInfo2);
         
@@ -240,21 +248,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         SComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
         
-        for (Pair<String> pair : sheetNamePairs) {
-            if (!pair.isPaired()) {
-                continue;
+        for (int i = 0; i < sheetNamePairs.size(); i++) {
+            Pair<String> pair = sheetNamePairs.get(i);
+            
+            if (pair.isPaired()) {
+                Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
+                SResult result = comparator.compare(cells1, cells2);
+                results.put(pair, Optional.of(result));
+                
+            } else {
+                results.put(pair, Optional.empty());
             }
-            Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
-            Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
-            SResult result = comparator.compare(cells1, cells2);
-            results.put(pair, Optional.of(result));
-        }
-        
-        List<Pair<String>> unpairedPairs = sheetNamePairs.stream()
-                .filter(Predicate.not(Pair::isPaired))
-                .toList();
-        for (Pair<String> pair : unpairedPairs) {
-            results.put(pair, Optional.empty());
+            
+            updateProgress(
+                    progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
+                    PROGRESS_MAX);
         }
         
         return BResult.of(bookInfo1.bookPath(), bookInfo2.bookPath(), sheetNamePairs, results);

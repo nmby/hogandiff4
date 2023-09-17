@@ -94,7 +94,7 @@ public class DResult {
         
         str.append(BR);
         str.append(rb.getString("excel.DResult.030")).append(BR);
-        str.append(getDiffSummary());
+        str.append(getDiffSummary()).append(BR);
         str.append(rb.getString("excel.DResult.040")).append(BR);
         str.append(getDiffDetail());
         
@@ -102,28 +102,30 @@ public class DResult {
     }
     
     private String getDiffSummary() {
-        return getDiffText(bResult -> "  -  " + bResult.getDiffSimpleSummary());
+        return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
+                ? bResult.get().getDiffSimpleSummary()
+                : rb.getString("excel.DResult.080")));
     }
     
     private String getDiffDetail() {
-        // TODO: 後で見直す
-        return getDiffText(bResult -> BR + bResult.getDiffDetail().indent(4).replace("\n", BR));
+        return getDiffText(bResult -> bResult.isPresent()
+                ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
+                : "");
     }
     
-    private String getDiffText(Function<BResult, String> diffDescriptor) {
+    private String getDiffText(Function<Optional<BResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> pair = bookNamePairs.get(i);
             Optional<BResult> bResult = results.get(pair);
             
-            if (!pair.isPaired() || bResult == null || bResult.isEmpty() || !bResult.get().hasDiff()) {
+            if (!pair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
                 continue;
             }
             
             str.append(formatBookNamesPair(i, pair));
-            str.append(diffDescriptor.apply(bResult.get()));
-            str.append(BR);
+            str.append(diffDescriptor.apply(bResult));
         }
         
         return str.isEmpty() ? "    " + rb.getString("excel.DResult.050") + BR : str.toString();

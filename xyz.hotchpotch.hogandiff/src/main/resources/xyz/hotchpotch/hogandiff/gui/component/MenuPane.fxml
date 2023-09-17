@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
@@ -11,7 +13,21 @@
             <ToggleGroup fx:id="compareTarget" />
          </toggleGroup>
 		</RadioButton>
-		<RadioButton fx:id="compareSheetsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.020" toggleGroup="$compareTarget" HBox.hgrow="NEVER" />
-      <RadioButton fx:id="compareDirsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.030" toggleGroup="$compareTarget" HBox.hgrow="NEVER" />
+		<RadioButton fx:id="compareSheetsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.020" toggleGroup="$compareTarget" HBox.hgrow="NEVER">
+         <HBox.margin>
+            <Insets left="15.0" />
+         </HBox.margin></RadioButton>
+      <RadioButton fx:id="compareDirsRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.030" toggleGroup="$compareTarget" HBox.hgrow="NEVER">
+         <HBox.margin>
+            <Insets left="15.0" />
+         </HBox.margin></RadioButton>
+      <CheckBox fx:id="recursivelyCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.MenuPane.040" HBox.hgrow="NEVER">
+         <HBox.margin>
+            <Insets left="3.0" />
+         </HBox.margin>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+      </CheckBox>
 	</children>
 </fx:root>
