@@ -38,10 +38,10 @@ public class DResult {
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "    %d) %s vs %s".formatted(
+        return "    【%d】 %s vs %s".formatted(
                 idx + 1,
-                pair.hasA() ? "A[" + pair.a() + "]" : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "B[" + pair.b() + "]" : rb.getString("excel.DResult.010"));
+                pair.hasA() ? "A【 " + pair.a() + " 】" : rb.getString("excel.DResult.010"),
+                pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
     }
     
     public static DResult of(
@@ -94,7 +94,7 @@ public class DResult {
         
         str.append(BR);
         str.append(rb.getString("excel.DResult.030")).append(BR);
-        str.append(getDiffSummary()).append(BR);
+        str.append(getDiffSummary());
         str.append(rb.getString("excel.DResult.040")).append(BR);
         str.append(getDiffDetail());
         
@@ -117,7 +117,7 @@ public class DResult {
             Pair<String> pair = bookNamePairs.get(i);
             Optional<BResult> bResult = results.get(pair);
             
-            if (!pair.isPaired() || bResult.isEmpty() || !bResult.get().hasDiff()) {
+            if (!pair.isPaired() || bResult == null || bResult.isEmpty() || !bResult.get().hasDiff()) {
                 continue;
             }
             

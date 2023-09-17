@@ -44,8 +44,8 @@ public class BResult {
         
         return "    %d) %s vs %s".formatted(
                 idx + 1,
-                pair.hasA() ? "A[" + pair.a() + "]" : rb.getString("excel.BResult.010"),
-                pair.hasB() ? "B[" + pair.b() + "]" : rb.getString("excel.BResult.010"));
+                pair.hasA() ? "A[ " + pair.a() + " ]" : rb.getString("excel.BResult.010"),
+                pair.hasB() ? "B[ " + pair.b() + " ]" : rb.getString("excel.BResult.010"));
     }
     
     /**

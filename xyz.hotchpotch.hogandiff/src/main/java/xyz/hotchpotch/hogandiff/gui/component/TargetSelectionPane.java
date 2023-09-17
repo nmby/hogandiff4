@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -259,9 +258,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             chooser.setInitialDirectory(dirPath.getValue().toFile());
             
         } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(Files.isDirectory(prevSelectedBookPath)
-                    ? prevSelectedBookPath.toFile()
-                    : prevSelectedBookPath.toFile().getParentFile());
+            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
         }
         
         File selected = chooser.showDialog(getScene().getWindow());
@@ -281,9 +278,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             chooser.setInitialFileName(book.getName());
             
         } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(Files.isDirectory(prevSelectedBookPath)
-                    ? prevSelectedBookPath.toFile()
-                    : prevSelectedBookPath.toFile().getParentFile());
+            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(

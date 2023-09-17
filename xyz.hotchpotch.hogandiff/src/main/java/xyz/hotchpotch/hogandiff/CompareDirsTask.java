@@ -168,22 +168,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
-        try {
-            Map<Pair<String>, Optional<BResult>> results = new HashMap<>();
+        Map<Pair<String>, Optional<BResult>> results = new HashMap<>();
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
+        str.append(rb.getString("AppTask.220")).append(BR);
+        updateMessage(str.toString());
+        
+        for (int i = 0; i < pairs.size(); i++) {
+            Pair<String> pair = pairs.get(i);
             
-            int total = progressAfter - progressBefore;
-            int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
-            int num = 0;
-            
-            updateProgress(progressBefore, PROGRESS_MAX);
-            if (0 < num) {
-                str.append(rb.getString("AppTask.220")).append(BR);
-                updateMessage(str.toString());
-            }
-            
-            for (int i = 0; i < pairs.size(); i++) {
-                Pair<String> pair = pairs.get(i);
-                
+            try {
                 if (!pair.isPaired()) {
                     Path src = pair.hasA()
                             ? dirData1.path().resolve(pair.a())
@@ -191,10 +185,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     Path dst = pair.hasA()
                             ? outputDir1.resolve("【A-%d】%s".formatted(i + 1, pair.a()))
                             : outputDir2.resolve("【B-%d】%s".formatted(i + 1, pair.b()));
+                    
                     Files.copy(src, dst);
                     dst.toFile().setReadable(true, false);
                     dst.toFile().setWritable(true, false);
+                    
                     results.put(pair, Optional.empty());
+                    str.append(BR);
+                    updateMessage(str.toString());
                     continue;
                 }
                 
@@ -202,7 +200,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateMessage(str.toString());
                 
                 BookInfo srcInfo1 = BookInfo.of(dirData1.path().resolve(pair.a()), null);
-                BookInfo srcInfo2 = BookInfo.of(dirData2.path().resolve(pair.a()), null);
+                BookInfo srcInfo2 = BookInfo.of(dirData2.path().resolve(pair.b()), null);
                 BookInfo dstInfo1 = BookInfo.of(outputDir1.resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
                 BookInfo dstInfo2 = BookInfo.of(outputDir2.resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 
@@ -217,20 +215,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append("  -  ").append(result.getDiffSimpleSummary()).append(BR);
                 updateMessage(str.toString());
                 
-                num++;
-                updateProgress(progressBefore + total * num / numTotalPairs, PROGRESS_MAX);
+                updateProgress(
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size(),
+                        PROGRESS_MAX);
+            } catch (Exception e) {
+                str.append("  -  ").append(rb.getString("AppTask.240")).append(BR);
+                updateMessage(str.toString());
+                e.printStackTrace();
             }
-            str.append(BR);
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            return DResult.of(dirData1, dirData2, pairs, results);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTask.230")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.230"), e);
         }
+        str.append(BR);
+        
+        updateProgress(progressAfter, PROGRESS_MAX);
+        return DResult.of(dirData1, dirData2, pairs, results);
     }
     
     private BResult compareBooks(BookInfo bookInfo1, BookInfo bookInfo2)
@@ -273,13 +270,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            str.append(rb.getString("excel.DResult.060")).append(BR);
-            
-            Desktop.getDesktop().open(outputDir1.toFile());
-            str.append("    - %s%n".formatted(outputDir1));
-            
-            Desktop.getDesktop().open(outputDir2.toFile());
-            str.append("    - %s%n%n".formatted(outputDir2));
+            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append(rb.getString("excel.DResult.060")).append(BR);
+                
+                Desktop.getDesktop().open(outputDir1.toFile());
+                str.append("    - %s%n".formatted(outputDir1));
+                
+                Desktop.getDesktop().open(outputDir2.toFile());
+                str.append("    - %s%n%n".formatted(outputDir2));
+            }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
