@@ -2,11 +2,13 @@ package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
@@ -30,6 +32,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
@@ -63,6 +66,18 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private Label titleLabel;
     
     @FXML
+    private Label dirPathLabel;
+    
+    @FXML
+    private TextField dirPathTextField;
+    
+    @FXML
+    private Button dirPathButton;
+    
+    @FXML
+    private Label bookPathLabel;
+    
+    @FXML
     private TextField bookPathTextField;
     
     @FXML
@@ -74,12 +89,14 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     @FXML
     private ChoiceBox<String> sheetNameChoiceBox;
     
+    private final Property<Path> dirPath = new SimpleObjectProperty<>();
     private final Property<BookInfo> bookInfo = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
     private final BooleanProperty isReady = new SimpleBooleanProperty();
     
     private final Factory factory = Factory.of();
     private TargetSelectionPane opposite;
+    private MainController parent;
     
     /**
      * コンストラクタ<br>
@@ -99,14 +116,35 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         Side side = (Side) params[0];
         opposite = (TargetSelectionPane) params[1];
+        this.parent = parent;
         
-        // 1.disableプロパティのバインディング
+        // 1.disableプロパティとvisibleプロパティのバインディング
         disableProperty().bind(parent.isRunning());
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_BOOKS,
+                () -> parent.menu().getValue() != AppMenu.COMPARE_SHEETS,
                 parent.menu()));
         sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_BOOKS,
+                () -> parent.menu().getValue() != AppMenu.COMPARE_SHEETS,
+                parent.menu()));
+        
+        dirPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                parent.menu()));
+        dirPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                parent.menu()));
+        dirPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                parent.menu()));
+        
+        bookPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
+                parent.menu()));
+        bookPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
+                parent.menu()));
+        bookPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
                 parent.menu()));
         
         // 2.項目ごとの各種設定
@@ -114,6 +152,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         setOnDragDropped(this::onDragDropped);
         
         titleLabel.setText(side.title);
+        
+        dirPathTextField.textProperty().bind(Bindings.createStringBinding(
+                () -> dirPath.getValue() == null ? null : dirPath.getValue().toString(),
+                dirPath));
+        dirPathButton.setOnAction(this::chooseDir);
         
         bookPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> bookInfo.getValue() == null ? null : bookInfo.getValue().bookPath().toString(),
@@ -123,16 +166,24 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         sheetName.bind(sheetNameChoiceBox.valueProperty());
         
         isReady.bind(Bindings.createBooleanBinding(
-                () -> bookInfo.getValue() != null
-                        && (sheetName.getValue() != null || parent.menu().getValue() == AppMenu.COMPARE_BOOKS),
-                bookInfo, sheetName, parent.menu()));
+                () -> switch (parent.menu().getValue()) {
+                case COMPARE_BOOKS -> bookInfo.getValue() != null;
+                case COMPARE_SHEETS -> bookInfo.getValue() != null && sheetName.getValue() != null;
+                case COMPARE_DIRS -> dirPath.getValue() != null;
+                default -> throw new AssertionError("unknown menu");
+                },
+                parent.menu(), bookInfo, sheetName, dirPath));
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
+        dirPath.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirPathKey, newValue));
         bookInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.bookInfoKey, newValue));
         sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
         
         // 3.初期値の設定
+        if (ar.settings().containsKey(side.dirPathKey)) {
+            setDirPath(ar.settings().get(side.dirPathKey));
+        }
         if (ar.settings().containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
                     ar.settings().get(side.bookInfoKey).bookPath(),
@@ -149,12 +200,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void onDragOver(DragEvent event) {
         event.consume();
+        Predicate<File> isAcceptableType = (parent.menu().getValue() == AppMenu.COMPARE_DIRS)
+                ? File::isDirectory
+                : File::isFile;
         
         if (!event.getDragboard().hasFiles()) {
             return;
         }
         File file = event.getDragboard().getFiles().get(0);
-        if (!file.isFile()) {
+        if (!isAcceptableType.test(file)) {
             return;
         }
         // ファイルの拡張子は確認しないことにする。
@@ -164,21 +218,56 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void onDragDropped(DragEvent event) {
         event.consume();
+        AppMenu menu = parent.menu().getValue();
+        Predicate<File> isAcceptableType = (menu == AppMenu.COMPARE_DIRS)
+                ? File::isDirectory
+                : File::isFile;
         
         if (!event.getDragboard().hasFiles()) {
             event.setDropCompleted(false);
             return;
         }
         List<File> files = event.getDragboard().getFiles();
-        if (!files.get(0).isFile()) {
+        if (!isAcceptableType.test(files.get(0))) {
             event.setDropCompleted(false);
             return;
         }
-        boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
-        event.setDropCompleted(dropCompleted);
         
-        if (dropCompleted && 1 < files.size() && files.get(1).isFile()) {
-            opposite.validateAndSetTarget(files.get(1).toPath(), null);
+        if (menu == AppMenu.COMPARE_DIRS) {
+            setDirPath(files.get(0).toPath());
+            event.setDropCompleted(true);
+            
+            if (1 < files.size() && isAcceptableType.test(files.get(1))) {
+                opposite.setDirPath(files.get(1).toPath());
+            }
+            
+        } else {
+            boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
+            event.setDropCompleted(dropCompleted);
+            
+            if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
+                opposite.validateAndSetTarget(files.get(1).toPath(), null);
+            }
+        }
+    }
+    
+    private void chooseDir(ActionEvent event) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.050"));
+        
+        if (dirPath.getValue() != null) {
+            chooser.setInitialDirectory(dirPath.getValue().toFile());
+            
+        } else if (prevSelectedBookPath != null) {
+            chooser.setInitialDirectory(Files.isDirectory(prevSelectedBookPath)
+                    ? prevSelectedBookPath.toFile()
+                    : prevSelectedBookPath.toFile().getParentFile());
+        }
+        
+        File selected = chooser.showDialog(getScene().getWindow());
+        
+        if (selected != null) {
+            setDirPath(selected.toPath());
         }
     }
     
@@ -192,7 +281,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             chooser.setInitialFileName(book.getName());
             
         } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+            chooser.setInitialDirectory(Files.isDirectory(prevSelectedBookPath)
+                    ? prevSelectedBookPath.toFile()
+                    : prevSelectedBookPath.toFile().getParentFile());
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
@@ -203,6 +294,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         if (selected != null) {
             validateAndSetTarget(selected.toPath(), null);
+        }
+    }
+    
+    private void setDirPath(Path newDirPath) {
+        dirPath.setValue(newDirPath);
+        if (newDirPath != null) {
+            prevSelectedBookPath = newDirPath;
         }
     }
     

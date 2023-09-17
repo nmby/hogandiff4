@@ -135,7 +135,7 @@ public class SettingKeys {
             },
             Path::toString,
             Path::of,
-            true);
+            false);
     
     /** 今回の実行における比較対象フォルダ2のパス */
     public static final Key<Path> CURR_DIR_PATH2 = new Key<Path>(
@@ -145,7 +145,7 @@ public class SettingKeys {
             },
             Path::toString,
             Path::of,
-            true);
+            false);
     
     /**
      * Excelシート同士の比較において、

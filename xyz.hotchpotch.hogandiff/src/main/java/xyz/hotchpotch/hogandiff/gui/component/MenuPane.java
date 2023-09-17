@@ -35,13 +35,16 @@ public class MenuPane extends HBox implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private ToggleGroup compareBooksOrSheets;
+    private ToggleGroup compareTarget;
     
     @FXML
     private RadioButton compareBooksRadioButton;
     
     @FXML
     private RadioButton compareSheetsRadioButton;
+    
+    @FXML
+    private RadioButton compareDirsRadioButton;
     
     private final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
@@ -67,19 +70,23 @@ public class MenuPane extends HBox implements ChildController {
         // 2.項目ごとの各種設定
         compareBooksRadioButton.setUserData(AppMenu.COMPARE_BOOKS);
         compareSheetsRadioButton.setUserData(AppMenu.COMPARE_SHEETS);
+        compareDirsRadioButton.setUserData(AppMenu.COMPARE_DIRS);
         
         menu.bind(Bindings.createObjectBinding(
-                () -> (AppMenu) compareBooksOrSheets.getSelectedToggle().getUserData(),
-                compareBooksOrSheets.selectedToggleProperty()));
+                () -> (AppMenu) compareTarget.getSelectedToggle().getUserData(),
+                compareTarget.selectedToggleProperty()));
         
         // 3.初期値の設定
-        compareBooksOrSheets.selectToggle(
-                ar.settings().getOrDefault(SettingKeys.CURR_MENU) == AppMenu.COMPARE_BOOKS
-                        ? compareBooksRadioButton
-                        : compareSheetsRadioButton);
+        compareTarget.selectToggle(
+                switch (ar.settings().getOrDefault(SettingKeys.CURR_MENU)) {
+                case COMPARE_BOOKS -> compareBooksRadioButton;
+                case COMPARE_SHEETS -> compareSheetsRadioButton;
+                case COMPARE_DIRS -> compareDirsRadioButton;
+                default -> throw new AssertionError("unknown menu");
+                });
         
         // 4.値変更時のイベントハンドラの設定
-        compareBooksOrSheets.selectedToggleProperty().addListener(
+        compareTarget.selectedToggleProperty().addListener(
                 (target, oldValue, newValue) -> ar
                         .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
     }

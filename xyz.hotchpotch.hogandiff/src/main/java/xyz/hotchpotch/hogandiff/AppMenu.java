@@ -99,7 +99,7 @@ public enum AppMenu {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(factory, "factory");
             
-            throw new UnsupportedOperationException();
+            return new CompareDirsTask(settings, factory);
         }
     };
     

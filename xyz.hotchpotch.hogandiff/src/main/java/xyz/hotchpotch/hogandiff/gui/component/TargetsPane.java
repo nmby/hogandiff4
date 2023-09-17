@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -35,10 +36,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1),
+        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2);
+        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
         
         // [instance members] --------------------------------------------------
         
@@ -51,10 +52,14 @@ public class TargetsPane extends VBox implements ChildController {
         /** シート名設定項目 */
         public final Key<String> sheetNameKey;
         
-        Side(String title, Key<BookInfo> bookInfoKey, Key<String> sheetNameKey) {
+        /** フォルダパス設定項目 */
+        public final Key<Path> dirPathKey;
+        
+        Side(String title, Key<BookInfo> bookInfoKey, Key<String> sheetNameKey, Key<Path> dirPathKey) {
             this.title = title;
             this.bookInfoKey = bookInfoKey;
             this.sheetNameKey = sheetNameKey;
+            this.dirPathKey = dirPathKey;
         }
     }
     
