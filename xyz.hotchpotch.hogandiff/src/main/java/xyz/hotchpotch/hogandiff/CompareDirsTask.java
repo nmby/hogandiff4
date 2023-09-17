@@ -68,16 +68,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<Pair<String>> pairs = pairingBookNames(dirData1, dirData2, 2, 5);
         
         // 3. Excelブック同士の比較
-        DResult results = compareDirs(dirData1, dirData2, outputDir1, outputDir2, pairs, 5, 80);
+        DResult dResult = compareDirs(dirData1, dirData2, outputDir1, outputDir2, pairs, 5, 90);
         
-        //        // 4. 比較結果の表示（テキスト）
-        //        showResultText(workDir, results, 80, 85);
-        //        
+        // 4. 比較結果の表示（テキスト）
+        saveAndShowResultText(workDir, dResult.toString(), 95, 97);
+        
         //        // 5. 比較結果の表示（Excelブック）
         //        showPaintedSheets(workDir, results, 80, 98);
-        //        
-        //        // 6. 処理終了のアナウンス
-        //        announceEnd();
+        
+        // 6. 処理終了のアナウンス
+        announceEnd();
         
         return null;
     }
@@ -183,13 +183,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 if (!pair.isPaired()) {
                     continue;
                 }
-                str.append(DResult.formatBookNamesPair(num, pair));
+                str.append(DResult.formatBookNamesPair(i, pair));
                 updateMessage(str.toString());
                 
                 BookInfo srcInfo1 = BookInfo.of(dirData1.path().resolve(pair.a()), null);
                 BookInfo srcInfo2 = BookInfo.of(dirData2.path().resolve(pair.a()), null);
-                BookInfo dstInfo1 = BookInfo.of(outputDir1.resolve("【A-%d】%s".formatted(num + 1, pair.a())), null);
-                BookInfo dstInfo2 = BookInfo.of(outputDir2.resolve("【B-%d】%s".formatted(num + 1, pair.b())), null);
+                BookInfo dstInfo1 = BookInfo.of(outputDir1.resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
+                BookInfo dstInfo2 = BookInfo.of(outputDir2.resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 
                 BResult result = compareBooks(srcInfo1, srcInfo2);
                 results.put(pair, Optional.of(result));

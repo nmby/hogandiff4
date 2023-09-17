@@ -98,6 +98,17 @@ public class BResult {
     }
     
     /**
+     * ひとつでも差分があるかを返します。<br>
+     * 
+     * @return ひとつでも差分がある場合は {@code true}
+     */
+    public boolean hasDiff() {
+        return sheetPairs.stream()
+                .map(p -> results.get(p))
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
+    }
+    
+    /**
      * 片側のExcelブックについての差分内容を返します。<br>
      * 
      * @param side Excelブックの側

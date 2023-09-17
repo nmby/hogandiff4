@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -17,6 +18,8 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public class DResult {
     
     // [static members] ********************************************************
+    
+    private static final String BR = System.lineSeparator();
     
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
@@ -60,6 +63,7 @@ public class DResult {
     private final Pair<DirData> dirData;
     private final List<Pair<String>> bookNamePairs;
     private final Map<Pair<String>, Optional<BResult>> results;
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     private DResult(
             DirData dirData1,
@@ -74,5 +78,54 @@ public class DResult {
         this.dirData = Pair.of(dirData1, dirData2);
         this.bookNamePairs = List.copyOf(bookNamePairs);
         this.results = Map.copyOf(results);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append(rb.getString("excel.DResult.020").formatted("A")).append(dirData.a().path()).append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("B")).append(dirData.b().path()).append(BR);
+        
+        for (int i = 0; i < bookNamePairs.size(); i++) {
+            Pair<String> pair = bookNamePairs.get(i);
+            str.append(formatBookNamesPair(i, pair)).append(BR);
+        }
+        
+        str.append(BR);
+        str.append(rb.getString("excel.DResult.030")).append(BR);
+        str.append(getDiffSummary()).append(BR);
+        str.append(rb.getString("excel.DResult.040")).append(BR);
+        str.append(getDiffDetail());
+        
+        return str.toString();
+    }
+    
+    private String getDiffSummary() {
+        return getDiffText(bResult -> "  -  " + bResult.getDiffSimpleSummary());
+    }
+    
+    private String getDiffDetail() {
+        // TODO: 後で見直す
+        return getDiffText(bResult -> BR + bResult.getDiffDetail().indent(4).replace("\n", BR));
+    }
+    
+    private String getDiffText(Function<BResult, String> diffDescriptor) {
+        StringBuilder str = new StringBuilder();
+        
+        for (int i = 0; i < bookNamePairs.size(); i++) {
+            Pair<String> pair = bookNamePairs.get(i);
+            Optional<BResult> bResult = results.get(pair);
+            
+            if (!pair.isPaired() || bResult.isEmpty() || !bResult.get().hasDiff()) {
+                continue;
+            }
+            
+            str.append(formatBookNamesPair(i, pair));
+            str.append(diffDescriptor.apply(bResult.get()));
+            str.append(BR);
+        }
+        
+        return str.isEmpty() ? "    " + rb.getString("excel.DResult.050") + BR : str.toString();
     }
 }
