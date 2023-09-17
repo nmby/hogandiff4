@@ -150,6 +150,29 @@ public class BResult {
         return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
     }
     
+    public String getDiffSimpleSummary() {
+        int diffSheets = (int) sheetPairs.stream()
+                .filter(Pair::isPaired).map(p -> results.get(p).get()).filter(SResult::hasDiff).count();
+        int gapSheets = (int) sheetPairs.stream().filter(p -> !p.isPaired()).count();
+        
+        if (diffSheets == 0 && gapSheets == 0) {
+            return rb.getString("excel.BResult.020");
+        }
+        
+        StringBuilder str = new StringBuilder();
+        if (0 < diffSheets) {
+            str.append(rb.getString("excel.BResult.060").formatted(diffSheets));
+        }
+        if (0 < gapSheets) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append(rb.getString("excel.BResult.070").formatted(gapSheets));
+        }
+        
+        return str.toString();
+    }
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();

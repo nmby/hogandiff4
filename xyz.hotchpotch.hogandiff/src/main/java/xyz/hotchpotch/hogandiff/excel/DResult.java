@@ -41,6 +41,20 @@ public class DResult {
                 pair.hasB() ? "B[" + pair.b() + "]" : rb.getString("excel.DResult.010"));
     }
     
+    public static DResult of(
+            DirData dirData1,
+            DirData dirData2,
+            List<Pair<String>> bookNamePairs,
+            Map<Pair<String>, Optional<BResult>> results) {
+        
+        Objects.requireNonNull(dirData1, "dirData1");
+        Objects.requireNonNull(dirData2, "dirData2");
+        Objects.requireNonNull(bookNamePairs, "bookNamePairs");
+        Objects.requireNonNull(results, "results");
+        
+        return new DResult(dirData1, dirData2, bookNamePairs, results);
+    }
+    
     // [instance members] ******************************************************
     
     private final Pair<DirData> dirData;
