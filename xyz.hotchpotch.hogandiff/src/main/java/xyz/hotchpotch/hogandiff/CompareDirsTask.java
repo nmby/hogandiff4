@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,14 +68,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         // 2. 比較するExcelブックの組み合わせの決定
         List<Pair<String>> pairs = pairingBookNames(dirData1, dirData2, 2, 5);
         
-        // 3. Excelブック同士の比較
+        // 3. フォルダ同士の比較
         DResult dResult = compareDirs(dirData1, dirData2, outputDir1, outputDir2, pairs, 5, 90);
         
         // 4. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, dResult.toString(), 95, 97);
         
-        //        // 5. 比較結果の表示（Excelブック）
-        //        showPaintedSheets(workDir, results, 80, 98);
+        // 5. 比較結果の表示（出力フォルダ）
+        showOutputDirs(outputDir1, outputDir2, 97, 99);
         
         // 6. 処理終了のアナウンス
         announceEnd();
@@ -168,21 +169,35 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("AppTask.220")).append(BR);
-            updateMessage(str.toString());
-            
             Map<Pair<String>, Optional<BResult>> results = new HashMap<>();
             
             int total = progressAfter - progressBefore;
             int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
             int num = 0;
             
+            updateProgress(progressBefore, PROGRESS_MAX);
+            if (0 < num) {
+                str.append(rb.getString("AppTask.220")).append(BR);
+                updateMessage(str.toString());
+            }
+            
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
+                
                 if (!pair.isPaired()) {
+                    Path src = pair.hasA()
+                            ? dirData1.path().resolve(pair.a())
+                            : dirData2.path().resolve(pair.b());
+                    Path dst = pair.hasA()
+                            ? outputDir1.resolve("【A-%d】%s".formatted(i + 1, pair.a()))
+                            : outputDir2.resolve("【B-%d】%s".formatted(i + 1, pair.b()));
+                    Files.copy(src, dst);
+                    dst.toFile().setReadable(true, false);
+                    dst.toFile().setWritable(true, false);
+                    results.put(pair, Optional.empty());
                     continue;
                 }
+                
                 str.append(DResult.formatBookNamesPair(i, pair));
                 updateMessage(str.toString());
                 
@@ -206,13 +221,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateProgress(progressBefore + total * num / numTotalPairs, PROGRESS_MAX);
             }
             str.append(BR);
-            
-            List<Pair<String>> unpairedPairs = pairs.stream()
-                    .filter(Predicate.not(Pair::isPaired))
-                    .toList();
-            for (Pair<String> pair : unpairedPairs) {
-                results.put(pair, Optional.empty());
-            }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             return DResult.of(dirData1, dirData2, pairs, results);
@@ -253,5 +261,33 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         return BResult.of(bookInfo1.bookPath(), bookInfo2.bookPath(), sheetNamePairs, results);
+    }
+    
+    // 5. 比較結果の表示（出力フォルダ）
+    private void showOutputDirs(
+            Path outputDir1,
+            Path outputDir2,
+            int progressBefore, int progressAfter)
+            throws ApplicationException {
+        
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            str.append(rb.getString("excel.DResult.060")).append(BR);
+            
+            Desktop.getDesktop().open(outputDir1.toFile());
+            str.append("    - %s%n".formatted(outputDir1));
+            
+            Desktop.getDesktop().open(outputDir2.toFile());
+            str.append("    - %s%n%n".formatted(outputDir2));
+            
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("excel.DResult.070")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("excel.DResult.070"), e);
+        }
     }
 }
