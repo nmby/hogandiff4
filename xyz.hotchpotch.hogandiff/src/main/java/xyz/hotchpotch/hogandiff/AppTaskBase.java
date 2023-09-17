@@ -5,17 +5,23 @@ import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
+import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -53,6 +59,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         return Objects.equals(
                 settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
                 settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
+    }
+    
+    protected List<Pair<String>> getSheetNamePairs(BookInfo bookInfo1, BookInfo bookInfo2)
+            throws ExcelHandlingException {
+        
+        BookLoader bookLoader1 = factory.bookLoader(bookInfo1);
+        BookLoader bookLoader2 = factory.bookLoader(bookInfo2);
+        List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
+        List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
+        
+        Matcher<String> matcher = factory.sheetNameMatcher(settings);
+        List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
+        
+        return pairs.stream()
+                .map(p -> Pair.ofNullable(
+                        p.hasA() ? sheetNames1.get(p.a()) : null,
+                        p.hasB() ? sheetNames2.get(p.b()) : null))
+                .toList();
     }
     
     // 作業用ディレクトリの作成

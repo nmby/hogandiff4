@@ -8,17 +8,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SComparator;
 import xyz.hotchpotch.hogandiff.excel.SResult;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -92,7 +88,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTask.050")).append(BR);
             updateMessage(str.toString());
             
-            List<Pair<String>> pairs = getSheetNamePairs();
+            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            
+            List<Pair<String>> pairs = getSheetNamePairs(bookInfo1, bookInfo2);
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
                 str.append(BResult.formatSheetNamesPair(i, pair)).append(BR);
@@ -111,26 +110,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             e.printStackTrace();
             throw new ApplicationException(rb.getString("AppTask.060"), e);
         }
-    }
-    
-    private List<Pair<String>> getSheetNamePairs()
-            throws ExcelHandlingException {
-        
-        BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-        BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-        BookLoader bookLoader1 = factory.bookLoader(bookInfo1);
-        BookLoader bookLoader2 = factory.bookLoader(bookInfo2);
-        List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
-        List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
-        
-        Matcher<String> matcher = factory.sheetNameMatcher(settings);
-        List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
-        
-        return pairs.stream()
-                .map(p -> Pair.ofNullable(
-                        p.hasA() ? sheetNames1.get(p.a()) : null,
-                        p.hasB() ? sheetNames2.get(p.b()) : null))
-                .toList();
     }
     
     // 3. シート同士の比較
