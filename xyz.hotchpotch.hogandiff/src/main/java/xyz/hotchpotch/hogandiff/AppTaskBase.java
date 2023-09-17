@@ -83,7 +83,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 比較結果の表示（テキスト）
-    protected void showResultText(
+    protected void saveAndShowResultText(
             Path workDir,
             BResult results,
             int progressBefore, int progressAfter)
@@ -120,20 +120,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 比較結果の表示（Excelブック）
-    protected void showPaintedSheets(
+    protected void saveAndShowPaintedSheets(
             Path workDir,
             BResult results,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
         if (isSameBook()) {
-            showPaintedSheets1(workDir, results, progressBefore, progressAfter);
+            saveAndShowPaintedSheets1(workDir, results, progressBefore, progressAfter);
         } else {
-            showPaintedSheets2(workDir, results, progressBefore, progressAfter);
+            saveAndShowPaintedSheets2(workDir, results, progressBefore, progressAfter);
         }
     }
     
-    private void showPaintedSheets1(
+    private void saveAndShowPaintedSheets1(
             Path workDir,
             BResult results,
             int progressBefore, int progressAfter)
@@ -184,7 +184,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    private void showPaintedSheets2(
+    private void saveAndShowPaintedSheets2(
             Path workDir,
             BResult results,
             int progressBefore, int progressAfter)

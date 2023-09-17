@@ -48,10 +48,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         BResult results = compareSheets(5, 75);
         
         // 3. 比較結果の表示（テキスト）
-        showResultText(workDir, results, 75, 80);
+        saveAndShowResultText(workDir, results, 75, 80);
         
         // 4. 比較結果の表示（Excelブック）
-        showPaintedSheets(workDir, results, 80, 98);
+        saveAndShowPaintedSheets(workDir, results, 80, 98);
         
         // 5. 処理終了のアナウンス
         announceEnd();

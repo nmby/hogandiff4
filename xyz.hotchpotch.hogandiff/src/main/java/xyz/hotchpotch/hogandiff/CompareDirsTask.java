@@ -161,6 +161,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         dirData2.path().resolve(pair.b()));
                 results.put(pair, Optional.of(result));
                 
+                // TODO: ここに保存処理を入れる
+                
                 str.append("  -  ").append(result.getDiffSimpleSummary()).append(BR);
                 updateMessage(str.toString());
                 
