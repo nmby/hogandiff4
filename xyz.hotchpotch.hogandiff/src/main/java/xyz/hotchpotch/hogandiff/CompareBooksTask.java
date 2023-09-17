@@ -50,13 +50,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<Pair<String>> pairs = pairingSheets(2, 5);
         
         // 3. シート同士の比較
-        BResult results = compareSheets(pairs, 5, 75);
+        BResult bResult = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, results, 75, 80);
+        saveAndShowResultText(workDir, bResult.toString(), 75, 80);
         
         // 5. 比較結果の表示（Excelブック）
-        saveAndShowPaintedSheets(workDir, results, 80, 98);
+        saveAndShowPaintedSheets(workDir, bResult, 80, 98);
         
         // 6. 処理終了のアナウンス
         announceEnd();

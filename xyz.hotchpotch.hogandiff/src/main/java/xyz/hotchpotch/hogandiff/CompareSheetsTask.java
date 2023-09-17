@@ -45,13 +45,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Path workDir = createWorkDir(0, 2);
         
         // 2. シート同士の比較
-        BResult results = compareSheets(5, 75);
+        BResult bResult = compareSheets(5, 75);
         
         // 3. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, results, 75, 80);
+        saveAndShowResultText(workDir, bResult.toString(), 75, 80);
         
         // 4. 比較結果の表示（Excelブック）
-        saveAndShowPaintedSheets(workDir, results, 80, 98);
+        saveAndShowPaintedSheets(workDir, bResult, 80, 98);
         
         // 5. 処理終了のアナウンス
         announceEnd();

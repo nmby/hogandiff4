@@ -109,7 +109,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 比較結果の表示（テキスト）
     protected void saveAndShowResultText(
             Path workDir,
-            BResult results,
+            String resultText,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -123,7 +123,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
-                writer.write(results.toString());
+                writer.write(resultText);
             }
             if (settings.getOrDefault(SettingKeys.SHOW_RESULT_TEXT)) {
                 str.append(rb.getString("AppTask.100")).append(BR).append(BR);
@@ -146,20 +146,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 比較結果の表示（Excelブック）
     protected void saveAndShowPaintedSheets(
             Path workDir,
-            BResult results,
+            BResult bResult,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
         if (isSameBook()) {
-            saveAndShowPaintedSheets1(workDir, results, progressBefore, progressAfter);
+            saveAndShowPaintedSheets1(workDir, bResult, progressBefore, progressAfter);
         } else {
-            saveAndShowPaintedSheets2(workDir, results, progressBefore, progressAfter);
+            saveAndShowPaintedSheets2(workDir, bResult, progressBefore, progressAfter);
         }
     }
     
     private void saveAndShowPaintedSheets1(
             Path workDir,
-            BResult results,
+            BResult bResult,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -178,8 +178,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
-            Map<String, Optional<SResult.Piece>> result = new HashMap<>(results.getPiece(Side.A));
-            result.putAll(results.getPiece(Side.B));
+            Map<String, Optional<SResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
+            result.putAll(bResult.getPiece(Side.B));
             BookPainter painter = factory.painter(settings, dst);
             painter.paintAndSave(src, dst, result);
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
@@ -210,7 +210,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     private void saveAndShowPaintedSheets2(
             Path workDir,
-            BResult results,
+            BResult bResult,
             int progressBefore, int progressAfter)
             throws ApplicationException {
         
@@ -230,7 +230,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
             BookPainter painter1 = factory.painter(settings, dst1);
-            painter1.paintAndSave(src1, dst1, results.getPiece(Side.A));
+            painter1.paintAndSave(src1, dst1, bResult.getPiece(Side.A));
             updateProgress(progressBefore + progressTotal * 2 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
@@ -248,7 +248,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
             BookPainter painter2 = factory.painter(settings, dst2);
-            painter2.paintAndSave(src2, dst2, results.getPiece(Side.B));
+            painter2.paintAndSave(src2, dst2, bResult.getPiece(Side.B));
             updateProgress(progressBefore + progressTotal * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
