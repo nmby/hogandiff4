@@ -31,7 +31,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareSheetsTask(Settings settings, Factory factory) {
+    /*package*/ CompareSheetsTask(
+            Settings settings,
+            Factory factory) {
+        
         super(settings, factory);
     }
     
@@ -51,7 +54,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
         
         // 4. 比較結果の表示（Excelブック）
-        saveAndShowPaintedSheets(workDir, bResult, 80, 98);
+        paintSaveAndShowBook(workDir, bResult, 80, 98);
         
         // 5. 処理終了のアナウンス
         announceEnd();
@@ -60,7 +63,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 0. 処理開始のアナウンス
-    private void announceStart(int progressBefore, int progressAfter) {
+    private void announceStart(
+            int progressBefore,
+            int progressAfter) {
+        
         updateProgress(progressBefore, PROGRESS_MAX);
         
         BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
@@ -68,7 +74,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
         String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
         
-        str.append(rb.getString("AppTask.020")).append(BR);
+        str.append(rb.getString("CompareSheetsTask.010")).append(BR);
         str.append(isSameBook()
                 ? "%s%n[A] %s%n[B] %s%n%n".formatted(bookInfo1, sheetName1, sheetName2)
                 : "[A] %s - %s%n[B] %s - %s%n%n".formatted(bookInfo1, sheetName1, bookInfo2, sheetName2));
@@ -79,12 +85,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 2. シート同士の比較
     private BResult compareSheets(
-            int progressBefore, int progressAfter)
+            int progressBefore,
+            int progressAfter)
             throws ApplicationException {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("AppTask.070")).append(BR);
+            str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
@@ -118,10 +125,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     Map.of(pair, Optional.of(result)));
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTask.080")).append(BR).append(BR);
+            str.append(rb.getString("CompareSheetsTask.030")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.080"), e);
+            throw new ApplicationException(rb.getString("CompareSheetsTask.030"), e);
         }
     }
 }

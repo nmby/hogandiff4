@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.excel.BResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
@@ -33,7 +32,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareBooksTask(Settings settings, Factory factory) {
+    /*package*/ CompareBooksTask(
+            Settings settings,
+            Factory factory) {
+        
         super(settings, factory);
     }
     
@@ -56,7 +58,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
         
         // 5. 比較結果の表示（Excelブック）
-        saveAndShowPaintedSheets(workDir, bResult, 80, 98);
+        paintSaveAndShowBook(workDir, bResult, 80, 98);
         
         // 6. 処理終了のアナウンス
         announceEnd();
@@ -65,27 +67,32 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 0. 処理開始のアナウンス
-    private void announceStart(int progressBefore, int progressAfter) {
+    private void announceStart(
+            int progressBefore,
+            int progressAfter) {
+        
         updateProgress(progressBefore, PROGRESS_MAX);
         
         BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
         BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
         
         str.append("%s%n[A] %s%n[B] %s%n%n"
-                .formatted(rb.getString("AppTask.010"), bookInfo1, bookInfo2));
+                .formatted(rb.getString("CompareBooksTask.010"), bookInfo1, bookInfo2));
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
     }
     
     // 2. 比較するシートの組み合わせの決定
-    private List<Pair<String>> pairingSheets(int progressBefore, int progressAfter)
+    private List<Pair<String>> pairingSheets(
+            int progressBefore,
+            int progressAfter)
             throws ApplicationException {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            str.append(rb.getString("AppTask.050")).append(BR);
+            str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
@@ -104,23 +111,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return pairs;
             
         } catch (Exception e) {
-            // TODO: サポート対象外の .xlsb の場合の考慮が必要
-            str.append(rb.getString("AppTask.060")).append(BR).append(BR);
+            str.append(rb.getString("CompareBooksTask.030")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.060"), e);
+            throw new ApplicationException(rb.getString("CompareBooksTask.030"), e);
         }
     }
     
     // 3. シート同士の比較
     private BResult compareSheets(
             List<Pair<String>> pairs,
-            int progressBefore, int progressAfter)
+            int progressBefore,
+            int progressAfter)
             throws ApplicationException {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("AppTask.070")).append(BR);
+            str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
@@ -133,46 +140,46 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             SComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
             
-            int total = progressAfter - progressBefore;
-            int numTotalPairs = (int) pairs.stream().filter(Pair::isPaired).count();
-            int num = 0;
-            
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
-                if (!pair.isPaired()) {
-                    continue;
+                
+                if (pair.isPaired()) {
+                    str.append(BResult.formatSheetNamesPair(i, pair));
+                    updateMessage(str.toString());
+                    
+                    Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
+                    Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
+                    
+                    SResult result = comparator.compare(cells1, cells2);
+                    results.put(pair, Optional.of(result));
+                    
+                    str.append("  -  ").append(result.getDiffSummary()).append(BR);
+                    updateMessage(str.toString());
+                    
+                } else {
+                    results.put(pair, Optional.empty());
                 }
-                str.append(BResult.formatSheetNamesPair(i, pair));
-                updateMessage(str.toString());
                 
-                Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
-                Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
-                SResult result = comparator.compare(cells1, cells2);
-                results.put(pair, Optional.of(result));
-                
-                str.append("  -  ").append(result.getDiffSummary()).append(BR);
-                updateMessage(str.toString());
-                
-                num++;
-                updateProgress(progressBefore + total * num / numTotalPairs, PROGRESS_MAX);
+                updateProgress(
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size(),
+                        PROGRESS_MAX);
             }
+            
             str.append(BR);
-            
-            List<Pair<String>> unpairedPairs = pairs.stream()
-                    .filter(Predicate.not(Pair::isPaired))
-                    .toList();
-            for (Pair<String> pair : unpairedPairs) {
-                results.put(pair, Optional.empty());
-            }
-            
+            updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
-            return BResult.of(bookInfo1.bookPath(), bookInfo2.bookPath(), pairs, results);
+            
+            return BResult.of(
+                    bookInfo1.bookPath(),
+                    bookInfo2.bookPath(),
+                    pairs,
+                    results);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTask.080")).append(BR).append(BR);
+            str.append(rb.getString("CompareBooksTask.050")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTask.080"), e);
+            throw new ApplicationException(rb.getString("CompareBooksTask.050"), e);
         }
     }
 }

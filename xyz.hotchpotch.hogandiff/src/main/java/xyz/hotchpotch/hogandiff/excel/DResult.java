@@ -38,7 +38,7 @@ public class DResult {
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "    【%d】 %s vs %s".formatted(
+        return "    【%d】 %s  vs  %s".formatted(
                 idx + 1,
                 pair.hasA() ? "A【 " + pair.a() + " 】" : rb.getString("excel.DResult.010"),
                 pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
