@@ -16,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
@@ -39,6 +40,9 @@ public class MenuPane extends HBox implements ChildController {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
+    
+    @FXML
+    private Label compareLabel;
     
     @FXML
     private ToggleGroup compareTarget;
