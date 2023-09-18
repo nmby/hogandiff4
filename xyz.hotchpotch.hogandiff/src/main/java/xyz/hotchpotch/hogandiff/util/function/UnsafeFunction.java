@@ -3,6 +3,8 @@ package xyz.hotchpotch.hogandiff.util.function;
 import java.util.Objects;
 import java.util.function.Function;
 
+import xyz.hotchpotch.hogandiff.util.Tuple2;
+
 /**
  * {@link Function} のチェック例外をスローできるバージョンです。<br>
  * つまり、{@link Function#apply(Object)} はチェック例外をスローできませんが、
@@ -142,6 +144,22 @@ public interface UnsafeFunction<T, R> {
                 throw e;
             } catch (Exception e) {
                 throw wrapper.apply(e);
+            }
+        };
+    }
+    
+    /**
+     * この {@link UnsafeFunction} を、関数の実行結果または例外を保持する {@link Tuple2} を返す
+     * {@link Function} に変換します。<br>
+     * 
+     * @return 関数の実行結果または例外を保持する {@link Tuple2}
+     */
+    default Function<T, Tuple2<R, Exception>> convert() {
+        return t -> {
+            try {
+                return new Tuple2<>(apply(t), null);
+            } catch (Exception e) {
+                return new Tuple2<>(null, e);
             }
         };
     }
