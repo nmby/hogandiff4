@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * 同型の2つの要素を保持する不変クラスです。<br>
+ * 同型の2つの要素を保持する不変コンテナです。<br>
  *
  * @param <T> 要素の型
  * @param a 要素a

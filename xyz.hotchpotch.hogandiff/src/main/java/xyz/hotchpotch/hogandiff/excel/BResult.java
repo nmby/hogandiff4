@@ -35,17 +35,17 @@ public class BResult {
      * @throws IndexOutOfBoundsException {@code idx} が {@code 0} 未満の場合
      */
     public static String formatSheetNamesPair(int idx, Pair<String> pair) {
+        Objects.requireNonNull(pair, "pair");
         if (idx < 0) {
             throw new IndexOutOfBoundsException(idx);
         }
-        Objects.requireNonNull(pair, "pair");
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "    %d) %s vs %s".formatted(
+        return "    %d) %s  vs  %s".formatted(
                 idx + 1,
-                pair.hasA() ? "A[" + pair.a() + "]" : rb.getString("excel.BResult.010"),
-                pair.hasB() ? "B[" + pair.b() + "]" : rb.getString("excel.BResult.010"));
+                pair.hasA() ? "A[ " + pair.a() + " ]" : rb.getString("excel.BResult.010"),
+                pair.hasB() ? "B[ " + pair.b() + " ]" : rb.getString("excel.BResult.010"));
     }
     
     /**
@@ -93,8 +93,19 @@ public class BResult {
         assert results != null;
         
         this.bookPath = Pair.of(bookPath1, bookPath2);
-        this.sheetPairs = sheetPairs;
-        this.results = results;
+        this.sheetPairs = List.copyOf(sheetPairs);
+        this.results = Map.copyOf(results);
+    }
+    
+    /**
+     * ひとつでも差分があるかを返します。<br>
+     * 
+     * @return ひとつでも差分がある場合は {@code true}
+     */
+    public boolean hasDiff() {
+        return sheetPairs.stream()
+                .map(p -> results.get(p))
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
     
     /**
@@ -129,7 +140,9 @@ public class BResult {
             str.append(BR);
         }
         
-        return str.isEmpty() ? "    " + rb.getString("excel.BResult.020") + BR : str.toString();
+        return str.isEmpty()
+                ? "    " + rb.getString("excel.BResult.020") + BR
+                : str.toString();
     }
     
     /**
@@ -150,15 +163,38 @@ public class BResult {
         return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
     }
     
+    public String getDiffSimpleSummary() {
+        int diffSheets = (int) sheetPairs.stream()
+                .filter(Pair::isPaired).map(p -> results.get(p).get()).filter(SResult::hasDiff).count();
+        int gapSheets = (int) sheetPairs.stream().filter(p -> !p.isPaired()).count();
+        
+        if (diffSheets == 0 && gapSheets == 0) {
+            return rb.getString("excel.BResult.020");
+        }
+        
+        StringBuilder str = new StringBuilder();
+        if (0 < diffSheets) {
+            str.append(rb.getString("excel.BResult.030").formatted(diffSheets));
+        }
+        if (0 < gapSheets) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append(rb.getString("excel.BResult.040").formatted(gapSheets));
+        }
+        
+        return str.toString();
+    }
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         
         if (bookPath.isIdentical()) {
-            str.append(rb.getString("excel.BResult.030").formatted("")).append(bookPath.a()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPath.a()).append(BR);
         } else {
-            str.append(rb.getString("excel.BResult.030").formatted("A")).append(bookPath.a()).append(BR);
-            str.append(rb.getString("excel.BResult.030").formatted("B")).append(bookPath.b()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPath.a()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPath.b()).append(BR);
         }
         
         for (int i = 0; i < sheetPairs.size(); i++) {
@@ -167,9 +203,9 @@ public class BResult {
         }
         
         str.append(BR);
-        str.append(rb.getString("excel.BResult.040")).append(BR);
+        str.append(rb.getString("excel.BResult.060")).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append(rb.getString("excel.BResult.050")).append(BR);
+        str.append(rb.getString("excel.BResult.070")).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

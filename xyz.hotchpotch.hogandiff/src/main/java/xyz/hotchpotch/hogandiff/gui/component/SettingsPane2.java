@@ -51,9 +51,8 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         // [static members] ----------------------------------------------------
         
-        JA("日本語", Locale.JAPANESE, "jp.png"),
-        EN("English", Locale.ENGLISH, "us.png"),
-        ZH("簡体中文", Locale.SIMPLIFIED_CHINESE, "cn.png");
+        JA("日本語", Locale.JAPANESE, "jp.png"), EN("English", Locale.ENGLISH, "us.png"), ZH("簡体中文",
+                Locale.SIMPLIFIED_CHINESE, "cn.png");
         
         public static LocaleItem of(Locale locale) {
             Objects.requireNonNull(locale, "locale");
@@ -119,7 +118,9 @@ public class SettingsPane2 extends VBox implements ChildController {
             e.printStackTrace();
             new Alert(
                     AlertType.WARNING,
-                    "%s%n%s".formatted(rb.getString("gui.component.SettingsPane2.020"), workDirBase.getValue()),
+                    "%s%n%s".formatted(
+                            rb.getString("gui.component.SettingsPane2.010"),
+                            workDirBase.getValue()),
                     ButtonType.OK)
                             .showAndWait();
         }
@@ -128,7 +129,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     private final EventHandler<ActionEvent> changeDir = event -> {
         DirectoryChooser dirChooser = new DirectoryChooser();
         
-        dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.030"));
+        dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
         dirChooser.setInitialDirectory(workDirBase.getValue().toFile());
         
         File newDir = null;
@@ -154,7 +155,9 @@ public class SettingsPane2 extends VBox implements ChildController {
                     e.printStackTrace();
                     new Alert(
                             AlertType.WARNING,
-                            "%s%n%s".formatted(rb.getString("gui.component.SettingsPane2.040"), newPath),
+                            "%s%n%s".formatted(
+                                    rb.getString("gui.component.SettingsPane2.030"),
+                                    newPath),
                             ButtonType.OK)
                                     .showAndWait();
                     return;
@@ -167,8 +170,10 @@ public class SettingsPane2 extends VBox implements ChildController {
     private final EventHandler<ActionEvent> deleteDir = event -> {
         Optional<ButtonType> result = new Alert(
                 AlertType.CONFIRMATION,
-                "%s%n%s".formatted(rb.getString("gui.component.SettingsPane2.050"), workDirBase.getValue()))
-                        .showAndWait();
+                "%s%n%s".formatted(
+                        rb.getString("gui.component.SettingsPane2.040"),
+                        workDirBase.getValue()))
+                                .showAndWait();
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Desktop desktop = Desktop.getDesktop();
@@ -245,9 +250,9 @@ public class SettingsPane2 extends VBox implements ChildController {
                 new Alert(
                         AlertType.INFORMATION,
                         "%s%n%n%s%n%n%s".formatted(
-                                rb.getString("gui.component.SettingsPane2.011"),
-                                rb.getString("gui.component.SettingsPane2.012"),
-                                rb.getString("gui.component.SettingsPane2.013")),
+                                rb.getString("gui.component.SettingsPane2.051"),
+                                rb.getString("gui.component.SettingsPane2.052"),
+                                rb.getString("gui.component.SettingsPane2.053")),
                         ButtonType.OK)
                                 .showAndWait();
             }
