@@ -104,7 +104,7 @@ public class DResult {
     private String getDiffSummary() {
         return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
                 ? bResult.get().getDiffSimpleSummary()
-                : rb.getString("excel.DResult.080")));
+                : rb.getString("excel.DResult.050")));
     }
     
     private String getDiffDetail() {
@@ -128,6 +128,6 @@ public class DResult {
             str.append(diffDescriptor.apply(bResult));
         }
         
-        return str.isEmpty() ? "    " + rb.getString("excel.DResult.050") + BR : str.toString();
+        return str.isEmpty() ? "    " + rb.getString("excel.DResult.060") + BR : str.toString();
     }
 }

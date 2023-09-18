@@ -252,7 +252,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void chooseDir(ActionEvent event) {
         DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.050"));
+        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
         
         if (dirPath.getValue() != null) {
             chooser.setInitialDirectory(dirPath.getValue().toFile());
@@ -270,7 +270,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void chooseBook(ActionEvent event) {
         FileChooser chooser = new FileChooser();
-        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.030"));
+        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.020"));
         
         if (bookInfo.getValue() != null) {
             File book = bookInfo.getValue().bookPath().toFile();
@@ -282,7 +282,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                rb.getString("gui.component.TargetSelectionPane.040"),
+                rb.getString("gui.component.TargetSelectionPane.030"),
                 "*.xls", "*.xlsx", "*.xlsm"));
         
         File selected = chooser.showOpenDialog(getScene().getWindow());
@@ -339,7 +339,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(rb.getString("gui.component.TargetSelectionPane.010"), newBookPath),
+                    "%s%n%s".formatted(
+                            rb.getString("gui.component.TargetSelectionPane.040"),
+                            newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -355,7 +357,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(rb.getString("gui.component.TargetSelectionPane.020"), sheetName),
+                    "%s%n%s".formatted(
+                            rb.getString("gui.component.TargetSelectionPane.050"),
+                            sheetName),
                     ButtonType.OK)
                             .showAndWait();
             return false;
