@@ -44,39 +44,56 @@ public class DirLoaderImpl implements DirLoader {
     }
     
     @Override
-    public DirData loadDir(Path path, boolean recursively) throws ExcelHandlingException {
+    public DirData loadDir(
+            Path path,
+            boolean recursively)
+            throws ExcelHandlingException {
+        
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
         }
         
+        return loadDir2(path, null, recursively);
+    }
+    
+    private DirData loadDir2(
+            Path path,
+            DirData parent,
+            boolean recursively)
+            throws ExcelHandlingException {
+        
+        assert path != null;
+        assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
+        
         try {
-            List<DirData> children = recursively
-                    ? Files.list(path)
-                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDir(p, true))).convert())
-                            .filter(t -> t.item1() != null)
-                            .map(Tuple2::item1)
-                            .sorted()
-                            .toList()
-                    : List.of();
+            DirData me = new DirData(path);
             
-            List<String> fileNames = Files.list(path)
+            me.setParent(parent);
+            
+            me.setFileNames(Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(DirLoaderImpl::isHandleableExcelBook)
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .sorted()
-                    .toList();
+                    .toList());
             
-            return new DirData(
-                    path,
-                    fileNames,
-                    children);
+            me.setChildren(recursively
+                    ? Files.list(path)
+                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDir2(p, me, true))).convert())
+                            .filter(t -> t.item1() != null)
+                            .map(Tuple2::item1)
+                            .sorted()
+                            .toList()
+                    : List.of());
+            
+            return me;
             
         } catch (IOException e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s (recursively:%b)".formatted(path, recursively),
+                    "processing failed : %s (recursively:true)".formatted(path),
                     e);
         }
     }

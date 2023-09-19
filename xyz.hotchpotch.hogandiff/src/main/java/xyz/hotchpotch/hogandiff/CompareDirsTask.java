@@ -119,8 +119,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirData> dirData)
             throws ApplicationException {
         
-        Path outputDir1 = workDir.resolve("【A】" + dirData.a().path().getFileName());
-        Path outputDir2 = workDir.resolve("【B】" + dirData.b().path().getFileName());
+        Path outputDir1 = workDir.resolve("【A】" + dirData.a().getPath().getFileName());
+        Path outputDir2 = workDir.resolve("【B】" + dirData.b().getPath().getFileName());
         
         try {
             return Pair.of(
@@ -174,13 +174,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         Matcher<String> matcher = factory.bookNameMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(
-                dirData.a().fileNames(),
-                dirData.b().fileNames());
+                dirData.a().getFileNames(),
+                dirData.b().getFileNames());
         
         return pairs.stream()
                 .map(p -> Pair.ofNullable(
-                        p.hasA() ? dirData.a().fileNames().get(p.a()) : null,
-                        p.hasB() ? dirData.b().fileNames().get(p.b()) : null))
+                        p.hasA() ? dirData.a().getFileNames().get(p.a()) : null,
+                        p.hasB() ? dirData.b().getFileNames().get(p.b()) : null))
                 .toList();
     }
     
@@ -205,8 +205,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             try {
                 if (!pair.isPaired()) {
                     Path src = pair.hasA()
-                            ? dirData.a().path().resolve(pair.a())
-                            : dirData.b().path().resolve(pair.b());
+                            ? dirData.a().getPath().resolve(pair.a())
+                            : dirData.b().getPath().resolve(pair.b());
                     Path dst = pair.hasA()
                             ? outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a()))
                             : outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b()));
@@ -222,8 +222,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(DResult.formatBookNamesPair(i, pair));
                 updateMessage(str.toString());
                 
-                BookInfo srcInfo1 = BookInfo.of(dirData.a().path().resolve(pair.a()), null);
-                BookInfo srcInfo2 = BookInfo.of(dirData.b().path().resolve(pair.b()), null);
+                BookInfo srcInfo1 = BookInfo.of(dirData.a().getPath().resolve(pair.a()), null);
+                BookInfo srcInfo2 = BookInfo.of(dirData.b().getPath().resolve(pair.b()), null);
                 BookInfo dstInfo1 = BookInfo.of(outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
                 BookInfo dstInfo2 = BookInfo.of(outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 

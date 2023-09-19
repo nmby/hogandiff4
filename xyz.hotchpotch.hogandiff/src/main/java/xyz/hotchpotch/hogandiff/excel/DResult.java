@@ -84,8 +84,8 @@ public class DResult {
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(rb.getString("excel.DResult.020").formatted("A")).append(dirData.a().path()).append(BR);
-        str.append(rb.getString("excel.DResult.020").formatted("B")).append(dirData.b().path()).append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("A")).append(dirData.a().getPath()).append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("B")).append(dirData.b().getPath()).append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> pair = bookNamePairs.get(i);
