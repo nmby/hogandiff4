@@ -9,7 +9,7 @@ import java.util.Set;
  * @author nmby
  */
 @FunctionalInterface
-public interface SheetLoader {
+public interface CellsLoader {
     
     // [static members] ********************************************************
     

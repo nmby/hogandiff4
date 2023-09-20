@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -96,10 +96,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
             BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            SheetLoader loader1 = factory.sheetLoader(settings, bookInfo1);
-            SheetLoader loader2 = isSameBook()
+            CellsLoader loader1 = factory.cellsLoader(settings, bookInfo1);
+            CellsLoader loader2 = isSameBook()
                     ? loader1
-                    : factory.sheetLoader(settings, bookInfo2);
+                    : factory.cellsLoader(settings, bookInfo2);
             
             Pair<String> pair = Pair.of(
                     settings.get(SettingKeys.CURR_SHEET_NAME1),

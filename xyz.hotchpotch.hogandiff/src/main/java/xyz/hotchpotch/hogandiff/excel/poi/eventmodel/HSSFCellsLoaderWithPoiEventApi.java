@@ -42,7 +42,7 @@ import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -51,13 +51,13 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 /**
  * Apache POI イベントモデル API を利用して、
  * .xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
+public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
     
     // [static members] ********************************************************
     
@@ -447,11 +447,11 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいローダー
      */
-    public static SheetLoader of(
+    public static CellsLoader of(
             boolean extractCachedValue,
             boolean saveMemory) {
         
-        return new HSSFSheetLoaderWithPoiEventApi(
+        return new HSSFCellsLoaderWithPoiEventApi(
                 extractCachedValue,
                 saveMemory);
     }
@@ -461,7 +461,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     private final boolean extractCachedValue;
     private final boolean saveMemory;
     
-    private HSSFSheetLoaderWithPoiEventApi(
+    private HSSFCellsLoaderWithPoiEventApi(
             boolean extractCachedValue,
             boolean saveMemory) {
         

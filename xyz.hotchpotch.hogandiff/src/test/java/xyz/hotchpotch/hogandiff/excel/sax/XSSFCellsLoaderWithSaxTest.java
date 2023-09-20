@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 
-class XSSFSheetLoaderWithSaxTest {
+class XSSFCellsLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
@@ -33,25 +33,25 @@ class XSSFSheetLoaderWithSaxTest {
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
         test1_xls = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
                 null);
         test1_xlsb = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
                 null);
         test1_xlsm = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
                 null);
         test1_xlsx = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
                 null);
         test2_xlsm = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI()),
                 null);
         test3_xlsx = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI()),
                 null);
         test4_xlsx = BookInfo.of(
-                Path.of(XSSFSheetLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI()),
+                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI()),
                 null);
     }
     
@@ -63,37 +63,37 @@ class XSSFSheetLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, null));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xls));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xls));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsb));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xlsb));
         
         // ■チェック例外
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, BookInfo.of(Path.of("dummy\\dummy.xlsx"), null)));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, BookInfo.of(Path.of("dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFSheetLoaderWithSax.of(true, saveMemory, test2_xlsm));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, test2_xlsm));
         
         // ■正常系
         assertTrue(
-                XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsx) instanceof XSSFSheetLoaderWithSax);
+                XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xlsx) instanceof XSSFCellsLoaderWithSax);
         assertTrue(
-                XSSFSheetLoaderWithSax.of(false, saveMemory, test1_xlsm) instanceof XSSFSheetLoaderWithSax);
+                XSSFCellsLoaderWithSax.of(false, saveMemory, test1_xlsm) instanceof XSSFCellsLoaderWithSax);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsm);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xlsm);
         
         // 対照
         assertDoesNotThrow(
@@ -118,7 +118,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsm);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xlsm);
         
         // 存在しないシート
         assertThrows(
@@ -139,7 +139,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test1_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, saveMemory, test1_xlsx);
         
         assertEquals(
                 Set.of(
@@ -155,7 +155,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test3_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, saveMemory, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -265,7 +265,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(false, saveMemory, test3_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, saveMemory, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, "A_バリエーション"));
@@ -370,7 +370,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(true, saveMemory, test4_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, saveMemory, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -386,7 +386,7 @@ class XSSFSheetLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        SheetLoader testee = XSSFSheetLoaderWithSax.of(false, saveMemory, test4_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, saveMemory, test4_xlsx);
         
         assertEquals(
                 Set.of(

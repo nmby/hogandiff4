@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -275,8 +275,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookInfo1, bookInfo2);
         
-        SheetLoader loader1 = factory.sheetLoader(settings, bookInfo1);
-        SheetLoader loader2 = factory.sheetLoader(settings, bookInfo2);
+        CellsLoader loader1 = factory.cellsLoader(settings, bookInfo1);
+        CellsLoader loader2 = factory.cellsLoader(settings, bookInfo2);
         SheetComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         

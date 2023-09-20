@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -28,13 +28,13 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class SheetLoaderWithPoiUserApi implements SheetLoader {
+public class CellsLoaderWithPoiUserApi implements CellsLoader {
     
     // [static members] ********************************************************
     
@@ -49,13 +49,13 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
      * @throw IllegalArgumentException {@code extractContents} が {@code false}
      *                               かつ {@code converter} が {@code null} 以外の場合
      */
-    public static SheetLoader of(
+    public static CellsLoader of(
             boolean saveMemory,
             Function<Cell, CellData> converter) {
         
         Objects.requireNonNull(converter, "converter");
         
-        return new SheetLoaderWithPoiUserApi(
+        return new CellsLoaderWithPoiUserApi(
                 saveMemory,
                 converter);
     }
@@ -65,7 +65,7 @@ public class SheetLoaderWithPoiUserApi implements SheetLoader {
     private final boolean saveMemory;
     private final Function<Cell, CellData> converter;
     
-    private SheetLoaderWithPoiUserApi(
+    private CellsLoaderWithPoiUserApi(
             boolean saveMemory,
             Function<Cell, CellData> converter) {
         

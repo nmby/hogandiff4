@@ -8,17 +8,17 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
- * 処理が成功するまで複数のローダーで順に処理を行う {@link SheetLoader} の実装です。<br>
+ * 処理が成功するまで複数のローダーで順に処理を行う {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler
 @SheetHandler
-public class CombinedSheetLoader implements SheetLoader {
+public class CombinedCellsLoader implements CellsLoader {
     
     // [static members] ********************************************************
     
@@ -30,20 +30,20 @@ public class CombinedSheetLoader implements SheetLoader {
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static SheetLoader of(List<UnsafeSupplier<SheetLoader>> suppliers) {
+    public static CellsLoader of(List<UnsafeSupplier<CellsLoader>> suppliers) {
         Objects.requireNonNull(suppliers, "suppliers");
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
         
-        return new CombinedSheetLoader(suppliers);
+        return new CombinedCellsLoader(suppliers);
     }
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<SheetLoader>> suppliers;
+    private final List<UnsafeSupplier<CellsLoader>> suppliers;
     
-    private CombinedSheetLoader(List<UnsafeSupplier<SheetLoader>> suppliers) {
+    private CombinedCellsLoader(List<UnsafeSupplier<CellsLoader>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -81,10 +81,10 @@ public class CombinedSheetLoader implements SheetLoader {
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s - %s".formatted(bookInfo, sheetName));
         
-        Iterator<UnsafeSupplier<SheetLoader>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<CellsLoader>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
-                SheetLoader loader = itr.next().get();
+                CellsLoader loader = itr.next().get();
                 return loader.loadCells(bookInfo, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();

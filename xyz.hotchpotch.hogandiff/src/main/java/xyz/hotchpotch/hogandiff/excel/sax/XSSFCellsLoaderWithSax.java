@@ -28,7 +28,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -38,13 +38,13 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 /**
  * SAX (Simple API for XML) を利用して、
  * .xlsx/.xlsm 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFSheetLoaderWithSax implements SheetLoader {
+public class XSSFCellsLoaderWithSax implements CellsLoader {
     
     // [static members] ********************************************************
     
@@ -265,7 +265,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
-    public static SheetLoader of(
+    public static CellsLoader of(
             boolean extractCachedValue,
             boolean saveMemory,
             BookInfo bookInfo)
@@ -273,10 +273,10 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
         
         Objects.requireNonNull(bookInfo, "bookInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(
-                XSSFSheetLoaderWithSax.class,
+                XSSFCellsLoaderWithSax.class,
                 bookInfo.bookType());
         
-        return new XSSFSheetLoaderWithSax(
+        return new XSSFCellsLoaderWithSax(
                 extractCachedValue,
                 saveMemory,
                 bookInfo);
@@ -290,7 +290,7 @@ public class XSSFSheetLoaderWithSax implements SheetLoader {
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
-    private XSSFSheetLoaderWithSax(
+    private XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
             boolean saveMemory,
             BookInfo bookInfo)

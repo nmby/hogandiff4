@@ -14,17 +14,17 @@ import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
 import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellsLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -101,7 +101,7 @@ public class Factory {
      * @throws UnsupportedOperationException
      *              {@code bookInfo} がサポート対象外の形式の場合
      */
-    public SheetLoader sheetLoader(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
+    public CellsLoader cellsLoader(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(bookInfo, "bookInfo");
         
@@ -126,29 +126,29 @@ public class Factory {
         switch (bookInfo.bookType()) {
         case XLS:
             return useCachedValue
-                    ? CombinedSheetLoader.of(List.of(
-                            () -> HSSFSheetLoaderWithPoiEventApi.of(
+                    ? CombinedCellsLoader.of(List.of(
+                            () -> HSSFCellsLoaderWithPoiEventApi.of(
                                     useCachedValue,
                                     saveMemory),
-                            () -> SheetLoaderWithPoiUserApi.of(
+                            () -> CellsLoaderWithPoiUserApi.of(
                                     saveMemory,
                                     converter)))
-                    : SheetLoaderWithPoiUserApi.of(
+                    : CellsLoaderWithPoiUserApi.of(
                             saveMemory,
                             converter);
         
         case XLSX:
         case XLSM:
             return useCachedValue
-                    ? CombinedSheetLoader.of(List.of(
-                            () -> XSSFSheetLoaderWithSax.of(
+                    ? CombinedCellsLoader.of(List.of(
+                            () -> XSSFCellsLoaderWithSax.of(
                                     useCachedValue,
                                     saveMemory,
                                     bookInfo),
-                            () -> SheetLoaderWithPoiUserApi.of(
+                            () -> CellsLoaderWithPoiUserApi.of(
                                     saveMemory,
                                     converter)))
-                    : SheetLoaderWithPoiUserApi.of(
+                    : CellsLoaderWithPoiUserApi.of(
                             saveMemory,
                             converter);
         

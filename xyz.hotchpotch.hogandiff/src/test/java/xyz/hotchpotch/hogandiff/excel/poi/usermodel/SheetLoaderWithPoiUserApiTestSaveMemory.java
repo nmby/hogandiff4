@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 
 class SheetLoaderWithPoiUserApiTestSaveMemory {
     
@@ -71,15 +71,15 @@ class SheetLoaderWithPoiUserApiTestSaveMemory {
     void testOf() {
         assertThrows(
                 NullPointerException.class,
-                () -> SheetLoaderWithPoiUserApi.of(saveMemory, null));
+                () -> CellsLoaderWithPoiUserApi.of(saveMemory, null));
         
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(saveMemory, converter) instanceof SheetLoaderWithPoiUserApi);
+                CellsLoaderWithPoiUserApi.of(saveMemory, converter) instanceof CellsLoaderWithPoiUserApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         // 対照群
         assertDoesNotThrow(
@@ -108,7 +108,7 @@ class SheetLoaderWithPoiUserApiTestSaveMemory {
     
     @Test
     void testLoadCells_例外系_チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         // 存在しないファイル
         assertThrows(
@@ -150,7 +150,7 @@ class SheetLoaderWithPoiUserApiTestSaveMemory {
     
     @Test
     void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         assertEquals(
                 Set.of(
@@ -186,7 +186,7 @@ class SheetLoaderWithPoiUserApiTestSaveMemory {
     
     @Test
     void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         assertEquals(
                 Set.of(
