@@ -9,7 +9,7 @@ import java.util.List;
  * @author nmby
  */
 @FunctionalInterface
-public interface BookLoader {
+public interface SheetNamesLoader {
     
     // [static members] ********************************************************
     

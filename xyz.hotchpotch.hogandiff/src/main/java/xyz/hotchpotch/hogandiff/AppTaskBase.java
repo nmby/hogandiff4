@@ -15,7 +15,7 @@ import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -97,8 +97,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         assert bookInfo2 != null;
         assert !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath());
         
-        BookLoader bookLoader1 = factory.bookLoader(bookInfo1);
-        BookLoader bookLoader2 = factory.bookLoader(bookInfo2);
+        SheetNamesLoader bookLoader1 = factory.sheetNamesLoader(bookInfo1);
+        SheetNamesLoader bookLoader2 = factory.sheetNamesLoader(bookInfo2);
         List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
         List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
         

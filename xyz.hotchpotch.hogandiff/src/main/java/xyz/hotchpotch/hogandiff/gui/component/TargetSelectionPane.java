@@ -37,7 +37,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -312,7 +312,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
             while (true) {
                 // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-                BookLoader loader = factory.bookLoader(newBookInfo);
+                SheetNamesLoader loader = factory.sheetNamesLoader(newBookInfo);
                 
                 try {
                     sheetNames = loader.loadSheetNames(newBookInfo);

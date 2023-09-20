@@ -12,18 +12,18 @@ import org.apache.poi.ss.usermodel.Cell;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
 import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellsLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -62,22 +62,22 @@ public class Factory {
      * @throws UnsupportedOperationException
      *              {@code bookInfo} がサポート対象外の形式の場合
      */
-    public BookLoader bookLoader(BookInfo bookInfo) throws ExcelHandlingException {
+    public SheetNamesLoader sheetNamesLoader(BookInfo bookInfo) throws ExcelHandlingException {
         Objects.requireNonNull(bookInfo, "bookInfo");
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
         switch (bookInfo.bookType()) {
         case XLS:
-            return CombinedBookLoader.of(List.of(
-                    () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
-                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+            return CombinedSheetNamesLoader.of(List.of(
+                    () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
         
         case XLSX:
         case XLSM:
-            return CombinedBookLoader.of(List.of(
-                    () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
-                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+            return CombinedSheetNamesLoader.of(List.of(
+                    () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
         
         case XLSB:
             // FIXME: [No.2 .xlsbのサポート]

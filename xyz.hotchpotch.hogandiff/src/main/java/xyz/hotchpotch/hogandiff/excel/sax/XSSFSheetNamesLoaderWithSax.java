@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -17,12 +17,12 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 /**
  * SAX (Simple API for XML) を利用して
  * .xlsx/.xlsm 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
-public class XSSFBookLoaderWithSax implements BookLoader {
+public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
     
     // [static members] ********************************************************
     
@@ -34,20 +34,20 @@ public class XSSFBookLoaderWithSax implements BookLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new XSSFBookLoaderWithSax(targetTypes);
+        return new XSSFSheetNamesLoaderWithSax(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private XSSFBookLoaderWithSax(Set<SheetType> targetTypes) {
+    private XSSFSheetNamesLoaderWithSax(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);

@@ -19,7 +19,7 @@ import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -30,12 +30,12 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 /**
  * Apache POI イベントモデル API を利用して
  * .xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
-public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
+public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     
     // [static members] ********************************************************
     
@@ -138,20 +138,20 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new HSSFBookLoaderWithPoiEventApi(targetTypes);
+        return new HSSFSheetNamesLoaderWithPoiEventApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private HSSFBookLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
+    private HSSFSheetNamesLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
