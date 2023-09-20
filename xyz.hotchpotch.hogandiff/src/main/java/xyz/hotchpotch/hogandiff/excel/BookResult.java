@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class BResult {
+public class BookResult {
     
     // [static members] ********************************************************
     
@@ -60,32 +60,32 @@ public class BResult {
      *          {@code bookPath1}, {@code bookPath2}, {@code sheetPairs}, {@code results}
      *          のいずれかが {@code null} の場合
      */
-    public static BResult of(
+    public static BookResult of(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, Optional<SResult>> results) {
+            Map<Pair<String>, Optional<SheetResult>> results) {
         
         Objects.requireNonNull(bookPath1, "bookPath1");
         Objects.requireNonNull(bookPath2, "bookPath2");
         Objects.requireNonNull(sheetPairs, "sheetPairs");
         Objects.requireNonNull(results, "results");
         
-        return new BResult(bookPath1, bookPath2, sheetPairs, results);
+        return new BookResult(bookPath1, bookPath2, sheetPairs, results);
     }
     
     // [instance members] ******************************************************
     
     private final Pair<Path> bookPath;
     private final List<Pair<String>> sheetPairs;
-    private final Map<Pair<String>, Optional<SResult>> results;
+    private final Map<Pair<String>, Optional<SheetResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
-    private BResult(
+    private BookResult(
             Path bookPath1,
             Path bookPath2,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, Optional<SResult>> results) {
+            Map<Pair<String>, Optional<SheetResult>> results) {
         
         assert bookPath1 != null;
         assert bookPath2 != null;
@@ -124,12 +124,12 @@ public class BResult {
                         entry -> entry.getValue().map(s -> s.getPiece(side))));
     }
     
-    private String getDiffText(Function<SResult, String> diffDescriptor) {
+    private String getDiffText(Function<SheetResult, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < sheetPairs.size(); i++) {
             Pair<String> pair = sheetPairs.get(i);
-            Optional<SResult> sResult = results.get(pair);
+            Optional<SheetResult> sResult = results.get(pair);
             
             if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
                 continue;
@@ -165,7 +165,7 @@ public class BResult {
     
     public String getDiffSimpleSummary() {
         int diffSheets = (int) sheetPairs.stream()
-                .filter(Pair::isPaired).map(p -> results.get(p).get()).filter(SResult::hasDiff).count();
+                .filter(Pair::isPaired).map(p -> results.get(p).get()).filter(SheetResult::hasDiff).count();
         int gapSheets = (int) sheetPairs.stream().filter(p -> !p.isPaired()).count();
         
         if (diffSheets == 0 && gapSheets == 0) {

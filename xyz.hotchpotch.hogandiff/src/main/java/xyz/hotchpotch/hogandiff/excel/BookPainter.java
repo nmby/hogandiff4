@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.Map;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>

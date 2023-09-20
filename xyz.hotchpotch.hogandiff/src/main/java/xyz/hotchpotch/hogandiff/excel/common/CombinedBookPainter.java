@@ -11,7 +11,7 @@ import java.util.Optional;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**

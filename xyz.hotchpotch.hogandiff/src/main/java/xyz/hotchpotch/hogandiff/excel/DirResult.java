@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class DResult {
+public class DirResult {
     
     // [static members] ********************************************************
     
@@ -44,32 +44,32 @@ public class DResult {
                 pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
     }
     
-    public static DResult of(
+    public static DirResult of(
             DirData dirData1,
             DirData dirData2,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results) {
         
         Objects.requireNonNull(dirData1, "dirData1");
         Objects.requireNonNull(dirData2, "dirData2");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
         Objects.requireNonNull(results, "results");
         
-        return new DResult(dirData1, dirData2, bookNamePairs, results);
+        return new DirResult(dirData1, dirData2, bookNamePairs, results);
     }
     
     // [instance members] ******************************************************
     
     private final Pair<DirData> dirData;
     private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, Optional<BResult>> results;
+    private final Map<Pair<String>, Optional<BookResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
-    private DResult(
+    private DirResult(
             DirData dirData1,
             DirData dirData2,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results) {
         
         assert dirData1 != null;
         assert dirData2 != null;
@@ -113,12 +113,12 @@ public class DResult {
                 : "");
     }
     
-    private String getDiffText(Function<Optional<BResult>, String> diffDescriptor) {
+    private String getDiffText(Function<Optional<BookResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> pair = bookNamePairs.get(i);
-            Optional<BResult> bResult = results.get(pair);
+            Optional<BookResult> bResult = results.get(pair);
             
             if (!pair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
                 continue;

@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
-import xyz.hotchpotch.hogandiff.excel.common.SComparatorImpl;
+import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
@@ -213,14 +213,14 @@ public class Factory {
      * @return セルセット同士を比較するコンパレータ
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public SComparator comparator(Settings settings) {
+    public SheetComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
-        return SComparatorImpl.of(
+        return SheetComparatorImpl.of(
                 considerRowGaps,
                 considerColumnGaps,
                 saveMemory);

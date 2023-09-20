@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BResult;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SComparator;
-import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -52,7 +52,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<Pair<String>> pairs = pairingSheets(2, 5);
         
         // 3. シート同士の比較
-        BResult bResult = compareSheets(pairs, 5, 75);
+        BookResult bResult = compareSheets(pairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
@@ -101,7 +101,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<Pair<String>> pairs = getSheetNamePairs(bookInfo1, bookInfo2);
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
-                str.append(BResult.formatSheetNamesPair(i, pair)).append(BR);
+                str.append(BookResult.formatSheetNamesPair(i, pair)).append(BR);
             }
             str.append(BR);
             
@@ -119,7 +119,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 3. シート同士の比較
-    private BResult compareSheets(
+    private BookResult compareSheets(
             List<Pair<String>> pairs,
             int progressBefore,
             int progressAfter)
@@ -137,20 +137,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     ? loader1
                     : factory.sheetLoader(settings, bookInfo2);
             
-            SComparator comparator = factory.comparator(settings);
-            Map<Pair<String>, Optional<SResult>> results = new HashMap<>();
+            SheetComparator comparator = factory.comparator(settings);
+            Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
                 
                 if (pair.isPaired()) {
-                    str.append(BResult.formatSheetNamesPair(i, pair));
+                    str.append(BookResult.formatSheetNamesPair(i, pair));
                     updateMessage(str.toString());
                     
                     Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
                     Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
                     
-                    SResult result = comparator.compare(cells1, cells2);
+                    SheetResult result = comparator.compare(cells1, cells2);
                     results.put(pair, Optional.of(result));
                     
                     str.append("  -  ").append(result.getDiffSummary()).append(BR);
@@ -169,7 +169,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return BResult.of(
+            return BookResult.of(
                     bookInfo1.bookPath(),
                     bookInfo2.bookPath(),
                     pairs,

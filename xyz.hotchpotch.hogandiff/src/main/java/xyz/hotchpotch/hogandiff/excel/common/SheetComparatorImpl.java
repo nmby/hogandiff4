@@ -11,15 +11,15 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.SComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
- * {@link SComparator} の標準的な実装です。<br>
+ * {@link SheetComparator} の標準的な実装です。<br>
  *
  * @author nmby
  */
-public class SComparatorImpl extends SComparatorBase {
+public class SheetComparatorImpl extends SheetComparatorBase {
     
     // [static members] ********************************************************
     
@@ -226,12 +226,12 @@ public class SComparatorImpl extends SComparatorBase {
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
-    public static SComparator of(
+    public static SheetComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {
         
-        return new SComparatorImpl(
+        return new SheetComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
                 saveMemory);
@@ -239,7 +239,7 @@ public class SComparatorImpl extends SComparatorBase {
     
     // [instance members] ******************************************************
     
-    private SComparatorImpl(
+    private SheetComparatorImpl(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {

@@ -13,13 +13,13 @@ import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BResult;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -219,7 +219,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     protected void paintSaveAndShowBook(
             Path workDir,
-            BResult bResult,
+            BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -239,7 +239,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     private void paintSaveAndShowBook1(
             Path workDir,
-            BResult bResult,
+            BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -261,7 +261,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookPainter painter = factory.painter(settings, dst);
-            Map<String, Optional<SResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
+            Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
             painter.paintAndSave(src, dst, result);
             
@@ -293,7 +293,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     private void paintSaveAndShowBook2(
             Path workDir,
-            BResult bResult,
+            BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {

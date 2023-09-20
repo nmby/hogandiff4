@@ -9,7 +9,7 @@ import java.util.Set;
 * @author nmby
  */
 @FunctionalInterface
-public interface SComparator {
+public interface SheetComparator {
     
     // [static members] ********************************************************
     
@@ -22,7 +22,7 @@ public interface SComparator {
      * @param cells2 セルセット2
      * @return 比較結果
      */
-    SResult compare(
+    SheetResult compare(
             Set<CellData> cells1,
             Set<CellData> cells2);
 }

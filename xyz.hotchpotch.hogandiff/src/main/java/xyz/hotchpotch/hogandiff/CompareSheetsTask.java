@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BResult;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SComparator;
-import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -48,7 +48,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Path workDir = createWorkDir(0, 2);
         
         // 2. シート同士の比較
-        BResult bResult = compareSheets(5, 75);
+        BookResult bResult = compareSheets(5, 75);
         
         // 3. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
@@ -84,7 +84,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 2. シート同士の比較
-    private BResult compareSheets(
+    private BookResult compareSheets(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -105,20 +105,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     settings.get(SettingKeys.CURR_SHEET_NAME1),
                     settings.get(SettingKeys.CURR_SHEET_NAME2));
             
-            str.append(BResult.formatSheetNamesPair(0, pair));
+            str.append(BookResult.formatSheetNamesPair(0, pair));
             updateMessage(str.toString());
             
             Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
             Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
             
-            SComparator comparator = factory.comparator(settings);
-            SResult result = comparator.compare(cells1, cells2);
+            SheetComparator comparator = factory.comparator(settings);
+            SheetResult result = comparator.compare(cells1, cells2);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return BResult.of(
+            return BookResult.of(
                     bookInfo1.bookPath(),
                     bookInfo2.bookPath(),
                     List.of(pair),
