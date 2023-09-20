@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookResult;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
@@ -73,11 +73,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-        BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+        BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+        BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
         
         str.append("%s%n[A] %s%n[B] %s%n%n"
-                .formatted(rb.getString("CompareBooksTask.010"), bookInfo1, bookInfo2));
+                .formatted(rb.getString("CompareBooksTask.010"), bookOpenInfo1, bookOpenInfo2));
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
@@ -95,10 +95,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
-            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
             
-            List<Pair<String>> pairs = getSheetNamePairs(bookInfo1, bookInfo2);
+            List<Pair<String>> pairs = getSheetNamePairs(bookOpenInfo1, bookOpenInfo2);
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
                 str.append(BookResult.formatSheetNamesPair(i, pair)).append(BR);
@@ -130,12 +130,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
-            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            CellsLoader loader1 = factory.cellsLoader(settings, bookInfo1);
+            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
+            CellsLoader loader1 = factory.cellsLoader(settings, bookOpenInfo1);
             CellsLoader loader2 = isSameBook()
                     ? loader1
-                    : factory.cellsLoader(settings, bookInfo2);
+                    : factory.cellsLoader(settings, bookOpenInfo2);
             
             SheetComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
@@ -147,8 +147,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     str.append(BookResult.formatSheetNamesPair(i, pair));
                     updateMessage(str.toString());
                     
-                    Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
-                    Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
+                    Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());
+                    Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, pair.b());
                     
                     SheetResult result = comparator.compare(cells1, cells2);
                     results.put(pair, Optional.of(result));
@@ -170,8 +170,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return BookResult.of(
-                    bookInfo1.bookPath(),
-                    bookInfo2.bookPath(),
+                    bookOpenInfo1.bookPath(),
+                    bookOpenInfo2.bookPath(),
                     pairs,
                     results);
             

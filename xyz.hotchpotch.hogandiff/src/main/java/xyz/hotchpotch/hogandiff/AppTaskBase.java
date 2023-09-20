@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -75,32 +75,32 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         return Objects.equals(
-                settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
-                settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
+                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
+                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath());
     }
     
     /**
      * 指定された2つのExcelブックに含まれるシート名をロードし、
      * 設定内容に基づいてシート名をペアリングして返します。<br>
      * 
-     * @param bookInfo1 Excelブック情報1
-     * @param bookInfo2 Excelブック情報2
+     * @param bookOpenInfo1 Excelブック情報1
+     * @param bookOpenInfo2 Excelブック情報2
      * @return シート名のペアのリスト
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     protected List<Pair<String>> getSheetNamePairs(
-            BookInfo bookInfo1,
-            BookInfo bookInfo2)
+            BookOpenInfo bookOpenInfo1,
+            BookOpenInfo bookOpenInfo2)
             throws ExcelHandlingException {
         
-        assert bookInfo1 != null;
-        assert bookInfo2 != null;
-        assert !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath());
+        assert bookOpenInfo1 != null;
+        assert bookOpenInfo2 != null;
+        assert !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath());
         
-        SheetNamesLoader bookLoader1 = factory.sheetNamesLoader(bookInfo1);
-        SheetNamesLoader bookLoader2 = factory.sheetNamesLoader(bookInfo2);
-        List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
-        List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
+        SheetNamesLoader bookLoader1 = factory.sheetNamesLoader(bookOpenInfo1);
+        SheetNamesLoader bookLoader2 = factory.sheetNamesLoader(bookOpenInfo2);
+        List<String> sheetNames1 = bookLoader1.loadSheetNames(bookOpenInfo1);
+        List<String> sheetNames2 = bookLoader2.loadSheetNames(bookOpenInfo2);
         
         Matcher<String> matcher = factory.sheetNamesMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
@@ -244,7 +244,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookInfo dst = null;
+        BookOpenInfo dst = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -252,8 +252,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookInfo src = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst = BookInfo.of(
+            BookOpenInfo src = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            dst = BookOpenInfo.of(
                     workDir.resolve(src.bookPath().getFileName()),
                     src.getReadPassword());
             
@@ -298,16 +298,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookInfo dst1 = null;
-        BookInfo dst2 = null;
+        BookOpenInfo dst1 = null;
+        BookOpenInfo dst2 = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookInfo src1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            dst1 = BookInfo.of(
+            BookOpenInfo src1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            dst1 = BookOpenInfo.of(
                     workDir.resolve("【A】" + src1.bookPath().getFileName()),
                     src1.getReadPassword());
             
@@ -327,8 +327,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            BookInfo src2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
-            dst2 = BookInfo.of(
+            BookOpenInfo src2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
+            dst2 = BookOpenInfo.of(
                     workDir.resolve("【B】" + src2.bookPath().getFileName()),
                     src2.getReadPassword());
             

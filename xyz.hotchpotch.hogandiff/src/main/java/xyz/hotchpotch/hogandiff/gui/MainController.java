@@ -164,8 +164,8 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             if (menu != AppMenu.COMPARE_DIRS
-                    && (settings.get(SettingKeys.CURR_BOOK_INFO1).getReadPassword() != null
-                            || settings.get(SettingKeys.CURR_BOOK_INFO2).getReadPassword() != null)) {
+                    && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).getReadPassword() != null
+                            || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).getReadPassword() != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -188,8 +188,8 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             if (menu != AppMenu.COMPARE_DIRS
-                    && (settings.get(SettingKeys.CURR_BOOK_INFO1).getReadPassword() != null
-                            || settings.get(SettingKeys.CURR_BOOK_INFO2).getReadPassword() != null)) {
+                    && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).getReadPassword() != null
+                            || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).getReadPassword() != null)) {
                 
                 new Alert(
                         AlertType.WARNING,

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -59,9 +59,9 @@ public class CombinedCellsLoader implements CellsLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -71,21 +71,23 @@ public class CombinedCellsLoader implements CellsLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
+    public Set<CellData> loadCells(
+            BookOpenInfo bookOpenInfo,
+            String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s - %s".formatted(bookInfo, sheetName));
+                "processiong failed : %s - %s".formatted(bookOpenInfo, sheetName));
         
         Iterator<UnsafeSupplier<CellsLoader>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 CellsLoader loader = itr.next().get();
-                return loader.loadCells(bookInfo, sheetName);
+                return loader.loadCells(bookOpenInfo, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();
                 failed.addSuppressed(e);

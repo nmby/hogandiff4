@@ -4,7 +4,7 @@ import java.util.Set;
 
 /**
  * Excelシートからセルデータを抽出するローダーを表します。<br>
- * これは、{@link #loadCells(BookInfo, String)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadCells(BookOpenInfo, String)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -18,11 +18,11 @@ public interface CellsLoader {
     /**
      * 指定されたExcelシートに含まれるセルのセットを返します。<br>
      * 
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @param sheetName シート名
      * @return 指定されたExcelシートに含まれるセルのセット
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
+    Set<CellData> loadCells(BookOpenInfo bookOpenInfo, String sheetName)
             throws ExcelHandlingException;
 }

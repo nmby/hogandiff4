@@ -7,7 +7,7 @@ import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>
- * これは、{@link #paintAndSave(BookInfo, BookInfo, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #paintAndSave(BookOpenInfo, BookOpenInfo, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -25,14 +25,14 @@ public interface BookPainter {
      * 元のExcelブックの差分個所に色を付けたものを
      * 指定されたパスに保存します。<br>
      * 
-     * @param srcBookInfo 元のExcelブックの情報
-     * @param dstBookInfo 保存先Excelブックの情報
+     * @param srcBookOpenInfo 元のExcelブックの情報
+     * @param dstBookOpenInfo 保存先Excelブックの情報
      * @param diffs シート名とその差分個所のマップ
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     void paintAndSave(
-            BookInfo srcBookInfo,
-            BookInfo dstBookInfo,
+            BookOpenInfo srcBookOpenInfo,
+            BookOpenInfo dstBookOpenInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException;
 }

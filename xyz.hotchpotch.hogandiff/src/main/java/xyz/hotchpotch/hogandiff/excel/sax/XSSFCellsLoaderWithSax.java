@@ -24,11 +24,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -148,36 +148,36 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                     value = fText.toString();
                 } else {
                     switch (type) {
-                    case b:
-                        if (vText != null) {
-                            value = Boolean.toString("1".equals(vText.toString()));
-                        }
-                        break;
-                    
-                    case n:
-                    case d:
-                    case e:
-                    case str:
-                        if (vText != null) {
-                            value = vText.toString();
-                        }
-                        break;
-                    
-                    case inlineStr:
-                        if (tText != null) {
-                            value = tText.toString();
-                        }
-                        break;
-                    
-                    case s:
-                        if (vText != null) {
-                            int idx = Integer.parseInt(vText.toString());
-                            value = sst.get(idx);
-                        }
-                        break;
-                    
-                    default:
-                        throw new AssertionError(type);
+                        case b:
+                            if (vText != null) {
+                                value = Boolean.toString("1".equals(vText.toString()));
+                            }
+                            break;
+                        
+                        case n:
+                        case d:
+                        case e:
+                        case str:
+                            if (vText != null) {
+                                value = vText.toString();
+                            }
+                            break;
+                        
+                        case inlineStr:
+                            if (tText != null) {
+                                value = tText.toString();
+                            }
+                            break;
+                        
+                        case s:
+                            if (vText != null) {
+                                int idx = Integer.parseInt(vText.toString());
+                                value = sst.get(idx);
+                            }
+                            break;
+                        
+                        default:
+                            throw new AssertionError(type);
                     }
                 }
                 if (value != null && !"".equals(value)) {
@@ -255,12 +255,12 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
      * @param saveMemory 省メモリモードの場合は {@code true}
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return 新しいローダー
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
@@ -268,56 +268,56 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
     public static CellsLoader of(
             boolean extractCachedValue,
             boolean saveMemory,
-            BookInfo bookInfo)
+            BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(
                 XSSFCellsLoaderWithSax.class,
-                bookInfo.bookType());
+                bookOpenInfo.bookType());
         
         return new XSSFCellsLoaderWithSax(
                 extractCachedValue,
                 saveMemory,
-                bookInfo);
+                bookOpenInfo);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
     private final boolean saveMemory;
-    private final BookInfo bookInfo;
+    private final BookOpenInfo bookOpenInfo;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
             boolean saveMemory,
-            BookInfo bookInfo)
+            BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
-        assert bookInfo != null;
-        assert CommonUtil.isSupportedBookType(getClass(), bookInfo.bookType());
+        assert bookOpenInfo != null;
+        assert CommonUtil.isSupportedBookType(getClass(), bookOpenInfo.bookType());
         
         this.extractCachedValue = extractCachedValue;
         this.saveMemory = saveMemory;
-        this.bookInfo = bookInfo;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookInfo).stream()
+        this.bookOpenInfo = bookOpenInfo;
+        this.nameToInfo = SaxUtil.loadSheetInfo(bookOpenInfo).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookInfo);
+        this.sst = SaxUtil.loadSharedStrings(bookOpenInfo);
     }
     
     /**
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} が構成時に指定されたExcelブックと異なる場合
+     *              {@code bookOpenInfo} が構成時に指定されたExcelブックと異なる場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -327,18 +327,20 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
+    public Set<CellData> loadCells(
+            BookOpenInfo bookOpenInfo,
+            String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        if (!Objects.equals(this.bookInfo.bookPath(), bookInfo.bookPath())) {
+        if (!Objects.equals(this.bookOpenInfo.bookPath(), bookOpenInfo.bookPath())) {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."
-                            .formatted(this.bookInfo, bookInfo));
+                            .formatted(this.bookOpenInfo, bookOpenInfo));
         }
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookOpenInfo.bookPath())) {
             
             if (!nameToInfo.containsKey(sheetName)) {
                 // 例外カスケードポリシーに従い、
@@ -371,7 +373,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
         }
     }
 }

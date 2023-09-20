@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 
 /**
  * ユーザーにパスワード入力を求めるダイアログボックスです。<br>
@@ -26,14 +26,14 @@ public class PasswordDialog extends Dialog<String> {
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param bookInfo 開こうとしているExcelブック
+     * @param bookOpenInfo 開こうとしているExcelブック
      * @throws IOException 子要素の構成に失敗した場合
      */
-    public PasswordDialog(BookInfo bookInfo) throws IOException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
+    public PasswordDialog(BookOpenInfo bookOpenInfo) throws IOException {
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
         PasswordDialogPane passwordDialogPane = new PasswordDialogPane();
-        passwordDialogPane.init(this, bookInfo);
+        passwordDialogPane.init(this, bookOpenInfo);
         
         DialogPane me = getDialogPane();
         me.setContent(passwordDialogPane);

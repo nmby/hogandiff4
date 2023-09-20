@@ -12,19 +12,19 @@ import org.apache.poi.ss.usermodel.Cell;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
 import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellsLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -54,38 +54,41 @@ public class Factory {
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws UnsupportedOperationException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
-    public SheetNamesLoader sheetNamesLoader(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
+    public SheetNamesLoader sheetNamesLoader(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
-        switch (bookInfo.bookType()) {
-        case XLS:
-            return CombinedSheetNamesLoader.of(List.of(
-                    () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
-                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-        
-        case XLSX:
-        case XLSM:
-            return CombinedSheetNamesLoader.of(List.of(
-                    () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
-                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-        
-        case XLSB:
-            // FIXME: [No.2 .xlsbのサポート]
-            //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
-            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
-        
-        default:
-            throw new AssertionError("unknown book type: " + bookInfo.bookType());
+        switch (bookOpenInfo.bookType()) {
+            case XLS:
+                return CombinedSheetNamesLoader.of(List.of(
+                        () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
+                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            
+            case XLSX:
+            case XLSM:
+                return CombinedSheetNamesLoader.of(List.of(
+                        () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
+                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            
+            case XLSB:
+                // FIXME: [No.2 .xlsbのサポート]
+                //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            
+            default:
+                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
         }
     }
     
@@ -93,17 +96,21 @@ public class Factory {
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookInfo} のいずれかが {@code null} の場合
+     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
-    public CellsLoader cellsLoader(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
+    public CellsLoader cellsLoader(
+            Settings settings,
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -123,41 +130,41 @@ public class Factory {
                             saveMemory);
         };
         
-        switch (bookInfo.bookType()) {
-        case XLS:
-            return useCachedValue
-                    ? CombinedCellsLoader.of(List.of(
-                            () -> HSSFCellsLoaderWithPoiEventApi.of(
-                                    useCachedValue,
-                                    saveMemory),
-                            () -> CellsLoaderWithPoiUserApi.of(
-                                    saveMemory,
-                                    converter)))
-                    : CellsLoaderWithPoiUserApi.of(
-                            saveMemory,
-                            converter);
-        
-        case XLSX:
-        case XLSM:
-            return useCachedValue
-                    ? CombinedCellsLoader.of(List.of(
-                            () -> XSSFCellsLoaderWithSax.of(
-                                    useCachedValue,
-                                    saveMemory,
-                                    bookInfo),
-                            () -> CellsLoaderWithPoiUserApi.of(
-                                    saveMemory,
-                                    converter)))
-                    : CellsLoaderWithPoiUserApi.of(
-                            saveMemory,
-                            converter);
-        
-        case XLSB:
-            // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
-        
-        default:
-            throw new AssertionError("unknown book type: " + bookInfo.bookType());
+        switch (bookOpenInfo.bookType()) {
+            case XLS:
+                return useCachedValue
+                        ? CombinedCellsLoader.of(List.of(
+                                () -> HSSFCellsLoaderWithPoiEventApi.of(
+                                        useCachedValue,
+                                        saveMemory),
+                                () -> CellsLoaderWithPoiUserApi.of(
+                                        saveMemory,
+                                        converter)))
+                        : CellsLoaderWithPoiUserApi.of(
+                                saveMemory,
+                                converter);
+            
+            case XLSX:
+            case XLSM:
+                return useCachedValue
+                        ? CombinedCellsLoader.of(List.of(
+                                () -> XSSFCellsLoaderWithSax.of(
+                                        useCachedValue,
+                                        saveMemory,
+                                        bookOpenInfo),
+                                () -> CellsLoaderWithPoiUserApi.of(
+                                        saveMemory,
+                                        converter)))
+                        : CellsLoaderWithPoiUserApi.of(
+                                saveMemory,
+                                converter);
+            
+            case XLSB:
+                // FIXME: [No.2 .xlsbのサポート]
+                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            
+            default:
+                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
         }
     }
     
@@ -231,17 +238,21 @@ public class Factory {
      * ペインターを返します。<br>
      * 
      * @param settings 設定
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookInfo} のいずれかが {@code null} の場合
+     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
-    public BookPainter painter(Settings settings, BookInfo bookInfo) throws ExcelHandlingException {
+    public BookPainter painter(
+            Settings settings,
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
         short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
@@ -254,45 +265,45 @@ public class Factory {
         Color diffSheetColor = settings.getOrDefault(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
         
-        switch (bookInfo.bookType()) {
-        case XLS:
-            return CombinedBookPainter.of(List.of(
-                    // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                    () -> BookPainterWithPoiUserApi.of(
-                            redundantColor,
-                            diffColor,
-                            redundantCommentColor,
-                            diffCommentColor,
-                            redundantSheetColor,
-                            diffSheetColor,
-                            sameSheetColor)));
-        
-        case XLSX:
-        case XLSM:
-            return CombinedBookPainter.of(List.of(
-                    () -> XSSFBookPainterWithStax.of(
-                            redundantColor,
-                            diffColor,
-                            redundantCommentHex,
-                            diffCommentHex,
-                            redundantSheetColor,
-                            diffSheetColor,
-                            sameSheetColor),
-                    () -> BookPainterWithPoiUserApi.of(
-                            redundantColor,
-                            diffColor,
-                            redundantCommentColor,
-                            diffCommentColor,
-                            redundantSheetColor,
-                            diffSheetColor,
-                            sameSheetColor)));
-        
-        case XLSB:
-            // FIXME: [No.2 .xlsbのサポート]
-            throw new UnsupportedOperationException("unsupported book type: " + bookInfo.bookType());
-        
-        default:
-            throw new AssertionError("unknown book type: " + bookInfo.bookType());
+        switch (bookOpenInfo.bookType()) {
+            case XLS:
+                return CombinedBookPainter.of(List.of(
+                        // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
+                        () -> BookPainterWithPoiUserApi.of(
+                                redundantColor,
+                                diffColor,
+                                redundantCommentColor,
+                                diffCommentColor,
+                                redundantSheetColor,
+                                diffSheetColor,
+                                sameSheetColor)));
+            
+            case XLSX:
+            case XLSM:
+                return CombinedBookPainter.of(List.of(
+                        () -> XSSFBookPainterWithStax.of(
+                                redundantColor,
+                                diffColor,
+                                redundantCommentHex,
+                                diffCommentHex,
+                                redundantSheetColor,
+                                diffSheetColor,
+                                sameSheetColor),
+                        () -> BookPainterWithPoiUserApi.of(
+                                redundantColor,
+                                diffColor,
+                                redundantCommentColor,
+                                diffCommentColor,
+                                redundantSheetColor,
+                                diffSheetColor,
+                                sameSheetColor)));
+            
+            case XLSB:
+                // FIXME: [No.2 .xlsbのサポート]
+                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            
+            default:
+                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
         }
     }
 }

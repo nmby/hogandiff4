@@ -11,7 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -20,31 +20,31 @@ class XSSFSheetNamesLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
-    private static BookInfo test1_xls;
-    private static BookInfo test1_xlsb;
-    private static BookInfo test1_xlsm;
-    private static BookInfo test1_xlsx;
-    private static BookInfo test2_xls;
-    private static BookInfo test2_xlsx;
+    private static BookOpenInfo test1_xls;
+    private static BookOpenInfo test1_xlsb;
+    private static BookOpenInfo test1_xlsm;
+    private static BookOpenInfo test1_xlsx;
+    private static BookOpenInfo test2_xls;
+    private static BookOpenInfo test2_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(
+        test1_xls = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookInfo.of(
+        test1_xlsb = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookInfo.of(
+        test1_xlsm = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookInfo.of(
+        test1_xlsx = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xls = BookInfo.of(
+        test2_xls = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xls").toURI()),
                 null);
-        test2_xlsx = BookInfo.of(
+        test2_xlsx = BookOpenInfo.of(
                 Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
                 null);
     }
@@ -95,7 +95,7 @@ class XSSFSheetNamesLoaderWithSaxTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx"), null)));
+                () -> testee.loadSheetNames(BookOpenInfo.of(Path.of("X:\\dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル
         assertThrows(

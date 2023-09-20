@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 
 /**
  * ユーザーにパスワード入力を求めるダイアログボックスの要素です。<br>
@@ -47,13 +47,13 @@ public class PasswordDialogPane extends VBox {
     
     /*package*/ void init(
             PasswordDialog parent,
-            BookInfo bookInfo) {
+            BookOpenInfo bookOpenInfo) {
         
-        assert bookInfo != null;
+        assert bookOpenInfo != null;
         
-        errorMsgLabel.setVisible(bookInfo.getReadPassword() != null);
+        errorMsgLabel.setVisible(bookOpenInfo.getReadPassword() != null);
         mainMsgLabel.setText(
-                rb.getString("gui.PasswordDialogPane.010").formatted(bookInfo.bookPath().getFileName()));
-        passwordField.textProperty().setValue(bookInfo.getReadPassword());
+                rb.getString("gui.PasswordDialogPane.010").formatted(bookOpenInfo.bookPath().getFileName()));
+        passwordField.textProperty().setValue(bookOpenInfo.getReadPassword());
     }
 }

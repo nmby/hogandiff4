@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
@@ -62,14 +62,14 @@ public class CombinedBookPainter implements BookPainter {
      * 全てのペインターで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code srcBookInfo}, {@code dstBookInfo}, {@code diffs}
+     *              {@code srcBookOpenInfo}, {@code dstBookOpenInfo}, {@code diffs}
      *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookInfo} がサポート対象外の形式の場合
+     *              {@code srcBookOpenInfo} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookInfo} と {@code dstBookInfo} が同じパスの場合
+     *              {@code srcBookOpenInfo} と {@code dstBookOpenInfo} が同じパスの場合
      * @throws IllegalArgumentException
-     *              {@code srcBookInfo} と {@code dstBookInfo} の形式が異なる場合
+     *              {@code srcBookOpenInfo} と {@code dstBookOpenInfo} の形式が異なる場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -80,32 +80,32 @@ public class CombinedBookPainter implements BookPainter {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public void paintAndSave(
-            BookInfo srcBookInfo,
-            BookInfo dstBookInfo,
+            BookOpenInfo srcBookOpenInfo,
+            BookOpenInfo dstBookOpenInfo,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookInfo, "srcBookInfo");
-        Objects.requireNonNull(dstBookInfo, "dstBookInfo");
+        Objects.requireNonNull(srcBookOpenInfo, "srcBookOpenInfo");
+        Objects.requireNonNull(dstBookOpenInfo, "dstBookOpenInfo");
         Objects.requireNonNull(diffs, "diffs");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookInfo.bookType());
-        if (Objects.equals(srcBookInfo.bookPath(), dstBookInfo.bookPath())) {
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookOpenInfo.bookType());
+        if (Objects.equals(srcBookOpenInfo.bookPath(), dstBookOpenInfo.bookPath())) {
             throw new IllegalArgumentException(
-                    "different book paths are required : %s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "different book paths are required : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
         }
-        if (srcBookInfo.bookType() != dstBookInfo.bookType()) {
+        if (srcBookOpenInfo.bookType() != dstBookOpenInfo.bookType()) {
             throw new IllegalArgumentException(
-                    "extentions must be the same : %s -> %s".formatted(srcBookInfo, dstBookInfo));
+                    "extentions must be the same : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
         }
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s -> %s".formatted(srcBookInfo, dstBookInfo));
+                "processiong failed : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
         
         Iterator<UnsafeSupplier<BookPainter>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 BookPainter painter = itr.next().get();
-                painter.paintAndSave(srcBookInfo, dstBookInfo, diffs);
+                painter.paintAndSave(srcBookOpenInfo, dstBookOpenInfo, diffs);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -116,7 +116,7 @@ public class CombinedBookPainter implements BookPainter {
             // 保存先ファイルを削除しておく。
             if (itr.hasNext()) {
                 try {
-                    Files.deleteIfExists(dstBookInfo.bookPath());
+                    Files.deleteIfExists(dstBookOpenInfo.bookPath());
                 } catch (IOException e) {
                     failed.addSuppressed(e);
                 }

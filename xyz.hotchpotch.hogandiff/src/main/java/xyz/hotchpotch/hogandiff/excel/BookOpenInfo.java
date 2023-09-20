@@ -8,7 +8,7 @@ import java.util.Objects;
  * 
  * @author nmby
  */
-public class BookInfo {
+public class BookOpenInfo {
     
     // [static members] ********************************************************
     
@@ -21,13 +21,13 @@ public class BookInfo {
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException {@code bookPath} の拡張子が不正な形式の場合
      */
-    public static BookInfo of(
+    public static BookOpenInfo of(
             Path bookPath,
             String readPassword) {
         
         Objects.requireNonNull(bookPath, "bookPath");
         
-        return new BookInfo(bookPath, readPassword);
+        return new BookOpenInfo(bookPath, readPassword);
     }
     
     // [instance members] ******************************************************
@@ -36,7 +36,7 @@ public class BookInfo {
     private final BookType bookType;
     private final String readPassword;
     
-    private BookInfo(
+    private BookOpenInfo(
             Path bookPath,
             String readPassword) {
         
@@ -86,7 +86,7 @@ public class BookInfo {
      * @param readPassword Excelブックの読み取りパスワード
      * @return 新たなExcelブック情報
      */
-    public BookInfo withReadPassword(String readPassword) {
+    public BookOpenInfo withReadPassword(String readPassword) {
         return of(this.bookPath, readPassword);
     }
 }

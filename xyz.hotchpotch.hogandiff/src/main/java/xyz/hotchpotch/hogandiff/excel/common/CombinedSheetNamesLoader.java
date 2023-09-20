@@ -5,10 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -58,9 +58,9 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -70,9 +70,12 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+    public List<String> loadSheetNames(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
         List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<SheetNamesLoader>> itr = suppliers.iterator();
@@ -81,7 +84,7 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
         while (itr.hasNext()) {
             try {
                 SheetNamesLoader loader = itr.next().get();
-                return loader.loadSheetNames(bookInfo);
+                return loader.loadSheetNames(bookOpenInfo);
                 
             } catch (PasswordHandlingException e) {
                 passwordIssue = true;
@@ -95,8 +98,8 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
         }
         
         ExcelHandlingException failed = passwordIssue
-                ? new PasswordHandlingException("processing failed : %s".formatted(bookInfo))
-                : new ExcelHandlingException("processing failed : %s".formatted(bookInfo));
+                ? new PasswordHandlingException("processing failed : %s".formatted(bookOpenInfo))
+                : new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo));
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }

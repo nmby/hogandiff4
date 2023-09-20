@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -61,13 +61,13 @@ class CombinedCellsLoaderTest {
                 () -> testee.loadCells(null, "dummy"));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), null));
+                () -> testee.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.loadCells(null, null));
         
         assertDoesNotThrow(
-                () -> testee.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testee.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
     
     @Test
@@ -82,12 +82,12 @@ class CombinedCellsLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testeeF.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testeeFFF.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
     
     @Test
@@ -103,11 +103,11 @@ class CombinedCellsLoaderTest {
         // 成功１つ
         assertEquals(
                 Set.of(cell1),
-                testeeS.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
+                testeeS.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 Set.of(cell1),
-                testeeFFSF.loadCells(BookInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
+                testeeFFSF.loadCells(BookOpenInfo.of(Path.of("dummy.xlsx"), null), "dummy"));
     }
 }

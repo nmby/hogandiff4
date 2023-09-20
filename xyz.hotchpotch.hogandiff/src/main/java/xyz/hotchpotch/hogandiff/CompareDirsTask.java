@@ -12,7 +12,7 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
@@ -222,10 +222,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(DirResult.formatBookNamesPair(i, pair));
                 updateMessage(str.toString());
                 
-                BookInfo srcInfo1 = BookInfo.of(dirData.a().getPath().resolve(pair.a()), null);
-                BookInfo srcInfo2 = BookInfo.of(dirData.b().getPath().resolve(pair.b()), null);
-                BookInfo dstInfo1 = BookInfo.of(outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
-                BookInfo dstInfo2 = BookInfo.of(outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
+                BookOpenInfo srcInfo1 = BookOpenInfo.of(dirData.a().getPath().resolve(pair.a()), null);
+                BookOpenInfo srcInfo2 = BookOpenInfo.of(dirData.b().getPath().resolve(pair.b()), null);
+                BookOpenInfo dstInfo1 = BookOpenInfo.of(outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
+                BookOpenInfo dstInfo2 = BookOpenInfo.of(outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 
                 BookResult result = compareBooks(
                         srcInfo1,
@@ -265,18 +265,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     private BookResult compareBooks(
-            BookInfo bookInfo1,
-            BookInfo bookInfo2,
+            BookOpenInfo bookOpenInfo1,
+            BookOpenInfo bookOpenInfo2,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookInfo1, bookInfo2);
+        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfo1, bookOpenInfo2);
         
-        CellsLoader loader1 = factory.cellsLoader(settings, bookInfo1);
-        CellsLoader loader2 = factory.cellsLoader(settings, bookInfo2);
+        CellsLoader loader1 = factory.cellsLoader(settings, bookOpenInfo1);
+        CellsLoader loader2 = factory.cellsLoader(settings, bookOpenInfo2);
         SheetComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
@@ -284,8 +284,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> pair = sheetNamePairs.get(i);
             
             if (pair.isPaired()) {
-                Set<CellData> cells1 = loader1.loadCells(bookInfo1, pair.a());
-                Set<CellData> cells2 = loader2.loadCells(bookInfo2, pair.b());
+                Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, pair.b());
                 SheetResult result = comparator.compare(cells1, cells2);
                 results.put(pair, Optional.of(result));
                 
@@ -299,8 +299,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         return BookResult.of(
-                bookInfo1.bookPath(),
-                bookInfo2.bookPath(),
+                bookOpenInfo1.bookPath(),
+                bookOpenInfo2.bookPath(),
                 sheetNamePairs,
                 results);
     }
