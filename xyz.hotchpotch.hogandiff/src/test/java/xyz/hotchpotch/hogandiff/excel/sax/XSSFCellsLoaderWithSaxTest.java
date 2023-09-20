@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 
 class XSSFCellsLoaderWithSaxTest {
     
@@ -32,25 +32,25 @@ class XSSFCellsLoaderWithSaxTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookOpenInfo.of(
+        test1_xls = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookOpenInfo.of(
+        test1_xlsb = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookOpenInfo.of(
+        test1_xlsm = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookOpenInfo.of(
+        test1_xlsx = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xlsm = BookOpenInfo.of(
+        test2_xlsm = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI()),
                 null);
-        test3_xlsx = BookOpenInfo.of(
+        test3_xlsx = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI()),
                 null);
-        test4_xlsx = BookOpenInfo.of(
+        test4_xlsx = new BookOpenInfo(
                 Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI()),
                 null);
     }
@@ -77,7 +77,8 @@ class XSSFCellsLoaderWithSaxTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, saveMemory, BookOpenInfo.of(Path.of("dummy\\dummy.xlsx"), null)));
+                () -> XSSFCellsLoaderWithSax.of(true, saveMemory,
+                        new BookOpenInfo(Path.of("dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル
         assertThrows(

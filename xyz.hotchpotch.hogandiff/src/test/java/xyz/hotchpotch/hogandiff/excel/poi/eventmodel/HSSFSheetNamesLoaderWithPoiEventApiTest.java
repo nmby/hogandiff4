@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 
 class HSSFSheetNamesLoaderWithPoiEventApiTest {
@@ -30,26 +30,27 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookOpenInfo.of(
+        test1_xls = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookOpenInfo.of(
+        test1_xlsb = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookOpenInfo.of(
+        test1_xlsm = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookOpenInfo.of(
+        test1_xlsx = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xls = BookOpenInfo.of(
+        test2_xls = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
                 null);
-        test2_xlsx = BookOpenInfo.of(
+        test2_xlsx = new BookOpenInfo(
                 Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
                 null);
-        test4_xls = BookOpenInfo.of(
-                Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls").toURI()),
+        test4_xls = new BookOpenInfo(
+                Path.of(HSSFSheetNamesLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls")
+                        .toURI()),
                 null);
     }
     
@@ -102,7 +103,7 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(BookOpenInfo.of(Path.of("X:\\dummy\\dummy.xls"), null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xls"), null)));
         
         // 暗号化ファイル
         assertThrows(

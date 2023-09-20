@@ -102,7 +102,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
         
         try (Workbook wb = WorkbookFactory.create(
                 bookOpenInfo.bookPath().toFile(),
-                bookOpenInfo.getReadPassword(),
+                bookOpenInfo.readPassword(),
                 true)) {
             
             Sheet sheet = wb.getSheet(sheetName);

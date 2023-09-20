@@ -186,7 +186,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
         Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.getReadPassword());
+        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
         try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
@@ -199,7 +199,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookOpenInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
                                     .formatted(bookOpenInfo),

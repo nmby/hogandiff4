@@ -308,7 +308,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         try {
             List<String> sheetNames = null;
-            BookOpenInfo newBookOpenInfo = BookOpenInfo.of(newBookPath, null);
+            BookOpenInfo newBookOpenInfo = new BookOpenInfo(newBookPath, null);
             
             while (true) {
                 // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。

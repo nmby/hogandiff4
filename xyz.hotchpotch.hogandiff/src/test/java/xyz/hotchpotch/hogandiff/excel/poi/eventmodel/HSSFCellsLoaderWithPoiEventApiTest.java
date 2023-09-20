@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 
 class HSSFCellsLoaderWithPoiEventApiTest {
     
@@ -33,28 +33,28 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookOpenInfo.of(
+        test1_xls = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookOpenInfo.of(
+        test1_xlsb = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookOpenInfo.of(
+        test1_xlsm = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookOpenInfo.of(
+        test1_xlsx = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xls = BookOpenInfo.of(
+        test2_xls = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
                 null);
-        test2_xlsx = BookOpenInfo.of(
+        test2_xlsx = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
                 null);
-        test3_xls = BookOpenInfo.of(
+        test3_xls = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI()),
                 null);
-        test5_xls = BookOpenInfo.of(
+        test5_xls = new BookOpenInfo(
                 Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI()),
                 null);
     }
@@ -112,7 +112,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(BookOpenInfo.of(Path.of("X:\\dummy\\dummy.xls"), null), "A1_ワークシート"));
+                () -> testee.loadCells(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xls"), null), "A1_ワークシート"));
         
         // 存在しないシート
         assertThrows(

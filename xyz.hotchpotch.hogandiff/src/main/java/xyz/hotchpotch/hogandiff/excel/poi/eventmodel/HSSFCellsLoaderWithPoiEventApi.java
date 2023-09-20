@@ -494,7 +494,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
         Objects.requireNonNull(sheetName, "sheetName");
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.getReadPassword());
+        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
         try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             

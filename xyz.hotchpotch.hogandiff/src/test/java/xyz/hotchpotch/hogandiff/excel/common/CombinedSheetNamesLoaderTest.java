@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 
 class CombinedSheetNamesLoaderTest {
     
@@ -62,12 +62,12 @@ class CombinedSheetNamesLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadSheetNames(BookOpenInfo.of(Path.of("dummy.xlsx"), null)));
+                () -> testeeF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadSheetNames(BookOpenInfo.of(Path.of("dummy.xlsx"), null)));
+                () -> testeeFFF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
     }
     
     @Test
@@ -82,11 +82,11 @@ class CombinedSheetNamesLoaderTest {
         // 成功１つ
         assertEquals(
                 List.of("success"),
-                testeeS.loadSheetNames(BookOpenInfo.of(Path.of("dummy.xlsx"), null)));
+                testeeS.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 List.of("success"),
-                testeeFFSF.loadSheetNames(BookOpenInfo.of(Path.of("dummy.xlsx"), null)));
+                testeeFFSF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
     }
 }

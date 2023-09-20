@@ -13,12 +13,12 @@ import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -253,9 +253,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookOpenInfo src = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst = BookOpenInfo.of(
+            dst = new BookOpenInfo(
                     workDir.resolve(src.bookPath().getFileName()),
-                    src.getReadPassword());
+                    src.readPassword());
             
             str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
@@ -307,9 +307,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookOpenInfo src1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst1 = BookOpenInfo.of(
+            dst1 = new BookOpenInfo(
                     workDir.resolve("【A】" + src1.bookPath().getFileName()),
-                    src1.getReadPassword());
+                    src1.readPassword());
             
             str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
@@ -328,9 +328,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             BookOpenInfo src2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            dst2 = BookOpenInfo.of(
+            dst2 = new BookOpenInfo(
                     workDir.resolve("【B】" + src2.bookPath().getFileName()),
-                    src2.getReadPassword());
+                    src2.readPassword());
             
             str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());

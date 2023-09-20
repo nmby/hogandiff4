@@ -11,18 +11,18 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.DirResult;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirData;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
+import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -222,10 +222,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(DirResult.formatBookNamesPair(i, pair));
                 updateMessage(str.toString());
                 
-                BookOpenInfo srcInfo1 = BookOpenInfo.of(dirData.a().getPath().resolve(pair.a()), null);
-                BookOpenInfo srcInfo2 = BookOpenInfo.of(dirData.b().getPath().resolve(pair.b()), null);
-                BookOpenInfo dstInfo1 = BookOpenInfo.of(outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
-                BookOpenInfo dstInfo2 = BookOpenInfo.of(outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
+                BookOpenInfo srcInfo1 = new BookOpenInfo(
+                        dirData.a().getPath().resolve(pair.a()), null);
+                BookOpenInfo srcInfo2 = new BookOpenInfo(
+                        dirData.b().getPath().resolve(pair.b()), null);
+                BookOpenInfo dstInfo1 = new BookOpenInfo(
+                        outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
+                BookOpenInfo dstInfo2 = new BookOpenInfo(
+                        outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
                 
                 BookResult result = compareBooks(
                         srcInfo1,

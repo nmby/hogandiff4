@@ -91,7 +91,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
         
         try (Workbook wb = WorkbookFactory.create(
                 bookOpenInfo.bookPath().toFile(),
-                bookOpenInfo.getReadPassword(),
+                bookOpenInfo.readPassword(),
                 true)) {
             
             return StreamSupport.stream(wb.spliterator(), false)
@@ -112,7 +112,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
             // 本当は読み取り専用で読み込めてほしいが
             // サポート対象外であるとユーザーに案内することにする。
             throw new PasswordHandlingException(
-                    (bookOpenInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
                                     .formatted(bookOpenInfo),
@@ -120,7 +120,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookOpenInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
                                     .formatted(bookOpenInfo),

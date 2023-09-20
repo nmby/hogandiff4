@@ -51,9 +51,9 @@ public class PasswordDialogPane extends VBox {
         
         assert bookOpenInfo != null;
         
-        errorMsgLabel.setVisible(bookOpenInfo.getReadPassword() != null);
+        errorMsgLabel.setVisible(bookOpenInfo.readPassword() != null);
         mainMsgLabel.setText(
                 rb.getString("gui.PasswordDialogPane.010").formatted(bookOpenInfo.bookPath().getFileName()));
-        passwordField.textProperty().setValue(bookOpenInfo.getReadPassword());
+        passwordField.textProperty().setValue(bookOpenInfo.readPassword());
     }
 }

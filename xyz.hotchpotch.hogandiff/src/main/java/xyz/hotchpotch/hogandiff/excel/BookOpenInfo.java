@@ -4,56 +4,20 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Excelブックを特定するための情報を保持する不変クラスです。<br>
+ * Excelブックを開くための情報を保持する不変クラスです。<br>
  * 
  * @author nmby
  */
-public class BookOpenInfo {
+public record BookOpenInfo(
+        Path bookPath,
+        String readPassword) {
     
     // [static members] ********************************************************
     
-    /**
-     * 新たなExcelブック情報を生成して返します。<br>
-     * 
-     * @param bookPath Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
-     * @return Excelブック情報
-     * @throws NullPointerException {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} の拡張子が不正な形式の場合
-     */
-    public static BookOpenInfo of(
-            Path bookPath,
-            String readPassword) {
-        
-        Objects.requireNonNull(bookPath, "bookPath");
-        
-        return new BookOpenInfo(bookPath, readPassword);
-    }
-    
     // [instance members] ******************************************************
     
-    private final Path bookPath;
-    private final BookType bookType;
-    private final String readPassword;
-    
-    private BookOpenInfo(
-            Path bookPath,
-            String readPassword) {
-        
-        assert bookPath != null;
-        
-        this.bookPath = bookPath;
-        this.bookType = BookType.of(bookPath);
-        this.readPassword = readPassword;
-    }
-    
-    /**
-     * このExcelブックのパスを返します。<br>
-     * 
-     * @return このExcelブックのパス
-     */
-    public Path bookPath() {
-        return bookPath;
+    public BookOpenInfo {
+        Objects.requireNonNull(bookPath, "bookPath");
     }
     
     /**
@@ -62,17 +26,7 @@ public class BookOpenInfo {
      * @return このExcelブックの形式
      */
     public BookType bookType() {
-        return bookType;
-    }
-    
-    /**
-     * このExcelブックの読み取りパスワードを返します。<br>
-     * 読み取りパスワードが登録されていない場合は {@code null} を返します。<br>
-     * 
-     * @return このExcelブックの読み取りパスワード（登録されていない場合は {@code null}）
-     */
-    public String getReadPassword() {
-        return readPassword;
+        return BookType.of(bookPath);
     }
     
     @Override
@@ -81,12 +35,13 @@ public class BookOpenInfo {
     }
     
     /**
-     * このExcelブック情報に指定された読み取りパスワードを追加したExcelブック情報を返します。<br>
+     * このExcelブックオープン情報に指定された読み取りパスワードを追加した
+     * 新たなExcelブックオープン情報を返します。<br>
      * 
      * @param readPassword Excelブックの読み取りパスワード
-     * @return 新たなExcelブック情報
+     * @return 新たなExcelブックオープン情報
      */
     public BookOpenInfo withReadPassword(String readPassword) {
-        return of(this.bookPath, readPassword);
+        return new BookOpenInfo(this.bookPath, readPassword);
     }
 }
