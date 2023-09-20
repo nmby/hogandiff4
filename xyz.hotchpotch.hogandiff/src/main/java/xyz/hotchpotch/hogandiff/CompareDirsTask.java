@@ -172,7 +172,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private List<Pair<String>> getBookNamePairs(Pair<DirData> dirData)
             throws ExcelHandlingException {
         
-        Matcher<String> matcher = factory.bookNameMatcher(settings);
+        Matcher<String> matcher = factory.bookNamesMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(
                 dirData.a().getFileNames(),
                 dirData.b().getFileNames());

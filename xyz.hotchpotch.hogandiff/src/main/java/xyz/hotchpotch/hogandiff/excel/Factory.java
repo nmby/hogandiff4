@@ -177,7 +177,7 @@ public class Factory {
      * @return シート名の対応付けを行うマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public Matcher<String> sheetNameMatcher(Settings settings) {
+    public Matcher<String> sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         return settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY)
@@ -194,7 +194,7 @@ public class Factory {
      * @return Excelブック名の対応付けを行うマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public Matcher<String> bookNameMatcher(Settings settings) {
+    public Matcher<String> bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能

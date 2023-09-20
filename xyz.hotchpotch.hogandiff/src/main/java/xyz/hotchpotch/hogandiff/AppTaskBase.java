@@ -102,7 +102,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<String> sheetNames1 = bookLoader1.loadSheetNames(bookInfo1);
         List<String> sheetNames2 = bookLoader2.loadSheetNames(bookInfo2);
         
-        Matcher<String> matcher = factory.sheetNameMatcher(settings);
+        Matcher<String> matcher = factory.sheetNamesMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(sheetNames1, sheetNames2);
         
         return pairs.stream()
