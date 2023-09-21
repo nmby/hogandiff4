@@ -14,7 +14,6 @@ import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
-import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
@@ -217,7 +216,7 @@ public class Factory {
         boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
-        return SheetComparatorImpl.of(
+        return SheetComparator.of(
                 considerRowGaps,
                 considerColumnGaps,
                 saveMemory);

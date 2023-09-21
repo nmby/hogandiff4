@@ -2,6 +2,8 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.common.SheetComparatorImpl;
+
 /**
  * 2つのシートから抽出したセルセット同士を比較するコンパレータを表します。<br>
  * これは、{@link #compare(Set, Set)} を関数メソッドに持つ関数型インタフェースです。<br>
@@ -12,6 +14,17 @@ import java.util.Set;
 public interface SheetComparator {
     
     // [static members] ********************************************************
+    
+    public static SheetComparator of(
+            boolean considerRowGaps,
+            boolean considerColumnGaps,
+            boolean saveMemory) {
+        
+        return SheetComparatorImpl.of(
+                considerRowGaps,
+                considerColumnGaps,
+                saveMemory);
+    }
     
     // [instance members] ******************************************************
     
