@@ -45,8 +45,8 @@ public class DirResult {
     }
     
     public static DirResult of(
-            DirData dirData1,
-            DirData dirData2,
+            DirInfo dirData1,
+            DirInfo dirData2,
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookResult>> results) {
         
@@ -60,14 +60,14 @@ public class DirResult {
     
     // [instance members] ******************************************************
     
-    private final Pair<DirData> dirData;
+    private final Pair<DirInfo> dirData;
     private final List<Pair<String>> bookNamePairs;
     private final Map<Pair<String>, Optional<BookResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
     private DirResult(
-            DirData dirData1,
-            DirData dirData2,
+            DirInfo dirData1,
+            DirInfo dirData2,
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookResult>> results) {
         

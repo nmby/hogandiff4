@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
-import xyz.hotchpotch.hogandiff.excel.DirData;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -57,7 +57,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         announceStart(0, 0);
         
         // 1. ディレクトリ情報の抽出
-        Pair<DirData> dirData = extractDirData();
+        Pair<DirInfo> dirData = extractDirData();
         
         // 2. 作業用ディレクトリの作成
         Path workDir = createWorkDir(0, 2);
@@ -103,12 +103,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 1. ディレクトリ情報の抽出
-    private Pair<DirData> extractDirData() throws ExcelHandlingException {
+    private Pair<DirInfo> extractDirData() throws ExcelHandlingException {
         Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
         Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
         DirLoader dirLoader = factory.dirLoader();
-        DirData dirData1 = dirLoader.loadDir(dirPath1, false);
-        DirData dirData2 = dirLoader.loadDir(dirPath2, false);
+        DirInfo dirData1 = dirLoader.loadDir(dirPath1, false);
+        DirInfo dirData2 = dirLoader.loadDir(dirPath2, false);
         
         return Pair.of(dirData1, dirData2);
     }
@@ -116,7 +116,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 3. 出力用ディレクトリの作成
     private Pair<Path> createOutputDirs(
             Path workDir,
-            Pair<DirData> dirData)
+            Pair<DirInfo> dirData)
             throws ApplicationException {
         
         Path outputDir1 = workDir.resolve("【A】" + dirData.a().getPath().getFileName());
@@ -139,7 +139,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 4. 比較するExcelブック名の組み合わせの決定
     private List<Pair<String>> pairingBookNames(
-            Pair<DirData> dirData,
+            Pair<DirInfo> dirData,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -169,24 +169,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    private List<Pair<String>> getBookNamePairs(Pair<DirData> dirData)
+    private List<Pair<String>> getBookNamePairs(Pair<DirInfo> dirData)
             throws ExcelHandlingException {
         
         Matcher<String> matcher = factory.bookNamesMatcher(settings);
         List<IntPair> pairs = matcher.makePairs(
-                dirData.a().getFileNames(),
-                dirData.b().getFileNames());
+                dirData.a().getBookNames(),
+                dirData.b().getBookNames());
         
         return pairs.stream()
                 .map(p -> Pair.ofNullable(
-                        p.hasA() ? dirData.a().getFileNames().get(p.a()) : null,
-                        p.hasB() ? dirData.b().getFileNames().get(p.b()) : null))
+                        p.hasA() ? dirData.a().getBookNames().get(p.a()) : null,
+                        p.hasB() ? dirData.b().getBookNames().get(p.b()) : null))
                 .toList();
     }
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirData> dirData,
+            Pair<DirInfo> dirData,
             Pair<Path> outputDir,
             List<Pair<String>> pairs,
             int progressBefore,

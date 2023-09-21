@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.DirData;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.util.Tuple2;
@@ -44,7 +44,7 @@ public class DirLoaderImpl implements DirLoader {
     }
     
     @Override
-    public DirData loadDir(
+    public DirInfo loadDir(
             Path path,
             boolean recursively)
             throws ExcelHandlingException {
@@ -57,9 +57,9 @@ public class DirLoaderImpl implements DirLoader {
         return loadDir2(path, null, recursively);
     }
     
-    private DirData loadDir2(
+    private DirInfo loadDir2(
             Path path,
-            DirData parent,
+            DirInfo parent,
             boolean recursively)
             throws ExcelHandlingException {
         
@@ -67,11 +67,11 @@ public class DirLoaderImpl implements DirLoader {
         assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
         
         try {
-            DirData me = new DirData(path);
+            DirInfo me = new DirInfo(path);
             
             me.setParent(parent);
             
-            me.setFileNames(Files.list(path)
+            me.setBookNames(Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(DirLoaderImpl::isHandleableExcelBook)
                     .map(Path::getFileName)
@@ -82,7 +82,7 @@ public class DirLoaderImpl implements DirLoader {
             me.setChildren(recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDir2(p, me, true))).convert())
+                            .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
                             .filter(t -> t.item1() != null)
                             .map(Tuple2::item1)
                             .sorted()
@@ -93,7 +93,7 @@ public class DirLoaderImpl implements DirLoader {
             
         } catch (IOException e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s (recursively:true)".formatted(path),
+                    "processing failed : %s (recursively:%b)".formatted(path, recursively),
                     e);
         }
     }

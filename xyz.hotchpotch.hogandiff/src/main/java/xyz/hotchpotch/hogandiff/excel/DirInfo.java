@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author nmby
  */
-public class DirData {
+public class DirInfo {
     
     // [static members] ********************************************************
     
@@ -17,11 +17,11 @@ public class DirData {
     
     private final Path path;
     
-    private DirData parent;
-    private List<String> fileNames;
-    private List<DirData> children;
+    private DirInfo parent;
+    private List<String> bookNames;
+    private List<DirInfo> children;
     
-    public DirData(Path path) {
+    public DirInfo(Path path) {
         Objects.requireNonNull(path);
         
         this.path = path;
@@ -31,36 +31,36 @@ public class DirData {
         return path;
     }
     
-    public DirData getParent() {
+    public DirInfo getParent() {
         return parent;
     }
     
-    public void setParent(DirData parent) {
+    public void setParent(DirInfo parent) {
         this.parent = parent;
     }
     
-    public List<String> getFileNames() {
-        return List.copyOf(fileNames);
+    public List<String> getBookNames() {
+        return List.copyOf(bookNames);
     }
     
-    public void setFileNames(List<String> fileNames) {
-        this.fileNames = List.copyOf(fileNames);
+    public void setBookNames(List<String> bookNames) {
+        this.bookNames = List.copyOf(bookNames);
     }
     
-    public List<DirData> getChildren() {
+    public List<DirInfo> getChildren() {
         return List.copyOf(children);
     }
     
-    public void setChildren(List<DirData> children) {
+    public void setChildren(List<DirInfo> children) {
         this.children = List.copyOf(children);
     }
     
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DirData other) {
+        if (o instanceof DirInfo other) {
             return Objects.equals(path, other.path)
                     && Objects.equals(parent, other.parent)
-                    && Objects.equals(fileNames, other.fileNames)
+                    && Objects.equals(bookNames, other.bookNames)
                     && Objects.equals(children, other.children);
         }
         return false;
@@ -71,7 +71,7 @@ public class DirData {
         return Objects.hash(
                 path,
                 parent,
-                fileNames,
+                bookNames,
                 children);
     }
 }

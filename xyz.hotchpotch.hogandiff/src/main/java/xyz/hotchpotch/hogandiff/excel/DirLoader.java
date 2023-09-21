@@ -23,6 +23,6 @@ public interface DirLoader {
      * @return フォルダの情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    DirData loadDir(Path path, boolean recursively)
+    DirInfo loadDir(Path path, boolean recursively)
             throws ExcelHandlingException;
 }
