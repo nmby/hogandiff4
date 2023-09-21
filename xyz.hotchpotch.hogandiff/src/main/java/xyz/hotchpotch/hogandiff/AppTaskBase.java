@@ -70,7 +70,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws IllegalStateException 今回の実行メニューが {@link AppMenu.COMPARE_DIRS} の場合
      */
     protected boolean isSameBook() {
-        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
+        AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         if (menu == AppMenu.COMPARE_DIRS) {
             throw new IllegalStateException("not suitable for COMPARE_DIRS");
         }
