@@ -56,19 +56,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         announceStart(0, 0);
         
         // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> dirData = extractDirData();
+        Pair<DirInfo> dirInfoPair = extractDirInfoPair();
         
         // 2. 作業用ディレクトリの作成
         Path workDir = createWorkDir(0, 2);
         
         // 3. 出力用ディレクトリの作成
-        Pair<Path> outputDirs = createOutputDirs(workDir, dirData);
+        Pair<Path> outputDirs = createOutputDirs(workDir, dirInfoPair);
         
         // 4. 比較するExcelブックの組み合わせの決定
-        List<Pair<String>> pairs = pairingBookNames(dirData, 2, 5);
+        List<Pair<String>> bookNamePairs = pairingBookNames(dirInfoPair, 2, 5);
         
         // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirData, outputDirs, pairs, 5, 90);
+        DirResult dResult = compareDirs(dirInfoPair, outputDirs, bookNamePairs, 5, 90);
         
         // 6. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, dResult.toString(), 95, 97);
@@ -102,24 +102,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 1. ディレクトリ情報の抽出
-    private Pair<DirInfo> extractDirData() throws ExcelHandlingException {
+    private Pair<DirInfo> extractDirInfoPair() throws ExcelHandlingException {
         Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
         Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
         DirLoader dirLoader = factory.dirLoader();
-        DirInfo dirData1 = dirLoader.loadDir(dirPath1, false);
-        DirInfo dirData2 = dirLoader.loadDir(dirPath2, false);
+        DirInfo dirInfo1 = dirLoader.loadDir(dirPath1, false);
+        DirInfo dirInfo2 = dirLoader.loadDir(dirPath2, false);
         
-        return Pair.of(dirData1, dirData2);
+        return Pair.of(dirInfo1, dirInfo2);
     }
     
     // 3. 出力用ディレクトリの作成
     private Pair<Path> createOutputDirs(
             Path workDir,
-            Pair<DirInfo> dirData)
+            Pair<DirInfo> dirInfoPair)
             throws ApplicationException {
         
-        Path outputDir1 = workDir.resolve("【A】" + dirData.a().getPath().getFileName());
-        Path outputDir2 = workDir.resolve("【B】" + dirData.b().getPath().getFileName());
+        Path outputDir1 = workDir.resolve("【A】" + dirInfoPair.a().getPath().getFileName());
+        Path outputDir2 = workDir.resolve("【B】" + dirInfoPair.b().getPath().getFileName());
         
         try {
             return Pair.of(
@@ -138,7 +138,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 4. 比較するExcelブック名の組み合わせの決定
     private List<Pair<String>> pairingBookNames(
-            Pair<DirInfo> dirData,
+            Pair<DirInfo> dirInfoPair,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -148,17 +148,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareDirsTask.030")).append(BR);
             updateMessage(str.toString());
             
-            List<Pair<String>> pairs = getBookNamePairs(dirData);
-            for (int i = 0; i < pairs.size(); i++) {
-                Pair<String> pair = pairs.get(i);
-                str.append(DirResult.formatBookNamesPair(i, pair)).append(BR);
+            List<Pair<String>> bookNamePairs = getBookNamePairs(dirInfoPair);
+            for (int i = 0; i < bookNamePairs.size(); i++) {
+                Pair<String> bookNamePair = bookNamePairs.get(i);
+                str.append(DirResult.formatBookNamesPair(i, bookNamePair)).append(BR);
             }
             
             str.append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return pairs;
+            return bookNamePairs;
             
         } catch (Exception e) {
             str.append(rb.getString("CompareDirsTask.040")).append(BR).append(BR);
@@ -168,18 +168,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    private List<Pair<String>> getBookNamePairs(Pair<DirInfo> dirData)
+    private List<Pair<String>> getBookNamePairs(Pair<DirInfo> dirInfoPair)
             throws ExcelHandlingException {
         
         BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
-        return matcher.pairingBooks(dirData.a(), dirData.b());
+        return matcher.pairingBooks(dirInfoPair.a(), dirInfoPair.b());
     }
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirInfo> dirData,
+            Pair<DirInfo> dirInfoPair,
             Pair<Path> outputDir,
-            List<Pair<String>> pairs,
+            List<Pair<String>> bookNamePairs,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -190,44 +190,44 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         Map<Pair<String>, Optional<BookResult>> results = new HashMap<>();
         
-        for (int i = 0; i < pairs.size(); i++) {
-            Pair<String> pair = pairs.get(i);
+        for (int i = 0; i < bookNamePairs.size(); i++) {
+            Pair<String> bookNamePair = bookNamePairs.get(i);
             
             try {
-                if (!pair.isPaired()) {
-                    Path src = pair.hasA()
-                            ? dirData.a().getPath().resolve(pair.a())
-                            : dirData.b().getPath().resolve(pair.b());
-                    Path dst = pair.hasA()
-                            ? outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a()))
-                            : outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b()));
+                if (!bookNamePair.isPaired()) {
+                    Path src = bookNamePair.hasA()
+                            ? dirInfoPair.a().getPath().resolve(bookNamePair.a())
+                            : dirInfoPair.b().getPath().resolve(bookNamePair.b());
+                    Path dst = bookNamePair.hasA()
+                            ? outputDir.a().resolve("【A-%d】%s".formatted(i + 1, bookNamePair.a()))
+                            : outputDir.b().resolve("【B-%d】%s".formatted(i + 1, bookNamePair.b()));
                     
                     Files.copy(src, dst);
                     dst.toFile().setReadable(true, false);
                     dst.toFile().setWritable(true, false);
                     
-                    results.put(pair, Optional.empty());
+                    results.put(bookNamePair, Optional.empty());
                     continue;
                 }
                 
-                str.append(DirResult.formatBookNamesPair(i, pair));
+                str.append(DirResult.formatBookNamesPair(i, bookNamePair));
                 updateMessage(str.toString());
                 
                 BookOpenInfo srcInfo1 = new BookOpenInfo(
-                        dirData.a().getPath().resolve(pair.a()), null);
+                        dirInfoPair.a().getPath().resolve(bookNamePair.a()), null);
                 BookOpenInfo srcInfo2 = new BookOpenInfo(
-                        dirData.b().getPath().resolve(pair.b()), null);
+                        dirInfoPair.b().getPath().resolve(bookNamePair.b()), null);
                 BookOpenInfo dstInfo1 = new BookOpenInfo(
-                        outputDir.a().resolve("【A-%d】%s".formatted(i + 1, pair.a())), null);
+                        outputDir.a().resolve("【A-%d】%s".formatted(i + 1, bookNamePair.a())), null);
                 BookOpenInfo dstInfo2 = new BookOpenInfo(
-                        outputDir.b().resolve("【B-%d】%s".formatted(i + 1, pair.b())), null);
+                        outputDir.b().resolve("【B-%d】%s".formatted(i + 1, bookNamePair.b())), null);
                 
                 BookResult result = compareBooks(
                         srcInfo1,
                         srcInfo2,
-                        progressBefore + (progressAfter - progressBefore) * i / pairs.size(),
-                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size());
-                results.put(pair, Optional.of(result));
+                        progressBefore + (progressAfter - progressBefore) * i / bookNamePairs.size(),
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / bookNamePairs.size());
+                results.put(bookNamePair, Optional.of(result));
                 
                 BookPainter painter1 = factory.painter(settings, srcInfo1);
                 BookPainter painter2 = factory.painter(settings, srcInfo2);
@@ -238,11 +238,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateMessage(str.toString());
                 
                 updateProgress(
-                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size(),
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / bookNamePairs.size(),
                         PROGRESS_MAX);
                 
             } catch (Exception e) {
-                results.putIfAbsent(pair, Optional.empty());
+                results.putIfAbsent(bookNamePair, Optional.empty());
                 str.append("  -  ").append(rb.getString("CompareDirsTask.060")).append(BR);
                 updateMessage(str.toString());
                 e.printStackTrace();
@@ -253,9 +253,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressAfter, PROGRESS_MAX);
         
         return DirResult.of(
-                dirData.a(),
-                dirData.b(),
-                pairs,
+                dirInfoPair.a(),
+                dirInfoPair.b(),
+                bookNamePairs,
                 results);
     }
     
@@ -276,16 +276,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
         for (int i = 0; i < sheetNamePairs.size(); i++) {
-            Pair<String> pair = sheetNamePairs.get(i);
+            Pair<String> sheetNamePair = sheetNamePairs.get(i);
             
-            if (pair.isPaired()) {
-                Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());
-                Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, pair.b());
+            if (sheetNamePair.isPaired()) {
+                Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, sheetNamePair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, sheetNamePair.b());
                 SheetResult result = comparator.compare(cells1, cells2);
-                results.put(pair, Optional.of(result));
+                results.put(sheetNamePair, Optional.of(result));
                 
             } else {
-                results.put(pair, Optional.empty());
+                results.put(sheetNamePair, Optional.empty());
             }
             
             updateProgress(

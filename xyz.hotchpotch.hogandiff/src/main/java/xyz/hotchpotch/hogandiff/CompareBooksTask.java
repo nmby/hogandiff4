@@ -49,10 +49,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Path workDir = createWorkDir(0, 2);
         
         // 2. 比較するシートの組み合わせの決定
-        List<Pair<String>> pairs = pairingSheets(2, 5);
+        List<Pair<String>> sheetNamePairs = pairingSheets(2, 5);
         
         // 3. シート同士の比較
-        BookResult bResult = compareSheets(pairs, 5, 75);
+        BookResult bResult = compareSheets(sheetNamePairs, 5, 75);
         
         // 4. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
@@ -120,7 +120,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 3. シート同士の比較
     private BookResult compareSheets(
-            List<Pair<String>> pairs,
+            List<Pair<String>> sheetNamePairs,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -140,28 +140,28 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             SheetComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
-            for (int i = 0; i < pairs.size(); i++) {
-                Pair<String> pair = pairs.get(i);
+            for (int i = 0; i < sheetNamePairs.size(); i++) {
+                Pair<String> sheetNamePair = sheetNamePairs.get(i);
                 
-                if (pair.isPaired()) {
-                    str.append(BookResult.formatSheetNamesPair(i, pair));
+                if (sheetNamePair.isPaired()) {
+                    str.append(BookResult.formatSheetNamesPair(i, sheetNamePair));
                     updateMessage(str.toString());
                     
-                    Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());
-                    Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, pair.b());
+                    Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, sheetNamePair.a());
+                    Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, sheetNamePair.b());
                     
                     SheetResult result = comparator.compare(cells1, cells2);
-                    results.put(pair, Optional.of(result));
+                    results.put(sheetNamePair, Optional.of(result));
                     
                     str.append("  -  ").append(result.getDiffSummary()).append(BR);
                     updateMessage(str.toString());
                     
                 } else {
-                    results.put(pair, Optional.empty());
+                    results.put(sheetNamePair, Optional.empty());
                 }
                 
                 updateProgress(
-                        progressBefore + (progressAfter - progressBefore) * (i + 1) / pairs.size(),
+                        progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
                         PROGRESS_MAX);
             }
             
@@ -172,7 +172,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return BookResult.of(
                     bookOpenInfo1.bookPath(),
                     bookOpenInfo2.bookPath(),
-                    pairs,
+                    sheetNamePairs,
                     results);
             
         } catch (Exception e) {

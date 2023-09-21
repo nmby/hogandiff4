@@ -45,37 +45,37 @@ public class DirResult {
     }
     
     public static DirResult of(
-            DirInfo dirData1,
-            DirInfo dirData2,
+            DirInfo dirInfo1,
+            DirInfo dirInfo2,
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookResult>> results) {
         
-        Objects.requireNonNull(dirData1, "dirData1");
-        Objects.requireNonNull(dirData2, "dirData2");
+        Objects.requireNonNull(dirInfo1, "dirInfo1");
+        Objects.requireNonNull(dirInfo2, "dirInfo2");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
         Objects.requireNonNull(results, "results");
         
-        return new DirResult(dirData1, dirData2, bookNamePairs, results);
+        return new DirResult(dirInfo1, dirInfo2, bookNamePairs, results);
     }
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> dirData;
+    private final Pair<DirInfo> dirInfoPair;
     private final List<Pair<String>> bookNamePairs;
     private final Map<Pair<String>, Optional<BookResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
     private DirResult(
-            DirInfo dirData1,
-            DirInfo dirData2,
+            DirInfo dirInfo1,
+            DirInfo dirInfo2,
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookResult>> results) {
         
-        assert dirData1 != null;
-        assert dirData2 != null;
+        assert dirInfo1 != null;
+        assert dirInfo2 != null;
         assert bookNamePairs != null;
         
-        this.dirData = Pair.of(dirData1, dirData2);
+        this.dirInfoPair = Pair.of(dirInfo1, dirInfo2);
         this.bookNamePairs = List.copyOf(bookNamePairs);
         this.results = Map.copyOf(results);
     }
@@ -84,8 +84,12 @@ public class DirResult {
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(rb.getString("excel.DResult.020").formatted("A")).append(dirData.a().getPath()).append(BR);
-        str.append(rb.getString("excel.DResult.020").formatted("B")).append(dirData.b().getPath()).append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("A"))
+                .append(dirInfoPair.a().getPath())
+                .append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("B"))
+                .append(dirInfoPair.b().getPath())
+                .append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> pair = bookNamePairs.get(i);
