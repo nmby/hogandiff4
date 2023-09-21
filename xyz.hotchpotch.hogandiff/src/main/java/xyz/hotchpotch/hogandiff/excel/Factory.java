@@ -178,20 +178,17 @@ public class Factory {
     }
     
     /**
-     * 2つのExcelブックに含まれるシート名の対応付けを行うマッチャーを返します。<br>
+     * 2つのExcelブックに含まれるシート名同士の対応関係を決めるマッチャーを返します。<br>
      * 
      * @param settings 設定
-     * @return シート名の対応付けを行うマッチャー
+     * @return シート名同士の対応関係を決めるマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public Matcher<String> sheetNamesMatcher(Settings settings) {
+    public SheetNamesMatcher sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        return settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY)
-                ? Matcher.identityMatcher()
-                : Matcher.nerutonMatcherOf(
-                        String::length,
-                        StringDiffUtil::levenshteinDistance);
+        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        return SheetNamesMatcher.of(matchNamesStrictly);
     }
     
     /**

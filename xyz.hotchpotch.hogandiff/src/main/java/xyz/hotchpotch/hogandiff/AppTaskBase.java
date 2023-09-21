@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
@@ -20,8 +19,8 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -103,16 +102,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         BookInfo bookInfo1 = bookLoader1.loadSheetNames(bookOpenInfo1);
         BookInfo bookInfo2 = bookLoader2.loadSheetNames(bookOpenInfo2);
         
-        Matcher<String> matcher = factory.sheetNamesMatcher(settings);
-        List<IntPair> pairs = matcher.makePairs(
-                bookInfo1.sheetNames(),
-                bookInfo2.sheetNames());
-        
-        return pairs.stream()
-                .map(p -> Pair.ofNullable(
-                        p.hasA() ? bookInfo1.sheetNames().get(p.a()) : null,
-                        p.hasB() ? bookInfo2.sheetNames().get(p.b()) : null))
-                .toList();
+        SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
+        return matcher.pairingSheetNames(bookInfo1, bookInfo2);
     }
     
     /**
