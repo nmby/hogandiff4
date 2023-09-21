@@ -92,8 +92,8 @@ public class DirResult {
                 .append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> pair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(i, pair)).append(BR);
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            str.append(formatBookNamesPair(i, bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -121,14 +121,14 @@ public class DirResult {
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> pair = bookNamePairs.get(i);
-            Optional<BookResult> bResult = results.get(pair);
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            Optional<BookResult> bResult = results.get(bookNamePair);
             
-            if (!pair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
+            if (!bookNamePair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
                 continue;
             }
             
-            str.append(formatBookNamesPair(i, pair));
+            str.append(formatBookNamesPair(i, bookNamePair));
             str.append(diffDescriptor.apply(bResult));
         }
         
