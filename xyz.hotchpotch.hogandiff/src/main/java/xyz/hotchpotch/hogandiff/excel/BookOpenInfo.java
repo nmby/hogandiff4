@@ -14,6 +14,18 @@ public record BookOpenInfo(
     
     // [static members] ********************************************************
     
+    public static boolean isSameBook(
+            BookOpenInfo bookOpenInfo1,
+            BookOpenInfo bookOpenInfo2) {
+        
+        Objects.requireNonNull(bookOpenInfo1, "bookOpenInfo1");
+        Objects.requireNonNull(bookOpenInfo2, "bookOpenInfo2");
+        
+        return Objects.equals(
+                bookOpenInfo1.bookPath,
+                bookOpenInfo2.bookPath);
+    }
+    
     // [instance members] ******************************************************
     
     public BookOpenInfo {

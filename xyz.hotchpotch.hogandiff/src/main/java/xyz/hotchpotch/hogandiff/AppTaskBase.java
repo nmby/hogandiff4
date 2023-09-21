@@ -74,9 +74,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throw new IllegalStateException("not suitable for COMPARE_DIRS");
         }
         
-        return Objects.equals(
-                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
-                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath());
+        return BookOpenInfo.isSameBook(
+                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
+                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
     }
     
     /**
