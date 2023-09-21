@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -69,7 +70,7 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(
+    public BookInfo loadSheetNames(
             BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
@@ -79,10 +80,12 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
         try {
             List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookOpenInfo);
             
-            return sheets.stream()
+            List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
                     .map(SheetInfo::name)
                     .toList();
+            
+            return new BookInfo(bookOpenInfo, sheetNames);
             
         } catch (Exception e) {
             throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);

@@ -18,6 +18,7 @@ import org.apache.poi.hssf.record.WSBoolRecord;
 import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -179,7 +180,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(
+    public BookInfo loadSheetNames(
             BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
@@ -195,7 +196,10 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
-            return listener1.getSheetNames(targetTypes);
+            
+            return new BookInfo(
+                    bookOpenInfo,
+                    listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(

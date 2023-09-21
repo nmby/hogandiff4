@@ -36,6 +36,7 @@ import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -307,7 +308,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            List<String> sheetNames = null;
+            BookInfo bookInfo = null;
             BookOpenInfo newBookOpenInfo = new BookOpenInfo(newBookPath, null);
             
             while (true) {
@@ -315,7 +316,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 SheetNamesLoader loader = factory.sheetNamesLoader(newBookOpenInfo);
                 
                 try {
-                    sheetNames = loader.loadSheetNames(newBookOpenInfo);
+                    bookInfo = loader.loadSheetNames(newBookOpenInfo);
                     break;
                     
                 } catch (PasswordHandlingException e) {
@@ -330,7 +331,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
             
             bookOpenInfo.setValue(newBookOpenInfo);
-            sheetNameChoiceBox.setItems(FXCollections.observableList(sheetNames));
+            sheetNameChoiceBox.setItems(FXCollections.observableList(bookInfo.sheetNames()));
             prevSelectedBookPath = newBookPath;
             
         } catch (Exception e) {

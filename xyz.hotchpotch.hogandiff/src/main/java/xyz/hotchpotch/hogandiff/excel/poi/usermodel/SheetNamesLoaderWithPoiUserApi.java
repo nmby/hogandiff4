@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -82,7 +83,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(
+    public BookInfo loadSheetNames(
             BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
@@ -94,10 +95,12 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
                 bookOpenInfo.readPassword(),
                 true)) {
             
-            return StreamSupport.stream(wb.spliterator(), false)
+            List<String> sheetNames = StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
                     .toList();
+            
+            return new BookInfo(bookOpenInfo, sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない

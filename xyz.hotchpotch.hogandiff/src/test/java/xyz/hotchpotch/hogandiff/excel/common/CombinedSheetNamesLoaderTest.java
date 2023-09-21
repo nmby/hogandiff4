@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -15,7 +16,8 @@ class CombinedSheetNamesLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final SheetNamesLoader successLoader = bookPath -> List.of("success");
+    private static final SheetNamesLoader successLoader = bookOpenInfo -> new BookInfo(
+            bookOpenInfo, List.of("success"));
     
     private static final SheetNamesLoader failLoader = bookPath -> {
         throw new RuntimeException("fail");
