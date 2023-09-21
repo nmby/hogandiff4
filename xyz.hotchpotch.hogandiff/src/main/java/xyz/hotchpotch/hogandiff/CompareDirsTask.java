@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
@@ -23,7 +23,6 @@ import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -172,16 +171,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private List<Pair<String>> getBookNamePairs(Pair<DirInfo> dirData)
             throws ExcelHandlingException {
         
-        Matcher<String> matcher = factory.bookNamesMatcher(settings);
-        List<IntPair> pairs = matcher.makePairs(
-                dirData.a().getBookNames(),
-                dirData.b().getBookNames());
-        
-        return pairs.stream()
-                .map(p -> Pair.ofNullable(
-                        p.hasA() ? dirData.a().getBookNames().get(p.a()) : null,
-                        p.hasB() ? dirData.b().getBookNames().get(p.b()) : null))
-                .toList();
+        BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
+        return matcher.pairingBooks(dirData.a(), dirData.b());
     }
     
     // 5. フォルダ同士の比較

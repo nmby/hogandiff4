@@ -10,8 +10,6 @@ import java.util.function.Function;
 import org.apache.poi.ss.usermodel.Cell;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
@@ -198,16 +196,11 @@ public class Factory {
      * @return Excelブック名の対応付けを行うマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public Matcher<String> bookNamesMatcher(Settings settings) {
+    public BookNamesMatcher bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
-        
-        return settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY)
-                ? Matcher.identityMatcher()
-                : Matcher.nerutonMatcherOf(
-                        String::length,
-                        StringDiffUtil::levenshteinDistance);
+        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        return BookNamesMatcher.of(matchNamesStrictly);
     }
     
     /**
