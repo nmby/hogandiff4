@@ -86,9 +86,13 @@ public class Factory {
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
      * @return フォルダ情報を抽出するローダー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirLoader dirLoader() {
-        return DirLoader.of();
+    public DirLoader dirLoader(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean recursively = settings.getOrDefault(SettingKeys.COMPARE_DIRS_RECURSIVELY);
+        return DirLoader.of(recursively);
     }
     
     /**

@@ -105,9 +105,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private Pair<DirInfo> extractDirInfoPair() throws ExcelHandlingException {
         Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
         Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
-        DirLoader dirLoader = factory.dirLoader();
-        DirInfo dirInfo1 = dirLoader.loadDir(dirPath1, false);
-        DirInfo dirInfo2 = dirLoader.loadDir(dirPath2, false);
+        DirLoader dirLoader = factory.dirLoader(settings);
+        DirInfo dirInfo1 = dirLoader.loadDir(dirPath1);
+        DirInfo dirInfo2 = dirLoader.loadDir(dirPath2);
         
         return Pair.of(dirInfo1, dirInfo2);
     }

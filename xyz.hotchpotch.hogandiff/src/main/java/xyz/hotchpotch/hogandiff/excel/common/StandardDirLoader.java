@@ -34,21 +34,20 @@ public class StandardDirLoader implements DirLoader {
         return handleableExtensions.stream().anyMatch(x -> fileName.endsWith(x));
     }
     
-    public static DirLoader of() {
-        return new StandardDirLoader();
+    public static DirLoader of(boolean recursively) {
+        return new StandardDirLoader(recursively);
     }
     
     // [instance members] ******************************************************
     
-    private StandardDirLoader() {
+    private final boolean recursively;
+    
+    private StandardDirLoader(boolean recursively) {
+        this.recursively = recursively;
     }
     
     @Override
-    public DirInfo loadDir(
-            Path path,
-            boolean recursively)
-            throws ExcelHandlingException {
-        
+    public DirInfo loadDir(Path path) throws ExcelHandlingException {
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
