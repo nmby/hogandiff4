@@ -1,5 +1,15 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
+
 /**
  * Excelブックからシート名の一覧を抽出するローダーを表します。<br>
  * これは、{@link #loadSheetNames(BookOpenInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
@@ -10,6 +20,45 @@ package xyz.hotchpotch.hogandiff.excel;
 public interface SheetNamesLoader {
     
     // [static members] ********************************************************
+    
+    /**
+     * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
+     * 
+     * @param bookOpenInfo Excelブックの情報
+     * @return Excelブックからシート名の一覧を抽出するローダー
+     * @throws NullPointerException
+     *              {@code bookOpenInfo} が {@code null} の場合
+     * @throws UnsupportedOperationException
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     */
+    public static SheetNamesLoader of(
+            BookOpenInfo bookOpenInfo) {
+        
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        
+        Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
+        
+        switch (bookOpenInfo.bookType()) {
+            case XLS:
+                return CombinedSheetNamesLoader.of(List.of(
+                        () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
+                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            
+            case XLSX:
+            case XLSM:
+                return CombinedSheetNamesLoader.of(List.of(
+                        () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
+                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            
+            case XLSB:
+                // FIXME: [No.2 .xlsbのサポート]
+                //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
+                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            
+            default:
+                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+        }
+    }
     
     // [instance members] ******************************************************
     

@@ -1,19 +1,13 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -57,28 +51,7 @@ public class Factory {
         
         Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
-        Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
-        
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return CombinedSheetNamesLoader.of(List.of(
-                        () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
-                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-            
-            case XLSX:
-            case XLSM:
-                return CombinedSheetNamesLoader.of(List.of(
-                        () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
-                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return SheetNamesLoader.of(bookOpenInfo);
     }
     
     /**
