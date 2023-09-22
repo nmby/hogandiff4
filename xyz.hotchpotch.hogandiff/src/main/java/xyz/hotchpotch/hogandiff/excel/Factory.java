@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -93,7 +92,7 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      */
     public DirLoader dirLoader() {
-        return DirLoaderImpl.of();
+        return DirLoader.of();
     }
     
     /**

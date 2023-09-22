@@ -2,6 +2,8 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
 
+import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
+
 /**
  * フォルダの情報を抽出するローダーを表します。<br>
  * これは、{@link #loadDir(Path, boolean)} を関数メソッドに持つ関数型インタフェースです。<br>
@@ -12,6 +14,15 @@ import java.nio.file.Path;
 public interface DirLoader {
     
     // [static members] ********************************************************
+    
+    /**
+     * フォルダ情報を抽出するローダーを返します。<br>
+     * 
+     * @return フォルダ情報を抽出するローダー
+     */
+    public static DirLoader of() {
+        return DirLoaderImpl.of();
+    }
     
     // [instance members] ******************************************************
     
