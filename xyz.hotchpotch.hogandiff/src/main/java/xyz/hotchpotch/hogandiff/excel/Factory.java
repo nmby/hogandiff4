@@ -5,22 +5,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-
-import org.apache.poi.ss.usermodel.Cell;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
 import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.common.DirLoaderImpl;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellsLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
 import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -116,53 +108,10 @@ public class Factory {
         boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
-        Function<Cell, CellData> converter = cell -> {
-            String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
-            return "".equals(content)
-                    ? null
-                    : CellData.of(
-                            cell.getRowIndex(),
-                            cell.getColumnIndex(),
-                            content,
-                            saveMemory);
-        };
-        
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return useCachedValue
-                        ? CombinedCellsLoader.of(List.of(
-                                () -> HSSFCellsLoaderWithPoiEventApi.of(
-                                        useCachedValue,
-                                        saveMemory),
-                                () -> CellsLoaderWithPoiUserApi.of(
-                                        saveMemory,
-                                        converter)))
-                        : CellsLoaderWithPoiUserApi.of(
-                                saveMemory,
-                                converter);
-            
-            case XLSX:
-            case XLSM:
-                return useCachedValue
-                        ? CombinedCellsLoader.of(List.of(
-                                () -> XSSFCellsLoaderWithSax.of(
-                                        useCachedValue,
-                                        saveMemory,
-                                        bookOpenInfo),
-                                () -> CellsLoaderWithPoiUserApi.of(
-                                        saveMemory,
-                                        converter)))
-                        : CellsLoaderWithPoiUserApi.of(
-                                saveMemory,
-                                converter);
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return CellsLoader.of(
+                bookOpenInfo,
+                useCachedValue,
+                saveMemory);
     }
     
     /**
@@ -189,10 +138,10 @@ public class Factory {
     }
     
     /**
-     * 2つのフォルダに含まれるExcelブック名の対応付けを行うマッチャーを返します。<br>
+     * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーを返します。<br>
      * 
      * @param settings 設定
-     * @return Excelブック名の対応付けを行うマッチャー
+     * @return Excelブック名同士の対応関係を決めるマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
     public BookNamesMatcher bookNamesMatcher(Settings settings) {
