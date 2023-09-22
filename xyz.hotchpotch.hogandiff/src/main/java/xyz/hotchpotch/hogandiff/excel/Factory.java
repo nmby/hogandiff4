@@ -1,13 +1,9 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
-import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -175,45 +171,16 @@ public class Factory {
         Color diffSheetColor = settings.getOrDefault(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
         
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return CombinedBookPainter.of(List.of(
-                        // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                        () -> BookPainterWithPoiUserApi.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentColor,
-                                diffCommentColor,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor)));
-            
-            case XLSX:
-            case XLSM:
-                return CombinedBookPainter.of(List.of(
-                        () -> XSSFBookPainterWithStax.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentHex,
-                                diffCommentHex,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor),
-                        () -> BookPainterWithPoiUserApi.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentColor,
-                                diffCommentColor,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor)));
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return BookPainter.of(
+                bookOpenInfo,
+                redundantColor,
+                diffColor,
+                redundantCommentColor,
+                diffCommentColor,
+                redundantCommentHex,
+                diffCommentHex,
+                redundantSheetColor,
+                diffSheetColor,
+                sameSheetColor);
     }
 }
