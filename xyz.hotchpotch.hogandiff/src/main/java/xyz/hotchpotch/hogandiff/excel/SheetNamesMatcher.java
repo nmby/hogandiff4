@@ -17,6 +17,12 @@ public class SheetNamesMatcher {
     
     // [static members] ********************************************************
     
+    /**
+     * 2つのExcelブックに含まれるシート名同士の対応関係を決めるマッチャーを返します。<br>
+     * 
+     * @param matchNamesStrictly シート名の揺らぎを許容しない場合は {@code true}
+     * @return シート名同士の対応関係を決めるマッチャー
+     */
     public static SheetNamesMatcher of(boolean matchNamesStrictly) {
         return new SheetNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()

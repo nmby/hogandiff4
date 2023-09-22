@@ -17,6 +17,12 @@ public class BookNamesMatcher {
     
     // [static members] ********************************************************
     
+    /**
+     * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーを返します。<br>
+     * 
+     * @param matchNamesStrictly Excelブック名のゆらぎを許容する場合は {@code true}
+     * @return Excelブック名同士の対応関係を決めるマッチャー
+     */
     public static BookNamesMatcher of(boolean matchNamesStrictly) {
         //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
         return new BookNamesMatcher(matchNamesStrictly
