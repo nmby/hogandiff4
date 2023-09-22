@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.common.BookNamesMatcherImpl;
+import xyz.hotchpotch.hogandiff.excel.common.StandardBookNamesMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -24,7 +24,7 @@ public interface BookNamesMatcher {
      */
     public static BookNamesMatcher of(boolean matchNamesStrictly) {
         //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
-        return BookNamesMatcherImpl.of(matchNamesStrictly);
+        return StandardBookNamesMatcher.of(matchNamesStrictly);
     }
     
     // [instance members] ******************************************************

@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  *
  * @author nmby
  */
-public class SheetComparatorImpl extends SheetComparatorBase {
+public class StandardSheetComparator extends SheetComparatorBase {
     
     // [static members] ********************************************************
     
@@ -231,7 +231,7 @@ public class SheetComparatorImpl extends SheetComparatorBase {
             boolean considerColumnGaps,
             boolean saveMemory) {
         
-        return new SheetComparatorImpl(
+        return new StandardSheetComparator(
                 considerRowGaps,
                 considerColumnGaps,
                 saveMemory);
@@ -239,7 +239,7 @@ public class SheetComparatorImpl extends SheetComparatorBase {
     
     // [instance members] ******************************************************
     
-    private SheetComparatorImpl(
+    private StandardSheetComparator(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {

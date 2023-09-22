@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
  * 
  * @author nmby
  */
-public class DirLoaderImpl implements DirLoader {
+public class StandardDirLoader implements DirLoader {
     
     // [static members] ********************************************************
     
@@ -35,12 +35,12 @@ public class DirLoaderImpl implements DirLoader {
     }
     
     public static DirLoader of() {
-        return new DirLoaderImpl();
+        return new StandardDirLoader();
     }
     
     // [instance members] ******************************************************
     
-    private DirLoaderImpl() {
+    private StandardDirLoader() {
     }
     
     @Override
@@ -73,7 +73,7 @@ public class DirLoaderImpl implements DirLoader {
             
             me.setBookNames(Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(DirLoaderImpl::isHandleableExcelBook)
+                    .filter(StandardDirLoader::isHandleableExcelBook)
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .sorted()

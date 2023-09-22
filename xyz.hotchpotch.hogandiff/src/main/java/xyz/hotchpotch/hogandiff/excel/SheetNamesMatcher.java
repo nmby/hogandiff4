@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.common.SheetNamesMatcherImpl;
+import xyz.hotchpotch.hogandiff.excel.common.StandardSheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -23,7 +23,7 @@ public interface SheetNamesMatcher {
      * @return シート名同士の対応関係を決めるマッチャー
      */
     public static SheetNamesMatcher of(boolean matchNamesStrictly) {
-        return SheetNamesMatcherImpl.of(matchNamesStrictly);
+        return StandardSheetNamesMatcher.of(matchNamesStrictly);
     }
     
     // [instance members] ******************************************************

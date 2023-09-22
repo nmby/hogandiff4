@@ -11,11 +11,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーです。<br>
+ * {@link BookNamesMatcher} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class BookNamesMatcherImpl implements BookNamesMatcher {
+public class StandardBookNamesMatcher implements BookNamesMatcher {
     
     // [static members] ********************************************************
     
@@ -25,8 +25,8 @@ public class BookNamesMatcherImpl implements BookNamesMatcher {
      * @param matchNamesStrictly Excelブック名のゆらぎを許容する場合は {@code true}
      * @return Excelブック名同士の対応関係を決めるマッチャー
      */
-    public static BookNamesMatcherImpl of(boolean matchNamesStrictly) {
-        return new BookNamesMatcherImpl(matchNamesStrictly
+    public static StandardBookNamesMatcher of(boolean matchNamesStrictly) {
+        return new StandardBookNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
                 : Matcher.nerutonMatcherOf(
                         String::length,
@@ -37,7 +37,7 @@ public class BookNamesMatcherImpl implements BookNamesMatcher {
     
     private final Matcher<String> coreMatcher;
     
-    private BookNamesMatcherImpl(Matcher<String> coreMatcher) {
+    private StandardBookNamesMatcher(Matcher<String> coreMatcher) {
         assert coreMatcher != null;
         
         this.coreMatcher = coreMatcher;

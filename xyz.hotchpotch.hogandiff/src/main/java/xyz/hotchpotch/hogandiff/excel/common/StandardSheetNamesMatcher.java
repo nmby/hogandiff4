@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class SheetNamesMatcherImpl implements SheetNamesMatcher {
+public class StandardSheetNamesMatcher implements SheetNamesMatcher {
     
     // [static members] ********************************************************
     
@@ -25,8 +25,8 @@ public class SheetNamesMatcherImpl implements SheetNamesMatcher {
      * @param matchNamesStrictly シート名の揺らぎを許容しない場合は {@code true}
      * @return シート名同士の対応関係を決めるマッチャー
      */
-    public static SheetNamesMatcherImpl of(boolean matchNamesStrictly) {
-        return new SheetNamesMatcherImpl(matchNamesStrictly
+    public static StandardSheetNamesMatcher of(boolean matchNamesStrictly) {
+        return new StandardSheetNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
                 : Matcher.nerutonMatcherOf(
                         String::length,
@@ -37,7 +37,7 @@ public class SheetNamesMatcherImpl implements SheetNamesMatcher {
     
     private Matcher<String> coreMatcher;
     
-    private SheetNamesMatcherImpl(Matcher<String> coreMatcher) {
+    private StandardSheetNamesMatcher(Matcher<String> coreMatcher) {
         assert coreMatcher != null;
         
         this.coreMatcher = coreMatcher;
