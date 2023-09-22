@@ -6,9 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -17,12 +18,12 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
 /**
  * SAX (Simple API for XML) を利用して
  * .xlsx/.xlsm 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
-public class XSSFBookLoaderWithSax implements BookLoader {
+public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
     
     // [static members] ********************************************************
     
@@ -34,20 +35,20 @@ public class XSSFBookLoaderWithSax implements BookLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new XSSFBookLoaderWithSax(targetTypes);
+        return new XSSFSheetNamesLoaderWithSax(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private XSSFBookLoaderWithSax(Set<SheetType> targetTypes) {
+    private XSSFSheetNamesLoaderWithSax(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
@@ -57,9 +58,9 @@ public class XSSFBookLoaderWithSax implements BookLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -69,20 +70,25 @@ public class XSSFBookLoaderWithSax implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+    public BookInfo loadSheetNames(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookInfo);
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookOpenInfo);
             
-            return sheets.stream()
+            List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
                     .map(SheetInfo::name)
                     .toList();
             
+            return new BookInfo(bookOpenInfo, sheetNames);
+            
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
         }
     }
 }

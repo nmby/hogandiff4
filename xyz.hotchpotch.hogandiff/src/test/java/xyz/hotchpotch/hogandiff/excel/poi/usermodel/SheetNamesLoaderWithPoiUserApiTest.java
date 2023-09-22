@@ -11,22 +11,22 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 
-class BookLoaderWithPoiUserApiTest {
+class SheetNamesLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static BookInfo test1_xls;
-    private static BookInfo test1_xlsb;
-    private static BookInfo test1_xlsm;
-    private static BookInfo test1_xlsx;
-    private static BookInfo test2_xls;
-    private static BookInfo test2_xlsx;
+    private static BookOpenInfo test1_xls;
+    private static BookOpenInfo test1_xlsb;
+    private static BookOpenInfo test1_xlsm;
+    private static BookOpenInfo test1_xlsx;
+    private static BookOpenInfo test2_xls;
+    private static BookOpenInfo test2_xlsx;
     
     private static Path bookPwTest1_xls;
     private static Path bookPwTest1_xlsx;
@@ -37,16 +37,16 @@ class BookLoaderWithPoiUserApiTest {
     private static Path bookPwTest4_xls;
     private static Path bookPwTest4_xlsx;
     
-    private static Class<?> me = BookLoaderWithPoiUserApiTest.class;
+    private static Class<?> me = SheetNamesLoaderWithPoiUserApiTest.class;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(Path.of(me.getResource("Test1.xls").toURI()), null);
-        test1_xlsb = BookInfo.of(Path.of(me.getResource("Test1.xlsb").toURI()), null);
-        test1_xlsm = BookInfo.of(Path.of(me.getResource("Test1.xlsm").toURI()), null);
-        test1_xlsx = BookInfo.of(Path.of(me.getResource("Test1.xlsx").toURI()), null);
-        test2_xls = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xls").toURI()), null);
-        test2_xlsx = BookInfo.of(Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI()), null);
+        test1_xls = new BookOpenInfo(Path.of(me.getResource("Test1.xls").toURI()), null);
+        test1_xlsb = new BookOpenInfo(Path.of(me.getResource("Test1.xlsb").toURI()), null);
+        test1_xlsm = new BookOpenInfo(Path.of(me.getResource("Test1.xlsm").toURI()), null);
+        test1_xlsx = new BookOpenInfo(Path.of(me.getResource("Test1.xlsx").toURI()), null);
+        test2_xls = new BookOpenInfo(Path.of(me.getResource("Test2_passwordAAA.xls").toURI()), null);
+        test2_xlsx = new BookOpenInfo(Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI()), null);
         
         bookPwTest1_xls = Path.of(me.getResource("BookPwTest1.xls").toURI());
         bookPwTest1_xlsx = Path.of(me.getResource("BookPwTest1.xlsx").toURI());
@@ -65,20 +65,20 @@ class BookLoaderWithPoiUserApiTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> BookLoaderWithPoiUserApi.of(null));
+                () -> SheetNamesLoaderWithPoiUserApi.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> BookLoaderWithPoiUserApi.of(Set.of()));
+                () -> SheetNamesLoaderWithPoiUserApi.of(Set.of()));
         
         // 正常系
         assertTrue(
-                BookLoaderWithPoiUserApi.of(
-                        EnumSet.allOf(SheetType.class)) instanceof BookLoaderWithPoiUserApi);
+                SheetNamesLoaderWithPoiUserApi.of(
+                        EnumSet.allOf(SheetType.class)) instanceof SheetNamesLoaderWithPoiUserApi);
     }
     
     @Test
     void testLoadSheetNames_例外系_非チェック例外() {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
         
         // null パラメータ
         assertThrows(
@@ -93,12 +93,12 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_例外系_チェック例外() {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx"), null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xlsx"), null)));
         
         // 暗号化ファイル - 読み取りPW指定なし
         assertThrows(
@@ -111,7 +111,7 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_全てのシート種別が対象の場合() throws ExcelHandlingException {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
                 List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
@@ -137,7 +137,7 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.WORKSHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.WORKSHEET));
         
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
@@ -161,7 +161,7 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.CHART_SHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.CHART_SHEET));
         
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
@@ -183,7 +183,7 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
         
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
@@ -207,7 +207,7 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.MACRO_SHEET));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.MACRO_SHEET));
         
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
@@ -237,61 +237,50 @@ class BookLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadSheetNames_読み取りPW指定なしの場合() {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         // 開ける
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xls, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, null)));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xlsx, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, null)));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xlsx, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, null)));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw無しのxlsファイルは開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xls, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, null)));
         
         // 開けずにPasswordHandlingExceptionをスロー
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xls, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, null)));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xlsx, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, null)));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xls, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, null)));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xlsx, null)));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, null)));
     }
     
     @Test
     void testLoadSheetNames_読み取りPW指定ありの場合() {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xls, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, "123")));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xlsx, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, "123")));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xls, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, "123")));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xlsx, "123")));
-        
-        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
-        // 書き込みpw有り/読み取りpw有りのxlsファイルは
-        // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
-        // see: BookLoaderWithPoiUserApi#loadSheetNames
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xls, "123")));
-        
-        assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xlsx, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, "123")));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
@@ -299,27 +288,38 @@ class BookLoaderWithPoiUserApiTest {
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xls, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, "123")));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xlsx, "123")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, "123")));
+        
+        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+        // 書き込みpw有り/読み取りpw有りのxlsファイルは
+        // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
+        // see: BookLoaderWithPoiUserApi#loadSheetNames
+        assertThrows(
+                PasswordHandlingException.class,
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, "123")));
+        
+        assertDoesNotThrow(
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, "123")));
     }
     
     @Test
     void testLoadSheetNames_誤った読み取りPW指定ありの場合() {
-        BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+        SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xls, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, "456")));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest1_xlsx, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, "456")));
         
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xls, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, "456")));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest2_xlsx, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, "456")));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
@@ -327,16 +327,16 @@ class BookLoaderWithPoiUserApiTest {
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xls, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, "456")));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest3_xlsx, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, "456")));
         
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xls, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, "456")));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(BookInfo.of(bookPwTest4_xlsx, "456")));
+                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, "456")));
     }
 }

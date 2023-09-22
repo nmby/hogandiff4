@@ -11,12 +11,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
-class SheetLoaderWithPoiUserApiTest {
+class CellsLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
@@ -28,40 +28,40 @@ class SheetLoaderWithPoiUserApiTest {
             PoiUtil.getCellContentAsString(cell, false),
             saveMemory);
     
-    private static BookInfo test1_xls;
-    private static BookInfo test1_xlsb;
-    private static BookInfo test1_xlsm;
-    private static BookInfo test1_xlsx;
-    private static BookInfo test2_xls;
-    private static BookInfo test2_xlsx;
-    private static BookInfo test4_xls;
-    private static BookInfo test4_xlsx;
+    private static BookOpenInfo test1_xls;
+    private static BookOpenInfo test1_xlsb;
+    private static BookOpenInfo test1_xlsm;
+    private static BookOpenInfo test1_xlsx;
+    private static BookOpenInfo test2_xls;
+    private static BookOpenInfo test2_xlsx;
+    private static BookOpenInfo test4_xls;
+    private static BookOpenInfo test4_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI()),
+        test1_xls = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI()),
+        test1_xlsb = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI()),
+        test1_xlsm = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI()),
+        test1_xlsx = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xls = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
+        test2_xls = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
                 null);
-        test2_xlsx = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
+        test2_xlsx = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
                 null);
-        test4_xls = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI()),
+        test4_xls = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI()),
                 null);
-        test4_xlsx = BookInfo.of(
-                Path.of(SheetLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI()),
+        test4_xlsx = new BookOpenInfo(
+                Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI()),
                 null);
     }
     
@@ -71,15 +71,15 @@ class SheetLoaderWithPoiUserApiTest {
     void testOf() {
         assertThrows(
                 NullPointerException.class,
-                () -> SheetLoaderWithPoiUserApi.of(saveMemory, null));
+                () -> CellsLoaderWithPoiUserApi.of(saveMemory, null));
         
         assertTrue(
-                SheetLoaderWithPoiUserApi.of(saveMemory, converter) instanceof SheetLoaderWithPoiUserApi);
+                CellsLoaderWithPoiUserApi.of(saveMemory, converter) instanceof CellsLoaderWithPoiUserApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         // 対照群
         assertDoesNotThrow(
@@ -108,12 +108,12 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() {
-        SheetLoader testee = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(BookInfo.of(Path.of("X:\\dummy\\dummy.xlsx"), null), "A1_ワークシート"));
+                () -> testee.loadCells(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xlsx"), null), "A1_ワークシート"));
         
         // 存在しないシート
         assertThrows(
@@ -150,7 +150,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         assertEquals(
                 Set.of(
@@ -186,7 +186,7 @@ class SheetLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-        SheetLoader testee1 = SheetLoaderWithPoiUserApi.of(saveMemory, converter);
+        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(saveMemory, converter);
         
         assertEquals(
                 Set.of(

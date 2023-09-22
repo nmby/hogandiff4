@@ -11,10 +11,10 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 
 class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
@@ -22,41 +22,41 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     private static final boolean saveMemory = true;
     
-    private static BookInfo test1_xls;
-    private static BookInfo test1_xlsb;
-    private static BookInfo test1_xlsm;
-    private static BookInfo test1_xlsx;
-    private static BookInfo test2_xls;
-    private static BookInfo test2_xlsx;
-    private static BookInfo test3_xls;
-    private static BookInfo test5_xls;
+    private static BookOpenInfo test1_xls;
+    private static BookOpenInfo test1_xlsb;
+    private static BookOpenInfo test1_xlsm;
+    private static BookOpenInfo test1_xlsx;
+    private static BookOpenInfo test2_xls;
+    private static BookOpenInfo test2_xlsx;
+    private static BookOpenInfo test3_xls;
+    private static BookOpenInfo test5_xls;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = BookInfo.of(
+        test1_xls = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xls").toURI()),
                 null);
-        test1_xlsb = BookInfo.of(
+        test1_xlsb = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsb").toURI()),
                 null);
-        test1_xlsm = BookInfo.of(
+        test1_xlsm = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsm").toURI()),
                 null);
-        test1_xlsx = BookInfo.of(
+        test1_xlsx = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test1.xlsx").toURI()),
                 null);
-        test2_xls = BookInfo.of(
+        test2_xls = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test2_passwordAAA.xls")
                         .toURI()),
                 null);
-        test2_xlsx = BookInfo.of(
+        test2_xlsx = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test2_passwordAAA.xlsx")
                         .toURI()),
                 null);
-        test3_xls = BookInfo.of(
+        test3_xls = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test3.xls").toURI()),
                 null);
-        test5_xls = BookInfo.of(
+        test5_xls = new BookOpenInfo(
                 Path.of(HSSFSheetLoaderWithPoiEventApiTestSaveMemory.class.getResource("Test5.xls").toURI()),
                 null);
     }
@@ -66,14 +66,14 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     @Test
     void testOf() {
         assertTrue(
-                HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory) instanceof HSSFSheetLoaderWithPoiEventApi);
+                HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory) instanceof HSSFCellsLoaderWithPoiEventApi);
         assertTrue(
-                HSSFSheetLoaderWithPoiEventApi.of(false, saveMemory) instanceof HSSFSheetLoaderWithPoiEventApi);
+                HSSFCellsLoaderWithPoiEventApi.of(false, saveMemory) instanceof HSSFCellsLoaderWithPoiEventApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory);
         
         // 対照群
         assertDoesNotThrow(
@@ -109,12 +109,12 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_例外系_チェック例外1() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory);
         
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(BookInfo.of(Path.of("X:\\dummy\\dummy.xls"), null), "A1_ワークシート"));
+                () -> testee.loadCells(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xls"), null), "A1_ワークシート"));
         
         // 存在しないシート
         assertThrows(
@@ -143,7 +143,7 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_例外系_チェック例外2() {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(false, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(false, saveMemory);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -157,7 +157,7 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory);
         
         assertEquals(
                 Set.of(
@@ -173,7 +173,7 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xls, "A_バリエーション"));
@@ -278,7 +278,7 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_正常系3_バリエーション_数式抽出() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(false, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(false, saveMemory);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -288,7 +288,7 @@ class HSSFSheetLoaderWithPoiEventApiTestSaveMemory {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        SheetLoader testee = HSSFSheetLoaderWithPoiEventApi.of(true, saveMemory);
+        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true, saveMemory);
         
         assertEquals(
                 Set.of(

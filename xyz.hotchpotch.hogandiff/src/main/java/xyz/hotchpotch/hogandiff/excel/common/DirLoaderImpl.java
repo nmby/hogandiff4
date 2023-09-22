@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.DirData;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.util.Tuple2;
@@ -44,35 +44,52 @@ public class DirLoaderImpl implements DirLoader {
     }
     
     @Override
-    public DirData loadDir(Path path, boolean recursively) throws ExcelHandlingException {
+    public DirInfo loadDir(
+            Path path,
+            boolean recursively)
+            throws ExcelHandlingException {
+        
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
         }
         
+        return loadDir2(path, null, recursively);
+    }
+    
+    private DirInfo loadDir2(
+            Path path,
+            DirInfo parent,
+            boolean recursively)
+            throws ExcelHandlingException {
+        
+        assert path != null;
+        assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
+        
         try {
-            List<DirData> children = recursively
-                    ? Files.list(path)
-                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirData>) (p -> loadDir(p, true))).convert())
-                            .filter(t -> t.item1() != null)
-                            .map(Tuple2::item1)
-                            .sorted()
-                            .toList()
-                    : List.of();
+            DirInfo me = new DirInfo(path);
             
-            List<String> fileNames = Files.list(path)
+            me.setParent(parent);
+            
+            me.setBookNames(Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(DirLoaderImpl::isHandleableExcelBook)
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .sorted()
-                    .toList();
+                    .toList());
             
-            return new DirData(
-                    path,
-                    fileNames,
-                    children);
+            me.setChildren(recursively
+                    ? Files.list(path)
+                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+                            .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
+                            .filter(t -> t.item1() != null)
+                            .map(Tuple2::item1)
+                            .sorted()
+                            .toList()
+                    : List.of());
+            
+            return me;
             
         } catch (IOException e) {
             throw new ExcelHandlingException(

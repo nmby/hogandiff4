@@ -19,10 +19,11 @@ import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -30,12 +31,12 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 /**
  * Apache POI イベントモデル API を利用して
  * .xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
-public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
+public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     
     // [static members] ********************************************************
     
@@ -69,54 +70,54 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
             assert record != null;
             
             switch (record.getSid()) {
-            case BoundSheetRecord.sid:
-                BoundSheetRecord bsRec = (BoundSheetRecord) record;
-                sheets.add(new SheetInfo(bsRec.getSheetname()));
-                break;
-            
-            case BOFRecord.sid:
-                BOFRecord bof = (BOFRecord) record;
-                
-                switch (bof.getType()) {
-                case BOFRecord.TYPE_WORKBOOK:
-                case BOFRecord.TYPE_WORKSPACE_FILE:
-                    // nop
+                case BoundSheetRecord.sid:
+                    BoundSheetRecord bsRec = (BoundSheetRecord) record;
+                    sheets.add(new SheetInfo(bsRec.getSheetname()));
                     break;
                 
-                case BOFRecord.TYPE_WORKSHEET:
-                    ++idx;
-                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.WORKSHEET, SheetType.DIALOG_SHEET);
+                case BOFRecord.sid:
+                    BOFRecord bof = (BOFRecord) record;
+                    
+                    switch (bof.getType()) {
+                        case BOFRecord.TYPE_WORKBOOK:
+                        case BOFRecord.TYPE_WORKSPACE_FILE:
+                            // nop
+                            break;
+                        
+                        case BOFRecord.TYPE_WORKSHEET:
+                            ++idx;
+                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.WORKSHEET, SheetType.DIALOG_SHEET);
+                            break;
+                        
+                        case BOFRecord.TYPE_CHART:
+                            ++idx;
+                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.CHART_SHEET);
+                            break;
+                        
+                        case BOFRecord.TYPE_EXCEL_4_MACRO:
+                            ++idx;
+                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.MACRO_SHEET);
+                            break;
+                        
+                        case BOFRecord.TYPE_VB_MODULE:
+                            ++idx;
+                            sheets.get(idx).possibleTypes = Set.of();
+                            break;
+                        
+                        default:
+                            throw new AssertionError("unknown BOF type: " + bof.getType());
+                    }
                     break;
                 
-                case BOFRecord.TYPE_CHART:
-                    ++idx;
-                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.CHART_SHEET);
+                case WSBoolRecord.sid:
+                    WSBoolRecord wsbRec = (WSBoolRecord) record;
+                    if (wsbRec.getDialog()) {
+                        // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
+                        sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
+                    } else {
+                        sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
+                    }
                     break;
-                
-                case BOFRecord.TYPE_EXCEL_4_MACRO:
-                    ++idx;
-                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.MACRO_SHEET);
-                    break;
-                
-                case BOFRecord.TYPE_VB_MODULE:
-                    ++idx;
-                    sheets.get(idx).possibleTypes = Set.of();
-                    break;
-                
-                default:
-                    throw new AssertionError("unknown BOF type: " + bof.getType());
-                }
-                break;
-            
-            case WSBoolRecord.sid:
-                WSBoolRecord wsbRec = (WSBoolRecord) record;
-                if (wsbRec.getDialog()) {
-                    // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
-                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
-                } else {
-                    sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
-                }
-                break;
             }
         }
         
@@ -138,20 +139,20 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new HSSFBookLoaderWithPoiEventApi(targetTypes);
+        return new HSSFSheetNamesLoaderWithPoiEventApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private HSSFBookLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
+    private HSSFSheetNamesLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
@@ -165,9 +166,9 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
      * ごめんなさい m(_ _)m <br>
      * 
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -179,12 +180,15 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+    public BookInfo loadSheetNames(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookInfo.getReadPassword());
-        try (FileInputStream fin = new FileInputStream(bookInfo.bookPath().toFile());
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        
+        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
+        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -192,17 +196,20 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
-            return listener1.getSheetNames(targetTypes);
+            
+            return new BookInfo(
+                    bookOpenInfo,
+                    listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookInfo),
+                                    .formatted(bookOpenInfo),
                     e);
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

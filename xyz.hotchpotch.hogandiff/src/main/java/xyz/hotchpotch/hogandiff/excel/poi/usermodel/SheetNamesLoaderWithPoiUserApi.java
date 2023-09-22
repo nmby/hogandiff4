@@ -13,10 +13,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -24,12 +25,12 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
-public class BookLoaderWithPoiUserApi implements BookLoader {
+public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
     
     // [static members] ********************************************************
     
@@ -41,20 +42,20 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new BookLoaderWithPoiUserApi(targetTypes);
+        return new SheetNamesLoaderWithPoiUserApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private BookLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
+    private SheetNamesLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
@@ -68,9 +69,9 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * ごめんなさい m(_ _)m <br>
      * 
      * @throws NullPointerException
-     *              {@code bookInfo} が {@code null} の場合
+     *              {@code bookOpenInfo} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -82,19 +83,24 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public List<String> loadSheetNames(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+    public BookInfo loadSheetNames(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
+        
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
         try (Workbook wb = WorkbookFactory.create(
-                bookInfo.bookPath().toFile(),
-                bookInfo.getReadPassword(),
+                bookOpenInfo.bookPath().toFile(),
+                bookOpenInfo.readPassword(),
                 true)) {
             
-            return StreamSupport.stream(wb.spliterator(), false)
+            List<String> sheetNames = StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
                     .toList();
+            
+            return new BookInfo(bookOpenInfo, sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
@@ -109,22 +115,22 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             // 本当は読み取り専用で読み込めてほしいが
             // サポート対象外であるとユーザーに案内することにする。
             throw new PasswordHandlingException(
-                    (bookInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookInfo),
+                                    .formatted(bookOpenInfo),
                     e);
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookInfo.getReadPassword() == null
+                    (bookOpenInfo.readPassword() == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookInfo),
+                                    .formatted(bookOpenInfo),
                     e);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
         }
     }
 }

@@ -9,17 +9,17 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
-import xyz.hotchpotch.hogandiff.excel.SComparator;
-import xyz.hotchpotch.hogandiff.excel.SResult;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * {@link SComparator} の基底実装です。<br>
+ * {@link SheetComparator} の基底実装です。<br>
  *
  * @author nmby
  */
-public abstract class SComparatorBase implements SComparator {
+public abstract class SheetComparatorBase implements SheetComparator {
     
     // [static members] ********************************************************
     
@@ -69,7 +69,7 @@ public abstract class SComparatorBase implements SComparator {
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
      * @param saveMemory 省メモリモードの場合は {@code true}
      */
-    protected SComparatorBase(
+    protected SheetComparatorBase(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {
@@ -102,7 +102,7 @@ public abstract class SComparatorBase implements SComparator {
      *              {@code cells1}, {@code cells2} が同一インスタンスの場合
      */
     @Override
-    public SResult compare(
+    public SheetResult compare(
             Set<CellData> cells1,
             Set<CellData> cells2) {
         
@@ -111,7 +111,7 @@ public abstract class SComparatorBase implements SComparator {
         
         if (cells1 == cells2) {
             if (cells1.isEmpty()) {
-                return new SResult(
+                return new SheetResult(
                         considerRowGaps,
                         considerColumnGaps,
                         Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
@@ -141,7 +141,7 @@ public abstract class SComparatorBase implements SComparator {
         List<Pair<CellData>> diffCells = extractDiffs(
                 cells1, cells2, rowPairs, columnPairs);
         
-        return new SResult(
+        return new SheetResult(
                 considerRowGaps,
                 considerColumnGaps,
                 Pair.of(redundantRows1, redundantRows2),

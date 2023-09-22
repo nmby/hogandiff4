@@ -19,7 +19,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -198,11 +198,11 @@ public class SaxUtil {
                 SheetInfo info = sheets.get(attributes.getValue("Id"));
                 if (info != null) {
                     info.type = switch (attributes.getValue("Type")) {
-                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
-                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
-                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
-                    case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
-                    default -> null;
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
+                        case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
+                        case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
+                        default -> null;
                     };
                     info.source = "xl/" + attributes.getValue("Target");
                 }
@@ -314,17 +314,20 @@ public class SaxUtil {
     /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return シート情報の一覧
-     * @throws NullPointerException {@code bookInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    public static List<SheetInfo> loadSheetInfo(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookInfo.bookType());
+    public static List<SheetInfo> loadSheetInfo(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookOpenInfo.bookType());
+        
+        try (FileSystem fs = FileSystems.newFileSystem(bookOpenInfo.bookPath())) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
@@ -351,24 +354,27 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "failed to load the book : %s".formatted(bookInfo), e);
+                    "failed to load the book : %s".formatted(bookOpenInfo), e);
         }
     }
     
     /**
      * .xlsx/.xlsm 形式のExcelブックから Shared Strings を読み取ります。<br>
      * 
-     * @param bookInfo Excelブックの情報
+     * @param bookOpenInfo Excelブックの情報
      * @return Shared Strings
-     * @throws NullPointerException {@code bookInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    public static List<String> loadSharedStrings(BookInfo bookInfo) throws ExcelHandlingException {
-        Objects.requireNonNull(bookInfo, "bookInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookInfo.bookType());
+    public static List<String> loadSharedStrings(
+            BookOpenInfo bookOpenInfo)
+            throws ExcelHandlingException {
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookInfo.bookPath())) {
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, bookOpenInfo.bookType());
+        
+        try (FileSystem fs = FileSystems.newFileSystem(bookOpenInfo.bookPath())) {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
@@ -385,7 +391,7 @@ public class SaxUtil {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "failed to load the book : %s".formatted(bookInfo), e);
+                    "failed to load the book : %s".formatted(bookOpenInfo), e);
         }
     }
     

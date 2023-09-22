@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -36,10 +36,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
+        A("A", SettingKeys.CURR_BOOK_OPEN_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
+        B("B", SettingKeys.CURR_BOOK_OPEN_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
         
         // [instance members] --------------------------------------------------
         
@@ -47,7 +47,7 @@ public class TargetsPane extends VBox implements ChildController {
         public final String title;
         
         /** ブックパス設定項目 */
-        public final Key<BookInfo> bookInfoKey;
+        public final Key<BookOpenInfo> bookOpenInfoKey;
         
         /** シート名設定項目 */
         public final Key<String> sheetNameKey;
@@ -55,9 +55,14 @@ public class TargetsPane extends VBox implements ChildController {
         /** フォルダパス設定項目 */
         public final Key<Path> dirPathKey;
         
-        Side(String title, Key<BookInfo> bookInfoKey, Key<String> sheetNameKey, Key<Path> dirPathKey) {
+        Side(
+                String title,
+                Key<BookOpenInfo> bookOpenInfoKey,
+                Key<String> sheetNameKey,
+                Key<Path> dirPathKey) {
+            
             this.title = title;
-            this.bookInfoKey = bookInfoKey;
+            this.bookOpenInfoKey = bookOpenInfoKey;
             this.sheetNameKey = sheetNameKey;
             this.dirPathKey = dirPathKey;
         }

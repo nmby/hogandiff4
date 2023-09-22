@@ -11,15 +11,15 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.SComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
- * {@link SComparator} の標準的な実装です。<br>
+ * {@link SheetComparator} の標準的な実装です。<br>
  *
  * @author nmby
  */
-public class SComparatorImpl extends SComparatorBase {
+public class SheetComparatorImpl extends SheetComparatorBase {
     
     // [static members] ********************************************************
     
@@ -82,7 +82,15 @@ public class SComparatorImpl extends SComparatorBase {
         };
     }
     
-    private static <U> int evaluateDiff(
+    /**
+     * セルのリスト同士を比較して差分スコアを返します。<br>
+     * 
+     * @param list1 セルのリスト1
+     * @param list2 セルのリスト2
+     * @param comparator セルの位置（前後関係）を比較する {@link Comparator}
+     * @return 差分スコア
+     */
+    private static int evaluateDiff(
             List<CellData> list1,
             List<CellData> list2,
             Comparator<CellData> comparator) {
@@ -101,16 +109,24 @@ public class SComparatorImpl extends SComparatorBase {
         CellData cell2 = null;
         
         while (itr1.hasNext() && itr2.hasNext()) {
+            // 次に比較すべき要素を準備する。
+            // 長さ0のリストも有り得るので、最初の要素の取得もループ内で実施している。
             if (comp <= 0) {
                 cell1 = itr1.next();
             }
             if (0 <= comp) {
                 cell2 = itr2.next();
             }
+            
+            // セルの位置を比較する。（内容の比較ではない。）
             comp = comparator.compare(cell1, cell2);
+            
             if (comp == 0 && !cell1.dataEquals(cell2)) {
+                // 位置は同じで内容が異なる場合は差分コスト2とする。
                 diff += 2;
+                
             } else if (comp != 0) {
+                // 位置が異なる場合は差分コスト1とする。
                 diff++;
             }
         }
@@ -210,12 +226,12 @@ public class SComparatorImpl extends SComparatorBase {
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
-    public static SComparator of(
+    public static SheetComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {
         
-        return new SComparatorImpl(
+        return new SheetComparatorImpl(
                 considerRowGaps,
                 considerColumnGaps,
                 saveMemory);
@@ -223,7 +239,7 @@ public class SComparatorImpl extends SComparatorBase {
     
     // [instance members] ******************************************************
     
-    private SComparatorImpl(
+    private SheetComparatorImpl(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean saveMemory) {

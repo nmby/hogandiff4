@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class DResult {
+public class DirResult {
     
     // [static members] ********************************************************
     
@@ -44,38 +44,38 @@ public class DResult {
                 pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
     }
     
-    public static DResult of(
-            DirData dirData1,
-            DirData dirData2,
+    public static DirResult of(
+            DirInfo dirInfo1,
+            DirInfo dirInfo2,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results) {
         
-        Objects.requireNonNull(dirData1, "dirData1");
-        Objects.requireNonNull(dirData2, "dirData2");
+        Objects.requireNonNull(dirInfo1, "dirInfo1");
+        Objects.requireNonNull(dirInfo2, "dirInfo2");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
         Objects.requireNonNull(results, "results");
         
-        return new DResult(dirData1, dirData2, bookNamePairs, results);
+        return new DirResult(dirInfo1, dirInfo2, bookNamePairs, results);
     }
     
     // [instance members] ******************************************************
     
-    private final Pair<DirData> dirData;
+    private final Pair<DirInfo> dirInfoPair;
     private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, Optional<BResult>> results;
+    private final Map<Pair<String>, Optional<BookResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
-    private DResult(
-            DirData dirData1,
-            DirData dirData2,
+    private DirResult(
+            DirInfo dirInfo1,
+            DirInfo dirInfo2,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results) {
         
-        assert dirData1 != null;
-        assert dirData2 != null;
+        assert dirInfo1 != null;
+        assert dirInfo2 != null;
         assert bookNamePairs != null;
         
-        this.dirData = Pair.of(dirData1, dirData2);
+        this.dirInfoPair = Pair.of(dirInfo1, dirInfo2);
         this.bookNamePairs = List.copyOf(bookNamePairs);
         this.results = Map.copyOf(results);
     }
@@ -84,12 +84,16 @@ public class DResult {
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(rb.getString("excel.DResult.020").formatted("A")).append(dirData.a().path()).append(BR);
-        str.append(rb.getString("excel.DResult.020").formatted("B")).append(dirData.b().path()).append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("A"))
+                .append(dirInfoPair.a().getPath())
+                .append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("B"))
+                .append(dirInfoPair.b().getPath())
+                .append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> pair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(i, pair)).append(BR);
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            str.append(formatBookNamesPair(i, bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -113,18 +117,18 @@ public class DResult {
                 : "");
     }
     
-    private String getDiffText(Function<Optional<BResult>, String> diffDescriptor) {
+    private String getDiffText(Function<Optional<BookResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> pair = bookNamePairs.get(i);
-            Optional<BResult> bResult = results.get(pair);
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            Optional<BookResult> bResult = results.get(bookNamePair);
             
-            if (!pair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
+            if (!bookNamePair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
                 continue;
             }
             
-            str.append(formatBookNamesPair(i, pair));
+            str.append(formatBookNamesPair(i, bookNamePair));
             str.append(diffDescriptor.apply(bResult));
         }
         

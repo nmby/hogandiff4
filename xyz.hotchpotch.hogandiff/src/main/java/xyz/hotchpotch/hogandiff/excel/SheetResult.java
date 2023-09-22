@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @param redundantColumns 余剰列の配列のペア
  * @param diffCells 差分セルのペアのリスト
  */
-public record SResult(
+public record SheetResult(
         boolean considerRowGaps,
         boolean considerColumnGaps,
         Pair<int[]> redundantRows,
@@ -112,7 +112,7 @@ public record SResult(
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public SResult {
+    public SheetResult {
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");

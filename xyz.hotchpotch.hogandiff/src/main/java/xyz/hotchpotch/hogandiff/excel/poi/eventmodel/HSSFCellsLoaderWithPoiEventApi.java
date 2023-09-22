@@ -37,12 +37,12 @@ import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -51,13 +51,13 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 /**
  * Apache POI イベントモデル API を利用して、
  * .xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link SheetLoader} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
+public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
     
     // [static members] ********************************************************
     
@@ -447,11 +447,11 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいローダー
      */
-    public static SheetLoader of(
+    public static CellsLoader of(
             boolean extractCachedValue,
             boolean saveMemory) {
         
-        return new HSSFSheetLoaderWithPoiEventApi(
+        return new HSSFCellsLoaderWithPoiEventApi(
                 extractCachedValue,
                 saveMemory);
     }
@@ -461,7 +461,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     private final boolean extractCachedValue;
     private final boolean saveMemory;
     
-    private HSSFSheetLoaderWithPoiEventApi(
+    private HSSFCellsLoaderWithPoiEventApi(
             boolean extractCachedValue,
             boolean saveMemory) {
         
@@ -473,9 +473,9 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookInfo} がサポート対象外の形式の場合
+     *              {@code bookOpenInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -485,15 +485,17 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public Set<CellData> loadCells(BookInfo bookInfo, String sheetName)
+    public Set<CellData> loadCells(
+            BookOpenInfo bookOpenInfo,
+            String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookInfo, "bookInfo");
+        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookInfo.getReadPassword());
-        try (FileInputStream fin = new FileInputStream(bookInfo.bookPath().toFile());
+        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
+        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -508,7 +510,7 @@ public class HSSFSheetLoaderWithPoiEventApi implements SheetLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
