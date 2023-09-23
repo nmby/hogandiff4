@@ -24,27 +24,25 @@ public class DirResult {
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param idx Excelブック名ペアのインデックス。{@code idx + 1} が番号として表示されます。
+     * @param id このExcelブック名ペアを示す識別子。
      * @param pair Excelブック名ペア
      * @return Excelブック名ペアの整形済み文字列
-     * @throws NullPointerException {@code pair} が {@code null} の場合
-     * @throws IndexOutOfBoundsException {@code idx} が {@code 0} 未満の場合
+     * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
      */
-    public static String formatBookNamesPair(int idx, Pair<String> pair) {
+    public static String formatBookNamesPair(String id, Pair<String> pair) {
+        Objects.requireNonNull(id, "id");
         Objects.requireNonNull(pair, "pair");
-        if (idx < 0) {
-            throw new IndexOutOfBoundsException(idx);
-        }
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "    【%d】 %s  vs  %s".formatted(
-                idx + 1,
+        return "    【%s】 %s  vs  %s".formatted(
+                id,
                 pair.hasA() ? "A【 " + pair.a() + " 】" : rb.getString("excel.DResult.010"),
                 pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
     }
     
     public static DirResult of(
+            // TODO: Pair<DirInfo>を取る形にした方がよい
             DirInfo dirInfo1,
             DirInfo dirInfo2,
             List<Pair<String>> bookNamePairs,
@@ -93,7 +91,7 @@ public class DirResult {
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(i, bookNamePair)).append(BR);
+            str.append(formatBookNamesPair(String.valueOf(i), bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -128,7 +126,7 @@ public class DirResult {
                 continue;
             }
             
-            str.append(formatBookNamesPair(i, bookNamePair));
+            str.append(formatBookNamesPair(String.valueOf(i), bookNamePair));
             str.append(diffDescriptor.apply(bResult));
         }
         

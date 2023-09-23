@@ -16,6 +16,8 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -79,6 +81,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
     }
     
+    // 実装メモ：
+    // 子クラスで使ういろんな機能を親に詰め込むというのはオブジェクト志向として間違ってる！
+    // というのは分かりつつも、、、まぁそのうち整理するので許して。。。
+    // TODO: AppTask周りの機能構成を整理する
+    
     /**
      * 指定された2つのExcelブックに含まれるシート名をロードし、
      * 設定内容に基づいてシート名をペアリングして返します。<br>
@@ -104,6 +111,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
         return matcher.pairingSheetNames(bookInfo1, bookInfo2);
+    }
+    
+    /**
+     * 比較対象のフォルダもしくはフォルダツリーを抽出し、
+     * トップフォルダの情報のペアを返します。<br>
+     * 
+     * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
+     * @throws ExcelHandlingException 処理に失敗した場合
+     */
+    protected Pair<DirInfo> extractDirInfoPair() throws ExcelHandlingException {
+        Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
+        Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+        DirLoader dirLoader = factory.dirLoader(settings);
+        DirInfo dirInfo1 = dirLoader.loadDir(dirPath1);
+        DirInfo dirInfo2 = dirLoader.loadDir(dirPath2);
+        
+        return Pair.of(dirInfo1, dirInfo2);
     }
     
     /**

@@ -17,7 +17,6 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -68,7 +67,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<Pair<String>> bookNamePairs = pairingBookNames(dirInfoPair, 2, 5);
         
         // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirInfoPair, outputDirs, bookNamePairs, 5, 90);
+        DirResult dResult = compareDirs(dirInfoPair, outputDirs, bookNamePairs, 5, 95);
         
         // 6. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, dResult.toString(), 95, 97);
@@ -99,17 +98,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
-    }
-    
-    // 1. ディレクトリ情報の抽出
-    private Pair<DirInfo> extractDirInfoPair() throws ExcelHandlingException {
-        Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
-        Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
-        DirLoader dirLoader = factory.dirLoader(settings);
-        DirInfo dirInfo1 = dirLoader.loadDir(dirPath1);
-        DirInfo dirInfo2 = dirLoader.loadDir(dirPath2);
-        
-        return Pair.of(dirInfo1, dirInfo2);
     }
     
     // 3. 出力用ディレクトリの作成
@@ -148,10 +136,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareDirsTask.030")).append(BR);
             updateMessage(str.toString());
             
-            List<Pair<String>> bookNamePairs = getBookNamePairs(dirInfoPair);
+            BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
+            List<Pair<String>> bookNamePairs = matcher.pairingBooks(
+                    dirInfoPair.a(),
+                    dirInfoPair.b());
+            
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair(i, bookNamePair)).append(BR);
+                str.append(DirResult.formatBookNamesPair(String.valueOf(i), bookNamePair)).append(BR);
             }
             
             str.append(BR);
@@ -166,13 +158,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             e.printStackTrace();
             throw new ApplicationException(rb.getString("CompareDirsTask.040"), e);
         }
-    }
-    
-    private List<Pair<String>> getBookNamePairs(Pair<DirInfo> dirInfoPair)
-            throws ExcelHandlingException {
-        
-        BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
-        return matcher.pairingBooks(dirInfoPair.a(), dirInfoPair.b());
     }
     
     // 5. フォルダ同士の比較
@@ -210,7 +195,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     continue;
                 }
                 
-                str.append(DirResult.formatBookNamesPair(i, bookNamePair));
+                str.append(DirResult.formatBookNamesPair(String.valueOf(i), bookNamePair));
                 updateMessage(str.toString());
                 
                 BookOpenInfo srcInfo1 = new BookOpenInfo(
