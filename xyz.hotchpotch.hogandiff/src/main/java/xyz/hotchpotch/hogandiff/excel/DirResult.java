@@ -91,7 +91,7 @@ public class DirResult {
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(String.valueOf(i), bookNamePair)).append(BR);
+            str.append(formatBookNamesPair(String.valueOf(i + 1), bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -126,7 +126,7 @@ public class DirResult {
                 continue;
             }
             
-            str.append(formatBookNamesPair(String.valueOf(i), bookNamePair));
+            str.append(formatBookNamesPair(String.valueOf(i + 1), bookNamePair));
             str.append(diffDescriptor.apply(bResult));
         }
         
