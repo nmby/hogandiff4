@@ -124,6 +124,20 @@ public class Factory {
     }
     
     /**
+     * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return フォルダ同士の対応関係を決めるマッチャー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
+    public DirsMatcher dirsMatcher(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        return DirsMatcher.of(matchNamesStrictly);
+    }
+    
+    /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
      * 
      * @param settings 設定
