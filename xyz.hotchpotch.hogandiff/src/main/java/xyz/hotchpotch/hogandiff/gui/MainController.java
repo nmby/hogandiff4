@@ -163,7 +163,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            if (menu != AppMenu.COMPARE_DIRS
+            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
                             || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
                 
@@ -187,7 +187,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            if (menu != AppMenu.COMPARE_DIRS
+            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
                             || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
                 

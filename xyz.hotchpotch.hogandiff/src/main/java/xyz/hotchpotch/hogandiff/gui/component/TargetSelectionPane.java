@@ -57,6 +57,10 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private static Path prevSelectedBookPath;
     
+    private static boolean isTargetDirs(AppMenu menu) {
+        return menu == AppMenu.COMPARE_DIRS || menu == AppMenu.COMPARE_TREES;
+    }
+    
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
@@ -128,23 +132,23 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 parent.menu()));
         
         dirPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                () -> isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         dirPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                () -> isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         dirPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_DIRS,
+                () -> isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         
         bookPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
+                () -> !isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         bookPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
+                () -> !isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         bookPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_DIRS,
+                () -> !isTargetDirs(parent.menu().getValue()),
                 parent.menu()));
         
         // 2.項目ごとの各種設定
@@ -170,6 +174,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     case COMPARE_BOOKS -> bookOpenInfo.getValue() != null;
                     case COMPARE_SHEETS -> bookOpenInfo.getValue() != null && sheetName.getValue() != null;
                     case COMPARE_DIRS -> dirPath.getValue() != null;
+                    case COMPARE_TREES -> dirPath.getValue() != null;
                     default -> throw new AssertionError("unknown menu");
                 },
                 parent.menu(), bookOpenInfo, sheetName, dirPath));
@@ -200,7 +205,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void onDragOver(DragEvent event) {
         event.consume();
-        Predicate<File> isAcceptableType = (parent.menu().getValue() == AppMenu.COMPARE_DIRS)
+        Predicate<File> isAcceptableType = isTargetDirs(parent.menu().getValue())
                 ? File::isDirectory
                 : File::isFile;
         
@@ -219,7 +224,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private void onDragDropped(DragEvent event) {
         event.consume();
         AppMenu menu = parent.menu().getValue();
-        Predicate<File> isAcceptableType = (menu == AppMenu.COMPARE_DIRS)
+        Predicate<File> isAcceptableType = isTargetDirs(menu)
                 ? File::isDirectory
                 : File::isFile;
         
@@ -233,7 +238,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             return;
         }
         
-        if (menu == AppMenu.COMPARE_DIRS) {
+        if (isTargetDirs(menu)) {
             setDirPath(files.get(0).toPath());
             event.setDropCompleted(true);
             
