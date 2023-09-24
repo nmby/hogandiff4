@@ -92,7 +92,7 @@ public class BookResult {
         assert sheetPairs != null;
         assert results != null;
         
-        this.bookPath = Pair.of(bookPath1, bookPath2);
+        this.bookPath = new Pair<>(bookPath1, bookPath2);
         this.sheetPairs = List.copyOf(sheetPairs);
         this.results = Map.copyOf(results);
     }

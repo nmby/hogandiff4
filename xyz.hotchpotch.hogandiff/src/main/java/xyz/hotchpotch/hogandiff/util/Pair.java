@@ -43,41 +43,6 @@ public record Pair<T>(T a, T b) {
         }
     }
     
-    /**
-     * 新たなペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param a 要素a
-     * @param b 要素b
-     * @return 新たなペア
-     * @throws NullPointerException {@code a}, {@code b} のいずれかが {@code null} の場合
-     */
-    public static <T> Pair<T> of(T a, T b) {
-        Objects.requireNonNull(a, "a");
-        Objects.requireNonNull(b, "b");
-        
-        return new Pair<>(a, b);
-    }
-    
-    /**
-     * どちらかまたは両方の要素が欠けている可能性のあるペアを生成します。<br>
-     * 
-     * @param <T> 要素の型
-     * @param a 要素a（{@code null} 許容）
-     * @param b 要素b（{@code null} 許容）
-     * @return 新たなペア
-     */
-    public static <T> Pair<T> ofNullable(T a, T b) {
-        return new Pair<>(a, b);
-    }
-    
-    public static <T> Pair<T> ofOnly(Side side, T value) {
-        Objects.requireNonNull(side, "side");
-        return side == Side.A
-                ? new Pair<>(value, null)
-                : new Pair<>(null, value);
-    }
-    
     // [instance members] ******************************************************
     
     @Override

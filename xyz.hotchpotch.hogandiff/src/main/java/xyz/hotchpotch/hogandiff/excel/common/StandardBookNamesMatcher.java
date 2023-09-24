@@ -56,7 +56,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
                 dirInfo2.bookNames());
         
         return pairs.stream()
-                .map(p -> Pair.ofNullable(
+                .map(p -> new Pair<>(
                         p.hasA() ? dirInfo1.bookNames().get(p.a()) : null,
                         p.hasB() ? dirInfo2.bookNames().get(p.b()) : null))
                 .toList();
