@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
-public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher {
+public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcherBase {
     
     // [static members] ********************************************************
     
