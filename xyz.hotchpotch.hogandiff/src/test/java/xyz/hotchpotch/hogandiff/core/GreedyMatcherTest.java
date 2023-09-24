@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
-class NerutonMatcherTest {
+class GreedyMatcherTest {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -34,21 +34,21 @@ class NerutonMatcherTest {
     void testConstructor() {
         assertThrows(
                 AssertionError.class,
-                () -> new NerutonMatcher<>(null, diffEvaluator));
+                () -> new GreedyMatcher<>(null, diffEvaluator));
         assertThrows(
                 AssertionError.class,
-                () -> new NerutonMatcher<>(gapEvaluator, null));
+                () -> new GreedyMatcher<>(gapEvaluator, null));
         assertThrows(
                 AssertionError.class,
-                () -> new NerutonMatcher<>(null, null));
+                () -> new GreedyMatcher<>(null, null));
         
         assertDoesNotThrow(
-                () -> new NerutonMatcher<>(gapEvaluator, diffEvaluator));
+                () -> new GreedyMatcher<>(gapEvaluator, diffEvaluator));
     }
     
     @Test
     void testMakePairs1_パラメータチェック() {
-        NerutonMatcher<String> testee = new NerutonMatcher<>(gapEvaluator, diffEvaluator);
+        GreedyMatcher<String> testee = new GreedyMatcher<>(gapEvaluator, diffEvaluator);
         
         assertThrows(
                 NullPointerException.class,
@@ -66,7 +66,7 @@ class NerutonMatcherTest {
     
     @Test
     void testMakePairs2_マッチングロジック_同じ内容() {
-        NerutonMatcher<String> testee = new NerutonMatcher<>(gapEvaluator, diffEvaluator);
+        GreedyMatcher<String> testee = new GreedyMatcher<>(gapEvaluator, diffEvaluator);
         
         // 同一インスタンス
         assertEquals(
@@ -99,7 +99,7 @@ class NerutonMatcherTest {
     
     @Test
     void testMakePairs3_マッチングロジック_異なる内容() {
-        NerutonMatcher<String> testee = new NerutonMatcher<>(gapEvaluator, diffEvaluator);
+        GreedyMatcher<String> testee = new GreedyMatcher<>(gapEvaluator, diffEvaluator);
         
         // 一方が長さゼロ
         assertEquals(

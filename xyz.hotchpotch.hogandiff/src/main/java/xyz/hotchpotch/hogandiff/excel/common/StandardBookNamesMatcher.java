@@ -28,7 +28,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
     public static StandardBookNamesMatcher of(boolean matchNamesStrictly) {
         return new StandardBookNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
-                : Matcher.nerutonMatcherOf(
+                : Matcher.greedyMatcherOf(
                         String::length,
                         StringDiffUtil::levenshteinDistance));
     }

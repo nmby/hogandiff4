@@ -48,17 +48,17 @@ class MatcherTest {
     void testNerutonMatcherOf() {
         assertThrows(
                 NullPointerException.class,
-                () -> Matcher.nerutonMatcherOf(null, diffEvaluator));
+                () -> Matcher.greedyMatcherOf(null, diffEvaluator));
         assertThrows(
                 NullPointerException.class,
-                () -> Matcher.nerutonMatcherOf(gapEvaluator, null));
+                () -> Matcher.greedyMatcherOf(gapEvaluator, null));
         assertThrows(
                 NullPointerException.class,
-                () -> Matcher.nerutonMatcherOf(null, null));
+                () -> Matcher.greedyMatcherOf(null, null));
         assertDoesNotThrow(
-                () -> Matcher.nerutonMatcherOf(gapEvaluator, diffEvaluator));
+                () -> Matcher.greedyMatcherOf(gapEvaluator, diffEvaluator));
         
         assertTrue(
-                Matcher.nerutonMatcherOf(gapEvaluator, diffEvaluator) instanceof NerutonMatcher);
+                Matcher.greedyMatcherOf(gapEvaluator, diffEvaluator) instanceof GreedyMatcher);
     }
 }
