@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -112,7 +113,7 @@ public class DirResult {
                 false);
     }
     
-    private String getDiffDetail() {
+    public String getDiffDetail() {
         return getDiffText(bResult -> bResult.isPresent()
                 ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
                 : BR + "        " + rb.getString("excel.DResult.050") + BR + BR,
@@ -140,9 +141,45 @@ public class DirResult {
                     str.append(BR);
                 }
             }
-            
+        }
+        return str.toString();
+    }
+    
+    public String getDiffSimpleSummary() {
+        int diffBooks = (int) results.values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(BookResult::hasDiff)
+                .count();
+        int gapBooks = (int) bookNamePairs.stream()
+                .filter(Predicate.not(Pair::isPaired))
+                .count();
+        int failed = (int) bookNamePairs.stream()
+                .filter(Pair::isPaired)
+                .filter(p -> !results.containsKey(p) || results.get(p).isEmpty())
+                .count();
+        
+        if (diffBooks == 0 && gapBooks == 0 && failed == 0) {
+            return rb.getString("excel.DResult.060");
         }
         
-        return str.isEmpty() ? "    " + rb.getString("excel.DResult.060") + BR : str.toString();
+        StringBuilder str = new StringBuilder();
+        if (0 < diffBooks) {
+            str.append(rb.getString("excel.DResult.070").formatted(diffBooks));
+        }
+        if (0 < gapBooks) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append(rb.getString("excel.DResult.080").formatted(gapBooks));
+        }
+        if (0 < failed) {
+            if (!str.isEmpty()) {
+                str.append(", ");
+            }
+            str.append(rb.getString("excel.DResult.090").formatted(failed));
+        }
+        
+        return str.toString();
     }
 }

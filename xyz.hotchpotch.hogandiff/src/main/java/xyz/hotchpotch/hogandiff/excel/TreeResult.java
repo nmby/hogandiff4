@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -17,6 +18,8 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public class TreeResult {
     
     // [static members] ********************************************************
+    
+    private static final String BR = System.lineSeparator();
     
     public static record DirPairData(
             int num,
@@ -79,5 +82,56 @@ public class TreeResult {
         this.topDirPair = topDirPair;
         this.pairDataList = List.copyOf(pairDataList);
         this.results = Map.copyOf(results);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append(rb.getString("excel.TreeResult.020").formatted("A"))
+                .append(topDirPair.a().getPath())
+                .append(BR);
+        str.append(rb.getString("excel.TreeResult.020").formatted("B"))
+                .append(topDirPair.b().getPath())
+                .append(BR);
+        
+        str.append(BR);
+        str.append(rb.getString("excel.TreeResult.030")).append(BR);
+        str.append(getDiffSummary()).append(BR);
+        str.append(rb.getString("excel.TreeResult.040")).append(BR);
+        str.append(getDiffDetail());
+        
+        return str.toString();
+    }
+    
+    private String getDiffSummary() {
+        return getDiffText(dirResult -> "        -  %s%n%n".formatted(dirResult.isPresent()
+                ? dirResult.get().getDiffSimpleSummary()
+                : rb.getString("excel.TreeResult.050")));
+    }
+    
+    private String getDiffDetail() {
+        return getDiffText(dirResult -> dirResult.isPresent()
+                ? dirResult.get().getDiffDetail().indent(4).replace("\n", BR)
+                : "        " + rb.getString("excel.TreeResult.050") + BR + BR);
+    }
+    
+    private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
+        StringBuilder str = new StringBuilder();
+        
+        for (int i = 0; i < pairDataList.size(); i++) {
+            DirPairData pairData = pairDataList.get(i);
+            Optional<DirResult> dirResult = results.get(pairData.dirPair());
+            
+            str.append(formatDirsPair(pairData.num(), pairData.dirPair()));
+            
+            if (pairData.dirPair().isPaired()) {
+                str.append(diffDescriptor.apply(dirResult));
+            } else {
+                str.append(BR);
+            }
+        }
+        
+        return str.toString();
     }
 }
