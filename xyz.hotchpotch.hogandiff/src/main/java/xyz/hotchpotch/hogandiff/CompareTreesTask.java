@@ -125,13 +125,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     .map(bookName -> Pair.ofOnly(side, bookName))
                     .toList();
             
-            List<DirPairData> dirPairDataList = new ArrayList<>();
+            List<DirPairData> pairDataList = new ArrayList<>();
             
             for (int i = 0; i < dirPairs.size(); i++) {
                 Pair<DirInfo> dirPair = dirPairs.get(i);
                 
-                String id = String.valueOf(i + 1);
-                str.append(TreeResult.formatDirsPair(id, dirPair));
+                str.append(TreeResult.formatDirsPair(i, dirPair));
+                updateMessage(str.toString());
                 
                 DirPairData data = new DirPairData(
                         i + 1,
@@ -141,23 +141,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                 : dirPair.isOnlyA()
                                         ? bookNamePairs.apply(Side.A, dirPair)
                                         : bookNamePairs.apply(Side.B, dirPair));
-                dirPairDataList.add(data);
+                pairDataList.add(data);
                 
                 for (int j = 0; j < data.bookNamePairs().size(); j++) {
                     Pair<String> bookNamePair = data.bookNamePairs().get(j);
                     
                     str.append("      " + DirResult.formatBookNamesPair(
-                            "%s-%d".formatted(id, j + 1),
+                            "%s-%d".formatted(i, j + 1),
                             bookNamePair));
                     str.append(BR);
+                    updateMessage(str.toString());
                 }
                 str.append(BR);
+                updateMessage(str.toString());
             }
             
-            updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return dirPairDataList;
+            return pairDataList;
             
         } catch (Exception e) {
             str.append(rb.getString("CompareTreesTask.030")).append(BR).append(BR);
@@ -194,7 +195,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData data = pairDataList.get(i);
             
-            str.append(TreeResult.formatDirsPair(String.valueOf(i + 1), data.dirPair));
+            str.append(TreeResult.formatDirsPair(i, data.dirPair));
             updateMessage(str.toString());
             
             Path outputDir1 = null;

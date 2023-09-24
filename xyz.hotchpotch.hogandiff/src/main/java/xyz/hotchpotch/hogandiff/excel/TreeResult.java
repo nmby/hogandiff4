@@ -21,23 +21,22 @@ public class TreeResult {
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param id このフォルダペアの識別子。
+     * @param i このフォルダペアの識別番号。{@code i + 1} をユーザー向けに表示します。
      * @param data フォルダペア情報
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
      */
-    public static String formatDirsPair(String id, Pair<DirInfo> dirPair) {
-        Objects.requireNonNull(id, "id");
+    public static String formatDirsPair(int i, Pair<DirInfo> dirPair) {
         Objects.requireNonNull(dirPair, "dirPair");
         
         ResourceBundle rb = AppMain.appResource.get();
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%s】 %s".formatted(id, dirPair.a().getPath())
+                        ? "【A%d】 %s".formatted(i + 1, dirPair.a().getPath())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%s】 %s".formatted(id, dirPair.b().getPath())
+                        ? "【B%d】 %s".formatted(i + 1, dirPair.b().getPath())
                         : rb.getString("excel.TreeResult.010"));
     }
     
