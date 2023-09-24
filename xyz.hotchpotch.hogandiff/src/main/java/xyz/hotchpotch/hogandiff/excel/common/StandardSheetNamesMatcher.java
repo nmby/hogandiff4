@@ -56,7 +56,7 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
                 bookInfo2.sheetNames());
         
         return pairs.stream()
-                .map(p -> Pair.ofNullable(
+                .map(p -> new Pair<>(
                         p.hasA() ? bookInfo1.sheetNames().get(p.a()) : null,
                         p.hasB() ? bookInfo2.sheetNames().get(p.b()) : null))
                 .toList();

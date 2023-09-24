@@ -134,7 +134,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         DirInfo dirInfo1 = dirLoader.loadDir(dirPath1);
         DirInfo dirInfo2 = dirLoader.loadDir(dirPath2);
         
-        return Pair.of(dirInfo1, dirInfo2);
+        return new Pair<>(dirInfo1, dirInfo2);
     }
     
     /**

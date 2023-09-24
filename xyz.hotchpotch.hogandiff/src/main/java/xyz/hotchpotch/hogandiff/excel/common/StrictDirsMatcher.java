@@ -40,7 +40,7 @@ public class StrictDirsMatcher extends VerticallyStrictDirsMatcher {
                 dirs2.stream().map(dirToName::apply).toList());
         
         return pairs.stream()
-                .map(p -> Pair.ofNullable(
+                .map(p -> new Pair<>(
                         p.hasA() ? dirs1.get(p.a()) : null,
                         p.hasB() ? dirs2.get(p.b()) : null))
                 .toList();

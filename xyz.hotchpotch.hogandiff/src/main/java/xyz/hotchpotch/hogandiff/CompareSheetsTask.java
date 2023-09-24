@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -101,7 +101,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     ? loader1
                     : factory.cellsLoader(settings, bookOpenInfo2);
             
-            Pair<String> pair = Pair.of(
+            Pair<String> pair = new Pair<>(
                     settings.get(SettingKeys.CURR_SHEET_NAME1),
                     settings.get(SettingKeys.CURR_SHEET_NAME2));
             
