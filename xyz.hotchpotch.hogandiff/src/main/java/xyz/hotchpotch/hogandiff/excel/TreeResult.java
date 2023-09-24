@@ -32,7 +32,7 @@ public class TreeResult {
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "%s%n%s%n".formatted(
+        return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
                         ? "【A%s】 %s".formatted(id, dirPair.a().getPath())
                         : rb.getString("excel.TreeResult.010"),

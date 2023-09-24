@@ -146,7 +146,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 for (int j = 0; j < data.bookNamePairs().size(); j++) {
                     Pair<String> bookNamePair = data.bookNamePairs().get(j);
                     
-                    str.append(DirResult.formatBookNamesPair(
+                    str.append("      " + DirResult.formatBookNamesPair(
                             "%s-%d".formatted(id, j + 1),
                             bookNamePair));
                     str.append(BR);
@@ -233,7 +233,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (int j = 0; j < data.bookNamePairs().size(); j++) {
                 Pair<String> bookNamePair = data.bookNamePairs().get(j);
                 
-                str.append(DirResult.formatBookNamesPair(
+                str.append("      " + DirResult.formatBookNamesPair(
                         "%d-%d".formatted(i + 1, j + 1),
                         bookNamePair));
                 updateMessage(str.toString());
