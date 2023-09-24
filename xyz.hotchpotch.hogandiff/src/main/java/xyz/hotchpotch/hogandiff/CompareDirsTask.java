@@ -3,20 +3,13 @@ package xyz.hotchpotch.hogandiff;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
-import xyz.hotchpotch.hogandiff.excel.BookPainter;
-import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Pair;
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -136,7 +129,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair(String.valueOf(i + 1), bookNamePair)).append(BR);
+                str.append(DirResult.formatBookNamesPair("", i, bookNamePair)).append(BR);
             }
             
             str.append(BR);
@@ -155,87 +148,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirInfo> dirInfoPair,
-            Pair<Path> outputDir,
+            Pair<DirInfo> dirPair,
+            Pair<Path> outputDirs,
             List<Pair<String>> bookNamePairs,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
         str.append(rb.getString("CompareDirsTask.050")).append(BR);
         updateMessage(str.toString());
+        updateProgress(progressBefore, PROGRESS_MAX);
         
-        Map<Pair<String>, Optional<BookResult>> results = new HashMap<>();
-        
-        for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> bookNamePair = bookNamePairs.get(i);
-            
-            try {
-                str.append(DirResult.formatBookNamesPair(String.valueOf(i + 1), bookNamePair));
-                updateMessage(str.toString());
-                
-                if (bookNamePair.isPaired()) {
-                    BookOpenInfo srcInfo1 = new BookOpenInfo(
-                            dirInfoPair.a().getPath().resolve(bookNamePair.a()), null);
-                    BookOpenInfo srcInfo2 = new BookOpenInfo(
-                            dirInfoPair.b().getPath().resolve(bookNamePair.b()), null);
-                    BookOpenInfo dstInfo1 = new BookOpenInfo(
-                            outputDir.a().resolve("【A-%d】%s".formatted(i + 1, bookNamePair.a())), null);
-                    BookOpenInfo dstInfo2 = new BookOpenInfo(
-                            outputDir.b().resolve("【B-%d】%s".formatted(i + 1, bookNamePair.b())), null);
-                    
-                    BookResult result = compareBooks(
-                            srcInfo1,
-                            srcInfo2,
-                            progressBefore + (progressAfter - progressBefore) * i / bookNamePairs.size(),
-                            progressBefore + (progressAfter - progressBefore) * (i + 1) / bookNamePairs.size());
-                    results.put(bookNamePair, Optional.of(result));
-                    
-                    BookPainter painter1 = factory.painter(settings, srcInfo1);
-                    BookPainter painter2 = factory.painter(settings, srcInfo2);
-                    painter1.paintAndSave(srcInfo1, dstInfo1, result.getPiece(Side.A));
-                    painter2.paintAndSave(srcInfo2, dstInfo2, result.getPiece(Side.B));
-                    
-                    str.append("  -  ").append(result.getDiffSimpleSummary()).append(BR);
-                    updateMessage(str.toString());
-                    
-                    updateProgress(
-                            progressBefore + (progressAfter - progressBefore) * (i + 1) / bookNamePairs.size(),
-                            PROGRESS_MAX);
-                    
-                } else {
-                    Path src = bookNamePair.hasA()
-                            ? dirInfoPair.a().getPath().resolve(bookNamePair.a())
-                            : dirInfoPair.b().getPath().resolve(bookNamePair.b());
-                    Path dst = bookNamePair.hasA()
-                            ? outputDir.a().resolve("【A-%d】%s".formatted(i + 1, bookNamePair.a()))
-                            : outputDir.b().resolve("【B-%d】%s".formatted(i + 1, bookNamePair.b()));
-                    
-                    Files.copy(src, dst);
-                    dst.toFile().setReadable(true, false);
-                    dst.toFile().setWritable(true, false);
-                    
-                    results.put(bookNamePair, Optional.empty());
-                    
-                    str.append(BR);
-                    updateMessage(str.toString());
-                }
-                
-            } catch (Exception e) {
-                results.putIfAbsent(bookNamePair, Optional.empty());
-                str.append("  -  ").append(rb.getString("CompareDirsTask.060")).append(BR);
-                updateMessage(str.toString());
-                e.printStackTrace();
-            }
-        }
-        str.append(BR);
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
-        
-        return DirResult.of(
-                dirInfoPair,
-                bookNamePairs,
-                results);
+        return compareDirs(
+                "",
+                "",
+                new DirPairData(0, dirPair, bookNamePairs),
+                outputDirs,
+                progressBefore,
+                progressAfter);
     }
 }

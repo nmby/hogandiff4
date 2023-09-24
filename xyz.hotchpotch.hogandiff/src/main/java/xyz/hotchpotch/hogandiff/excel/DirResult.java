@@ -24,20 +24,28 @@ public class DirResult {
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param id このExcelブック名ペアを示す識別子。
+     * @param bookId 親フォルダのペアを示す識別子。
+     * @param i このExcelブック名ペアの番号。{@code i + 1} をユーザー向けに表示します。
      * @param pair Excelブック名ペア
      * @return Excelブック名ペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
      */
-    public static String formatBookNamesPair(String id, Pair<String> pair) {
-        Objects.requireNonNull(id, "id");
+    public static String formatBookNamesPair(
+            String bookId,
+            int i,
+            Pair<String> pair) {
+        
+        Objects.requireNonNull(bookId, "bookId");
         Objects.requireNonNull(pair, "pair");
+        if (i < 0) {
+            throw new IllegalArgumentException("i: %d".formatted(i));
+        }
         
         ResourceBundle rb = AppMain.appResource.get();
         
         return "    %s  vs  %s".formatted(
-                pair.hasA() ? "【A%s】%s".formatted(id, pair.a()) : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "【B%s】%s".formatted(id, pair.b()) : rb.getString("excel.DResult.010"));
+                pair.hasA() ? "【A%s-%d】%s".formatted(bookId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
+                pair.hasB() ? "【B%s-%d】%s".formatted(bookId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
     public static DirResult of(
@@ -85,7 +93,7 @@ public class DirResult {
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(String.valueOf(i + 1), bookNamePair)).append(BR);
+            str.append(formatBookNamesPair("", i, bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -120,7 +128,7 @@ public class DirResult {
                 continue;
             }
             
-            str.append(formatBookNamesPair(String.valueOf(i + 1), bookNamePair));
+            str.append(formatBookNamesPair("", i, bookNamePair));
             str.append(diffDescriptor.apply(bResult));
         }
         

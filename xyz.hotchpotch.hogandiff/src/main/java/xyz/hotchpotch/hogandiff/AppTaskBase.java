@@ -22,6 +22,7 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
+import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
@@ -43,6 +44,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     protected static final String BR = System.lineSeparator();
     protected static final int PROGRESS_MAX = 100;
+    
+    protected static record DirPairData(
+            int num,
+            Pair<DirInfo> dirPair,
+            List<Pair<String>> bookNamePairs) {
+    }
     
     // [instance members] ******************************************************
     
@@ -216,6 +223,91 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 bookOpenInfo2.bookPath(),
                 sheetNamePairs,
                 results);
+    }
+    
+    protected DirResult compareDirs(
+            String id,
+            String indent,
+            DirPairData data,
+            Pair<Path> outputDirs,
+            int progressBefore,
+            int progressAfter) {
+        
+        Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
+        int bookPairsCount = (int) data.bookNamePairs.stream().filter(Pair::isPaired).count();
+        int num = 0;
+        
+        for (int i = 0; i < data.bookNamePairs().size(); i++) {
+            Pair<String> bookNamePair = data.bookNamePairs().get(i);
+            
+            try {
+                str.append(indent
+                        + DirResult.formatBookNamesPair(id, i, bookNamePair));
+                updateMessage(str.toString());
+                
+                if (bookNamePair.isPaired()) {
+                    BookOpenInfo srcInfo1 = new BookOpenInfo(
+                            data.dirPair.a().getPath().resolve(bookNamePair.a()), null);
+                    BookOpenInfo srcInfo2 = new BookOpenInfo(
+                            data.dirPair.b().getPath().resolve(bookNamePair.b()), null);
+                    BookOpenInfo dstInfo1 = new BookOpenInfo(
+                            outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a())), null);
+                    BookOpenInfo dstInfo2 = new BookOpenInfo(
+                            outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b())), null);
+                    
+                    BookResult bookResult = compareBooks(
+                            srcInfo1,
+                            srcInfo2,
+                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
+                            progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
+                    bookResults.put(bookNamePair, Optional.of(bookResult));
+                    
+                    BookPainter painter1 = factory.painter(settings, srcInfo1);
+                    BookPainter painter2 = factory.painter(settings, srcInfo2);
+                    painter1.paintAndSave(srcInfo1, dstInfo1, bookResult.getPiece(Side.A));
+                    painter2.paintAndSave(srcInfo2, dstInfo2, bookResult.getPiece(Side.B));
+                    
+                    str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
+                    updateMessage(str.toString());
+                    
+                    num++;
+                    updateProgress(
+                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
+                            PROGRESS_MAX);
+                    
+                } else {
+                    Path src = bookNamePair.hasA()
+                            ? data.dirPair.a().getPath().resolve(bookNamePair.a())
+                            : data.dirPair.b().getPath().resolve(bookNamePair.b());
+                    Path dst = bookNamePair.hasA()
+                            ? outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a()))
+                            : outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b()));
+                    
+                    Files.copy(src, dst);
+                    dst.toFile().setReadable(true, false);
+                    dst.toFile().setWritable(true, false);
+                    
+                    bookResults.put(bookNamePair, Optional.empty());
+                    
+                    str.append(BR);
+                    updateMessage(str.toString());
+                }
+                
+            } catch (Exception e) {
+                bookResults.putIfAbsent(bookNamePair, Optional.empty());
+                str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                updateMessage(str.toString());
+                e.printStackTrace();
+                continue;
+            }
+        }
+        str.append(BR);
+        updateMessage(str.toString());
+        
+        return DirResult.of(
+                data.dirPair,
+                data.bookNamePairs,
+                bookResults);
     }
     
     /**
