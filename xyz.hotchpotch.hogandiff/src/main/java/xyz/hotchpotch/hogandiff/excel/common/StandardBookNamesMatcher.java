@@ -28,7 +28,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
     public static StandardBookNamesMatcher of(boolean matchNamesStrictly) {
         return new StandardBookNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
-                : Matcher.nerutonMatcherOf(
+                : Matcher.greedyMatcherOf(
                         String::length,
                         StringDiffUtil::levenshteinDistance));
     }
@@ -52,13 +52,13 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
         Objects.requireNonNull(dirInfo2, "dirInfo2");
         
         List<IntPair> pairs = coreMatcher.makePairs(
-                dirInfo1.getBookNames(),
-                dirInfo2.getBookNames());
+                dirInfo1.bookNames(),
+                dirInfo2.bookNames());
         
         return pairs.stream()
                 .map(p -> Pair.ofNullable(
-                        p.hasA() ? dirInfo1.getBookNames().get(p.a()) : null,
-                        p.hasB() ? dirInfo2.getBookNames().get(p.b()) : null))
+                        p.hasA() ? dirInfo1.bookNames().get(p.a()) : null,
+                        p.hasB() ? dirInfo2.bookNames().get(p.b()) : null))
                 .toList();
     }
 }

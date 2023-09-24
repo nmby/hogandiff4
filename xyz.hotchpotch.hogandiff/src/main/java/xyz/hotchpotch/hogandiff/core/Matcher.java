@@ -60,14 +60,14 @@ public interface Matcher<T> {
      * @throws NullPointerException
      *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
      */
-    public static <T> Matcher<T> nerutonMatcherOf(
+    public static <T> Matcher<T> greedyMatcherOf(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
         Objects.requireNonNull(gapEvaluator, "gapEvaluator");
         Objects.requireNonNull(diffEvaluator, "diffEvaluator");
         
-        return new NerutonMatcher<>(gapEvaluator, diffEvaluator);
+        return new GreedyMatcher<>(gapEvaluator, diffEvaluator);
     }
     
     /**

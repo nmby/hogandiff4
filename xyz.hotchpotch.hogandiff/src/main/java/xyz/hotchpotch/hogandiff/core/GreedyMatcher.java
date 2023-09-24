@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @param <T> リストの要素の型
  * @author nmby
  */
-/*package*/ class NerutonMatcher<T> implements Matcher<T> {
+/*package*/ class GreedyMatcher<T> implements Matcher<T> {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -100,7 +100,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     private final ToIntFunction<? super T> gapEvaluator;
     private final ToIntBiFunction<? super T, ? super T> diffEvaluator;
     
-    /*package*/ NerutonMatcher(
+    /*package*/ GreedyMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         

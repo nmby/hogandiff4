@@ -34,21 +34,20 @@ public class StandardDirLoader implements DirLoader {
         return handleableExtensions.stream().anyMatch(x -> fileName.endsWith(x));
     }
     
-    public static DirLoader of() {
-        return new StandardDirLoader();
+    public static DirLoader of(boolean recursively) {
+        return new StandardDirLoader(recursively);
     }
     
     // [instance members] ******************************************************
     
-    private StandardDirLoader() {
+    private final boolean recursively;
+    
+    private StandardDirLoader(boolean recursively) {
+        this.recursively = recursively;
     }
     
     @Override
-    public DirInfo loadDir(
-            Path path,
-            boolean recursively)
-            throws ExcelHandlingException {
-        
+    public DirInfo loadDir(Path path) throws ExcelHandlingException {
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
@@ -81,7 +80,7 @@ public class StandardDirLoader implements DirLoader {
             
             me.setChildren(recursively
                     ? Files.list(path)
-                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+                            .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
                             .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
                             .filter(t -> t.item1() != null)
                             .map(Tuple2::item1)

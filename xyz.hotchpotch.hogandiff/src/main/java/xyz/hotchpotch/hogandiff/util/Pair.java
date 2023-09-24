@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * 同型の2つの要素を保持する不変コンテナです。<br>
@@ -11,7 +12,7 @@ import java.util.Objects;
  * @param b 要素b
  * @author nmby
  */
-public record Pair<T> (T a, T b) {
+public record Pair<T>(T a, T b) {
     
     // [static members] ********************************************************
     
@@ -68,6 +69,13 @@ public record Pair<T> (T a, T b) {
      */
     public static <T> Pair<T> ofNullable(T a, T b) {
         return new Pair<>(a, b);
+    }
+    
+    public static <T> Pair<T> ofOnly(Side side, T value) {
+        Objects.requireNonNull(side, "side");
+        return side == Side.A
+                ? new Pair<>(value, null)
+                : new Pair<>(null, value);
     }
     
     // [instance members] ******************************************************
@@ -184,5 +192,11 @@ public record Pair<T> (T a, T b) {
      */
     public boolean isIdentical() {
         return Objects.equals(a, b);
+    }
+    
+    public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
+        return new Pair<>(
+                a == null ? null : mapper.apply(a),
+                b == null ? null : mapper.apply(b));
     }
 }

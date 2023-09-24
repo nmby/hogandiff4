@@ -8,13 +8,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -82,39 +77,36 @@ public class MenuPane extends HBox implements ChildController {
         recursivelyCheckBox.disableProperty().bind(compareDirsRadioButton.selectedProperty().not());
         
         // 2.項目ごとの各種設定
-        compareBooksRadioButton.setUserData(AppMenu.COMPARE_BOOKS);
-        compareSheetsRadioButton.setUserData(AppMenu.COMPARE_SHEETS);
-        compareDirsRadioButton.setUserData(AppMenu.COMPARE_DIRS);
-        
         menu.bind(Bindings.createObjectBinding(
-                () -> (AppMenu) compareTarget.getSelectedToggle().getUserData(),
-                compareTarget.selectedToggleProperty()));
-        
-        recursivelyCheckBox.setOnAction(infoMsg);
+                () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? AppMenu.COMPARE_BOOKS
+                        : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? AppMenu.COMPARE_SHEETS
+                                : recursivelyCheckBox.isSelected()
+                                        ? AppMenu.COMPARE_TREES
+                                        : AppMenu.COMPARE_DIRS,
+                compareTarget.selectedToggleProperty(),
+                recursivelyCheckBox.selectedProperty()));
         
         // 3.初期値の設定
         compareTarget.selectToggle(
                 switch (ar.settings().getOrDefault(SettingKeys.CURR_MENU)) {
-                case COMPARE_BOOKS -> compareBooksRadioButton;
-                case COMPARE_SHEETS -> compareSheetsRadioButton;
-                case COMPARE_DIRS -> compareDirsRadioButton;
-                default -> throw new AssertionError("unknown menu");
+                    case COMPARE_BOOKS -> compareBooksRadioButton;
+                    case COMPARE_SHEETS -> compareSheetsRadioButton;
+                    case COMPARE_DIRS -> compareDirsRadioButton;
+                    case COMPARE_TREES -> compareDirsRadioButton;
+                    default -> throw new AssertionError("unknown menu");
                 });
         
+        recursivelyCheckBox.setSelected(
+                ar.settings().getOrDefault(SettingKeys.COMPARE_DIRS_RECURSIVELY));
+        
         // 4.値変更時のイベントハンドラの設定
-        compareTarget.selectedToggleProperty().addListener(
-                (target, oldValue, newValue) -> ar
-                        .changeSetting(SettingKeys.CURR_MENU, (AppMenu) newValue.getUserData()));
+        menu.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+        
+        recursivelyCheckBox.selectedProperty()
+                .addListener((target, oldValue, newValue) -> ar.changeSetting(
+                        SettingKeys.COMPARE_DIRS_RECURSIVELY,
+                        newValue));
     }
-    
-    private final EventHandler<ActionEvent> infoMsg = event -> {
-        new Alert(
-                AlertType.INFORMATION,
-                rb.getString("gui.component.MenuPane.010"),
-                ButtonType.OK)
-                        .showAndWait();
-        recursivelyCheckBox.setSelected(false);
-    };
     
     /**
      * 選択されている比較メニューを返します。<br>

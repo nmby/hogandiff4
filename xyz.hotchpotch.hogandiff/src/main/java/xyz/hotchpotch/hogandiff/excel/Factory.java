@@ -86,9 +86,13 @@ public class Factory {
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
      * @return フォルダ情報を抽出するローダー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirLoader dirLoader() {
-        return DirLoader.of();
+    public DirLoader dirLoader(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean recursively = settings.getOrDefault(SettingKeys.COMPARE_DIRS_RECURSIVELY);
+        return DirLoader.of(recursively);
     }
     
     /**
@@ -117,6 +121,20 @@ public class Factory {
         
         boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
         return BookNamesMatcher.of(matchNamesStrictly);
+    }
+    
+    /**
+     * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return フォルダ同士の対応関係を決めるマッチャー
+     * @throws NullPointerException {@code settings} が {@code null} の場合
+     */
+    public DirsMatcher dirsMatcher(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        return DirsMatcher.of(matchNamesStrictly);
     }
     
     /**

@@ -103,6 +103,36 @@ public enum AppMenu {
             
             return new CompareDirsTask(settings, factory);
         }
+    },
+    
+    /**
+     * 指定されたフォルダ配下のフォルダツリーを比較します。
+     * 具体的には、2つのフォルダツリーに含まれるフォルダ同士をマッチングし、
+     * それらのペアごとに比較を行います。<br>
+     */
+    COMPARE_TREES {
+        
+        @Override
+        public boolean isValidTargets(Settings settings) {
+            Objects.requireNonNull(settings, "settings");
+            
+            Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
+            Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+            
+            return !Objects.equals(dirPath1, dirPath2);
+        }
+        
+        @Override
+        public Task<Void> getTask(
+                Settings settings,
+                Factory factory) {
+            
+            Objects.requireNonNull(settings, "settings");
+            Objects.requireNonNull(factory, "factory");
+            
+            // TODO: coding
+            return new CompareTreesTask(settings, factory);
+        }
     };
     
     // [instance members] ******************************************************

@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author nmby
  */
-public class DirInfo {
+public class DirInfo implements Comparable<DirInfo> {
     
     // [static members] ********************************************************
     
@@ -27,11 +27,11 @@ public class DirInfo {
         this.path = path;
     }
     
-    public Path getPath() {
+    public Path path() {
         return path;
     }
     
-    public DirInfo getParent() {
+    public DirInfo parent() {
         return parent;
     }
     
@@ -39,7 +39,7 @@ public class DirInfo {
         this.parent = parent;
     }
     
-    public List<String> getBookNames() {
+    public List<String> bookNames() {
         return List.copyOf(bookNames);
     }
     
@@ -47,7 +47,7 @@ public class DirInfo {
         this.bookNames = List.copyOf(bookNames);
     }
     
-    public List<DirInfo> getChildren() {
+    public List<DirInfo> children() {
         return List.copyOf(children);
     }
     
@@ -58,20 +58,32 @@ public class DirInfo {
     @Override
     public boolean equals(Object o) {
         if (o instanceof DirInfo other) {
-            return Objects.equals(path, other.path)
-                    && Objects.equals(parent, other.parent)
-                    && Objects.equals(bookNames, other.bookNames)
-                    && Objects.equals(children, other.children);
+            return Objects.equals(path, other.path);
+            // ある程度の深さのフォルダツリーにおいてStackOverflowエラーが発生したため、
+            // 子要素はequals, hashCodeの対象に含めないこととする。
+            //            return Objects.equals(path, other.path)
+            //                    && Objects.equals(parent, other.parent)
+            //                    && Objects.equals(bookNames, other.bookNames)
+            //                    && Objects.equals(children, other.children);
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(
-                path,
-                parent,
-                bookNames,
-                children);
+        return Objects.hash(path);
+        // ある程度の深さのフォルダツリーにおいてStackOverflowエラーが発生したため、
+        // 子要素はequals, hashCodeの対象に含めないこととする。
+        //        return Objects.hash(
+        //                path,
+        //                parent,
+        //                bookNames,
+        //                children);
+    }
+    
+    @Override
+    public int compareTo(DirInfo o) {
+        Objects.requireNonNull(o, "o");
+        return path.compareTo(o.path);
     }
 }

@@ -28,7 +28,7 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
     public static StandardSheetNamesMatcher of(boolean matchNamesStrictly) {
         return new StandardSheetNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
-                : Matcher.nerutonMatcherOf(
+                : Matcher.greedyMatcherOf(
                         String::length,
                         StringDiffUtil::levenshteinDistance));
     }

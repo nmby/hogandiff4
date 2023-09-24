@@ -6,7 +6,7 @@ import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
 
 /**
  * フォルダの情報を抽出するローダーを表します。<br>
- * これは、{@link #loadDir(Path, boolean)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadDir(Path)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -18,10 +18,11 @@ public interface DirLoader {
     /**
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
+     * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダ情報を抽出するローダー
      */
-    public static DirLoader of() {
-        return StandardDirLoader.of();
+    public static DirLoader of(boolean recursively) {
+        return StandardDirLoader.of(recursively);
     }
     
     // [instance members] ******************************************************
@@ -30,10 +31,8 @@ public interface DirLoader {
      * 指定されたフォルダの情報を返します。<br>
      * 
      * @param path フォルダのパス
-     * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダの情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    DirInfo loadDir(Path path, boolean recursively)
-            throws ExcelHandlingException;
+    DirInfo loadDir(Path path) throws ExcelHandlingException;
 }
