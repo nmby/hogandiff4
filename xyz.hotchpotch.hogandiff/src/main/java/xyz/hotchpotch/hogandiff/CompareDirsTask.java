@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +66,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         saveAndShowResultText(workDir, dResult.toString(), 95, 97);
         
         // 7. 比較結果の表示（出力フォルダ）
-        showOutputDirs(outputDirs, 97, 99);
+        showOutputDirs(workDir, 97, 99);
         
         // 8. 処理終了のアナウンス
         announceEnd();
@@ -238,35 +237,5 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 dirInfoPair,
                 bookNamePairs,
                 results);
-    }
-    
-    // 7. 比較結果の表示（出力フォルダ）
-    private void showOutputDirs(
-            Pair<Path> outputDir,
-            int progressBefore,
-            int progressAfter)
-            throws ApplicationException {
-        
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("CompareDirsTask.070")).append(BR);
-                
-                Desktop.getDesktop().open(outputDir.a().toFile());
-                str.append("    - %s%n".formatted(outputDir.a()));
-                
-                Desktop.getDesktop().open(outputDir.b().toFile());
-                str.append("    - %s%n%n".formatted(outputDir.b()));
-            }
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("CompareDirsTask.080")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareDirsTask.080"), e);
-        }
     }
 }
