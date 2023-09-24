@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * 同型の2つの要素を保持する不変コンテナです。<br>
@@ -191,5 +192,11 @@ public record Pair<T>(T a, T b) {
      */
     public boolean isIdentical() {
         return Objects.equals(a, b);
+    }
+    
+    public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
+        return new Pair<>(
+                a == null ? null : mapper.apply(a),
+                b == null ? null : mapper.apply(b));
     }
 }

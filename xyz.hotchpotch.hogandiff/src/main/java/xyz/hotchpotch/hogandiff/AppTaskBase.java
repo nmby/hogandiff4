@@ -127,7 +127,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    protected Pair<DirInfo> extractDirInfoPair() throws ExcelHandlingException {
+    protected Pair<DirInfo> extractDirs() throws ExcelHandlingException {
         Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
         Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
         DirLoader dirLoader = factory.dirLoader(settings);

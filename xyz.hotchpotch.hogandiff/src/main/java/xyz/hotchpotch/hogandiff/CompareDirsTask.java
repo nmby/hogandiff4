@@ -42,19 +42,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         announceStart(0, 0);
         
         // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> dirInfoPair = extractDirInfoPair();
+        Pair<DirInfo> dirPair = extractDirs();
         
         // 2. 作業用ディレクトリの作成
         Path workDir = createWorkDir(0, 2);
         
         // 3. 出力用ディレクトリの作成
-        Pair<Path> outputDirs = createOutputDirs(workDir, dirInfoPair);
+        Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
         
         // 4. 比較するExcelブックの組み合わせの決定
-        List<Pair<String>> bookNamePairs = pairingBookNames(dirInfoPair, 2, 5);
+        List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
         
         // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirInfoPair, outputDirs, bookNamePairs, 5, 95);
+        DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 95);
         
         // 6. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, dResult.toString(), 95, 97);
@@ -90,11 +90,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 3. 出力用ディレクトリの作成
     private Pair<Path> createOutputDirs(
             Path workDir,
-            Pair<DirInfo> dirInfoPair)
+            Pair<DirInfo> dirPair)
             throws ApplicationException {
         
-        Path outputDir1 = workDir.resolve("【A】" + dirInfoPair.a().getPath().getFileName());
-        Path outputDir2 = workDir.resolve("【B】" + dirInfoPair.b().getPath().getFileName());
+        Path outputDir1 = workDir.resolve("【A】" + dirPair.a().getPath().getFileName());
+        Path outputDir2 = workDir.resolve("【B】" + dirPair.b().getPath().getFileName());
         
         try {
             return Pair.of(
@@ -113,7 +113,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 4. 比較するExcelブック名の組み合わせの決定
     private List<Pair<String>> pairingBookNames(
-            Pair<DirInfo> dirInfoPair,
+            Pair<DirInfo> dirPair,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -125,8 +125,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
             List<Pair<String>> bookNamePairs = matcher.pairingBooks(
-                    dirInfoPair.a(),
-                    dirInfoPair.b());
+                    dirPair.a(),
+                    dirPair.b());
             
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);

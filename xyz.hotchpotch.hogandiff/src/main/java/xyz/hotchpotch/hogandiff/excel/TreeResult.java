@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,7 +53,7 @@ public class TreeResult {
     public static TreeResult of(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
-            Map<Pair<DirInfo>, Optional<DirResult>> results) {
+            Map<Pair<Path>, Optional<DirResult>> results) {
         
         Objects.requireNonNull(topDirPair, "topDirPair");
         Objects.requireNonNull(pairDataList, "pairDataList");
@@ -68,13 +69,13 @@ public class TreeResult {
     
     private final Pair<DirInfo> topDirPair;
     private final List<DirPairData> pairDataList;
-    private final Map<Pair<DirInfo>, Optional<DirResult>> results;
+    private final Map<Pair<Path>, Optional<DirResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
     private TreeResult(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
-            Map<Pair<DirInfo>, Optional<DirResult>> results) {
+            Map<Pair<Path>, Optional<DirResult>> results) {
         
         assert topDirPair != null;
         assert pairDataList != null;
@@ -121,7 +122,7 @@ public class TreeResult {
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = results.get(pairData.dirPair());
+            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::getPath));
             
             str.append(formatDirsPair(pairData.num(), pairData.dirPair()));
             
