@@ -108,28 +108,39 @@ public class DirResult {
     private String getDiffSummary() {
         return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
                 ? bResult.get().getDiffSimpleSummary()
-                : rb.getString("excel.DResult.050")));
+                : rb.getString("excel.DResult.050")),
+                false);
     }
     
     private String getDiffDetail() {
         return getDiffText(bResult -> bResult.isPresent()
                 ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : "");
+                : BR + "        " + rb.getString("excel.DResult.050") + BR + BR,
+                true);
     }
     
-    private String getDiffText(Function<Optional<BookResult>, String> diffDescriptor) {
+    private String getDiffText(
+            Function<Optional<BookResult>, String> diffDescriptor,
+            boolean isDetailMode) {
+        
         StringBuilder str = new StringBuilder();
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
             Optional<BookResult> bResult = results.get(bookNamePair);
             
-            if (!bookNamePair.isPaired() || (bResult.isPresent() && !bResult.get().hasDiff())) {
-                continue;
+            str.append(formatBookNamesPair("", i, bookNamePair));
+            
+            if (bookNamePair.isPaired()) {
+                str.append(diffDescriptor.apply(bResult));
+            } else {
+                str.append(BR);
+                if (isDetailMode) {
+                    // TODO: とても不細工なのでどうにかしたい
+                    str.append(BR);
+                }
             }
             
-            str.append(formatBookNamesPair("", i, bookNamePair));
-            str.append(diffDescriptor.apply(bResult));
         }
         
         return str.isEmpty() ? "    " + rb.getString("excel.DResult.060") + BR : str.toString();
