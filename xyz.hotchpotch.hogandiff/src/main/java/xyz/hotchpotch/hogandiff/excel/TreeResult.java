@@ -98,7 +98,7 @@ public class TreeResult {
         
         str.append(BR);
         str.append(rb.getString("excel.TreeResult.030")).append(BR);
-        str.append(getDiffSummary()).append(BR);
+        str.append(getDiffSummary());
         str.append(rb.getString("excel.TreeResult.040")).append(BR);
         str.append(getDiffDetail());
         
