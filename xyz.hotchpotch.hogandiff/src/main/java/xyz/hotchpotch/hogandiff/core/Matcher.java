@@ -6,6 +6,7 @@ import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 2つのリストの要素同士の最適な組み合わせを返すマッチャーを表します。<br>
@@ -94,4 +95,29 @@ public interface Matcher<T> {
     List<IntPair> makePairs(
             List<? extends T> listA,
             List<? extends T> listB);
+    
+    /**
+     * 2つのリストの要素同士の最適な組み合わせを返します。<br>
+     * 「最適な」の定義は {@link Matcher} の実装ごとに異なります。<br>
+     * 
+     * @param listA リストA
+     * @param listB リストB
+     * @return リストA, Bの要素同士の最適な組み合わせのリスト
+     * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
+     */
+    default List<Pair<T>> makePairs2(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+        
+        Objects.requireNonNull(listA, "listA");
+        Objects.requireNonNull(listA, "listB");
+        
+        List<IntPair> pairs = makePairs(listA, listB);
+        
+        return pairs.stream()
+                .map(p -> new Pair<>(
+                        p.hasA() ? listA.get(p.a()) : null,
+                        p.hasB() ? listB.get(p.b()) : null))
+                .toList();
+    }
 }

@@ -7,7 +7,6 @@ import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -51,14 +50,8 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
         Objects.requireNonNull(bookInfo1, "bookInfo1");
         Objects.requireNonNull(bookInfo2, "bookInfo2");
         
-        List<IntPair> pairs = coreMatcher.makePairs(
+        return coreMatcher.makePairs2(
                 bookInfo1.sheetNames(),
                 bookInfo2.sheetNames());
-        
-        return pairs.stream()
-                .map(p -> new Pair<>(
-                        p.hasA() ? bookInfo1.sheetNames().get(p.a()) : null,
-                        p.hasB() ? bookInfo2.sheetNames().get(p.b()) : null))
-                .toList();
     }
 }

@@ -7,7 +7,6 @@ import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -51,14 +50,8 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
         Objects.requireNonNull(dirInfo1, "dirInfo1");
         Objects.requireNonNull(dirInfo2, "dirInfo2");
         
-        List<IntPair> pairs = coreMatcher.makePairs(
+        return coreMatcher.makePairs2(
                 dirInfo1.bookNames(),
                 dirInfo2.bookNames());
-        
-        return pairs.stream()
-                .map(p -> new Pair<>(
-                        p.hasA() ? dirInfo1.bookNames().get(p.a()) : null,
-                        p.hasB() ? dirInfo2.bookNames().get(p.b()) : null))
-                .toList();
     }
 }

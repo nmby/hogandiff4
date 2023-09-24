@@ -67,12 +67,6 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcherB
         assert dirs1 != null;
         assert dirs2 != null;
         
-        List<IntPair> pairs = coreMatcher.makePairs(dirs1, dirs2);
-        
-        return pairs.stream()
-                .map(p -> new Pair<>(
-                        p.hasA() ? dirs1.get(p.a()) : null,
-                        p.hasB() ? dirs2.get(p.b()) : null))
-                .toList();
+        return coreMatcher.makePairs2(dirs1, dirs2);
     }
 }
