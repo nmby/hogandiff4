@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
@@ -128,6 +131,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     dirPair.a(),
                     dirPair.b());
             
+            if (bookNamePairs.size() == 0) {
+                str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
+            }
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);
                 str.append(DirResult.formatBookNamesPair("", i, bookNamePair)).append(BR);
@@ -156,16 +162,26 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        str.append(rb.getString("CompareDirsTask.050")).append(BR);
-        updateMessage(str.toString());
         updateProgress(progressBefore, PROGRESS_MAX);
+        if (0 < bookNamePairs.size()) {
+            str.append(rb.getString("CompareDirsTask.050")).append(BR);
+            updateMessage(str.toString());
+            return compareDirs(
+                    "",
+                    "",
+                    new DirPairData(0, dirPair, bookNamePairs),
+                    outputDirs,
+                    progressBefore,
+                    progressAfter);
+            
+        } else {
+            return DirResult.of(
+                    dirPair,
+                    bookNamePairs,
+                    bookNamePairs.stream().collect(Collectors.toMap(
+                            Function.identity(),
+                            name -> Optional.empty())));
+        }
         
-        return compareDirs(
-                "",
-                "",
-                new DirPairData(0, dirPair, bookNamePairs),
-                outputDirs,
-                progressBefore,
-                progressAfter);
     }
 }

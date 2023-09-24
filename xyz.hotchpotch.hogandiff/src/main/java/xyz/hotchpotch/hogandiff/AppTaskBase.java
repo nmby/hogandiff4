@@ -232,6 +232,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         int bookPairsCount = (int) data.bookNamePairs().stream().filter(Pair::isPaired).count();
         int num = 0;
         
+        if (data.bookNamePairs().size() == 0) {
+            str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
+            updateMessage(str.toString());
+        }
         for (int i = 0; i < data.bookNamePairs().size(); i++) {
             Pair<String> bookNamePair = data.bookNamePairs().get(i);
             

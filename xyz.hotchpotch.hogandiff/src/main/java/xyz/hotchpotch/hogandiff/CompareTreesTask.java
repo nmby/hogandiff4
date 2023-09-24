@@ -133,6 +133,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                         : bookNamePairs.apply(Side.B, dirPair));
                 pairDataList.add(data);
                 
+                if (data.bookNamePairs().size() == 0) {
+                    str.append("        - ");
+                    str.append(rb.getString("CompareTreesTask.060"));
+                    str.append(BR);
+                    updateMessage(str.toString());
+                }
                 for (int j = 0; j < data.bookNamePairs().size(); j++) {
                     Pair<String> bookNamePair = data.bookNamePairs().get(j);
                     

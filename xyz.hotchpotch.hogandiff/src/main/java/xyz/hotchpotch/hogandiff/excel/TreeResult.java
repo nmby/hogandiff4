@@ -106,7 +106,7 @@ public class TreeResult {
     }
     
     private String getDiffSummary() {
-        return getDiffText(dirResult -> "        -  %s%n%n".formatted(dirResult.isPresent()
+        return getDiffText(dirResult -> "        - %s%n%n".formatted(dirResult.isPresent()
                 ? dirResult.get().getDiffSimpleSummary()
                 : rb.getString("excel.TreeResult.050")));
     }

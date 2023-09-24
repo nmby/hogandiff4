@@ -126,6 +126,15 @@ public class DirResult {
         
         StringBuilder str = new StringBuilder();
         
+        if (results.isEmpty()) {
+            str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
+            if (isDetailMode) {
+                // TODO: とても不細工なのでどうにかしたい
+                str.append(BR);
+            }
+            return str.toString();
+        }
+        
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
             Optional<BookResult> bResult = results.get(bookNamePair);
@@ -146,6 +155,10 @@ public class DirResult {
     }
     
     public String getDiffSimpleSummary() {
+        if (results.isEmpty()) {
+            return rb.getString("excel.DResult.100");
+        }
+        
         int diffBooks = (int) results.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
