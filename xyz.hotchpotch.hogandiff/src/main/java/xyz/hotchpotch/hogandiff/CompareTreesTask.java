@@ -16,6 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
+import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -239,7 +240,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         return TreeResult.of(
                 topDirPair,
-                pairDataList.stream().map(DirPairData::dirPair).toList(),
+                pairDataList,
                 dirResults);
     }
 }

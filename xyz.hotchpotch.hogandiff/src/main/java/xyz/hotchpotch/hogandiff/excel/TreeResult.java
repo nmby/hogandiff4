@@ -18,6 +18,12 @@ public class TreeResult {
     
     // [static members] ********************************************************
     
+    public static record DirPairData(
+            int num,
+            Pair<DirInfo> dirPair,
+            List<Pair<String>> bookNamePairs) {
+    }
+    
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
@@ -42,36 +48,36 @@ public class TreeResult {
     
     public static TreeResult of(
             Pair<DirInfo> topDirPair,
-            List<Pair<DirInfo>> dirPairs,
+            List<DirPairData> pairDataList,
             Map<Pair<DirInfo>, Optional<DirResult>> results) {
         
         Objects.requireNonNull(topDirPair, "topDirPair");
-        Objects.requireNonNull(dirPairs, "dirPairs");
+        Objects.requireNonNull(pairDataList, "pairDataList");
         Objects.requireNonNull(results, "results");
         
         return new TreeResult(
                 topDirPair,
-                dirPairs,
+                pairDataList,
                 results);
     }
     
     // [instance members] ******************************************************
     
     private final Pair<DirInfo> topDirPair;
-    private final List<Pair<DirInfo>> dirPairs;
+    private final List<DirPairData> pairDataList;
     private final Map<Pair<DirInfo>, Optional<DirResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
     private TreeResult(
             Pair<DirInfo> topDirPair,
-            List<Pair<DirInfo>> dirPairs,
+            List<DirPairData> pairDataList,
             Map<Pair<DirInfo>, Optional<DirResult>> results) {
         
         assert topDirPair != null;
-        assert dirPairs != null;
+        assert pairDataList != null;
         
         this.topDirPair = topDirPair;
-        this.dirPairs = List.copyOf(dirPairs);
+        this.pairDataList = List.copyOf(pairDataList);
         this.results = Map.copyOf(results);
     }
 }

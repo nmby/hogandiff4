@@ -29,6 +29,7 @@ import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
+import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -44,12 +45,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     protected static final String BR = System.lineSeparator();
     protected static final int PROGRESS_MAX = 100;
-    
-    protected static record DirPairData(
-            int num,
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-    }
     
     // [instance members] ******************************************************
     
@@ -234,7 +229,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter) {
         
         Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
-        int bookPairsCount = (int) data.bookNamePairs.stream().filter(Pair::isPaired).count();
+        int bookPairsCount = (int) data.bookNamePairs().stream().filter(Pair::isPaired).count();
         int num = 0;
         
         for (int i = 0; i < data.bookNamePairs().size(); i++) {
@@ -247,9 +242,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 if (bookNamePair.isPaired()) {
                     BookOpenInfo srcInfo1 = new BookOpenInfo(
-                            data.dirPair.a().getPath().resolve(bookNamePair.a()), null);
+                            data.dirPair().a().getPath().resolve(bookNamePair.a()), null);
                     BookOpenInfo srcInfo2 = new BookOpenInfo(
-                            data.dirPair.b().getPath().resolve(bookNamePair.b()), null);
+                            data.dirPair().b().getPath().resolve(bookNamePair.b()), null);
                     BookOpenInfo dstInfo1 = new BookOpenInfo(
                             outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a())), null);
                     BookOpenInfo dstInfo2 = new BookOpenInfo(
@@ -277,8 +272,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                 } else {
                     Path src = bookNamePair.hasA()
-                            ? data.dirPair.a().getPath().resolve(bookNamePair.a())
-                            : data.dirPair.b().getPath().resolve(bookNamePair.b());
+                            ? data.dirPair().a().getPath().resolve(bookNamePair.a())
+                            : data.dirPair().b().getPath().resolve(bookNamePair.b());
                     Path dst = bookNamePair.hasA()
                             ? outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a()))
                             : outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b()));
@@ -305,8 +300,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateMessage(str.toString());
         
         return DirResult.of(
-                data.dirPair,
-                data.bookNamePairs,
+                data.dirPair(),
+                data.bookNamePairs(),
                 bookResults);
     }
     
