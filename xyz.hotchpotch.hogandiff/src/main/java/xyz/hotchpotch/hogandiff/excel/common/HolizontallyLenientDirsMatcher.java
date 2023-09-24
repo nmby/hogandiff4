@@ -15,6 +15,7 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher 
     
     // [static members] ********************************************************
     
+    private static final int BASE_WEIGHT = 5;
     private static final int DIR_WEIGHT = 25;
     private static final int BOOK_WEIGHT = 10;
     
@@ -25,6 +26,13 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher 
             + dirInfo.bookNames().size() * BOOK_WEIGHT;
     
     private static final ToIntBiFunction<DirInfo, DirInfo> diffCost = (dirInfo1, dirInfo2) -> {
+        String dirName1 = dirInfo1.path().getFileName().toString();
+        String dirName2 = dirInfo2.path().getFileName().toString();
+        if (dirName1.equals(dirName2)) {
+            // フォルダ名が同じならばフォルダの内容を加味せずにマッチングさせる。
+            return 0;
+        }
+        
         List<String> childNames1 = dirInfo1.children().stream().map(c -> c.path().getFileName().toString()).toList();
         List<String> childNames2 = dirInfo2.children().stream().map(c -> c.path().getFileName().toString()).toList();
         List<IntPair> childPairs = namesMatcher.makePairs(childNames1, childNames2);
@@ -33,7 +41,7 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher 
         int unmatchDirs = (int) childPairs.stream().filter(Predicate.not(IntPair::isPaired)).count();
         int unmatchBooks = (int) bookNamePairs.stream().filter(Predicate.not(IntPair::isPaired)).count();
         
-        return unmatchDirs * DIR_WEIGHT + unmatchBooks * BOOK_WEIGHT;
+        return BASE_WEIGHT + unmatchDirs * DIR_WEIGHT + unmatchBooks * BOOK_WEIGHT;
     };
     
     private static final Matcher<DirInfo> coreMatcher = Matcher.greedyMatcherOf(
