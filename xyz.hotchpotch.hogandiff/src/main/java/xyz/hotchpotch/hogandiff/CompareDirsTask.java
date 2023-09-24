@@ -235,8 +235,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressAfter, PROGRESS_MAX);
         
         return DirResult.of(
-                dirInfoPair.a(),
-                dirInfoPair.b(),
+                dirInfoPair,
                 bookNamePairs,
                 results);
     }

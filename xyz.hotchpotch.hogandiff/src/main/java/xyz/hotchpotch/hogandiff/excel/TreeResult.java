@@ -42,42 +42,36 @@ public class TreeResult {
     }
     
     public static TreeResult of(
-            // TODO: Pair<DirInfo>を取る形にした方がよい
-            DirInfo topDirInfo1,
-            DirInfo topDirInfo2,
+            Pair<DirInfo> topDirPair,
             List<Pair<DirInfo>> dirPairs,
             Map<Pair<DirInfo>, Optional<DirResult>> results) {
         
-        Objects.requireNonNull(topDirInfo1, "topDirInfo1");
-        Objects.requireNonNull(topDirInfo2, "topDirInfo2");
+        Objects.requireNonNull(topDirPair, "topDirPair");
         Objects.requireNonNull(dirPairs, "dirPairs");
         Objects.requireNonNull(results, "results");
         
         return new TreeResult(
-                topDirInfo1,
-                topDirInfo2,
+                topDirPair,
                 dirPairs,
                 results);
     }
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> topDirInfoPair;
+    private final Pair<DirInfo> topDirPair;
     private final List<Pair<DirInfo>> dirPairs;
     private final Map<Pair<DirInfo>, Optional<DirResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
     
     private TreeResult(
-            DirInfo topDirInfo1,
-            DirInfo topDirInfo2,
+            Pair<DirInfo> topDirPair,
             List<Pair<DirInfo>> dirPairs,
             Map<Pair<DirInfo>, Optional<DirResult>> results) {
         
-        assert topDirInfo1 != null;
-        assert topDirInfo2 != null;
+        assert topDirPair != null;
         assert dirPairs != null;
         
-        this.topDirInfoPair = Pair.of(topDirInfo1, topDirInfo2);
+        this.topDirPair = topDirPair;
         this.dirPairs = List.copyOf(dirPairs);
         this.results = Map.copyOf(results);
     }

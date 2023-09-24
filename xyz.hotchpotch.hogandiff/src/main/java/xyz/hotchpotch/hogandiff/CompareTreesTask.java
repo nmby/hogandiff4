@@ -300,8 +300,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     data.dirPair,
                     data.dirPair.isPaired()
                             ? Optional.of(DirResult.of(
-                                    data.dirPair.a(),
-                                    data.dirPair.b(),
+                                    data.dirPair,
                                     data.bookNamePairs,
                                     bookResults))
                             : Optional.empty());
@@ -313,8 +312,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressAfter, PROGRESS_MAX);
         
         return TreeResult.of(
-                topDirPair.a(),
-                topDirPair.b(),
+                topDirPair,
                 pairDataList.stream().map(DirPairData::dirPair).toList(),
                 dirResults);
     }
