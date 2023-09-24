@@ -43,10 +43,10 @@ public class TreeResult {
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%d】 %s".formatted(i + 1, dirPair.a().getPath())
+                        ? "【A%d】 %s".formatted(i + 1, dirPair.a().path())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%d】 %s".formatted(i + 1, dirPair.b().getPath())
+                        ? "【B%d】 %s".formatted(i + 1, dirPair.b().path())
                         : rb.getString("excel.TreeResult.010"));
     }
     
@@ -90,10 +90,10 @@ public class TreeResult {
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(topDirPair.a().getPath())
+                .append(topDirPair.a().path())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(topDirPair.b().getPath())
+                .append(topDirPair.b().path())
                 .append(BR);
         
         str.append(BR);
@@ -122,7 +122,7 @@ public class TreeResult {
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::getPath));
+            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::path));
             
             str.append(formatDirsPair(pairData.num(), pairData.dirPair()));
             

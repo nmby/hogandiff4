@@ -111,7 +111,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookNamesMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
             BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> bookNamePairs = (side, dirPair) -> dirPair
-                    .get(side).getBookNames().stream()
+                    .get(side).bookNames().stream()
                     .map(bookName -> Pair.ofOnly(side, bookName))
                     .toList();
             
@@ -196,22 +196,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     DirInfo targetDir1 = data.dirPair().a();
                     Path parentDir = targetDir1.equals(topDirPair.a())
                             ? workDir
-                            : outputDirs1.get(targetDir1.getParent().getPath());
-                    outputDir1 = parentDir.resolve("【A%d】%s".formatted(i + 1, targetDir1.getPath().getFileName()));
+                            : outputDirs1.get(targetDir1.parent().path());
+                    outputDir1 = parentDir.resolve("【A%d】%s".formatted(i + 1, targetDir1.path().getFileName()));
                     Files.createDirectories(outputDir1);
-                    outputDirs1.put(targetDir1.getPath(), outputDir1);
+                    outputDirs1.put(targetDir1.path(), outputDir1);
                 }
                 if (data.dirPair().hasB()) {
                     DirInfo targetDir2 = data.dirPair().b();
                     Path parentDir = targetDir2.equals(topDirPair.b())
                             ? workDir
-                            : outputDirs2.get(targetDir2.getParent().getPath());
-                    outputDir2 = parentDir.resolve("【B%d】%s".formatted(i + 1, targetDir2.getPath().getFileName()));
+                            : outputDirs2.get(targetDir2.parent().path());
+                    outputDir2 = parentDir.resolve("【B%d】%s".formatted(i + 1, targetDir2.path().getFileName()));
                     Files.createDirectories(outputDir2);
-                    outputDirs2.put(targetDir2.getPath(), outputDir2);
+                    outputDirs2.put(targetDir2.path(), outputDir2);
                 }
             } catch (IOException e) {
-                dirResults.putIfAbsent(data.dirPair().map(DirInfo::getPath), Optional.empty());
+                dirResults.putIfAbsent(data.dirPair().map(DirInfo::path), Optional.empty());
                 str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
                 updateMessage(str.toString());
                 e.printStackTrace();
@@ -226,11 +226,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         Pair.of(outputDir1, outputDir2),
                         progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                         progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
-                dirResults.put(data.dirPair().map(DirInfo::getPath), Optional.of(dirResult));
+                dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
                 num++;
                 
             } else {
-                dirResults.put(data.dirPair().map(DirInfo::getPath), Optional.empty());
+                dirResults.put(data.dirPair().map(DirInfo::path), Optional.empty());
                 str.append(BR);
                 updateMessage(str.toString());
             }

@@ -77,13 +77,13 @@ public class StrictDirsMatcher implements DirsMatcher {
         assert dirInfo1 != null;
         assert dirInfo2 != null;
         
-        Map<String, DirInfo> children1 = dirInfo1.getChildren().stream()
+        Map<String, DirInfo> children1 = dirInfo1.children().stream()
                 .collect(Collectors.toMap(
-                        d -> d.getPath().getFileName().toString(),
+                        d -> d.path().getFileName().toString(),
                         Function.identity()));
-        Map<String, DirInfo> children2 = dirInfo2.getChildren().stream()
+        Map<String, DirInfo> children2 = dirInfo2.children().stream()
                 .collect(Collectors.toMap(
-                        d -> d.getPath().getFileName().toString(),
+                        d -> d.path().getFileName().toString(),
                         Function.identity()));
         
         List<Pair<String>> dirNamePairs = pairingDirNames(
@@ -126,6 +126,6 @@ public class StrictDirsMatcher implements DirsMatcher {
                 ? Pair.ofNullable(dirInfo, null)
                 : Pair.ofNullable(null, dirInfo));
         
-        dirInfo.getChildren().forEach(d -> setAloneDirs(pairs, d, side));
+        dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
     }
 }

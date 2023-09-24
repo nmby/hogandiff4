@@ -86,10 +86,10 @@ public class DirResult {
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirPair.a().getPath())
+                .append(dirPair.a().path())
                 .append(BR);
         str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirPair.b().getPath())
+                .append(dirPair.b().path())
                 .append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {

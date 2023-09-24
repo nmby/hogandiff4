@@ -27,11 +27,11 @@ public class DirInfo implements Comparable<DirInfo> {
         this.path = path;
     }
     
-    public Path getPath() {
+    public Path path() {
         return path;
     }
     
-    public DirInfo getParent() {
+    public DirInfo parent() {
         return parent;
     }
     
@@ -39,7 +39,7 @@ public class DirInfo implements Comparable<DirInfo> {
         this.parent = parent;
     }
     
-    public List<String> getBookNames() {
+    public List<String> bookNames() {
         return List.copyOf(bookNames);
     }
     
@@ -47,7 +47,7 @@ public class DirInfo implements Comparable<DirInfo> {
         this.bookNames = List.copyOf(bookNames);
     }
     
-    public List<DirInfo> getChildren() {
+    public List<DirInfo> children() {
         return List.copyOf(children);
     }
     

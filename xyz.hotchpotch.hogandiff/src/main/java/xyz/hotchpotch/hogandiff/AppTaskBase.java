@@ -242,9 +242,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 if (bookNamePair.isPaired()) {
                     BookOpenInfo srcInfo1 = new BookOpenInfo(
-                            data.dirPair().a().getPath().resolve(bookNamePair.a()), null);
+                            data.dirPair().a().path().resolve(bookNamePair.a()), null);
                     BookOpenInfo srcInfo2 = new BookOpenInfo(
-                            data.dirPair().b().getPath().resolve(bookNamePair.b()), null);
+                            data.dirPair().b().path().resolve(bookNamePair.b()), null);
                     BookOpenInfo dstInfo1 = new BookOpenInfo(
                             outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a())), null);
                     BookOpenInfo dstInfo2 = new BookOpenInfo(
@@ -272,8 +272,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                 } else {
                     Path src = bookNamePair.hasA()
-                            ? data.dirPair().a().getPath().resolve(bookNamePair.a())
-                            : data.dirPair().b().getPath().resolve(bookNamePair.b());
+                            ? data.dirPair().a().path().resolve(bookNamePair.a())
+                            : data.dirPair().b().path().resolve(bookNamePair.b());
                     Path dst = bookNamePair.hasA()
                             ? outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a()))
                             : outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b()));

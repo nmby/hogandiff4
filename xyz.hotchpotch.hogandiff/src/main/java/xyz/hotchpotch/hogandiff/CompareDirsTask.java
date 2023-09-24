@@ -93,8 +93,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair)
             throws ApplicationException {
         
-        Path outputDir1 = workDir.resolve("【A】" + dirPair.a().getPath().getFileName());
-        Path outputDir2 = workDir.resolve("【B】" + dirPair.b().getPath().getFileName());
+        Path outputDir1 = workDir.resolve("【A】" + dirPair.a().path().getFileName());
+        Path outputDir2 = workDir.resolve("【B】" + dirPair.b().path().getFileName());
         
         try {
             return Pair.of(
