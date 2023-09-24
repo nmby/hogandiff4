@@ -80,7 +80,7 @@ public class StandardDirLoader implements DirLoader {
             
             me.setChildren(recursively
                     ? Files.list(path)
-                            .filter(f -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
+                            .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
                             .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
                             .filter(t -> t.item1() != null)
                             .map(Tuple2::item1)

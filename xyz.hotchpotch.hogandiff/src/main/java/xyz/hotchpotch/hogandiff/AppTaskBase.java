@@ -10,16 +10,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
+import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
@@ -170,6 +174,47 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     "%s%n%s".formatted(rb.getString("AppTaskBase.020"), workDir),
                     e);
         }
+    }
+    
+    protected BookResult compareBooks(
+            BookOpenInfo bookOpenInfo1,
+            BookOpenInfo bookOpenInfo2,
+            int progressBefore,
+            int progressAfter)
+            throws ExcelHandlingException {
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
+        
+        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfo1, bookOpenInfo2);
+        
+        CellsLoader loader1 = factory.cellsLoader(settings, bookOpenInfo1);
+        CellsLoader loader2 = factory.cellsLoader(settings, bookOpenInfo2);
+        SheetComparator comparator = factory.comparator(settings);
+        Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
+        
+        for (int i = 0; i < sheetNamePairs.size(); i++) {
+            Pair<String> sheetNamePair = sheetNamePairs.get(i);
+            
+            if (sheetNamePair.isPaired()) {
+                Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, sheetNamePair.a());
+                Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, sheetNamePair.b());
+                SheetResult result = comparator.compare(cells1, cells2);
+                results.put(sheetNamePair, Optional.of(result));
+                
+            } else {
+                results.put(sheetNamePair, Optional.empty());
+            }
+            
+            updateProgress(
+                    progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
+                    PROGRESS_MAX);
+        }
+        
+        return BookResult.of(
+                bookOpenInfo1.bookPath(),
+                bookOpenInfo2.bookPath(),
+                sheetNamePairs,
+                results);
     }
     
     /**

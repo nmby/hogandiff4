@@ -11,7 +11,7 @@ import java.util.Objects;
  * @param b 要素b
  * @author nmby
  */
-public record Pair<T> (T a, T b) {
+public record Pair<T>(T a, T b) {
     
     // [static members] ********************************************************
     
@@ -68,6 +68,13 @@ public record Pair<T> (T a, T b) {
      */
     public static <T> Pair<T> ofNullable(T a, T b) {
         return new Pair<>(a, b);
+    }
+    
+    public static <T> Pair<T> ofOnly(Side side, T value) {
+        Objects.requireNonNull(side, "side");
+        return side == Side.A
+                ? new Pair<>(value, null)
+                : new Pair<>(null, value);
     }
     
     // [instance members] ******************************************************

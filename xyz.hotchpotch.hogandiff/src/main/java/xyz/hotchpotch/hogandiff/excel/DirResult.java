@@ -35,10 +35,9 @@ public class DirResult {
         
         ResourceBundle rb = AppMain.appResource.get();
         
-        return "    【%s】 %s  vs  %s".formatted(
-                id,
-                pair.hasA() ? "A【 " + pair.a() + " 】" : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "B【 " + pair.b() + " 】" : rb.getString("excel.DResult.010"));
+        return "    %s  vs  %s".formatted(
+                pair.hasA() ? "【A%s】%s".formatted(id, pair.a()) : rb.getString("excel.DResult.010"),
+                pair.hasB() ? "【B%s】%s".formatted(id, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
     public static DirResult of(

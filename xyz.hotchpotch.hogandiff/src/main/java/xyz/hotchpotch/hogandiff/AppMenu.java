@@ -131,7 +131,7 @@ public enum AppMenu {
             Objects.requireNonNull(factory, "factory");
             
             // TODO: coding
-            throw new UnsupportedOperationException("★要実装");
+            return new CompareTreesTask(settings, factory);
         }
     };
     
