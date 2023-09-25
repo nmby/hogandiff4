@@ -24,6 +24,7 @@ public abstract class SheetComparatorBase implements SheetComparator {
     // [static members] ********************************************************
     
     private static final int[] EMPTY_INT_ARRAY = new int[] {};
+    private static final Pair<int[]> EMPTY_INT_ARRAY_PAIR = new Pair<>(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY);
     
     /**
      * 行同士または列同士の対応関係を決定するマッパーを表します。<br>
@@ -114,8 +115,8 @@ public abstract class SheetComparatorBase implements SheetComparator {
                 return new SheetResult(
                         considerRowGaps,
                         considerColumnGaps,
-                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
-                        Pair.of(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY),
+                        EMPTY_INT_ARRAY_PAIR,
+                        EMPTY_INT_ARRAY_PAIR,
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
@@ -144,8 +145,8 @@ public abstract class SheetComparatorBase implements SheetComparator {
         return new SheetResult(
                 considerRowGaps,
                 considerColumnGaps,
-                Pair.of(redundantRows1, redundantRows2),
-                Pair.of(redundantColumns1, redundantColumns2),
+                new Pair<>(redundantRows1, redundantRows2),
+                new Pair<>(redundantColumns1, redundantColumns2),
                 diffCells);
     }
     
@@ -182,7 +183,7 @@ public abstract class SheetComparatorBase implements SheetComparator {
                 
                 return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
                         ? null
-                        : Pair.<CellData> of(
+                        : new Pair<>(
                                 cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
                                 cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
             }).filter(Objects::nonNull);

@@ -14,13 +14,13 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public abstract class VerticallyStrictDirsMatcher implements DirsMatcher {
+public abstract class VerticallyStrictDirsMatcherBase implements DirsMatcher {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    protected VerticallyStrictDirsMatcher() {
+    protected VerticallyStrictDirsMatcherBase() {
     }
     
     @Override
@@ -34,7 +34,7 @@ public abstract class VerticallyStrictDirsMatcher implements DirsMatcher {
         start();
         List<Pair<DirInfo>> resultPairs = new ArrayList<>();
         
-        resultPairs.add(Pair.of(topDirInfo1, topDirInfo2));
+        resultPairs.add(new Pair<>(topDirInfo1, topDirInfo2));
         
         pairingDirs2(resultPairs, topDirInfo1, topDirInfo2);
         
@@ -81,8 +81,8 @@ public abstract class VerticallyStrictDirsMatcher implements DirsMatcher {
             Side side) {
         
         pairs.add(side == Side.A
-                ? Pair.ofNullable(dirInfo, null)
-                : Pair.ofNullable(null, dirInfo));
+                ? new Pair<>(dirInfo, null)
+                : new Pair<>(null, dirInfo));
         
         dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
     }

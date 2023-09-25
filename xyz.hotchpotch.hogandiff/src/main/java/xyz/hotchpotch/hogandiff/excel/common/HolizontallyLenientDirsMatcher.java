@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
-public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher {
+public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcherBase {
     
     // [static members] ********************************************************
     
@@ -67,12 +67,6 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcher 
         assert dirs1 != null;
         assert dirs2 != null;
         
-        List<IntPair> pairs = coreMatcher.makePairs(dirs1, dirs2);
-        
-        return pairs.stream()
-                .map(p -> Pair.ofNullable(
-                        p.hasA() ? dirs1.get(p.a()) : null,
-                        p.hasB() ? dirs2.get(p.b()) : null))
-                .toList();
+        return coreMatcher.makePairs2(dirs1, dirs2);
     }
 }

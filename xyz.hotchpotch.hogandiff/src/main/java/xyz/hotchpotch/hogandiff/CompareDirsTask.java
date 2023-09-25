@@ -100,7 +100,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Path outputDir2 = workDir.resolve("【B】" + dirPair.b().path().getFileName());
         
         try {
-            return Pair.of(
+            return new Pair<>(
                     Files.createDirectory(outputDir1),
                     Files.createDirectory(outputDir2));
             
