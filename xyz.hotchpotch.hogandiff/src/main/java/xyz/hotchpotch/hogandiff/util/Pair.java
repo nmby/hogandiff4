@@ -51,34 +51,6 @@ public record Pair<T>(T a, T b) {
     }
     
     /**
-     * 要素aがある場合はその値を返し、そうでない場合は例外をスローします。<br>
-     * 
-     * @return 要素a
-     * @throws NoSuchElementException 要素aが無い場合
-     */
-    @Override
-    public T a() {
-        if (a == null) {
-            throw new NoSuchElementException();
-        }
-        return a;
-    }
-    
-    /**
-     * 要素bがある場合はその値を返し、そうでない場合は例外をスローします。<br>
-     * 
-     * @return 要素b
-     * @throws NoSuchElementException 要素bが無い場合
-     */
-    @Override
-    public T b() {
-        if (b == null) {
-            throw new NoSuchElementException();
-        }
-        return b;
-    }
-    
-    /**
      * 指定された側の要素がある場合はその値を返し、そうでない場合は例外をスローします。<br>
      * 
      * @param side 要素の側
