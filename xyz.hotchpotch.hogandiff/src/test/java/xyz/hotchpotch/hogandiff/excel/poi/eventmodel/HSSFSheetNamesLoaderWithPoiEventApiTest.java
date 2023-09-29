@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -116,8 +117,10 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         SheetNamesLoader testee = HSSFSheetNamesLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
     }
     
@@ -128,8 +131,10 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A3_ダイアログ",
-                        "B1_ワークシート", "B3_ダイアログ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A3_ダイアログ",
+                                "B1_ワークシート", "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xls));
     }
     
@@ -138,8 +143,10 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         SheetNamesLoader testee = HSSFSheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.CHART_SHEET));
         
         assertEquals(
-                List.of("A2_グラフ",
-                        "B2_グラフ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A2_グラフ",
+                                "B2_グラフ")),
                 testee.loadSheetNames(test1_xls));
     }
     
@@ -150,7 +157,9 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of(),
+                new BookInfo(
+                        test1_xls,
+                        List.of()),
                 testee.loadSheetNames(test1_xls));
     }
     
@@ -159,8 +168,10 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         SheetNamesLoader testee = HSSFSheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.MACRO_SHEET));
         
         assertEquals(
-                List.of("A4_マクロ",
-                        "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A4_マクロ",
+                                "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
     }
     
@@ -169,8 +180,10 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         SheetNamesLoader testee = HSSFSheetNamesLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
-                List.of("A1_ワークシート",
-                        "A2_ワークシート"),
+                new BookInfo(
+                        test4_xls,
+                        List.of("A1_ワークシート",
+                                "A2_ワークシート")),
                 testee.loadSheetNames(test4_xls));
     }
 }

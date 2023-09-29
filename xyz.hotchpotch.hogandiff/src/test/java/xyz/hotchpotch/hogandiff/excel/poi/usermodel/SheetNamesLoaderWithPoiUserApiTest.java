@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -114,15 +115,19 @@ class SheetNamesLoaderWithPoiUserApiTest {
         SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」と「x4_マクロ」を取得できない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ",
-                        "B1_ワークシート", "B2_グラフ"),
+                new BookInfo(
+                        test1_xlsm,
+                        List.of("A1_ワークシート", "A2_グラフ",
+                                "B1_ワークシート", "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsm));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」を取得できない。
@@ -130,8 +135,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // 「x4_マクロ」は取得できている。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xlsx,
+                        List.of("A1_ワークシート", "A2_グラフ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx));
     }
     
@@ -142,20 +149,26 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
         
         assertEquals(
-                List.of("A1_ワークシート",
-                        "B1_ワークシート"),
+                new BookInfo(
+                        test1_xlsm,
+                        List.of("A1_ワークシート",
+                                "B1_ワークシート")),
                 testee.loadSheetNames(test1_xlsm));
         
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
         // 「x4_マクロ」も取得されている。
         assertEquals(
-                List.of("A1_ワークシート", "A4_マクロ",
-                        "B1_ワークシート", "B4_マクロ"),
+                new BookInfo(
+                        test1_xlsx,
+                        List.of("A1_ワークシート", "A4_マクロ",
+                                "B1_ワークシート", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx));
     }
     
@@ -166,18 +179,24 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
         
         assertEquals(
-                List.of("A2_グラフ",
-                        "B2_グラフ"),
+                new BookInfo(
+                        test1_xlsm,
+                        List.of("A2_グラフ",
+                                "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsm));
         
         assertEquals(
-                List.of("A2_グラフ",
-                        "B2_グラフ"),
+                new BookInfo(
+                        test1_xlsx,
+                        List.of("A2_グラフ",
+                                "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsx));
     }
     
@@ -188,20 +207,26 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
         
         // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of(),
+                new BookInfo(
+                        test1_xlsm,
+                        List.of()),
                 testee.loadSheetNames(test1_xlsm));
         
         // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of(),
+                new BookInfo(
+                        test1_xlsx,
+                        List.of()),
                 testee.loadSheetNames(test1_xlsx));
     }
     
@@ -212,8 +237,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
-                        "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ"),
+                new BookInfo(
+                        test1_xls,
+                        List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
+                                "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つのバグが重なっているっぽい。
@@ -221,8 +248,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         //   ・「1_ワークシート」と「4_マクロ」を判別できない
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート",
-                        "B1_ワークシート"),
+                new BookInfo(
+                        test1_xlsm,
+                        List.of("A1_ワークシート",
+                                "B1_ワークシート")),
                 testee.loadSheetNames(test1_xlsm));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つの事情によりこうなるっぽい。
@@ -230,8 +259,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         //   ・「1_ワークシート」と「4_マクロ」を判別できない
         // どうしようもないのかしら？？
         assertEquals(
-                List.of("A1_ワークシート", "A4_マクロ",
-                        "B1_ワークシート", "B4_マクロ"),
+                new BookInfo(
+                        test1_xlsx,
+                        List.of("A1_ワークシート", "A4_マクロ",
+                                "B1_ワークシート", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx));
     }
     
