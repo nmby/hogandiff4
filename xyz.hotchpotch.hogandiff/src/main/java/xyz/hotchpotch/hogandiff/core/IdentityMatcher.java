@@ -21,21 +21,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [static members] ********************************************************
     
-    private static final Comparator<IntPair> PairComparator = (p1, p2) -> {
-        if (p1.isPaired() && p2.isPaired()) {
-            return Integer.compare(p1.a(), p2.a());
-        }
-        if (p1.isPaired() != p2.isPaired()) {
-            return p1.isPaired() ? -1 : 1;
-        }
-        if (p1.isOnlyA() != p2.isOnlyA()) {
-            return p1.isOnlyA() ? -1 : 1;
-        }
-        return p1.isOnlyA()
-                ? Integer.compare(p1.a(), p2.a())
-                : Integer.compare(p1.b(), p2.b());
-    };
-    
     // [instance members] ******************************************************
     
     /*package*/ IdentityMatcher() {
@@ -104,7 +89,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         });
         mapB.values().forEach(j -> result.add(IntPair.onlyB(j)));
         
-        result.sort(PairComparator);
+        result.sort(Comparator.naturalOrder());
         return result;
     }
 }
