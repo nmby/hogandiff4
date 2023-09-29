@@ -82,13 +82,19 @@ class CombinedSheetNamesLoaderTest {
                 () -> failLoader));
         
         // 成功１つ
+        BookOpenInfo info1 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
         assertEquals(
-                List.of("success"),
-                testeeS.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                new BookInfo(
+                        info1,
+                        List.of("success")),
+                testeeS.loadSheetNames(info1));
         
         // いくつかの失敗ののちに成功
+        BookOpenInfo info2 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
         assertEquals(
-                List.of("success"),
-                testeeFFSF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                new BookInfo(
+                        info2,
+                        List.of("success")),
+                testeeFFSF.loadSheetNames(info2));
     }
 }
