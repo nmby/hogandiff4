@@ -25,7 +25,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         this.diffEvaluator = diffEvaluator;
     }
     
-    protected abstract List<IntPair> makePairs3(
+    protected void makePairsPrecheck(
+            List<? extends T> listA,
+            List<? extends T> listB) {
+    }
+    
+    protected abstract List<IntPair> makePairsMain(
             List<? extends T> listA,
             List<? extends T> listB);
     
@@ -42,6 +47,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
+        makePairsPrecheck(listA, listB);
+        
         if (listA.isEmpty() && listB.isEmpty()) {
             return List.of();
         }
@@ -57,6 +64,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
         }
         
-        return makePairs3(listA, listB);
+        return makePairsMain(listA, listB);
     }
 }
