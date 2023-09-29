@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
-class GreedyMatcherTest {
+class MinimumCostFlowMatcherTest {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -31,7 +31,7 @@ class GreedyMatcherTest {
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    private final Matcher<String> testee = new GreedyMatcher<>(gapEvaluator, diffEvaluator);
+    private final Matcher<String> testee = new MinimumCostFlowMatcher<>(gapEvaluator, diffEvaluator);
     
     @Test
     void testConstructor() {
@@ -115,9 +115,9 @@ class GreedyMatcherTest {
         // 同じ長さでギャップ無し
         assertEquals(
                 List.of(
+                        IntPair.of(0, 2),
                         IntPair.of(1, 0),
-                        IntPair.of(2, 1),
-                        IntPair.of(0, 2)),
+                        IntPair.of(2, 1)),
                 testee.makePairs(listABC_1, listBCA_1));
         assertEquals(
                 List.of(
@@ -129,8 +129,8 @@ class GreedyMatcherTest {
         // ギャップあり
         assertEquals(
                 List.of(
-                        IntPair.of(1, 2),
                         IntPair.of(0, 3),
+                        IntPair.of(1, 2),
                         IntPair.onlyA(2),
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
