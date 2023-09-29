@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.util;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.IntUnaryOperator;
+import java.util.function.ToIntFunction;
 
 /**
  * 2つの {@code int} 値を保持する不変クラスです。<br>
@@ -11,7 +12,7 @@ import java.util.function.IntUnaryOperator;
  */
 // 実装メモ：
 // このクラスは記憶領域の節約に主眼を置いて設計されています。
-public abstract sealed class IntPair {
+public abstract sealed class IntPair implements Comparable<IntPair> {
     
     // [static members] ********************************************************
     
@@ -304,6 +305,15 @@ public abstract sealed class IntPair {
     }
     
     /**
+     * このペアが空かを返します。<br>
+     * 
+     * @return このペアが空の場合は {@code true}
+     */
+    public final boolean isEmpty() {
+        return !hasA() && !hasB();
+    }
+    
+    /**
      * 値a, 値bそれぞれに指定された演算を適用して得られるペアを返します。<br>
      * 
      * @param mapper 値a, 値bに適用する演算
@@ -322,5 +332,27 @@ public abstract sealed class IntPair {
     @Override
     public int hashCode() {
         return (hasA() ? 31 * a() : 0) + (hasB() ? b() : 0);
+    }
+    
+    @Override
+    public int compareTo(IntPair o) {
+        Objects.requireNonNull(o, "o");
+        
+        ToIntFunction<IntPair> pairScore = p -> p.isPaired() ? 0 : p.isOnlyA() ? 1 : p.isOnlyB() ? 2 : 3;
+        int myScore = pairScore.applyAsInt(this);
+        int themScore = pairScore.applyAsInt(o);
+        
+        if (myScore != themScore) {
+            return Integer.compare(myScore, themScore);
+            
+        } else if (hasA() && a() != o.a()) {
+            return Integer.compare(a(), o.a());
+            
+        } else if (hasB() && b() != o.b()) {
+            return Integer.compare(b(), o.b());
+            
+        } else {
+            return 0;
+        }
     }
 }
