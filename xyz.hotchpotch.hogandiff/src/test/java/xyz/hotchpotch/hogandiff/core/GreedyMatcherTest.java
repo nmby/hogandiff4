@@ -17,7 +17,7 @@ class GreedyMatcherTest {
     
     private static final ToIntFunction<String> gapEvaluator = String::length;
     private static final ToIntBiFunction<String, String> diffEvaluator = (s1,
-            s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1;
+            s2) -> StringDiffUtil.levenshteinDistance(s1, s2);
     
     private static final List<String> list0_1 = List.of();
     private static final List<String> list0_2 = new ArrayList<>();
