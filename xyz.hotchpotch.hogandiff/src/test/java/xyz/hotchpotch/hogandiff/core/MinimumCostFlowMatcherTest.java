@@ -10,6 +10,7 @@ import java.util.function.ToIntFunction;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 class MinimumCostFlowMatcherTest {
     
@@ -157,5 +158,60 @@ class MinimumCostFlowMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(2)),
                 testee.makePairs(listBB_1, listABC_1));
+    }
+    
+    @Test
+    void monkeyTest() {
+        assertEquals(
+                List.of(
+                        new Pair<>("Sunday", "Sunday"),
+                        new Pair<>("Monday", "Monday"),
+                        new Pair<>("Tuesday", "Tuesday"),
+                        new Pair<>("Wednesday", "Wednesday"),
+                        new Pair<>("Thursday", "Thursday"),
+                        new Pair<>("Friday", "Friday"),
+                        new Pair<>("Saturday", "Saturday")),
+                testee.makePairs2(
+                        List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
+                        List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")));
+        
+        assertEquals(
+                List.of(
+                        new Pair<>("Sunday", "Sunday"),
+                        new Pair<>("Monday", "Monday"),
+                        new Pair<>("Tuesday", "Tuesday"),
+                        new Pair<>("Wednesday", "Wednesday"),
+                        new Pair<>("Thursday", "Thursday"),
+                        new Pair<>("Friday", "Friday"),
+                        new Pair<>("Saturday", "Saturday")),
+                testee.makePairs2(
+                        List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
+                        List.of("Saturday", "Wednesday", "Sunday", "Tuesday", "Thursday", "Friday", "Monday")));
+        
+        assertEquals(
+                List.of(
+                        new Pair<>("Tuesday", "Tuesday"),
+                        new Pair<>("Wednesday", "Tuesday"),
+                        new Pair<>("Thursday", "Thursday"),
+                        new Pair<>("Friday", "Friday"),
+                        new Pair<>("Sunday", null),
+                        new Pair<>("Monday", null),
+                        new Pair<>("Saturday", null)),
+                testee.makePairs2(
+                        List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
+                        List.of("Thursday", "Friday", "Tuesday", "Tuesday")));
+        
+        assertEquals(
+                List.of(
+                        new Pair<>("Thursday", "Thursday"),
+                        new Pair<>("Friday", "Friday"),
+                        new Pair<>("Tuesday", "Tuesday"),
+                        new Pair<>("Tuesday", "Wednesday"),
+                        new Pair<>(null, "Sunday"),
+                        new Pair<>(null, "Monday"),
+                        new Pair<>(null, "Saturday")),
+                testee.makePairs2(
+                        List.of("Thursday", "Friday", "Tuesday", "Tuesday"),
+                        List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")));
     }
 }
