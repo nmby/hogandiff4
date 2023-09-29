@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @param <T> リストの要素の型
  * @author nmby
  */
-/*package*/ class GreedyMatcher<T> implements Matcher<T> {
+/*package*/ class GreedyMatcher<T> extends MatcherBase<T> {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -97,50 +97,19 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    private final ToIntFunction<? super T> gapEvaluator;
-    private final ToIntBiFunction<? super T, ? super T> diffEvaluator;
-    
     /*package*/ GreedyMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
+        super(gapEvaluator, diffEvaluator);
+        
         assert gapEvaluator != null;
         assert diffEvaluator != null;
-        
-        this.gapEvaluator = gapEvaluator;
-        this.diffEvaluator = diffEvaluator;
     }
     
-    /**
-     * {@inheritDoc}
-     * <br>
-     * この実装は、2つのリストの要素同士の組み合わせの中で
-     * 最も一致度の高いペアから対応付けを確定していきます。<br>
-     * 
-     * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
-     */
-    @Override
-    public List<IntPair> makePairs(
+    protected List<IntPair> makePairs3(
             List<? extends T> listA,
             List<? extends T> listB) {
-        
-        Objects.requireNonNull(listA, "listA");
-        Objects.requireNonNull(listB, "listB");
-        
-        if (listA.isEmpty() && listB.isEmpty()) {
-            return List.of();
-        }
-        if (listA == listB) {
-            return IntStream.range(0, listA.size())
-                    .mapToObj(n -> IntPair.of(n, n))
-                    .toList();
-        }
-        if (listA.isEmpty()) {
-            return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
-        }
-        if (listB.isEmpty()) {
-            return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
-        }
         
         // まず、全ての組み合わせのコストを計算する。
         Stream<Cost> gapCostsA = IntStream.range(0, listA.size()).parallel()

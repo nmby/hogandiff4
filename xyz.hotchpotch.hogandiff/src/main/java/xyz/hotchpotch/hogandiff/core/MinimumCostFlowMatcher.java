@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
@@ -16,51 +15,34 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
-public class MinimumCostFlowMatcher<T> implements Matcher<T> {
+/**
+ * 2つのリストの要素同士の一致度の総和が最大になるような（換言すると差異度の総和が最小になるような）
+ * 対応付けを行う {@link Matcher} の実装です。<br>
+ * 
+ * @param <T> リストの要素の型
+ * @author nmby
+ */
+public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    private final ToIntFunction<? super T> gapEvaluator;
-    private final ToIntBiFunction<? super T, ? super T> diffEvaluator;
-    
     /*package*/ MinimumCostFlowMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
+        super(gapEvaluator, diffEvaluator);
+        
         assert gapEvaluator != null;
         assert diffEvaluator != null;
-        
-        this.gapEvaluator = gapEvaluator;
-        this.diffEvaluator = diffEvaluator;
     }
     
-    @Override
-    public List<IntPair> makePairs(
+    protected List<IntPair> makePairs3(
             List<? extends T> listA,
             List<? extends T> listB) {
         
-        Objects.requireNonNull(listA, "listA");
-        Objects.requireNonNull(listB, "listB");
-        
-        if (listA.isEmpty() && listB.isEmpty()) {
-            return List.of();
-        }
-        if (listA == listB) {
-            return IntStream.range(0, listA.size())
-                    .mapToObj(n -> IntPair.of(n, n))
-                    .toList();
-        }
-        if (listA.isEmpty()) {
-            return IntStream.range(0, listB.size()).mapToObj(IntPair::onlyB).toList();
-        }
-        if (listB.isEmpty()) {
-            return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
-        }
-        
-        Graph graph = new Graph(listA, listB);
-        return graph.execute();
+        return new Graph(listA, listB).execute();
     }
     
     private class Graph {
