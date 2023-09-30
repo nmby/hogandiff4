@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff;
 
 import java.awt.Desktop;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -236,31 +237,55 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
             updateMessage(str.toString());
         }
+        
         for (int i = 0; i < data.bookNamePairs().size(); i++) {
             Pair<String> bookNamePair = data.bookNamePairs().get(i);
             
-            try {
-                str.append(indent
-                        + DirResult.formatBookNamesPair(dirId, i, bookNamePair));
-                updateMessage(str.toString());
+            str.append(indent
+                    + DirResult.formatBookNamesPair(dirId, i, bookNamePair));
+            updateMessage(str.toString());
+            
+            if (bookNamePair.isPaired()) {
                 
-                if (bookNamePair.isPaired()) {
-                    BookOpenInfo srcInfo1 = new BookOpenInfo(
+                BookOpenInfo srcInfo1 = null;
+                BookOpenInfo srcInfo2 = null;
+                BookOpenInfo dstInfo1 = null;
+                BookOpenInfo dstInfo2 = null;
+                BookResult bookResult = null;
+                
+                try {
+                    srcInfo1 = new BookOpenInfo(
                             data.dirPair().a().path().resolve(bookNamePair.a()), null);
-                    BookOpenInfo srcInfo2 = new BookOpenInfo(
+                    srcInfo2 = new BookOpenInfo(
                             data.dirPair().b().path().resolve(bookNamePair.b()), null);
-                    BookOpenInfo dstInfo1 = new BookOpenInfo(
+                    dstInfo1 = new BookOpenInfo(
                             outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a())), null);
-                    BookOpenInfo dstInfo2 = new BookOpenInfo(
+                    dstInfo2 = new BookOpenInfo(
                             outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b())), null);
                     
-                    BookResult bookResult = compareBooks(
+                    bookResult = compareBooks(
                             srcInfo1,
                             srcInfo2,
                             progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
                     bookResults.put(bookNamePair, Optional.of(bookResult));
                     
+                } catch (Exception e) {
+                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    updateMessage(str.toString());
+                    e.printStackTrace();
+                    
+                    try {
+                        Files.copy(srcInfo1.bookPath(), dstInfo1.bookPath());
+                        Files.copy(srcInfo2.bookPath(), dstInfo2.bookPath());
+                    } catch (IOException e1) {
+                        // nop
+                    }
+                    continue;
+                }
+                
+                try {
                     BookPainter painter1 = factory.painter(settings, srcInfo1);
                     BookPainter painter2 = factory.painter(settings, srcInfo2);
                     painter1.paintAndSave(srcInfo1, dstInfo1, bookResult.getPiece(Side.A));
@@ -274,7 +299,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                             PROGRESS_MAX);
                     
-                } else {
+                } catch (Exception e) {
+                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    updateMessage(str.toString());
+                    e.printStackTrace();
+                    continue;
+                }
+                
+            } else {
+                
+                try {
                     Path src = bookNamePair.hasA()
                             ? data.dirPair().a().path().resolve(bookNamePair.a())
                             : data.dirPair().b().path().resolve(bookNamePair.b());
@@ -290,14 +325,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                     str.append(BR);
                     updateMessage(str.toString());
+                    
+                } catch (Exception e) {
+                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    updateMessage(str.toString());
+                    e.printStackTrace();
+                    continue;
                 }
-                
-            } catch (Exception e) {
-                bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                updateMessage(str.toString());
-                e.printStackTrace();
-                continue;
             }
         }
         str.append(BR);
