@@ -29,7 +29,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
                 ? Matcher.identityMatcher()
                 : Matcher.combinedMatcher(List.of(
                         Matcher.identityMatcher(),
-                        Matcher.greedyMatcherOf(
+                        Matcher.minimumCostFlowMatcherOf(
                                 String::length,
                                 (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1))));
     }
