@@ -38,7 +38,7 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         assert diffEvaluator != null;
     }
     
-    protected List<IntPair> makePairs3(
+    protected List<IntPair> makePairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

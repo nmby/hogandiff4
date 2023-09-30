@@ -36,7 +36,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected List<IntPair> makePairs3(
+    protected List<IntPair> makePairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         
