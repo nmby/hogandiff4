@@ -88,6 +88,28 @@ public class DirResult {
         this.dirId = dirId;
     }
     
+    public boolean hasDiff() {
+        return bookNamePairs.stream()
+                .map(results::get)
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
+    }
+    
+    public Pair<DirInfo> dirPair() {
+        return dirPair;
+    }
+    
+    public List<Pair<String>> bookNamePairs() {
+        return List.copyOf(bookNamePairs);
+    }
+    
+    public Map<Pair<String>, Optional<BookResult>> results() {
+        return Map.copyOf(results);
+    }
+    
+    public String dirId() {
+        return dirId;
+    }
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();

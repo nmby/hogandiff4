@@ -335,10 +335,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         Path textPath = null;
         try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
             textPath = workDir.resolve("result.txt");
             
+            updateProgress(progressBefore, PROGRESS_MAX);
             str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.030"), textPath));
             updateMessage(str.toString());
             

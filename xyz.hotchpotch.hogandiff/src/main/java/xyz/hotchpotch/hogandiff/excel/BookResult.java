@@ -104,7 +104,7 @@ public class BookResult {
      */
     public boolean hasDiff() {
         return sheetPairs.stream()
-                .map(p -> results.get(p))
+                .map(results::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
     

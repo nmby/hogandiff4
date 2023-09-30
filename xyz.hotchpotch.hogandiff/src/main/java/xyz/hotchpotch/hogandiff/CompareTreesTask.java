@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,9 +15,11 @@ import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -59,13 +62,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
         
         // 4. フォルダツリー同士の比較
-        TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 95);
+        TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
         
-        // 5. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, tResult.toString(), 95, 97);
+        // 5. 比較結果テキストの作成と表示
+        saveAndShowResultText(workDir, tResult.toString(), 93, 95);
         
-        // 6. 比較結果の表示（出力フォルダ）
-        showOutputDirs(workDir, 97, 99);
+        // 6. 比較結果Excelの作成と表示
+        createSaveAndShowResultBook(workDir, tResult, 95, 99);
         
         // 7. 処理終了のアナウンス
         announceEnd();
@@ -229,5 +232,50 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 topDirPair,
                 pairDataList,
                 dirResults);
+    }
+    
+    // 6. 比較結果Excelの作成と表示
+    private void createSaveAndShowResultBook(
+            Path workDir,
+            TreeResult tResult,
+            int progressBefore,
+            int progressAfter)
+            throws ApplicationException {
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
+        Path resultBookPath = null;
+        
+        try {
+            resultBookPath = workDir.resolve("result.xlsx");
+            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
+            updateMessage(str.toString());
+            
+            TreeResultBookCreator creator = new TreeResultBookCreator();
+            creator.createResultBook(resultBookPath, tResult);
+            
+        } catch (ExcelHandlingException e) {
+            str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "%s%n%s".formatted(rb.getString("CompareTreesTask.080"), resultBookPath),
+                    e);
+        }
+        
+        try {
+            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(resultBookPath.toFile());
+            }
+        } catch (IOException e) {
+            str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
+                    e);
+        }
+        updateProgress(progressAfter, PROGRESS_MAX);
     }
 }
