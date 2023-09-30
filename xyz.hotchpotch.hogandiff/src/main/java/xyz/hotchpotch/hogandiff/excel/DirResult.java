@@ -25,18 +25,18 @@ public class DirResult {
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param bookId 親フォルダのペアを示す識別子。
+     * @param dirId 親フォルダのペアを示す識別子。
      * @param i このExcelブック名ペアの番号。{@code i + 1} をユーザー向けに表示します。
      * @param pair Excelブック名ペア
      * @return Excelブック名ペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
      */
     public static String formatBookNamesPair(
-            String bookId,
+            String dirId,
             int i,
             Pair<String> pair) {
         
-        Objects.requireNonNull(bookId, "bookId");
+        Objects.requireNonNull(dirId, "dirId");
         Objects.requireNonNull(pair, "pair");
         if (i < 0) {
             throw new IllegalArgumentException("i: %d".formatted(i));
@@ -45,20 +45,22 @@ public class DirResult {
         ResourceBundle rb = AppMain.appResource.get();
         
         return "    %s  vs  %s".formatted(
-                pair.hasA() ? "【A%s-%d】%s".formatted(bookId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "【B%s-%d】%s".formatted(bookId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
+                pair.hasA() ? "【A%s-%d】%s".formatted(dirId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
+                pair.hasB() ? "【B%s-%d】%s".formatted(dirId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
     public static DirResult of(
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results,
+            String dirId) {
         
         Objects.requireNonNull(dirPair, "dirPair");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
         Objects.requireNonNull(results, "results");
+        Objects.requireNonNull(dirId, "dirId");
         
-        return new DirResult(dirPair, bookNamePairs, results);
+        return new DirResult(dirPair, bookNamePairs, results, dirId);
     }
     
     // [instance members] ******************************************************
@@ -67,18 +69,45 @@ public class DirResult {
     private final List<Pair<String>> bookNamePairs;
     private final Map<Pair<String>, Optional<BookResult>> results;
     private final ResourceBundle rb = AppMain.appResource.get();
+    private final String dirId;
     
     private DirResult(
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookResult>> results) {
+            Map<Pair<String>, Optional<BookResult>> results,
+            String dirId) {
         
         assert dirPair != null;
         assert bookNamePairs != null;
+        assert results != null;
+        assert dirId != null;
         
         this.dirPair = dirPair;
         this.bookNamePairs = List.copyOf(bookNamePairs);
         this.results = Map.copyOf(results);
+        this.dirId = dirId;
+    }
+    
+    public boolean hasDiff() {
+        return bookNamePairs.stream()
+                .map(results::get)
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
+    }
+    
+    public Pair<DirInfo> dirPair() {
+        return dirPair;
+    }
+    
+    public List<Pair<String>> bookNamePairs() {
+        return List.copyOf(bookNamePairs);
+    }
+    
+    public Map<Pair<String>, Optional<BookResult>> results() {
+        return Map.copyOf(results);
+    }
+    
+    public String dirId() {
+        return dirId;
     }
     
     @Override
@@ -94,7 +123,7 @@ public class DirResult {
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair("", i, bookNamePair)).append(BR);
+            str.append(formatBookNamesPair(dirId, i, bookNamePair)).append(BR);
         }
         
         str.append(BR);
@@ -139,7 +168,7 @@ public class DirResult {
             Pair<String> bookNamePair = bookNamePairs.get(i);
             Optional<BookResult> bResult = results.get(bookNamePair);
             
-            str.append(formatBookNamesPair("", i, bookNamePair));
+            str.append(formatBookNamesPair(dirId, i, bookNamePair));
             
             if (bookNamePair.isPaired()) {
                 str.append(diffDescriptor.apply(bResult));

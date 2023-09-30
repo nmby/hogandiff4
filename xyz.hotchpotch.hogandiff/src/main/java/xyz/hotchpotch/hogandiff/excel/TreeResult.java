@@ -85,6 +85,18 @@ public class TreeResult {
         this.results = Map.copyOf(results);
     }
     
+    public Pair<DirInfo> topDirPair() {
+        return topDirPair;
+    }
+    
+    public List<DirPairData> pairDataList() {
+        return List.copyOf(pairDataList);
+    }
+    
+    public Map<Pair<Path>, Optional<DirResult>> results() {
+        return Map.copyOf(results);
+    }
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
