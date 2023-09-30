@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
-public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcherBase {
+public class HLenientDirsMatcher extends VStrictDirsMatcherBase {
     
     // [static members] ********************************************************
     
@@ -49,12 +49,12 @@ public class HolizontallyLenientDirsMatcher extends VerticallyStrictDirsMatcherB
             diffCost::applyAsInt);
     
     public static DirsMatcher of() {
-        return new HolizontallyLenientDirsMatcher();
+        return new HLenientDirsMatcher();
     }
     
     // [instance members] ******************************************************
     
-    private HolizontallyLenientDirsMatcher() {
+    private HLenientDirsMatcher() {
         super();
         System.out.println("★★★ HolizontallyLenientDirsMatcher ★★★");
     }

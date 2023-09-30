@@ -9,7 +9,7 @@ import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
-public class StrictDirsMatcher extends VerticallyStrictDirsMatcherBase {
+public class StrictDirsMatcher extends VStrictDirsMatcherBase {
     
     // [static members] ********************************************************
     

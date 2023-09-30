@@ -14,13 +14,13 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public abstract class VerticallyStrictDirsMatcherBase implements DirsMatcher {
+public abstract class VStrictDirsMatcherBase implements DirsMatcher {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    protected VerticallyStrictDirsMatcherBase() {
+    protected VStrictDirsMatcherBase() {
     }
     
     @Override

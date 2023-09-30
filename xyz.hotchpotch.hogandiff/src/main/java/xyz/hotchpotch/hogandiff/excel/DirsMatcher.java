@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.common.HolizontallyLenientDirsMatcher;
+import xyz.hotchpotch.hogandiff.excel.common.HLenientDirsMatcher;
 import xyz.hotchpotch.hogandiff.excel.common.StrictDirsMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -26,7 +26,7 @@ public interface DirsMatcher {
     public static DirsMatcher of(boolean matchNamesStrictly) {
         return matchNamesStrictly
                 ? StrictDirsMatcher.of()
-                : HolizontallyLenientDirsMatcher.of();
+                : HLenientDirsMatcher.of();
     }
     
     // [instance members] ******************************************************
