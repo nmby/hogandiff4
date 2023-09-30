@@ -180,7 +180,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     bookNamePairs,
                     bookNamePairs.stream().collect(Collectors.toMap(
                             Function.identity(),
-                            name -> Optional.empty())));
+                            name -> Optional.empty())),
+                    "");
         }
         
     }

@@ -221,7 +221,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     protected DirResult compareDirs(
-            String id,
+            String dirId,
             String indent,
             DirPairData data,
             Pair<Path> outputDirs,
@@ -241,7 +241,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             try {
                 str.append(indent
-                        + DirResult.formatBookNamesPair(id, i, bookNamePair));
+                        + DirResult.formatBookNamesPair(dirId, i, bookNamePair));
                 updateMessage(str.toString());
                 
                 if (bookNamePair.isPaired()) {
@@ -250,9 +250,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     BookOpenInfo srcInfo2 = new BookOpenInfo(
                             data.dirPair().b().path().resolve(bookNamePair.b()), null);
                     BookOpenInfo dstInfo1 = new BookOpenInfo(
-                            outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a())), null);
+                            outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a())), null);
                     BookOpenInfo dstInfo2 = new BookOpenInfo(
-                            outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b())), null);
+                            outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b())), null);
                     
                     BookResult bookResult = compareBooks(
                             srcInfo1,
@@ -279,8 +279,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             ? data.dirPair().a().path().resolve(bookNamePair.a())
                             : data.dirPair().b().path().resolve(bookNamePair.b());
                     Path dst = bookNamePair.hasA()
-                            ? outputDirs.a().resolve("【A%s-%d】%s".formatted(id, i + 1, bookNamePair.a()))
-                            : outputDirs.b().resolve("【B%s-%d】%s".formatted(id, i + 1, bookNamePair.b()));
+                            ? outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()))
+                            : outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
                     
                     Files.copy(src, dst);
                     dst.toFile().setReadable(true, false);
@@ -306,7 +306,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         return DirResult.of(
                 data.dirPair(),
                 data.bookNamePairs(),
-                bookResults);
+                bookResults,
+                dirId);
     }
     
     /**
