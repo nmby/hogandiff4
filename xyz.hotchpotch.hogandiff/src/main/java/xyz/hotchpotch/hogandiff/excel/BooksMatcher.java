@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.common.StandardBookNamesMatcher;
+import xyz.hotchpotch.hogandiff.excel.common.StandardBooksMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  */
 @FunctionalInterface
-public interface BookNamesMatcher {
+public interface BooksMatcher {
     
     // [static members] ********************************************************
     
@@ -22,9 +22,9 @@ public interface BookNamesMatcher {
      * @param matchNamesStrictly Excelブック名のゆらぎを許容する場合は {@code true}
      * @return Excelブック名同士の対応関係を決めるマッチャー
      */
-    public static BookNamesMatcher of(boolean matchNamesStrictly) {
+    public static BooksMatcher of(boolean matchNamesStrictly) {
         //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
-        return StandardBookNamesMatcher.of(matchNamesStrictly);
+        return StandardBooksMatcher.of(matchNamesStrictly);
     }
     
     // [instance members] ******************************************************
