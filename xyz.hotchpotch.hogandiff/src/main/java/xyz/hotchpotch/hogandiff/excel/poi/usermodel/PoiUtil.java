@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -559,6 +560,21 @@ public class PoiUtil {
         
         Row row = CellUtil.getRow(r, sheet);
         return CellUtil.getCell(row, c);
+    }
+    
+    public static Optional<Cell> getCellIfPresent(
+            Sheet sheet,
+            int r,
+            int c) {
+        
+        Objects.requireNonNull(sheet, "sheet");
+        if (r < 0 || c < 0) {
+            throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
+        }
+        
+        return Optional
+                .ofNullable(sheet.getRow(r))
+                .map(row -> row.getCell(c));
     }
     
     public static void setCellValue(
