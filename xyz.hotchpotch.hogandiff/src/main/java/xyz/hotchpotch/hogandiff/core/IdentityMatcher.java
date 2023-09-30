@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -25,11 +26,20 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ******************************************************
     
-    private Map<? extends T, Integer> mapA;
-    private Map<? extends T, Integer> mapB;
+    private final Function<? super T, ?> idExtractor;
+    
+    private Map<?, Integer> mapA;
+    private Map<?, Integer> mapB;
     
     /*package*/ IdentityMatcher() {
         super(null, null);
+        this.idExtractor = Function.identity();
+    }
+    
+    /*package*/ IdentityMatcher(Function<? super T, ?> extractor) {
+        super(null, null);
+        assert extractor != null;
+        this.idExtractor = extractor;
     }
     
     @Override
@@ -40,12 +50,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         mapA = IntStream.range(0, listA.size())
                 .collect(
                         HashMap::new,
-                        (map, i) -> map.put(listA.get(i), i),
+                        (map, i) -> map.put(idExtractor.apply(listA.get(i)), i),
                         Map::putAll);
         mapB = IntStream.range(0, listB.size())
                 .collect(
                         HashMap::new,
-                        (map, i) -> map.put(listB.get(i), i),
+                        (map, j) -> map.put(idExtractor.apply(listB.get(j)), j),
                         Map::putAll);
         
         if (listA.size() != mapA.size() || listB.size() != mapB.size()) {

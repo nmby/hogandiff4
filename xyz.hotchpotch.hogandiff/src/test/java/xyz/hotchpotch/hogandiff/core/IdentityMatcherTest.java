@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 class IdentityMatcherTest {
     
@@ -131,5 +132,41 @@ class IdentityMatcherTest {
                         IntPair.onlyA(4),
                         IntPair.onlyB(2)),
                 testee.makePairs(listXYBAZ_1, listABC_1));
+    }
+    
+    @Test
+    void monkeyTest() {
+        assertEquals(
+                List.of(
+                        new Pair<>("SUN", null),
+                        new Pair<>("MON", null),
+                        new Pair<>("TUE", null),
+                        new Pair<>("WED", null),
+                        new Pair<>("THU", null),
+                        new Pair<>("FRI", null),
+                        new Pair<>("SAT", null),
+                        new Pair<>(null, "sun"),
+                        new Pair<>(null, "mon"),
+                        new Pair<>(null, "tue"),
+                        new Pair<>(null, "wed"),
+                        new Pair<>(null, "thu"),
+                        new Pair<>(null, "fri"),
+                        new Pair<>(null, "sat")),
+                new IdentityMatcher<>().makePairs2(
+                        List.of("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"),
+                        List.of("sun", "mon", "tue", "wed", "thu", "fri", "sat")));
+        
+        assertEquals(
+                List.of(
+                        new Pair<>("SUN", "sun"),
+                        new Pair<>("MON", "mon"),
+                        new Pair<>("TUE", "tue"),
+                        new Pair<>("WED", "wed"),
+                        new Pair<>("THU", "thu"),
+                        new Pair<>("FRI", "fri"),
+                        new Pair<>("SAT", "sat")),
+                new IdentityMatcher<String>(String::toUpperCase).makePairs2(
+                        List.of("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"),
+                        List.of("sun", "mon", "tue", "wed", "thu", "fri", "sat")));
     }
 }
