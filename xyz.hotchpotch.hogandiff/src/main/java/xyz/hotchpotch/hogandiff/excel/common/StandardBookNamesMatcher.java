@@ -5,16 +5,16 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * {@link BooksMatcher} の標準的な実装です。<br>
+ * {@link BookNamesMatcher} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class StandardBooksMatcher implements BooksMatcher {
+public class StandardBookNamesMatcher implements BookNamesMatcher {
     
     // [static members] ********************************************************
     
@@ -24,8 +24,8 @@ public class StandardBooksMatcher implements BooksMatcher {
      * @param matchNamesStrictly Excelブック名のゆらぎを許容する場合は {@code true}
      * @return Excelブック名同士の対応関係を決めるマッチャー
      */
-    public static StandardBooksMatcher of(boolean matchNamesStrictly) {
-        return new StandardBooksMatcher(matchNamesStrictly
+    public static StandardBookNamesMatcher of(boolean matchNamesStrictly) {
+        return new StandardBookNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
                 : Matcher.greedyMatcherOf(
                         String::length,
@@ -36,7 +36,7 @@ public class StandardBooksMatcher implements BooksMatcher {
     
     private final Matcher<String> coreMatcher;
     
-    private StandardBooksMatcher(Matcher<String> coreMatcher) {
+    private StandardBookNamesMatcher(Matcher<String> coreMatcher) {
         assert coreMatcher != null;
         
         this.coreMatcher = coreMatcher;
