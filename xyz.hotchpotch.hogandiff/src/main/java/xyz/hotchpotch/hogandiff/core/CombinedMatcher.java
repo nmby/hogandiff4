@@ -23,10 +23,10 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ******************************************************
     
-    private final List<Matcher<T>> matchers;
+    private final List<Matcher<? super T>> matchers;
     
     /*package*/ CombinedMatcher(
-            List<Matcher<T>> matchers) {
+            List<Matcher<? super T>> matchers) {
         
         super(null, null);
         
@@ -52,7 +52,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         List<? extends T> tmpA = listA;
         List<? extends T> tmpB = listB;
         
-        for (Matcher<T> matcher : matchers) {
+        for (Matcher<? super T> matcher : matchers) {
             List<IntPair> res = matcher.makePairs(tmpA, tmpB);
             BitSet pairedA = new BitSet(tmpA.size());
             BitSet pairedB = new BitSet(tmpB.size());

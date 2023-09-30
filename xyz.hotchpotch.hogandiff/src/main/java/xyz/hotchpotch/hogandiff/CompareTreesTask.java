@@ -120,7 +120,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (int i = 0; i < dirPairs.size(); i++) {
                 Pair<DirInfo> dirPair = dirPairs.get(i);
                 
-                str.append(TreeResult.formatDirsPair(i, dirPair));
+                str.append(TreeResult.formatDirsPair(i, dirPair)).append(BR);
                 updateMessage(str.toString());
                 
                 DirPairData data = new DirPairData(
@@ -132,25 +132,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                         ? bookNamePairs.apply(Side.A, dirPair)
                                         : bookNamePairs.apply(Side.B, dirPair));
                 pairDataList.add(data);
-                
-                if (data.bookNamePairs().size() == 0) {
-                    str.append("        - ");
-                    str.append(rb.getString("CompareTreesTask.060"));
-                    str.append(BR);
-                    updateMessage(str.toString());
-                }
-                for (int j = 0; j < data.bookNamePairs().size(); j++) {
-                    Pair<String> bookNamePair = data.bookNamePairs().get(j);
-                    
-                    str.append("      " + DirResult.formatBookNamesPair(
-                            String.valueOf(i + 1),
-                            j,
-                            bookNamePair));
-                    str.append(BR);
-                    updateMessage(str.toString());
-                }
-                str.append(BR);
-                updateMessage(str.toString());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
