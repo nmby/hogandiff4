@@ -3,9 +3,13 @@ package xyz.hotchpotch.hogandiff.excel.common;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -14,13 +18,43 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public abstract class VStrictDirsMatcherBase implements DirsMatcher {
+public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     // [static members] ********************************************************
     
+    private static final Function<DirInfo, String> dirNameExtractor = d -> d.path().getFileName().toString();
+    
+    private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcher(dirNameExtractor);
+    
+    private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
+            d -> d.children().size() + d.bookNames().size(),
+            (d1, d2) -> {
+                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                
+                int gapChildren = (int) Matcher.identityMatcher().makePairs(childrenNames1, childrenNames2)
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                int gapBookNames = (int) Matcher.identityMatcher().makePairs(d1.bookNames(), d2.bookNames())
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                
+                return gapChildren + gapBookNames;
+            });
+    
+    public static DirsMatcher of(boolean matchNamesStrictly) {
+        return new VerticallyStrictDirsMatcher(matchNamesStrictly
+                ? strictDirNamesMatcher
+                : Matcher.combinedMatcher(List.of(
+                        strictDirNamesMatcher,
+                        fuzzyButSimpleDirsMatcher)));
+    }
+    
     // [instance members] ******************************************************
     
-    protected VStrictDirsMatcherBase() {
+    private final Matcher<DirInfo> coreMatcher;
+    
+    private VerticallyStrictDirsMatcher(Matcher<DirInfo> coreMatcher) {
+        assert coreMatcher != null;
+        this.coreMatcher = coreMatcher;
     }
     
     @Override
@@ -31,7 +65,6 @@ public abstract class VStrictDirsMatcherBase implements DirsMatcher {
         Objects.requireNonNull(topDirInfo1, "topDirInfo1");
         Objects.requireNonNull(topDirInfo2, "topDirInfo2");
         
-        start();
         List<Pair<DirInfo>> resultPairs = new ArrayList<>();
         
         resultPairs.add(new Pair<>(topDirInfo1, topDirInfo2));
@@ -50,7 +83,7 @@ public abstract class VStrictDirsMatcherBase implements DirsMatcher {
         assert dirInfo1 != null;
         assert dirInfo2 != null;
         
-        List<Pair<DirInfo>> dirPairs = pairingDirs(
+        List<Pair<DirInfo>> dirPairs = coreMatcher.makePairs2(
                 dirInfo1.children(),
                 dirInfo2.children());
         
@@ -67,13 +100,6 @@ public abstract class VStrictDirsMatcherBase implements DirsMatcher {
             }
         }
     }
-    
-    protected void start() {
-    }
-    
-    protected abstract List<Pair<DirInfo>> pairingDirs(
-            List<DirInfo> dirs1,
-            List<DirInfo> dirs2);
     
     private void setAloneDirs(
             List<Pair<DirInfo>> pairs,
