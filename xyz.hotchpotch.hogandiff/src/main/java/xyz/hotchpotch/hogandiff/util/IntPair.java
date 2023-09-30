@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
+
 /**
  * 2つの {@code int} 値を保持する不変クラスです。<br>
  * 
@@ -257,6 +259,11 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
      */
     public int b() {
         throw new NoSuchElementException();
+    }
+    
+    public int get(Side side) {
+        Objects.requireNonNull(side, "side");
+        return side == Side.A ? a() : b();
     }
     
     /**
