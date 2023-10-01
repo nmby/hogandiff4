@@ -57,6 +57,12 @@ public class TreeResultBookCreator {
     private static final String DIFF_BOTH = "!";
     private static final String DIFF_FAILED = "?";
     
+    // こんなの絶対標準APIにあるはずだけど見つけられていない・・・
+    // TODO: 実装改善（標準APIを利用する）
+    private static String sanitize(Path path) {
+        return path.toString().replace("\\", "/").replace(" ", "%20");
+    }
+    
     // [instance members] ******************************************************
     
     private final ResourceBundle rb = AppMain.appResource.get();
@@ -90,7 +96,7 @@ public class TreeResultBookCreator {
             Row templateRow = sheet.getRow(ROW_LIST_TEMPLATE);
             
             // 3. ヘッダ情報を出力する。
-            outputHeader(sheet, treeResult, dstBookPath.getParent());
+            outputHeader(ch, sheet, dstBookPath.getParent(), treeResult);
             
             // 4. フォルダとファイルの比較結果を出力する。
             
@@ -187,9 +193,10 @@ public class TreeResultBookCreator {
     }
     
     private void outputHeader(
+            CreationHelper ch,
             Sheet sheet,
-            TreeResult treeResult,
-            Path workDir) {
+            Path workDir,
+            TreeResult treeResult) {
         
         PoiUtil.setCellValue(sheet, 0, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.A));
@@ -198,10 +205,19 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        PoiUtil.setCellValue(sheet, 0, 2, treeResult.topDirPair().a().path().toString());
-        PoiUtil.setCellValue(sheet, 1, 2, treeResult.topDirPair().b().path().toString());
-        PoiUtil.setCellValue(sheet, 2, 2, workDir.toString());
+        Path topDirA = treeResult.topDirPair().a().path();
+        Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
+        linkA.setAddress(sanitize(topDirA));
+        PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
+        Path topDirB = treeResult.topDirPair().b().path();
+        Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
+        linkB.setAddress(sanitize(topDirB));
+        PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);
+        
+        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
+        linkW.setAddress(sanitize(workDir));
+        PoiUtil.setCellValue(sheet, 2, 2, workDir.toString()).setHyperlink(linkW);
     }
     
     private void outputDirLine(
@@ -222,7 +238,7 @@ public class TreeResultBookCreator {
                 
                 // ハイパーリンクの設定
                 Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
-                link.setAddress(outputDirs.get(side).toString().replace("\\", "/"));
+                link.setAddress(sanitize(outputDirs.get(side)));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(link);
             }
         }
@@ -249,10 +265,8 @@ public class TreeResultBookCreator {
                 
                 // ハイパーリンクの設定
                 Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
-                link.setAddress(
-                        // TODO: URI周りの処理をもっとスマートにできるはず..
-                        outputDirs.get(side).resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookNames.get(side)))
-                                .toString().replace("\\", "/").replace(" ", "%20"));
+                link.setAddress(sanitize(outputDirs.get(side)
+                        .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookNames.get(side)))));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(link);
             }
         }
