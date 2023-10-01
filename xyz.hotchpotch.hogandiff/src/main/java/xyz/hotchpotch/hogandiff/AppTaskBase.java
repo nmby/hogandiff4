@@ -24,13 +24,13 @@ import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -214,9 +214,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     PROGRESS_MAX);
         }
         
-        return BookResult.of(
-                bookOpenInfo1.bookPath(),
-                bookOpenInfo2.bookPath(),
+        return new BookResult(
+                new Pair<>(
+                        bookOpenInfo1.bookPath(),
+                        bookOpenInfo2.bookPath()),
                 sheetNamePairs,
                 results);
     }
@@ -338,7 +339,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
         
-        return DirResult.of(
+        return new DirResult(
                 data.dirPair(),
                 data.bookNamePairs(),
                 bookResults,

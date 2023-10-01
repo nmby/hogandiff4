@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -16,17 +17,15 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class TreeResult {
+public record TreeResult(
+        Pair<DirInfo> topDirPair,
+        List<DirPairData> pairDataList,
+        Map<Pair<Path>, Optional<DirResult>> dirResults) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    
-    public static record DirPairData(
-            int num,
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-    }
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
@@ -39,8 +38,6 @@ public class TreeResult {
     public static String formatDirsPair(int i, Pair<DirInfo> dirPair) {
         Objects.requireNonNull(dirPair, "dirPair");
         
-        ResourceBundle rb = AppMain.appResource.get();
-        
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
                         ? "【A%d】 %s".formatted(i + 1, dirPair.a().path())
@@ -50,51 +47,20 @@ public class TreeResult {
                         : rb.getString("excel.TreeResult.010"));
     }
     
-    public static TreeResult of(
+    // [instance members] ******************************************************
+    
+    public TreeResult(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
-            Map<Pair<Path>, Optional<DirResult>> results) {
+            Map<Pair<Path>, Optional<DirResult>> dirResults) {
         
         Objects.requireNonNull(topDirPair, "topDirPair");
         Objects.requireNonNull(pairDataList, "pairDataList");
-        Objects.requireNonNull(results, "results");
-        
-        return new TreeResult(
-                topDirPair,
-                pairDataList,
-                results);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final Pair<DirInfo> topDirPair;
-    private final List<DirPairData> pairDataList;
-    private final Map<Pair<Path>, Optional<DirResult>> results;
-    private final ResourceBundle rb = AppMain.appResource.get();
-    
-    private TreeResult(
-            Pair<DirInfo> topDirPair,
-            List<DirPairData> pairDataList,
-            Map<Pair<Path>, Optional<DirResult>> results) {
-        
-        assert topDirPair != null;
-        assert pairDataList != null;
+        Objects.requireNonNull(dirResults, "dirResults");
         
         this.topDirPair = topDirPair;
         this.pairDataList = List.copyOf(pairDataList);
-        this.results = Map.copyOf(results);
-    }
-    
-    public Pair<DirInfo> topDirPair() {
-        return topDirPair;
-    }
-    
-    public List<DirPairData> pairDataList() {
-        return List.copyOf(pairDataList);
-    }
-    
-    public Map<Pair<Path>, Optional<DirResult>> results() {
-        return Map.copyOf(results);
+        this.dirResults = Map.copyOf(dirResults);
     }
     
     @Override
@@ -134,7 +100,7 @@ public class TreeResult {
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::path));
+            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
             
             str.append(formatDirsPair(pairData.num() - 1, pairData.dirPair()));
             
