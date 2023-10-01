@@ -123,11 +123,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (int i = 0; i < dirPairs.size(); i++) {
                 Pair<DirInfo> dirPair = dirPairs.get(i);
                 
-                str.append(TreeResult.formatDirsPair(i, dirPair)).append(BR);
+                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirPair)).append(BR);
                 updateMessage(str.toString());
                 
                 DirPairData data = new DirPairData(
-                        i + 1,
+                        Integer.toString(i + 1),
                         dirPair,
                         dirPair.isPaired()
                                 ? bookNamesMatcher.pairingBooks(dirPair.a(), dirPair.b())
@@ -174,7 +174,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData data = pairDataList.get(i);
             
-            str.append(TreeResult.formatDirsPair(i, data.dirPair()));
+            str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
             updateMessage(str.toString());
             
             Path outputDir1 = null;

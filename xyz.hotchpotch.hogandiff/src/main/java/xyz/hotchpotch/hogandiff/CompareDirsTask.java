@@ -169,7 +169,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return compareDirs(
                     "",
                     "",
-                    new DirPairData(0, dirPair, bookNamePairs),
+                    new DirPairData("", dirPair, bookNamePairs),
                     outputDirs,
                     progressBefore,
                     progressAfter);

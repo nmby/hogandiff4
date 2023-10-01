@@ -127,7 +127,7 @@ public class TreeResultBookCreator {
                 Pair<Path> outputDirs = new Pair<>(Side.A, Side.B)
                         .map(side -> dirPair.has(side)
                                 ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent()).resolve(
-                                        "【%s%d】%s".formatted(side, pairData.num(),
+                                        "【%s%s】%s".formatted(side, pairData.id(),
                                                 dirPair.get(side).path().getFileName().toString()))
                                 : null);
                 
@@ -141,7 +141,7 @@ public class TreeResultBookCreator {
                         ch,
                         sheet,
                         rowNo,
-                        pairData.num(),
+                        pairData.id(),
                         outputDirs,
                         dirRelNames,
                         dirPair,
@@ -162,7 +162,7 @@ public class TreeResultBookCreator {
                             ch,
                             sheet,
                             rowNo,
-                            pairData.num(),
+                            pairData.id(),
                             i + 1,
                             outputDirs,
                             dirRelNames,
@@ -208,7 +208,7 @@ public class TreeResultBookCreator {
             CreationHelper ch,
             Sheet sheet,
             int rowNo,
-            int dirNo,
+            String dirId,
             Pair<Path> outputDirs,
             Pair<String> dirRelNames,
             Pair<DirInfo> dirPair,
@@ -217,7 +217,7 @@ public class TreeResultBookCreator {
         for (Side side : Side.values()) {
             if (dirPair.has(side)) {
                 // フォルダパスの出力
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%d】".formatted(side, dirNo));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
                 
                 // ハイパーリンクの設定
@@ -232,7 +232,7 @@ public class TreeResultBookCreator {
             CreationHelper ch,
             Sheet sheet,
             int rowNo,
-            int dirNo,
+            String dirId,
             int bookNo,
             Pair<Path> outputDirs,
             Pair<String> dirRelNames,
@@ -242,16 +242,16 @@ public class TreeResultBookCreator {
         for (Side side : Side.values()) {
             if (bookNames.has(side)) {
                 // ファイル名の出力
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%d】".formatted(side, dirNo));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 2, "【%s%d-%d】".formatted(side, dirNo, bookNo));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 2, "【%s%s-%d】".formatted(side, dirId, bookNo));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookNames.get(side));
                 
                 // ハイパーリンクの設定
                 Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
                 link.setAddress(
                         // TODO: URI周りの処理をもっとスマートにできるはず..
-                        outputDirs.get(side).resolve("【%s%d-%d】%s".formatted(side, dirNo, bookNo, bookNames.get(side)))
+                        outputDirs.get(side).resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookNames.get(side)))
                                 .toString().replace("\\", "/").replace(" ", "%20"));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(link);
             }

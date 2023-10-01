@@ -17,7 +17,7 @@ public interface DirsMatcher {
     // [static members] ********************************************************
     
     public static record DirPairData(
-            int num,
+            String id,
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs) {
     }
