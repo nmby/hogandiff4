@@ -31,6 +31,8 @@ import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
+import xyz.hotchpotch.hogandiff.excel.TreeResult;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -588,6 +590,50 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             e.printStackTrace();
             throw new ApplicationException(rb.getString("AppTaskBase.140"), e);
         }
+    }
+    
+    protected void createSaveAndShowResultBook(
+            Path workDir,
+            TreeResult tResult,
+            int progressBefore,
+            int progressAfter)
+            throws ApplicationException {
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
+        Path resultBookPath = null;
+        
+        try {
+            resultBookPath = workDir.resolve("result.xlsx");
+            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
+            updateMessage(str.toString());
+            
+            TreeResultBookCreator creator = new TreeResultBookCreator();
+            creator.createResultBook(resultBookPath, tResult);
+            
+        } catch (ExcelHandlingException e) {
+            str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "%s%n%s".formatted(rb.getString("CompareTreesTask.080"), resultBookPath),
+                    e);
+        }
+        
+        try {
+            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(resultBookPath.toFile());
+            }
+        } catch (IOException e) {
+            str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
+                    e);
+        }
+        updateProgress(progressAfter, PROGRESS_MAX);
     }
     
     /**
