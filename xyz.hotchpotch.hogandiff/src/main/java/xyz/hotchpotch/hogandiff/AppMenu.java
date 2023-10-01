@@ -130,7 +130,6 @@ public enum AppMenu {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(factory, "factory");
             
-            // TODO: coding
             return new CompareTreesTask(settings, factory);
         }
     };
