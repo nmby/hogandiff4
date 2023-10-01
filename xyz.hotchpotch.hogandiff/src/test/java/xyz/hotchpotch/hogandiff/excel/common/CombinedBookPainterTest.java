@@ -9,10 +9,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 
 class CombinedBookPainterTest {
     
@@ -20,24 +20,31 @@ class CombinedBookPainterTest {
     
     private static final BookPainter successPainter = new BookPainter() {
         @Override
-        public void paintAndSave(BookInfo srcBookInfo, BookInfo dstBookInfo, Map<String, Optional<Piece>> diffs)
+        public void paintAndSave(
+                BookOpenInfo srcBookOpenInfo,
+                BookOpenInfo dstBookOpenInfo,
+                Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
+            
             // nop
         }
     };
     
     private static final BookPainter failPainter = new BookPainter() {
         @Override
-        public void paintAndSave(BookInfo srcBookInfo, BookInfo dstBookInfo, Map<String, Optional<Piece>> diffs)
+        public void paintAndSave(
+                BookOpenInfo srcBookOpenInfo,
+                BookOpenInfo dstBookOpenInfo,
+                Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
             throw new ExcelHandlingException();
         }
     };
     
-    private static final BookInfo dummy1_xlsx = BookInfo.of(Path.of("dummy1.xlsx"), null);
-    private static final BookInfo dummy1_xls = BookInfo.of(Path.of("dummy1.xls"), null);
-    private static final BookInfo dummy2_xlsx = BookInfo.of(Path.of("dummy2.xlsx"), null);
+    private static final BookOpenInfo dummy1_xlsx = new BookOpenInfo(Path.of("dummy1.xlsx"), null);
+    private static final BookOpenInfo dummy1_xls = new BookOpenInfo(Path.of("dummy1.xls"), null);
+    private static final BookOpenInfo dummy2_xlsx = new BookOpenInfo(Path.of("dummy2.xlsx"), null);
     
     // [instance members] ******************************************************
     
@@ -68,13 +75,13 @@ class CombinedBookPainterTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(null, BookInfo.of(Path.of("dummy2.xlsx"), null), Map.of()));
+                () -> testee.paintAndSave(null, new BookOpenInfo(Path.of("dummy2.xlsx"), null), Map.of()));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(dummy1_xlsx, null, Map.of()));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, BookInfo.of(Path.of("dummy2.xlsx"), null), null));
+                () -> testee.paintAndSave(dummy1_xlsx, new BookOpenInfo(Path.of("dummy2.xlsx"), null), null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(null, null, null));

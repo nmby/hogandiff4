@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -98,41 +99,41 @@ public class PoiUtil {
                 : cell.getCellType();
         
         switch (type) {
-        case STRING:
-            return cell.getStringCellValue();
-        
-        case FORMULA:
-            return cell.getCellFormula();
-        
-        case BOOLEAN:
-            return Boolean.toString(cell.getBooleanCellValue());
-        
-        case NUMERIC:
-            // 日付セルや独自書式セルの値の扱いは甚だ不完全なものの、
-            // diffツールとしては内容の比較を行えればよいのだと割り切り、
-            // これ以上に凝ったコーディングは行わないこととする。
-            if (DateUtil.isCellDateFormatted(cell)) {
-                Date date = cell.getDateCellValue();
-                LocalDateTime localDateTime = LocalDateTime
-                        .ofInstant(date.toInstant(), ZoneId.systemDefault());
-                return dateTimeFormatter.format(localDateTime);
-                
-            } else {
-                String val = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
-                if (val.endsWith(".0")) {
-                    val = val.substring(0, val.length() - 2);
-                }
-                return val;
-            }
+            case STRING:
+                return cell.getStringCellValue();
             
-        case ERROR:
-            return ErrorEval.getText(cell.getErrorCellValue());
-        
-        case BLANK:
-            return "";
-        
-        default:
-            throw new AssertionError("unknown cell type: " + type);
+            case FORMULA:
+                return cell.getCellFormula();
+            
+            case BOOLEAN:
+                return Boolean.toString(cell.getBooleanCellValue());
+            
+            case NUMERIC:
+                // 日付セルや独自書式セルの値の扱いは甚だ不完全なものの、
+                // diffツールとしては内容の比較を行えればよいのだと割り切り、
+                // これ以上に凝ったコーディングは行わないこととする。
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    Date date = cell.getDateCellValue();
+                    LocalDateTime localDateTime = LocalDateTime
+                            .ofInstant(date.toInstant(), ZoneId.systemDefault());
+                    return dateTimeFormatter.format(localDateTime);
+                    
+                } else {
+                    String val = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
+                    if (val.endsWith(".0")) {
+                        val = val.substring(0, val.length() - 2);
+                    }
+                    return val;
+                }
+                
+            case ERROR:
+                return ErrorEval.getText(cell.getErrorCellValue());
+            
+            case BLANK:
+                return "";
+            
+            default:
+                throw new AssertionError("unknown cell type: " + type);
         }
     }
     
@@ -545,6 +546,46 @@ public class PoiUtil {
         } else if (sheet instanceof HSSFSheet hSheet) {
             // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
         }
+    }
+    
+    public static Cell getCell(
+            Sheet sheet,
+            int r,
+            int c) {
+        
+        Objects.requireNonNull(sheet, "sheet");
+        if (r < 0 || c < 0) {
+            throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
+        }
+        
+        Row row = CellUtil.getRow(r, sheet);
+        return CellUtil.getCell(row, c);
+    }
+    
+    public static Optional<Cell> getCellIfPresent(
+            Sheet sheet,
+            int r,
+            int c) {
+        
+        Objects.requireNonNull(sheet, "sheet");
+        if (r < 0 || c < 0) {
+            throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
+        }
+        
+        return Optional
+                .ofNullable(sheet.getRow(r))
+                .map(row -> row.getCell(c));
+    }
+    
+    public static Cell setCellValue(
+            Sheet sheet,
+            int r,
+            int c,
+            String value) {
+        
+        Cell cell = getCell(sheet, r, c);
+        cell.setCellValue(value);
+        return cell;
     }
     
     // [instance members] ******************************************************

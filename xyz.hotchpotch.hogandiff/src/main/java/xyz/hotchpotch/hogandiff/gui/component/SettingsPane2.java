@@ -51,8 +51,9 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         // [static members] ----------------------------------------------------
         
-        JA("日本語", Locale.JAPANESE, "jp.png"), EN("English", Locale.ENGLISH, "us.png"), ZH("簡体中文",
-                Locale.SIMPLIFIED_CHINESE, "cn.png");
+        JA("日本語", Locale.JAPANESE, "jp.png"),
+        EN("English", Locale.ENGLISH, "us.png"),
+        ZH("簡体中文", Locale.SIMPLIFIED_CHINESE, "cn.png");
         
         public static LocaleItem of(Locale locale) {
             Objects.requireNonNull(locale, "locale");

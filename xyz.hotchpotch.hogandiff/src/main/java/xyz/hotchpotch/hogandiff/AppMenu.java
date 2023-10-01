@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -28,10 +28,10 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
             
-            return !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath());
+            return !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath());
         }
         
         @Override
@@ -55,12 +55,12 @@ public enum AppMenu {
         public boolean isValidTargets(Settings settings) {
             Objects.requireNonNull(settings, "settings");
             
-            BookInfo bookInfo1 = settings.get(SettingKeys.CURR_BOOK_INFO1);
-            BookInfo bookInfo2 = settings.get(SettingKeys.CURR_BOOK_INFO2);
+            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
+            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
             String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
             String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
             
-            return !Objects.equals(bookInfo1.bookPath(), bookInfo2.bookPath())
+            return !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath())
                     || !Objects.equals(sheetName1, sheetName2);
         }
         
@@ -102,6 +102,35 @@ public enum AppMenu {
             Objects.requireNonNull(factory, "factory");
             
             return new CompareDirsTask(settings, factory);
+        }
+    },
+    
+    /**
+     * 指定されたフォルダ配下のフォルダツリーを比較します。
+     * 具体的には、2つのフォルダツリーに含まれるフォルダ同士をマッチングし、
+     * それらのペアごとに比較を行います。<br>
+     */
+    COMPARE_TREES {
+        
+        @Override
+        public boolean isValidTargets(Settings settings) {
+            Objects.requireNonNull(settings, "settings");
+            
+            Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
+            Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+            
+            return !Objects.equals(dirPath1, dirPath2);
+        }
+        
+        @Override
+        public Task<Void> getTask(
+                Settings settings,
+                Factory factory) {
+            
+            Objects.requireNonNull(settings, "settings");
+            Objects.requireNonNull(factory, "factory");
+            
+            return new CompareTreesTask(settings, factory);
         }
     };
     

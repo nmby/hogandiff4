@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -74,8 +74,8 @@ public class AppArgsParser {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
                     .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.of(Path.of(args[0]), null))
-                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.of(Path.of(args[1]), null));
+                    .set(SettingKeys.CURR_BOOK_OPEN_INFO1, new BookOpenInfo(Path.of(args[0]), null))
+                    .set(SettingKeys.CURR_BOOK_OPEN_INFO2, new BookOpenInfo(Path.of(args[1]), null));
             
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
             remainingParams.remove();
