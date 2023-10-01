@@ -175,7 +175,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     progressAfter);
             
         } else {
-            return DirResult.of(
+            return new DirResult(
                     dirPair,
                     bookNamePairs,
                     bookNamePairs.stream().collect(Collectors.toMap(

@@ -339,7 +339,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
         
-        return DirResult.of(
+        return new DirResult(
                 data.dirPair(),
                 data.bookNamePairs(),
                 bookResults,

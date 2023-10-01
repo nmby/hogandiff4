@@ -16,11 +16,16 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class DirResult {
+public record DirResult(
+        Pair<DirInfo> dirPair,
+        List<Pair<String>> bookNamePairs,
+        Map<Pair<String>, Optional<BookResult>> results,
+        String dirId) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
@@ -42,14 +47,14 @@ public class DirResult {
             throw new IllegalArgumentException("i: %d".formatted(i));
         }
         
-        ResourceBundle rb = AppMain.appResource.get();
-        
         return "    %s  vs  %s".formatted(
                 pair.hasA() ? "【A%s-%d】%s".formatted(dirId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
                 pair.hasB() ? "【B%s-%d】%s".formatted(dirId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
-    public static DirResult of(
+    // [instance members] ******************************************************
+    
+    public DirResult(
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookResult>> results,
@@ -59,28 +64,6 @@ public class DirResult {
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
         Objects.requireNonNull(results, "results");
         Objects.requireNonNull(dirId, "dirId");
-        
-        return new DirResult(dirPair, bookNamePairs, results, dirId);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final Pair<DirInfo> dirPair;
-    private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, Optional<BookResult>> results;
-    private final ResourceBundle rb = AppMain.appResource.get();
-    private final String dirId;
-    
-    private DirResult(
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookResult>> results,
-            String dirId) {
-        
-        assert dirPair != null;
-        assert bookNamePairs != null;
-        assert results != null;
-        assert dirId != null;
         
         this.dirPair = dirPair;
         this.bookNamePairs = List.copyOf(bookNamePairs);
@@ -92,22 +75,6 @@ public class DirResult {
         return bookNamePairs.stream()
                 .map(results::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
-    }
-    
-    public Pair<DirInfo> dirPair() {
-        return dirPair;
-    }
-    
-    public List<Pair<String>> bookNamePairs() {
-        return List.copyOf(bookNamePairs);
-    }
-    
-    public Map<Pair<String>, Optional<BookResult>> results() {
-        return Map.copyOf(results);
-    }
-    
-    public String dirId() {
-        return dirId;
     }
     
     @Override
