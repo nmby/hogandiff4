@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -16,85 +17,50 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class TreeResult {
+public record TreeResult(
+        Pair<DirInfo> topDirPair,
+        List<DirPairData> pairDataList,
+        Map<Pair<Path>, Optional<DirResult>> dirResults) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    
-    public static record DirPairData(
-            int num,
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-    }
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param i このフォルダペアの識別番号。{@code i + 1} をユーザー向けに表示します。
+     * @param id このフォルダペアの識別子。
      * @param data フォルダペア情報
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
      */
-    public static String formatDirsPair(int i, Pair<DirInfo> dirPair) {
+    public static String formatDirsPair(String id, Pair<DirInfo> dirPair) {
         Objects.requireNonNull(dirPair, "dirPair");
-        
-        ResourceBundle rb = AppMain.appResource.get();
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%d】 %s".formatted(i + 1, dirPair.a().path())
+                        ? "【A%s】 %s".formatted(id, dirPair.a().path())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%d】 %s".formatted(i + 1, dirPair.b().path())
+                        ? "【B%s】 %s".formatted(id, dirPair.b().path())
                         : rb.getString("excel.TreeResult.010"));
-    }
-    
-    public static TreeResult of(
-            Pair<DirInfo> topDirPair,
-            List<DirPairData> pairDataList,
-            Map<Pair<Path>, Optional<DirResult>> results) {
-        
-        Objects.requireNonNull(topDirPair, "topDirPair");
-        Objects.requireNonNull(pairDataList, "pairDataList");
-        Objects.requireNonNull(results, "results");
-        
-        return new TreeResult(
-                topDirPair,
-                pairDataList,
-                results);
     }
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> topDirPair;
-    private final List<DirPairData> pairDataList;
-    private final Map<Pair<Path>, Optional<DirResult>> results;
-    private final ResourceBundle rb = AppMain.appResource.get();
-    
-    private TreeResult(
+    public TreeResult(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
-            Map<Pair<Path>, Optional<DirResult>> results) {
+            Map<Pair<Path>, Optional<DirResult>> dirResults) {
         
-        assert topDirPair != null;
-        assert pairDataList != null;
+        Objects.requireNonNull(topDirPair, "topDirPair");
+        Objects.requireNonNull(pairDataList, "pairDataList");
+        Objects.requireNonNull(dirResults, "dirResults");
         
         this.topDirPair = topDirPair;
         this.pairDataList = List.copyOf(pairDataList);
-        this.results = Map.copyOf(results);
-    }
-    
-    public Pair<DirInfo> topDirPair() {
-        return topDirPair;
-    }
-    
-    public List<DirPairData> pairDataList() {
-        return List.copyOf(pairDataList);
-    }
-    
-    public Map<Pair<Path>, Optional<DirResult>> results() {
-        return Map.copyOf(results);
+        this.dirResults = Map.copyOf(dirResults);
     }
     
     @Override
@@ -134,9 +100,9 @@ public class TreeResult {
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::path));
+            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
             
-            str.append(formatDirsPair(pairData.num() - 1, pairData.dirPair()));
+            str.append(formatDirsPair(pairData.id(), pairData.dirPair()));
             
             if (pairData.dirPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));

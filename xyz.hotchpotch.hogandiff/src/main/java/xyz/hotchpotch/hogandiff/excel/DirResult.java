@@ -16,11 +16,16 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class DirResult {
+public record DirResult(
+        Pair<DirInfo> dirPair,
+        List<Pair<String>> bookNamePairs,
+        Map<Pair<String>, Optional<BookResult>> bookResults,
+        String dirId) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
@@ -42,72 +47,34 @@ public class DirResult {
             throw new IllegalArgumentException("i: %d".formatted(i));
         }
         
-        ResourceBundle rb = AppMain.appResource.get();
-        
         return "    %s  vs  %s".formatted(
                 pair.hasA() ? "【A%s-%d】%s".formatted(dirId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
                 pair.hasB() ? "【B%s-%d】%s".formatted(dirId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
-    public static DirResult of(
+    // [instance members] ******************************************************
+    
+    public DirResult(
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookResult>> results,
+            Map<Pair<String>, Optional<BookResult>> bookResults,
             String dirId) {
         
         Objects.requireNonNull(dirPair, "dirPair");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
-        Objects.requireNonNull(results, "results");
+        Objects.requireNonNull(bookResults, "bookResults");
         Objects.requireNonNull(dirId, "dirId");
-        
-        return new DirResult(dirPair, bookNamePairs, results, dirId);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final Pair<DirInfo> dirPair;
-    private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, Optional<BookResult>> results;
-    private final ResourceBundle rb = AppMain.appResource.get();
-    private final String dirId;
-    
-    private DirResult(
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookResult>> results,
-            String dirId) {
-        
-        assert dirPair != null;
-        assert bookNamePairs != null;
-        assert results != null;
-        assert dirId != null;
         
         this.dirPair = dirPair;
         this.bookNamePairs = List.copyOf(bookNamePairs);
-        this.results = Map.copyOf(results);
+        this.bookResults = Map.copyOf(bookResults);
         this.dirId = dirId;
     }
     
     public boolean hasDiff() {
         return bookNamePairs.stream()
-                .map(results::get)
+                .map(bookResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
-    }
-    
-    public Pair<DirInfo> dirPair() {
-        return dirPair;
-    }
-    
-    public List<Pair<String>> bookNamePairs() {
-        return List.copyOf(bookNamePairs);
-    }
-    
-    public Map<Pair<String>, Optional<BookResult>> results() {
-        return Map.copyOf(results);
-    }
-    
-    public String dirId() {
-        return dirId;
     }
     
     @Override
@@ -155,7 +122,7 @@ public class DirResult {
         
         StringBuilder str = new StringBuilder();
         
-        if (results.isEmpty()) {
+        if (bookResults.isEmpty()) {
             str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
             if (isDetailMode) {
                 // TODO: とても不細工なのでどうにかしたい
@@ -166,7 +133,7 @@ public class DirResult {
         
         for (int i = 0; i < bookNamePairs.size(); i++) {
             Pair<String> bookNamePair = bookNamePairs.get(i);
-            Optional<BookResult> bResult = results.get(bookNamePair);
+            Optional<BookResult> bResult = bookResults.get(bookNamePair);
             
             str.append(formatBookNamesPair(dirId, i, bookNamePair));
             
@@ -184,11 +151,11 @@ public class DirResult {
     }
     
     public String getDiffSimpleSummary() {
-        if (results.isEmpty()) {
+        if (bookResults.isEmpty()) {
             return rb.getString("excel.DResult.100");
         }
         
-        int diffBooks = (int) results.values().stream()
+        int diffBooks = (int) bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(BookResult::hasDiff)
@@ -198,7 +165,7 @@ public class DirResult {
                 .count();
         int failed = (int) bookNamePairs.stream()
                 .filter(Pair::isPaired)
-                .filter(p -> !results.containsKey(p) || results.get(p).isEmpty())
+                .filter(p -> !bookResults.containsKey(p) || bookResults.get(p).isEmpty())
                 .count();
         
         if (diffBooks == 0 && gapBooks == 0 && failed == 0) {

@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,11 +14,9 @@ import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
-import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -123,11 +120,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (int i = 0; i < dirPairs.size(); i++) {
                 Pair<DirInfo> dirPair = dirPairs.get(i);
                 
-                str.append(TreeResult.formatDirsPair(i, dirPair)).append(BR);
+                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirPair)).append(BR);
                 updateMessage(str.toString());
                 
                 DirPairData data = new DirPairData(
-                        i + 1,
+                        Integer.toString(i + 1),
                         dirPair,
                         dirPair.isPaired()
                                 ? bookNamesMatcher.pairingBooks(dirPair.a(), dirPair.b())
@@ -174,7 +171,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData data = pairDataList.get(i);
             
-            str.append(TreeResult.formatDirsPair(i, data.dirPair()));
+            str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
             updateMessage(str.toString());
             
             Path outputDir1 = null;
@@ -228,54 +225,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressAfter, PROGRESS_MAX);
         
-        return TreeResult.of(
+        return new TreeResult(
                 topDirPair,
                 pairDataList,
                 dirResults);
-    }
-    
-    // 6. 比較結果Excelの作成と表示
-    private void createSaveAndShowResultBook(
-            Path workDir,
-            TreeResult tResult,
-            int progressBefore,
-            int progressAfter)
-            throws ApplicationException {
-        
-        updateProgress(progressBefore, PROGRESS_MAX);
-        Path resultBookPath = null;
-        
-        try {
-            resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
-            updateMessage(str.toString());
-            
-            TreeResultBookCreator creator = new TreeResultBookCreator();
-            creator.createResultBook(resultBookPath, tResult);
-            
-        } catch (ExcelHandlingException e) {
-            str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.080"), resultBookPath),
-                    e);
-        }
-        
-        try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
-                updateMessage(str.toString());
-                Desktop.getDesktop().open(resultBookPath.toFile());
-            }
-        } catch (IOException e) {
-            str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
-                    e);
-        }
-        updateProgress(progressAfter, PROGRESS_MAX);
     }
 }
