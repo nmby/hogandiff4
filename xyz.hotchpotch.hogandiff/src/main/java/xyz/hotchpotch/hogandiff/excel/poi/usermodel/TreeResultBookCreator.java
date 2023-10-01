@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -36,16 +35,6 @@ public class TreeResultBookCreator {
     // [static members] ********************************************************
     
     private static final String templateBookName = "result.xlsx";
-    private static final Path templateBookPath;
-    static {
-        Path tmp = null;
-        try {
-            tmp = Path.of(AppMain.class.getResource(templateBookName).toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        templateBookPath = tmp;
-    }
     private static final String sheetName = "result";
     
     private static final int ROW_LIST_TEMPLATE = 4;
@@ -76,14 +65,14 @@ public class TreeResultBookCreator {
         Objects.requireNonNull(treeResult, "treeResult");
         
         // 1. テンプレートブックをコピーする。
-        try {
-            Files.copy(templateBookPath, dstBookPath);
+        try (InputStream srcIs = ClassLoader.getSystemResourceAsStream(templateBookName)) {
+            Files.copy(srcIs, dstBookPath);
             dstBookPath.toFile().setReadable(true, false);
             dstBookPath.toFile().setWritable(true, false);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "failed to copy template book : %s -> %s".formatted(templateBookPath, dstBookPath),
+                    "failed to copy template book : %s -> %s".formatted(templateBookName, dstBookPath),
                     e);
         }
         

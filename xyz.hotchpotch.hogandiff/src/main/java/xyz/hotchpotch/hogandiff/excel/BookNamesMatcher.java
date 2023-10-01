@@ -23,7 +23,6 @@ public interface BookNamesMatcher {
      * @return Excelブック名同士の対応関係を決めるマッチャー
      */
     public static BookNamesMatcher of(boolean matchNamesStrictly) {
-        //TODO: Excelブック名だけでなく内包するシートも加味したマッチャーに改善可能
         return StandardBookNamesMatcher.of(matchNamesStrictly);
     }
     
