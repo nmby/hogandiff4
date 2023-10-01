@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public record BookResult(
         Pair<Path> bookPaths,
         List<Pair<String>> sheetPairs,
-        Map<Pair<String>, Optional<SheetResult>> results) {
+        Map<Pair<String>, Optional<SheetResult>> sheetResults) {
     
     // [static members] ********************************************************
     
@@ -59,7 +59,7 @@ public record BookResult(
      * 
      * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
-     * @param results Excelシート同士の比較結果（片側だけの欠損ペアも含む）
+     * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
      * @return Excelブック同士の比較結果
      * @throws NullPointerException
      *          {@code bookPaths}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
@@ -67,15 +67,15 @@ public record BookResult(
     public BookResult(
             Pair<Path> bookPaths,
             List<Pair<String>> sheetPairs,
-            Map<Pair<String>, Optional<SheetResult>> results) {
+            Map<Pair<String>, Optional<SheetResult>> sheetResults) {
         
         Objects.requireNonNull(bookPaths, "bookPaths");
         Objects.requireNonNull(sheetPairs, "sheetPairs");
-        Objects.requireNonNull(results, "results");
+        Objects.requireNonNull(sheetResults, "sheetResults");
         
         this.bookPaths = bookPaths;
         this.sheetPairs = List.copyOf(sheetPairs);
-        this.results = Map.copyOf(results);
+        this.sheetResults = Map.copyOf(sheetResults);
     }
     
     /**
@@ -85,7 +85,7 @@ public record BookResult(
      */
     public boolean hasDiff() {
         return sheetPairs.stream()
-                .map(results::get)
+                .map(sheetResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
     
@@ -98,7 +98,7 @@ public record BookResult(
     public Map<String, Optional<Piece>> getPiece(Side side) {
         Objects.requireNonNull(side, "side");
         
-        return results.entrySet().stream()
+        return sheetResults.entrySet().stream()
                 .filter(entry -> entry.getKey().has(side))
                 .collect(Collectors.toMap(
                         entry -> entry.getKey().get(side),
@@ -110,7 +110,7 @@ public record BookResult(
         
         for (int i = 0; i < sheetPairs.size(); i++) {
             Pair<String> pair = sheetPairs.get(i);
-            Optional<SheetResult> sResult = results.get(pair);
+            Optional<SheetResult> sResult = sheetResults.get(pair);
             
             if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
                 continue;
@@ -146,7 +146,7 @@ public record BookResult(
     
     public String getDiffSimpleSummary() {
         int diffSheets = (int) sheetPairs.stream()
-                .filter(Pair::isPaired).map(p -> results.get(p).get()).filter(SheetResult::hasDiff).count();
+                .filter(Pair::isPaired).map(p -> sheetResults.get(p).get()).filter(SheetResult::hasDiff).count();
         int gapSheets = (int) sheetPairs.stream().filter(p -> !p.isPaired()).count();
         
         if (diffSheets == 0 && gapSheets == 0) {

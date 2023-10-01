@@ -24,9 +24,9 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
-import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -118,7 +118,7 @@ public class TreeResultBookCreator {
                 
                 // 4-3. フォルダ名と差分シンボルの出力
                 Pair<DirInfo> dirPair = pairData.dirPair();
-                Optional<DirResult> dirResult = treeResult.results().get(dirPair.map(DirInfo::path));
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::path));
                 
                 Pair<String> dirRelNames = new Pair<>(
                         dirPair.hasA() ? relPath.apply(Side.A, dirPair.a().path()) : null,
@@ -156,7 +156,7 @@ public class TreeResultBookCreator {
                     
                     // 4-6. Excelブック名と差分シンボルの出力
                     Pair<String> bookNames = pairData.bookNamePairs().get(i);
-                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.results().get(bookNames));
+                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.bookResults().get(bookNames));
                     
                     outputFileLine(
                             ch,

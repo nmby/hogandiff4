@@ -16,6 +16,12 @@ public interface DirsMatcher {
     
     // [static members] ********************************************************
     
+    public static record DirPairData(
+            int num,
+            Pair<DirInfo> dirPair,
+            List<Pair<String>> bookNamePairs) {
+    }
+    
     /**
      * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
      * 

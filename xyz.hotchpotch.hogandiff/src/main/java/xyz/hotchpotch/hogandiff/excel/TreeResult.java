@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.TreeResult.DirPairData;
+import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -20,18 +20,12 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public record TreeResult(
         Pair<DirInfo> topDirPair,
         List<DirPairData> pairDataList,
-        Map<Pair<Path>, Optional<DirResult>> results) {
+        Map<Pair<Path>, Optional<DirResult>> dirResults) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
     private static final ResourceBundle rb = AppMain.appResource.get();
-    
-    public static record DirPairData(
-            int num,
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-    }
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
@@ -58,15 +52,15 @@ public record TreeResult(
     public TreeResult(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
-            Map<Pair<Path>, Optional<DirResult>> results) {
+            Map<Pair<Path>, Optional<DirResult>> dirResults) {
         
         Objects.requireNonNull(topDirPair, "topDirPair");
         Objects.requireNonNull(pairDataList, "pairDataList");
-        Objects.requireNonNull(results, "results");
+        Objects.requireNonNull(dirResults, "dirResults");
         
         this.topDirPair = topDirPair;
         this.pairDataList = List.copyOf(pairDataList);
-        this.results = Map.copyOf(results);
+        this.dirResults = Map.copyOf(dirResults);
     }
     
     @Override
@@ -106,7 +100,7 @@ public record TreeResult(
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = results.get(pairData.dirPair().map(DirInfo::path));
+            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
             
             str.append(formatDirsPair(pairData.num() - 1, pairData.dirPair()));
             
