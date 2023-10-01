@@ -9,6 +9,10 @@ import java.util.Objects;
  *
  * @author nmby
  */
+// 実装メモ
+// 本クラスは record にしたいところだが、
+// #equals と #hashCode を独自実装したいため（詳細は各メソッドのコメント参照）、
+// 普通のクラスとして実装している。
 public class DirInfo implements Comparable<DirInfo> {
     
     // [static members] ********************************************************
@@ -65,6 +69,10 @@ public class DirInfo implements Comparable<DirInfo> {
             //                    && Objects.equals(parent, other.parent)
             //                    && Objects.equals(bookNames, other.bookNames)
             //                    && Objects.equals(children, other.children);
+            //
+            // -> parent と children で参照ループを構成しているため。
+            //    こういうときはどうすれば良いのん？
+            // TODO: 要お勉強
         }
         return false;
     }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -57,13 +59,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
         
         // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 95);
+        DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 93);
         
-        // 6. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, dResult.toString(), 95, 97);
+        // 6. 比較結果テキストの作成と表示
+        saveAndShowResultText(workDir, dResult.toString(), 93, 95);
         
-        // 7. 比較結果の表示（出力フォルダ）
-        showOutputDirs(workDir, 97, 99);
+        // 7. 比較結果Excelの作成と表示
+        TreeResult tResult = new TreeResult(
+                dirPair,
+                List.of(new DirPairData("", dirPair, bookNamePairs)),
+                Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
+        createSaveAndShowResultBook(workDir, tResult, 95, 99);
         
         // 8. 処理終了のアナウンス
         announceEnd();
@@ -169,7 +175,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return compareDirs(
                     "",
                     "",
-                    new DirPairData(0, dirPair, bookNamePairs),
+                    new DirPairData("", dirPair, bookNamePairs),
                     outputDirs,
                     progressBefore,
                     progressAfter);

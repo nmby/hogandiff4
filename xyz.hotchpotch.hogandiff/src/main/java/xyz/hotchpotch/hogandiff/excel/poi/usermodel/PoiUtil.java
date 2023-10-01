@@ -577,7 +577,7 @@ public class PoiUtil {
                 .map(row -> row.getCell(c));
     }
     
-    public static void setCellValue(
+    public static Cell setCellValue(
             Sheet sheet,
             int r,
             int c,
@@ -585,6 +585,7 @@ public class PoiUtil {
         
         Cell cell = getCell(sheet, r, c);
         cell.setCellValue(value);
+        return cell;
     }
     
     // [instance members] ******************************************************

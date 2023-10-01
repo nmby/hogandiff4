@@ -30,20 +30,20 @@ public record TreeResult(
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param i このフォルダペアの識別番号。{@code i + 1} をユーザー向けに表示します。
+     * @param id このフォルダペアの識別子。
      * @param data フォルダペア情報
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
      */
-    public static String formatDirsPair(int i, Pair<DirInfo> dirPair) {
+    public static String formatDirsPair(String id, Pair<DirInfo> dirPair) {
         Objects.requireNonNull(dirPair, "dirPair");
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%d】 %s".formatted(i + 1, dirPair.a().path())
+                        ? "【A%s】 %s".formatted(id, dirPair.a().path())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%d】 %s".formatted(i + 1, dirPair.b().path())
+                        ? "【B%s】 %s".formatted(id, dirPair.b().path())
                         : rb.getString("excel.TreeResult.010"));
     }
     
@@ -102,7 +102,7 @@ public record TreeResult(
             DirPairData pairData = pairDataList.get(i);
             Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
             
-            str.append(formatDirsPair(pairData.num() - 1, pairData.dirPair()));
+            str.append(formatDirsPair(pairData.id(), pairData.dirPair()));
             
             if (pairData.dirPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
