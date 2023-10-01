@@ -214,9 +214,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     PROGRESS_MAX);
         }
         
-        return BookResult.of(
-                bookOpenInfo1.bookPath(),
-                bookOpenInfo2.bookPath(),
+        return new BookResult(
+                new Pair<>(
+                        bookOpenInfo1.bookPath(),
+                        bookOpenInfo2.bookPath()),
                 sheetNamePairs,
                 results);
     }

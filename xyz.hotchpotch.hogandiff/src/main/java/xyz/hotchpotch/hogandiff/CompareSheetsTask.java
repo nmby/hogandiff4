@@ -118,9 +118,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return BookResult.of(
-                    bookOpenInfo1.bookPath(),
-                    bookOpenInfo2.bookPath(),
+            return new BookResult(
+                    new Pair<>(
+                            bookOpenInfo1.bookPath(),
+                            bookOpenInfo2.bookPath()),
                     List.of(pair),
                     Map.of(pair, Optional.of(result)));
             

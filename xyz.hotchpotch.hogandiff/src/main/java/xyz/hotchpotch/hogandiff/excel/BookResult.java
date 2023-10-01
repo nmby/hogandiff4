@@ -19,11 +19,15 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class BookResult {
+public record BookResult(
+        Pair<Path> bookPaths,
+        List<Pair<String>> sheetPairs,
+        Map<Pair<String>, Optional<SheetResult>> results) {
     
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
+    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * シート名ペアをユーザー表示用に整形して返します。<br>
@@ -40,7 +44,7 @@ public class BookResult {
             throw new IndexOutOfBoundsException(idx);
         }
         
-        ResourceBundle rb = AppMain.appResource.get();
+        //ResourceBundle rb = AppMain.appResource.get();
         
         return "    %d) %s  vs  %s".formatted(
                 idx + 1,
@@ -48,51 +52,28 @@ public class BookResult {
                 pair.hasB() ? "B[ " + pair.b() + " ]" : rb.getString("excel.BResult.010"));
     }
     
+    // [instance members] ******************************************************
+    
     /**
      * Excelブック同士の比較結果を生成して返します。<br>
      * 
-     * @param bookPath1 比較対象Excelブックのパス1
-     * @param bookPath2 比較対象Excelブックのパス2
+     * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
      * @param results Excelシート同士の比較結果（片側だけの欠損ペアも含む）
      * @return Excelブック同士の比較結果
      * @throws NullPointerException
-     *          {@code bookPath1}, {@code bookPath2}, {@code sheetPairs}, {@code results}
-     *          のいずれかが {@code null} の場合
+     *          {@code bookPaths}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
      */
-    public static BookResult of(
-            Path bookPath1,
-            Path bookPath2,
+    public BookResult(
+            Pair<Path> bookPaths,
             List<Pair<String>> sheetPairs,
             Map<Pair<String>, Optional<SheetResult>> results) {
         
-        Objects.requireNonNull(bookPath1, "bookPath1");
-        Objects.requireNonNull(bookPath2, "bookPath2");
+        Objects.requireNonNull(bookPaths, "bookPaths");
         Objects.requireNonNull(sheetPairs, "sheetPairs");
         Objects.requireNonNull(results, "results");
         
-        return new BookResult(bookPath1, bookPath2, sheetPairs, results);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final Pair<Path> bookPath;
-    private final List<Pair<String>> sheetPairs;
-    private final Map<Pair<String>, Optional<SheetResult>> results;
-    private final ResourceBundle rb = AppMain.appResource.get();
-    
-    private BookResult(
-            Path bookPath1,
-            Path bookPath2,
-            List<Pair<String>> sheetPairs,
-            Map<Pair<String>, Optional<SheetResult>> results) {
-        
-        assert bookPath1 != null;
-        assert bookPath2 != null;
-        assert sheetPairs != null;
-        assert results != null;
-        
-        this.bookPath = new Pair<>(bookPath1, bookPath2);
+        this.bookPaths = bookPaths;
         this.sheetPairs = List.copyOf(sheetPairs);
         this.results = Map.copyOf(results);
     }
@@ -190,11 +171,11 @@ public class BookResult {
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        if (bookPath.isIdentical()) {
-            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPath.a()).append(BR);
+        if (bookPaths.isIdentical()) {
+            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPaths.a()).append(BR);
         } else {
-            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPath.a()).append(BR);
-            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPath.b()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPaths.a()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPaths.b()).append(BR);
         }
         
         for (int i = 0; i < sheetPairs.size(); i++) {
@@ -207,47 +188,6 @@ public class BookResult {
         str.append(getDiffSummary()).append(BR);
         str.append(rb.getString("excel.BResult.070")).append(BR);
         str.append(getDiffDetail());
-        
-        return str.toString();
-    }
-    
-    /**
-     * 比較結果のコマンドライン出力用文字列を返します。<br>
-     * 
-     * @return 比較結果のコマンドライン出力用文字列
-     */
-    public String getDiff() {
-        StringBuilder str = new StringBuilder();
-        
-        if (bookPath.isIdentical()) {
-            str.append("--- ").append(bookPath.a()).append(sheetPairs.get(0).a()).append(BR);
-            str.append("+++ ").append(bookPath.b()).append(sheetPairs.get(0).b()).append(BR);
-            str.append(BR);
-            str.append(results.get(sheetPairs.get(0)).get().getDiff());
-            
-        } else {
-            str.append("--- ").append(bookPath.a()).append(BR);
-            str.append("+++ ").append(bookPath.b()).append(BR);
-            str.append(BR);
-            
-            Function<Pair<String>, String> sheetPairToStr = sheetPair -> {
-                if (sheetPair.isPaired()) {
-                    return "@@ [%s] -> [%s] @@%n".formatted(sheetPair.a(), sheetPair.b())
-                            + results.get(sheetPair).get().getDiff();
-                    
-                } else if (sheetPair.isOnlyA()) {
-                    return "@@ -[%s] @@%n".formatted(sheetPair.a());
-                    
-                } else if (sheetPair.isOnlyB()) {
-                    return "@@ +[%s] @@%n".formatted(sheetPair.b());
-                    
-                } else {
-                    throw new AssertionError();
-                }
-            };
-            
-            str.append(sheetPairs.stream().map(sheetPairToStr).collect(Collectors.joining(BR)));
-        }
         
         return str.toString();
     }
