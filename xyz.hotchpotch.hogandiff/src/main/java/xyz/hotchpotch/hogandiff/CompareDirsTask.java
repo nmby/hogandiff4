@@ -70,7 +70,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 List.of(new DirPairData("", dirPair, bookNamePairs)),
                 Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
         createSaveAndShowResultBook(workDir, tResult, 95, 99);
-        showOutputDirs(workDir, 95, 99);
         
         // 8. 処理終了のアナウンス
         announceEnd();

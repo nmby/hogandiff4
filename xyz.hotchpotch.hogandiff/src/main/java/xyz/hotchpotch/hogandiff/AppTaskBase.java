@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
@@ -555,40 +554,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(rb.getString("AppTaskBase.090"), e);
-        }
-    }
-    
-    protected void showOutputDirs(
-            Path workDir,
-            int progressBefore,
-            int progressAfter)
-            throws ApplicationException {
-        
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTaskBase.130")).append(BR);
-                
-                List<Path> outputDirs = Files.list(workDir)
-                        .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
-                        .sorted()
-                        .toList();
-                
-                Desktop.getDesktop().open(outputDirs.get(0).toFile());
-                str.append("    - %s%n".formatted(outputDirs.get(0)));
-                
-                Desktop.getDesktop().open(outputDirs.get(1).toFile());
-                str.append("    - %s%n%n".formatted(outputDirs.get(1)));
-            }
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.140")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.140"), e);
         }
     }
     
