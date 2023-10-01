@@ -228,7 +228,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressAfter, PROGRESS_MAX);
         
-        return TreeResult.of(
+        return new TreeResult(
                 topDirPair,
                 pairDataList,
                 dirResults);
