@@ -71,6 +71,14 @@ public class SettingKeys {
             Double::valueOf,
             true);
     
+    /** 設定エリアを表示するか */
+    public static final Key<Boolean> STAGE_MAXIMIZED = new Key<Boolean>(
+            "application.maximized",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
     /** 今回の実行を識別するためのタイムスタンプタグ */
     public static final Key<String> CURR_TIMESTAMP = new Key<String>(
             "current.timestamp",

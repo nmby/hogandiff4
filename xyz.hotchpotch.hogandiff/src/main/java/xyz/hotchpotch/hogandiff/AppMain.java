@@ -21,7 +21,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.17.0";
+    private static final String VERSION = "v0.17.1";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -95,25 +95,28 @@ public class AppMain extends Application {
         if (settings.containsKey(SettingKeys.STAGE_WIDTH)) {
             primaryStage.setWidth(settings.get(SettingKeys.STAGE_WIDTH));
         }
+        if (settings.containsKey(SettingKeys.STAGE_MAXIMIZED)) {
+            primaryStage.setMaximized(settings.get(SettingKeys.STAGE_MAXIMIZED));
+        }
+        primaryStage.heightProperty().addListener((target, oldValue, newValue) -> {
+            if (!primaryStage.isMaximized()) {
+                appResource.changeSetting(SettingKeys.STAGE_HEIGHT, (Double) newValue);
+            }
+        });
+        primaryStage.widthProperty().addListener((target, oldValue, newValue) -> {
+            if (!primaryStage.isMaximized()) {
+                appResource.changeSetting(SettingKeys.STAGE_WIDTH, (Double) newValue);
+            }
+        });
+        primaryStage.maximizedProperty().addListener((target, oldValue, newValue) -> {
+            appResource.changeSetting(SettingKeys.STAGE_MAXIMIZED, newValue);
+        });
+        
         primaryStage.show();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.execute();
-        }
-    }
-    
-    @Override
-    public void stop() {
-        Settings settings = appResource.settings();
-        
-        if (!settings.containsKey(SettingKeys.STAGE_HEIGHT)
-                || settings.get(SettingKeys.STAGE_HEIGHT) != stage.getHeight()) {
-            appResource.changeSetting(SettingKeys.STAGE_HEIGHT, stage.getHeight());
-        }
-        if (!settings.containsKey(SettingKeys.STAGE_WIDTH)
-                || settings.get(SettingKeys.STAGE_WIDTH) != stage.getWidth()) {
-            appResource.changeSetting(SettingKeys.STAGE_WIDTH, stage.getWidth());
         }
     }
 }
