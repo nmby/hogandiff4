@@ -96,7 +96,7 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.topDirPair().a().path().getParent(),
+                        treeResult.topDirPair().get(side).path().getParent(),
                         dstBookPath.getParent());
             }
             
@@ -121,8 +121,8 @@ public class TreeResultBookCreator {
                 
                 Pair<Path> outputDirs = new Pair<>(Side.A, Side.B)
                         .map(side -> dirPair.has(side)
-                                ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent()).resolve(
-                                        "【%s%s】%s".formatted(side, pairData.id(),
+                                ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent())
+                                        .resolve("【%s%s】%s".formatted(side, pairData.id(),
                                                 dirPair.get(side).path().getFileName().toString()))
                                 : null);
                 
