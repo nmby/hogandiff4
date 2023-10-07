@@ -121,12 +121,22 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
         }
         copy {
             from outputDirTmpJars
-            into outputDirWinX64.resolve("lib")
             exclude "xyz.hotchpotch.hogandiff.jar"
+            into outputDirWinX64.resolve("lib")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-win-x64')
             into outputDirWinX64.resolve("jre-min")
+        }
+        copy {
+            from project['myprop.poi.src']
+            include 'LICENSE', 'NOTICE'
+            into outputDirWinX64.resolve("lib/legal/poi")
+        }
+        copy {
+            from project['myprop.log4j.bin']
+            include 'LICENSE.txt', 'NOTICE.txt'
+            into outputDirWinX64.resolve("lib/legal/log4j")
         }
     }
 }
@@ -153,6 +163,16 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
             into outputDirMacX64.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+        }
+        copy {
+            from project['myprop.poi.src']
+            include 'LICENSE', 'NOTICE'
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/poi')
+        }
+        copy {
+            from project['myprop.log4j.bin']
+            include 'LICENSE.txt', 'NOTICE.txt'
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/log4j')
         }
     }
 }
