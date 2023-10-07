@@ -28,6 +28,13 @@ public interface BookNamesMatcher {
     
     // [instance members] ******************************************************
     
+    /**
+     * 2つのフォルダに含まれるExcelブック同士の対応関係を、Excelブック名のペアのリストとして返します。<br>
+     * 
+     * @param dirInfo1 フォルダ情報1
+     * @param dirInfo2 フォルダ情報2
+     * @return Excelブック名のペアのリスト
+     */
     public List<Pair<String>> pairingBooks(
             DirInfo dirInfo1,
             DirInfo dirInfo2);

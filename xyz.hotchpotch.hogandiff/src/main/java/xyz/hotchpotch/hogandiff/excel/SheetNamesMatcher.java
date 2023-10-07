@@ -28,6 +28,13 @@ public interface SheetNamesMatcher {
     
     // [instance members] ******************************************************
     
+    /**
+     * 2つのExcelブックに含まれるシート同士の組み合わせを決定して返します。<br>
+     * 
+     * @param bookInfo1 比較対象Excelブック情報1
+     * @param bookInfo2 比較対象Excelブック情報2
+     * @return シート同士の組み合わせを表すリスト
+     */
     public List<Pair<String>> pairingSheetNames(
             BookInfo bookInfo1,
             BookInfo bookInfo2);

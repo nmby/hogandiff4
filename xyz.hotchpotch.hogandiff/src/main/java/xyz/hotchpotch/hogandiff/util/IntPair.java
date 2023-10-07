@@ -261,6 +261,13 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         throw new NoSuchElementException();
     }
     
+    /**
+     * 指定した側の値がある場合はその値を返し、そうでない場合は例外をスローします。<br>
+     * 
+     * @param side 値を取得する側
+     * @return 指定した側の値
+     * @throws NoSuchElementException 指定した側の値が無い場合
+     */
     public int get(Side side) {
         Objects.requireNonNull(side, "side");
         return side == Side.A ? a() : b();

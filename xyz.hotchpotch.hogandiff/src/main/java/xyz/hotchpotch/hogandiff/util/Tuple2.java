@@ -5,6 +5,8 @@ package xyz.hotchpotch.hogandiff.util;
  * 
  * @param <T1> 要素1の型
  * @param <T2> 要素2の型
+ * @param item1 要素1
+ * @param item2 要素2
  */
 public record Tuple2<T1, T2>(T1 item1, T2 item2) {
     

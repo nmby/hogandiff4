@@ -16,6 +16,13 @@ public interface DirsMatcher {
     
     // [static members] ********************************************************
     
+    /**
+     * フォルダの組み合わせを表すレコードです。<br>
+     * 
+     * @param id フォルダ同士の組み合わせを表す識別子
+     * @param dirPair 比較対象のフォルダ情報のペア
+     * @param bookNamePairs 比較対象のExcelブック名同士のペアのリスト
+     */
     public static record DirPairData(
             String id,
             Pair<DirInfo> dirPair,
@@ -34,6 +41,13 @@ public interface DirsMatcher {
     
     // [instance members] ******************************************************
     
+    /**
+     * フォルダツリーに含まれるフォルダ同士の組み合わせを決定して返します。<br>
+     * 
+     * @param topDirInfo1 トップフォルダ1
+     * @param topDirInfo2 トップフォルダ2
+     * @return フォルダ同士の組み合わせを表すリスト
+     */
     public List<Pair<DirInfo>> pairingDirs(
             DirInfo topDirInfo1,
             DirInfo topDirInfo2);

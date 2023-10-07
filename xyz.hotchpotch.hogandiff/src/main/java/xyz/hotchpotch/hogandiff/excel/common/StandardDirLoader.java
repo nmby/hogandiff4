@@ -34,6 +34,12 @@ public class StandardDirLoader implements DirLoader {
         return handleableExtensions.stream().anyMatch(x -> fileName.endsWith(x));
     }
     
+    /**
+     * {@link DirLoader} のインスタンスを返します。<br>
+     * 
+     * @param recursively 子フォルダの情報も再帰的にロードするか
+     * @return ローダー
+     */
     public static DirLoader of(boolean recursively) {
         return new StandardDirLoader(recursively);
     }

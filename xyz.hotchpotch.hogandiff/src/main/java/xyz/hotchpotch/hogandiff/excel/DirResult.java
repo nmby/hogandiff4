@@ -15,6 +15,11 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * フォルダ同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
+ * 
+ * @param dirPair 比較対象のフォルダ情報のペア
+ * @param bookNamePairs 比較対象のExcelブック名のペアのリスト
+ * @param bookResults Excelブック名のペアに対応するExcelブック同士の比較結果のマップ
+ * @param dirId フォルダの識別番号
  */
 public record DirResult(
         Pair<DirInfo> dirPair,
@@ -54,6 +59,17 @@ public record DirResult(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @param dirPair 比較対象のフォルダ情報のペア
+     * @param bookNamePairs 比較対象のExcelブック名のペアのリスト
+     * @param bookResults Excelブック名のペアに対応するExcelブック同士の比較結果のマップ
+     * @param dirId フォルダの識別番号
+     * @throws NullPointerException
+     *          {@code dirPair}, {@code bookNamePairs}, {@code bookResults}, {@code dirId}
+     *          のいずれかが {@code null} の場合
+     */
     public DirResult(
             Pair<DirInfo> dirPair,
             List<Pair<String>> bookNamePairs,
@@ -71,6 +87,11 @@ public record DirResult(
         this.dirId = dirId;
     }
     
+    /**
+     * 差分ありの場合は {@code true}<br>
+     * 
+     * @return 差分ありの場合は {@code true}
+     */
     public boolean hasDiff() {
         return bookNamePairs.stream()
                 .map(bookResults::get)
@@ -109,6 +130,11 @@ public record DirResult(
                 false);
     }
     
+    /**
+     * 差分内容の詳細を返します。<br>
+     * 
+     * @return 差分内容の詳細を表す文字列
+     */
     public String getDiffDetail() {
         return getDiffText(bResult -> bResult.isPresent()
                 ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
@@ -150,6 +176,11 @@ public record DirResult(
         return str.toString();
     }
     
+    /**
+     * 差分内容のサマリを返します。<br>
+     * 
+     * @return 差分内容のサマリ
+     */
     public String getDiffSimpleSummary() {
         if (bookResults.isEmpty()) {
             return rb.getString("excel.DResult.100");
