@@ -85,6 +85,7 @@ public class Factory {
     /**
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
+     * @param settings 設定
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */

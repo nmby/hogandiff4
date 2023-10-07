@@ -30,6 +30,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
+/**
+ * フォルダツリー同士の比較結果をExcelファイルの形式に出力する機能を提供します。<br>
+ * 
+ * @author nmby
+ */
 public class TreeResultBookCreator {
     
     // [static members] ********************************************************
@@ -56,6 +61,14 @@ public class TreeResultBookCreator {
     
     private final ResourceBundle rb = AppMain.appResource.get();
     
+    /**
+     * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
+     * 
+     * @param dstBookPath 保存先Excelブックのパス
+     * @param treeResult フォルダツリー同士の比較結果
+     * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
+     */
     public void createResultBook(
             Path dstBookPath,
             TreeResult treeResult)
