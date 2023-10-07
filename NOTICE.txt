@@ -15,7 +15,10 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 This product contains parts of Apache POI libraries.
 Copyright 2003-2022 The Apache Software Foundation.
 <https://www.apache.org/>
-
+    
+    Apache POI includes software developed at
+    The Apache Software Foundation (https://www.apache.org/).
+    
     Apache POI contains parts that were originally based on software from BEA.
     Copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/> (dead link),
     which was acquired by Oracle Corporation in 2008.
@@ -36,7 +39,35 @@ Copyright 2003-2022 The Apache Software Foundation.
     Copyright (c) 2009-2018
     FedICT (federal ICT department of Belgium), e-Contract.be BVBA (https://www.e-contract.be),
     Bart Hanssens from FedICT
+    
+    ExceptionUtils is derived from `scala.util.control.NonFatal` in scala-library
+    which was released under the Apache 2.0 license.
+    
+    Copyright (c) 2002-2023 EPFL
+    Copyright (c) 2011-2023 Lightbend, Inc.
+    
+    Scala includes software developed at
+    LAMP/EPFL (https://lamp.epfl.ch/) and
+    Lightbend, Inc. (https://www.lightbend.com/).
 
 This product contains parts of Apache Log4j 2 libraries.
 Copyright 1999-2021 The Apache Software Foundation.
 <https://www.apache.org/>
+    
+    Apache Log4j 2 includes software developed at
+    The Apache Software Foundation (http://www.apache.org/).
+    
+    ResolverUtil.java
+    Copyright 2005-2006 Tim Fennell
+    
+    Dumbster SMTP test server
+    Copyright 2004 Jason Paul Kitchen
+    
+    TypeUtil.java
+    Copyright 2002-2012 Ramnivas Laddad, Juergen Hoeller, Chris Beams
+    
+    picocli (http://picocli.info)
+    Copyright 2017 Remko Popma
+    
+    TimeoutBlockingWaitStrategy.java and parts of Util.java
+    Copyright 2011 LMAX Ltd.
