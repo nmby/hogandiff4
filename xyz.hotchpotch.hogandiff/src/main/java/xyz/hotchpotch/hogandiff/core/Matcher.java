@@ -97,6 +97,17 @@ public interface Matcher<T> {
         return new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator);
     }
     
+    /**
+     * 2つのリストの要素同士の組み合わせで得られる差分コストが最小となるような対応付けを行う
+     * マッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @param gapEvaluator 余剰コスト評価関数
+     * @param diffEvaluator 差分コスト評価関数
+     * @return 新しいマッチャー
+     * @throws NullPointerException
+     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     */
     public static <T> Matcher<T> minimumCostFlowMatcherOf(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
@@ -107,6 +118,14 @@ public interface Matcher<T> {
         return new MinimumCostFlowMatcher<>(gapEvaluator, diffEvaluator);
     }
     
+    /**
+     * 複数のマッチャーで順に対応付けを試行するマッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @param matchers マッチャーのリスト
+     * @return 新しいマッチャー
+     * @throws NullPointerException {@code matchers} が {@code null} の場合
+     */
     public static <T> Matcher<T> combinedMatcher(List<Matcher<? super T>> matchers) {
         Objects.requireNonNull(matchers, "matchers");
         return new CombinedMatcher<>(matchers);
