@@ -16,37 +16,14 @@ import java.nio.file.Path
 final def version = '0.17.1'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
-
 final def baseDir = projectDir.toPath()
+
+final def targetFatZip = baseDir.resolve('xyz.hotchpotch.hogandiff/build/distributions/xyz.hotchpotch.hogandiff.zip')
+
 final def outputDir = baseDir.resolve('build/' + timetag)
+final def outputDirTmpJars = outputDir.resolve("tmp/fat/xyz.hotchpotch.hogandiff/lib")
 final def outputDirWinX64 = outputDir.resolve("方眼Diff-${version}-win-x64")
 final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
-
-final def targetJar = baseDir.resolve('xyz.hotchpotch.hogandiff/build/libs/xyz.hotchpotch.hogandiff.jar')
-
-final def poi = 'poi-bin-5.2.3'
-final def poiJars = [
-    'poi-5.2.3.jar',
-    'poi-ooxml-5.2.3.jar',
-    'poi-ooxml-lite-5.2.3.jar',
-    'lib/commons-codec-1.15.jar',
-    'lib/commons-collections4-4.4.jar',
-    'lib/commons-io-2.11.0.jar',
-    'lib/commons-math3-3.6.1.jar',
-    'lib/log4j-api-2.18.0.jar',
-    'lib/SparseBitSet-1.2.jar',
-    'ooxml-lib/commons-compress-1.21.jar',
-    'ooxml-lib/curvesapi-1.07.jar',
-    'ooxml-lib/xmlbeans-5.1.1.jar'
-]
-final def poiFiles = ['LICENSE', 'NOTICE'] + poiJars
-
-final def log4j = 'apache-log4j-2.20.0-bin'
-final def log4jJars = [
-    'log4j-core-2.20.0.jar',
-    'log4j-api-2.20.0.jar'
-]
-final def log4jFiles = ['LICENSE.txt', 'NOTICE.txt'] + log4jJars
 
 final def requiredMods = '' \
     + 'java.base,' \
@@ -61,26 +38,11 @@ final def requiredMods = '' \
     + 'jdk.charsets,' \
     + 'jdk.zipfs'
 
-// executable on [win-x64, mac-x64]
-task pickUpJars {
+task pickupAndExpandFatJar(type: Copy) {
     group 'distribution_common'
 
-    doLast {
-        copy {
-            from project['myprop.userlib'] +"/${poi}"
-            include poiFiles
-            into outputDir.resolve("tmp/jars/${poi}")
-        }
-        copy {
-            from project['myprop.userlib'] +"/${log4j}"
-            include log4jFiles
-            into outputDir.resolve("tmp/jars/${log4j}")
-        }
-        copy {
-            from targetJar
-            into outputDir.resolve("tmp/jars")
-        }
-    }
+    from zipTree(targetFatZip)
+    into outputDir.resolve("tmp/fat")
 }
 
 // executable on [win-x64, mac-x64]
@@ -122,84 +84,7 @@ task jlinkForMacX64 {
 }
 
 // executable on [win-x64]
-task jpackageForWinX64(dependsOn: [pickUpJars, jlinkForWinX64]) {
-    group 'distribution_win_x64'
-
-    doLast {
-        exec {
-            // java14現在、jpackageはincubatorの位置づけである。
-            // TODO: jpackageの仕様に変更が無いか確認する。
-            commandLine project['myprop.cmd.jpackage'],
-                    '--type', 'msi',
-                    '--app-version', version,
-                    '--copyright', '(c) 2018-2023 nmby',
-                    '--dest', outputDir,
-                    '--vendor', 'nmby',
-                    '--verbose',
-                    '--runtime-image', outputDir.resolve('tmp/jre-min-win-x64'),
-                    '--icon', baseDir.resolve('resources/favicon.ico'),
-                    '--input', outputDir.resolve("tmp/jars"),
-                    '--java-options', '-Xms256m',
-                    '--java-options', '-Xmx2048m',
-                    '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
-                    '--license-file', baseDir.resolve('LICENSE.txt'),
-                    '--win-dir-chooser',
-                    '--win-menu',
-                    '--win-per-user-install',
-                    '--win-shortcut',
-                    '--temp', outputDir.resolve("tmp/jpackage-win-x64"),
-                    // TODO: --name 等に全角文字を含められるようにする。
-                    // --description, --name, --win-menu-group に全角文字が含まれると、
-                    // WiX Toolset v3.11 の light.exe 実行で下記中間ファイルに
-                    // コードページ1252外の文字が含まれるということでエラーになる。
-                    // 解決方法不明。jpackage越しにcodepageを指定する方法ある？
-                    //      ・config\main.wxs
-                    //      ・config\bundle.wxf
-                    //'--description', 'Excelファイル比較ツール',
-                    //'--name', '方眼Diff',
-                    //'--win-menu-group', '方眼Diff',
-                    '--name', 'hogandiff',
-                    '--win-menu-group', 'hogandiff'
-        }
-    }
-}
-
-// executable on [mac-x64]
-task jpackageForMacX64(dependsOn: [pickUpJars, jlinkForMacX64]) {
-    group 'distribution_mac_x64'
-
-    doLast {
-        exec {
-            // java14現在、jpackageはincubatorの位置づけである。
-            // TODO: jpackageの仕様に変更が無いか確認する。
-            commandLine project['myprop.cmd.jpackage'],
-                    '--type', 'pkg',
-                    '--app-version', version,
-                    '--copyright', '(c) 2018-2023 nmby',
-                    '--description', 'Excelファイル比較ツール',
-                    '--name', '方眼Diff',
-                    '--dest', outputDir,
-                    '--vendor', 'nmby',
-                    '--verbose',
-                    '--runtime-image', outputDir.resolve('tmp/jre-min-mac-x64'),
-                    '--icon', baseDir.resolve('resources/hogandiff.icns'),
-                    '--input', outputDir.resolve("tmp/jars"),
-                    '--java-options', '-Xms256m',
-                    '--java-options', '-Xmx2048m',
-                    '--main-jar', 'xyz.hotchpotch.hogandiff.jar',
-                    '--mac-package-identifier', 'xyz.hotchpotch.hogandiff',
-                    '--mac-package-name', '方眼Diff',
-                    // TODO: gatekeeperにブロックされる問題を解消する
-                    '--mac-sign',
-                    '--mac-signing-key-user-name', 'Yasuhiro Namba (J3DDQPPF9B)',
-                    '--license-file', baseDir.resolve('LICENSE.txt'),
-                    '--temp', outputDir.resolve("tmp/jpackage-mac-x64")
-        }
-    }
-}
-
-// executable on [win-x64]
-task exewrapForWinX64 {
+task exewrapForWinX64(dependsOn: pickupAndExpandFatJar) {
     group 'distribution_win_x64'
 
     doLast {
@@ -213,14 +98,14 @@ task exewrapForWinX64 {
                     '-d', '方眼Diff',
                     '-p', '方眼Diff',
                     '-c', '(c) 2018-2023 nmby',
-                    '-j', targetJar,
+                    '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
                     '-o', outputDirWinX64.resolve('方眼Diff.exe')
         }
     }
 }
 
 // executable on [win-x64, mac-x64]
-task gatherFilesForWinX64(dependsOn: jlinkForWinX64) {
+task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
     group 'distribution_win_x64'
 
     doLast {
@@ -235,24 +120,29 @@ task gatherFilesForWinX64(dependsOn: jlinkForWinX64) {
             into outputDirWinX64
         }
         copy {
-            from project['myprop.userlib'] + "/${poi}"
-            include poiFiles
-            into outputDirWinX64.resolve("lib/${poi}")
-        }
-        copy {
-            from project['myprop.userlib'] + "/${log4j}"
-            include log4jFiles
-            into outputDirWinX64.resolve("lib/${log4j}")
+            from outputDirTmpJars
+            exclude "xyz.hotchpotch.hogandiff.jar"
+            into outputDirWinX64.resolve("lib")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-win-x64')
             into outputDirWinX64.resolve("jre-min")
         }
+        copy {
+            from project['myprop.poi.src']
+            include 'LICENSE', 'NOTICE'
+            into outputDirWinX64.resolve("lib/legal/poi")
+        }
+        copy {
+            from project['myprop.log4j.bin']
+            include 'LICENSE.txt', 'NOTICE.txt'
+            into outputDirWinX64.resolve("lib/legal/log4j")
+        }
     }
 }
 
 // executable on [win-x64, mac-x64]
-task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
+task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
     group 'distribution_mac_x64'
 
     doLast {
@@ -267,24 +157,22 @@ task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
             into outputDirMacX64.resolve('方眼Diff.app/Contents/Resources')
         }
         copy {
-            from targetJar
+            from outputDirTmpJars
             into outputDirMacX64.resolve('方眼Diff.app/Contents/Java')
-        }
-        copy {
-            String poiMod = poi.replace('.', '_')
-            from project['myprop.userlib'] + "/${poi}"
-            include poiFiles
-            into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${poiMod}")
-        }
-        copy {
-            String log4jMod = log4j.replace('.', '_')
-            from project['myprop.userlib'] + "/${log4j}"
-            include log4jFiles
-            into outputDirMacX64.resolve("方眼Diff.app/Contents/PlugIns/lib/${log4jMod}")
         }
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
             into outputDirMacX64.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+        }
+        copy {
+            from project['myprop.poi.src']
+            include 'LICENSE', 'NOTICE'
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/poi')
+        }
+        copy {
+            from project['myprop.log4j.bin']
+            include 'LICENSE.txt', 'NOTICE.txt'
+            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/log4j')
         }
     }
 }
@@ -293,7 +181,7 @@ task gatherFilesForMacX64(dependsOn: jlinkForMacX64) {
 task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]) {
     group 'distribution_win_x64'
 
-    metadataCharset='UTF-8'
+    metadataCharset = 'UTF-8'
     archiveBaseName = "hogandiff-${version}-win-x64"
     destinationDirectory = file(outputDir)
     from outputDirWinX64
@@ -304,7 +192,7 @@ task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]
 task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
     group 'distribution_mac_x64'
 
-    metadataCharset='UTF-8'
+    metadataCharset = 'UTF-8'
     archiveBaseName = "hogandiff-${version}-mac-x64"
     destinationDirectory = file(outputDir)
     from outputDirMacX64
@@ -327,30 +215,15 @@ task all(dependsOn: [allForWinX64, allForMacX64]) {
 }
 
 // executable on [win-x64, mac-x64]
-task checkDependencies {
+task checkDependencies(dependsOn: pickupAndExpandFatJar) {
     group 'test'
 
     doLast {
-        Path poiDir = Path.of(project['myprop.userlib']).resolve(poi)
-        String poiMods = ''
-        poiJars.each {
-            poiMods += poiDir.resolve(it).toString().replace('\\', '/') + ";"
-        }
-        
-        Path log4jDir = Path.of(project['myprop.userlib']).resolve(log4j)
-        String log4jMods = ''
-        log4jJars.each {
-            log4jMods += log4jDir.resolve(it).toString().replace('\\', '/') + ";"
-        }
-
         exec {
             commandLine project['myprop.cmd.jdeps'],
                     '--multi-release', 20,
-                    '--module-path', "${project['myprop.jre.mod.win.x64']};" \
-                                    + "${project['myprop.jfx.lib.win.x64']};" \
-                                    + "${poiMods};" \
-                                    + "${log4jMods}",
-                    '-s', targetJar
+                    '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']}",
+                    '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
         }
     }
 }
