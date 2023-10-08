@@ -23,8 +23,8 @@ test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_20
-    targetCompatibility = JavaVersion.VERSION_20
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType(JavaCompile) {
@@ -34,6 +34,10 @@ tasks.withType(JavaCompile) {
 javafx {
     version = 21
     modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+application {
+    mainClass = 'xyz.hotchpotch.hogandiff.AppMain'
 }
 
 jar {
