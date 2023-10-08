@@ -97,6 +97,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private final Property<BookOpenInfo> bookOpenInfo = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
     private final BooleanProperty isReady = new SimpleBooleanProperty();
+    private final BooleanProperty isBusy = new SimpleBooleanProperty();
     
     private final Factory factory = Factory.of();
     private TargetSelectionPane opposite;
@@ -123,7 +124,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         this.parent = parent;
         
         // 1.disableプロパティとvisibleプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
+        disableProperty().bind(parent.isRunning().or(isBusy));
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> parent.menu().getValue() != AppMenu.COMPARE_SHEETS,
                 parent.menu()));
@@ -222,79 +223,97 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     }
     
     private void onDragDropped(DragEvent event) {
-        event.consume();
-        AppMenu menu = parent.menu().getValue();
-        Predicate<File> isAcceptableType = isTargetDirs(menu)
-                ? File::isDirectory
-                : File::isFile;
-        
-        if (!event.getDragboard().hasFiles()) {
-            event.setDropCompleted(false);
-            return;
-        }
-        List<File> files = event.getDragboard().getFiles();
-        if (!isAcceptableType.test(files.get(0))) {
-            event.setDropCompleted(false);
-            return;
-        }
-        
-        if (isTargetDirs(menu)) {
-            setDirPath(files.get(0).toPath());
-            event.setDropCompleted(true);
+        try {
+            isBusy.set(true);
+            event.consume();
             
-            if (1 < files.size() && isAcceptableType.test(files.get(1))) {
-                opposite.setDirPath(files.get(1).toPath());
+            AppMenu menu = parent.menu().getValue();
+            Predicate<File> isAcceptableType = isTargetDirs(menu)
+                    ? File::isDirectory
+                    : File::isFile;
+            
+            if (!event.getDragboard().hasFiles()) {
+                event.setDropCompleted(false);
+                return;
+            }
+            List<File> files = event.getDragboard().getFiles();
+            if (!isAcceptableType.test(files.get(0))) {
+                event.setDropCompleted(false);
+                return;
             }
             
-        } else {
-            boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
-            event.setDropCompleted(dropCompleted);
-            
-            if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
-                opposite.validateAndSetTarget(files.get(1).toPath(), null);
+            if (isTargetDirs(menu)) {
+                setDirPath(files.get(0).toPath());
+                event.setDropCompleted(true);
+                
+                if (1 < files.size() && isAcceptableType.test(files.get(1))) {
+                    opposite.setDirPath(files.get(1).toPath());
+                }
+                
+            } else {
+                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
+                event.setDropCompleted(dropCompleted);
+                
+                if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
+                    opposite.validateAndSetTarget(files.get(1).toPath(), null);
+                }
             }
+        } finally {
+            isBusy.set(false);
         }
     }
     
     private void chooseDir(ActionEvent event) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
-        
-        if (dirPath.getValue() != null) {
-            chooser.setInitialDirectory(dirPath.getValue().toFile());
+        try {
+            isBusy.set(true);
             
-        } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
-        }
-        
-        File selected = chooser.showDialog(getScene().getWindow());
-        
-        if (selected != null) {
-            setDirPath(selected.toPath());
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
+            
+            if (dirPath.getValue() != null) {
+                chooser.setInitialDirectory(dirPath.getValue().toFile());
+                
+            } else if (prevSelectedBookPath != null) {
+                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+            }
+            
+            File selected = chooser.showDialog(getScene().getWindow());
+            
+            if (selected != null) {
+                setDirPath(selected.toPath());
+            }
+        } finally {
+            isBusy.set(false);
         }
     }
     
     private void chooseBook(ActionEvent event) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.020"));
-        
-        if (bookOpenInfo.getValue() != null) {
-            File book = bookOpenInfo.getValue().bookPath().toFile();
-            chooser.setInitialDirectory(book.getParentFile());
-            chooser.setInitialFileName(book.getName());
+        try {
+            isBusy.set(true);
             
-        } else if (prevSelectedBookPath != null) {
-            chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
-        }
-        
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                rb.getString("gui.component.TargetSelectionPane.030"),
-                "*.xls", "*.xlsx", "*.xlsm"));
-        
-        File selected = chooser.showOpenDialog(getScene().getWindow());
-        
-        if (selected != null) {
-            validateAndSetTarget(selected.toPath(), null);
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.020"));
+            
+            if (bookOpenInfo.getValue() != null) {
+                File book = bookOpenInfo.getValue().bookPath().toFile();
+                chooser.setInitialDirectory(book.getParentFile());
+                chooser.setInitialFileName(book.getName());
+                
+            } else if (prevSelectedBookPath != null) {
+                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+            }
+            
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                    rb.getString("gui.component.TargetSelectionPane.030"),
+                    "*.xls", "*.xlsx", "*.xlsm"));
+            
+            File selected = chooser.showOpenDialog(getScene().getWindow());
+            
+            if (selected != null) {
+                validateAndSetTarget(selected.toPath(), null);
+            }
+        } finally {
+            isBusy.set(false);
         }
     }
     
