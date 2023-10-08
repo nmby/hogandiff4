@@ -44,6 +44,6 @@ jar {
     manifest {
         attributes (
             "Main-Class": 'xyz.hotchpotch.hogandiff.AppMain',
-            "Class-Path": './')
+            "Class-Path": configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
     }
 }
