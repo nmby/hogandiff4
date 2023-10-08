@@ -1,10 +1,10 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.nio.file.Path;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -22,119 +22,61 @@ public enum AppMenu {
      * 具体的には、2つのExcelブックに含まれる名前の似ているシート同士をマッチングし、
      * それらのペアごとに比較を行います。<br>
      */
-    COMPARE_BOOKS {
-        
-        @Override
-        public boolean isValidTargets(Settings settings) {
-            Objects.requireNonNull(settings, "settings");
-            
-            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            
-            return !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath());
-        }
-        
-        @Override
-        public Task<Void> getTask(
-                Settings settings,
-                Factory factory) {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            return new CompareBooksTask(settings, factory);
-        }
-    },
+    COMPARE_BOOKS(
+            CompareBooksTask::new,
+            settings -> !Objects.equals(
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath())),
     
     /**
      * 特定のExcelシート同士を比較します。
      */
-    COMPARE_SHEETS {
-        
-        @Override
-        public boolean isValidTargets(Settings settings) {
-            Objects.requireNonNull(settings, "settings");
-            
-            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
-            String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
-            
-            return !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath())
-                    || !Objects.equals(sheetName1, sheetName2);
-        }
-        
-        @Override
-        public Task<Void> getTask(
-                Settings settings,
-                Factory factory) {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            return new CompareSheetsTask(settings, factory);
-        }
-    },
+    COMPARE_SHEETS(
+            CompareSheetsTask::new,
+            settings -> !Objects.equals(
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath())
+                    || !Objects.equals(
+                            settings.get(SettingKeys.CURR_SHEET_NAME1),
+                            settings.get(SettingKeys.CURR_SHEET_NAME2))),
     
     /**
      * 指定されたフォルダに含まれる全Excelブックを比較します。
      * 具体的には、2つのフォルダに含まれる名前の似ているExcelブック同士をマッチングし、
      * それらのペアごとに比較を行います。<br>
      */
-    COMPARE_DIRS {
-        
-        @Override
-        public boolean isValidTargets(Settings settings) {
-            Objects.requireNonNull(settings, "settings");
-            
-            Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
-            Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
-            
-            return !Objects.equals(dirPath1, dirPath2);
-        }
-        
-        @Override
-        public Task<Void> getTask(
-                Settings settings,
-                Factory factory) {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            return new CompareDirsTask(settings, factory);
-        }
-    },
+    COMPARE_DIRS(
+            CompareDirsTask::new,
+            settings -> !Objects.equals(
+                    settings.get(SettingKeys.CURR_DIR_PATH1),
+                    settings.get(SettingKeys.CURR_DIR_PATH2))),
     
     /**
      * 指定されたフォルダ配下のフォルダツリーを比較します。
      * 具体的には、2つのフォルダツリーに含まれるフォルダ同士をマッチングし、
      * それらのペアごとに比較を行います。<br>
      */
-    COMPARE_TREES {
-        
-        @Override
-        public boolean isValidTargets(Settings settings) {
-            Objects.requireNonNull(settings, "settings");
-            
-            Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
-            Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
-            
-            return !Objects.equals(dirPath1, dirPath2);
-        }
-        
-        @Override
-        public Task<Void> getTask(
-                Settings settings,
-                Factory factory) {
-            
-            Objects.requireNonNull(settings, "settings");
-            Objects.requireNonNull(factory, "factory");
-            
-            return new CompareTreesTask(settings, factory);
-        }
-    };
+    COMPARE_TREES(
+            CompareTreesTask::new,
+            settings -> !Objects.equals(
+                    settings.get(SettingKeys.CURR_DIR_PATH1),
+                    settings.get(SettingKeys.CURR_DIR_PATH2)));
     
     // [instance members] ******************************************************
+    
+    private final BiFunction<Settings, Factory, Task<Void>> taskFactory;
+    private final Predicate<Settings> targetValidator;
+    
+    private AppMenu(
+            BiFunction<Settings, Factory, Task<Void>> taskFactory,
+            Predicate<Settings> targetValidator) {
+        
+        assert taskFactory != null;
+        assert targetValidator != null;
+        
+        this.taskFactory = taskFactory;
+        this.targetValidator = targetValidator;
+    }
     
     /**
      * 処理対象のフォルダ／Excelブック／シートの指定が妥当なものかを確認します。<br>
@@ -145,7 +87,11 @@ public enum AppMenu {
      * @return 比較対象の指定が妥当な場合は {@code true}
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public abstract boolean isValidTargets(Settings settings);
+    public boolean isValidTargets(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        return targetValidator.test(settings);
+    }
     
     /**
      * このメニューを実行するためのタスクを生成して返します。<br>
@@ -155,5 +101,10 @@ public enum AppMenu {
      * @return 新しいタスク
      * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
      */
-    public abstract Task<Void> getTask(Settings settings, Factory factory);
+    public Task<Void> getTask(Settings settings, Factory factory) {
+        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(factory, "factory");
+        
+        return taskFactory.apply(settings, factory);
+    }
 }
