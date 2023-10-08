@@ -42,6 +42,8 @@ application {
 
 jar {
     manifest {
-        attributes "Main-Class": 'xyz.hotchpotch.hogandiff.AppMain'
+        attributes (
+            "Main-Class": 'xyz.hotchpotch.hogandiff.AppMain',
+            "Class-Path": './')
     }
 }
