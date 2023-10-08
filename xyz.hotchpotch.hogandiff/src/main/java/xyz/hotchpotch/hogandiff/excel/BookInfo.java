@@ -7,6 +7,9 @@ import java.util.Objects;
  * Excelブックの情報を保持する不変クラスです。<br>
  * 
  * @author nmby
+ * 
+ * @param bookOpenInfo Excelブックオープン情報
+ * @param sheetNames Excelブックに含まれるシート名
  */
 public record BookInfo(
         BookOpenInfo bookOpenInfo,
@@ -16,6 +19,13 @@ public record BookInfo(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @param bookOpenInfo Excelブックオープン情報
+     * @param sheetNames Excelブックに含まれるシート名
+     * @throws NullPointerException {@code bookOpenInfo}, {@code sheetNames} のいずれかが {@code null} の場合
+     */
     public BookInfo(
             BookOpenInfo bookOpenInfo,
             List<String> sheetNames) {

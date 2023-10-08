@@ -18,6 +18,10 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * Excepブック同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
+ * 
+ * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
+ * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
+ * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
 public record BookResult(
         Pair<Path> bookPaths,
@@ -55,12 +59,11 @@ public record BookResult(
     // [instance members] ******************************************************
     
     /**
-     * Excelブック同士の比較結果を生成して返します。<br>
+     * コンストラクタ<br>
      * 
      * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
      * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
-     * @return Excelブック同士の比較結果
      * @throws NullPointerException
      *          {@code bookPaths}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
      */
@@ -144,6 +147,11 @@ public record BookResult(
         return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
     }
     
+    /**
+     * 比較結果を端的に表す差分サマリを返します。<br>
+     * 
+     * @return 比較結果を端的に表す差分サマリ
+     */
     public String getDiffSimpleSummary() {
         int diffSheets = (int) sheetPairs.stream()
                 .filter(Pair::isPaired).map(p -> sheetResults.get(p).get()).filter(SheetResult::hasDiff).count();

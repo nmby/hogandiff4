@@ -40,6 +40,12 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
                 return gapChildren + gapBookNames;
             });
     
+    /**
+     * {@link DirsMatcher} のインスタンスを返します。<br>
+     * 
+     * @param matchNamesStrictly フォルダ名の曖昧一致を許さない場合は {@code true}
+     * @return マッチャー
+     */
     public static DirsMatcher of(boolean matchNamesStrictly) {
         return new VerticallyStrictDirsMatcher(matchNamesStrictly
                 ? strictDirNamesMatcher

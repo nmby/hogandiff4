@@ -30,6 +30,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
+/**
+ * フォルダツリー同士の比較結果をExcelファイルの形式に出力する機能を提供します。<br>
+ * 
+ * @author nmby
+ */
 public class TreeResultBookCreator {
     
     // [static members] ********************************************************
@@ -56,6 +61,14 @@ public class TreeResultBookCreator {
     
     private final ResourceBundle rb = AppMain.appResource.get();
     
+    /**
+     * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
+     * 
+     * @param dstBookPath 保存先Excelブックのパス
+     * @param treeResult フォルダツリー同士の比較結果
+     * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
+     */
     public void createResultBook(
             Path dstBookPath,
             TreeResult treeResult)
@@ -246,17 +259,22 @@ public class TreeResultBookCreator {
         
         for (Side side : Side.values()) {
             if (bookNames.has(side)) {
-                // ファイル名の出力
+                // フォルダ名とファイル名の出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
+                
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 2, "【%s%s-%d】".formatted(side, dirId, bookNo));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookNames.get(side));
                 
                 // ハイパーリンクの設定
-                Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
-                link.setAddress(sanitize(outputDirs.get(side)
+                Hyperlink dirLink = ch.createHyperlink(HyperlinkType.FILE);
+                dirLink.setAddress(sanitize(outputDirs.get(side)));
+                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(dirLink);
+                
+                Hyperlink fileLink = ch.createHyperlink(HyperlinkType.FILE);
+                fileLink.setAddress(sanitize(outputDirs.get(side)
                         .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookNames.get(side)))));
-                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(link);
+                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(fileLink);
             }
         }
         

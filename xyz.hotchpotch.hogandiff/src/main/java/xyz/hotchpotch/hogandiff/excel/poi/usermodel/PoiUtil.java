@@ -548,6 +548,17 @@ public class PoiUtil {
         }
     }
     
+    /**
+     * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
+     * 指定した位置のセルオブジェクトが存在しない場合は作成して返します。<br>
+     * 
+     * @param sheet シート
+     * @param r 行インデックス（0開始）
+     * @param c 列インデックス（0開始）
+     * @return セルオブジェクト
+     * @throws NullPointerException {@code sheet} が {@code null} の場合
+     * @throws IllegalArgumentException {@code r}, {@code c} のいずれかが負数の場合
+     */
     public static Cell getCell(
             Sheet sheet,
             int r,
@@ -562,6 +573,15 @@ public class PoiUtil {
         return CellUtil.getCell(row, c);
     }
     
+    /**
+     * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
+     * 指定した位置のセルオブジェクトが存在しない場合は {@link Optional#empty} を返します。<br>
+     * 
+     * @param sheet シート
+     * @param r 行インデックス（0開始）
+     * @param c 列インデックス（0開始）
+     * @return セルオブジェクト（存在しない場合は {@link Optional#empty}）
+     */
     public static Optional<Cell> getCellIfPresent(
             Sheet sheet,
             int r,
@@ -577,6 +597,16 @@ public class PoiUtil {
                 .map(row -> row.getCell(c));
     }
     
+    /**
+     * シート上の指定した位置のセルに値を設定します。<br>
+     * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
+     * 
+     * @param sheet シート
+     * @param r 行インデックス（0開始）
+     * @param c 列インデックス（0開始）
+     * @param value 設定する値
+     * @return セルオブジェクト
+     */
     public static Cell setCellValue(
             Sheet sheet,
             int r,

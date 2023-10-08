@@ -16,6 +16,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * フォルダツリー同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
+ * 
+ * @param topDirPair 比較対象のトップフォルダのペア
+ * @param pairDataList 比較するフォルダ同士の組み合わせを表すリスト
+ * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(
         Pair<DirInfo> topDirPair,
@@ -31,7 +35,7 @@ public record TreeResult(
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
      * @param id このフォルダペアの識別子。
-     * @param data フォルダペア情報
+     * @param dirPair フォルダペア情報
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
      */
@@ -49,6 +53,15 @@ public record TreeResult(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @param topDirPair 比較対象のトップフォルダのペア
+     * @param pairDataList 比較するフォルダ同士の組み合わせを表すリスト
+     * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
+     * @throws NullPointerException
+     *          {@code topDirPair}, {@code pairDataList}, {@code dirResults} のいずれかが {@code null} の場合
+     */
     public TreeResult(
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,

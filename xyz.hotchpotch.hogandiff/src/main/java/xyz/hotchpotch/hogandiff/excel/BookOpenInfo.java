@@ -7,6 +7,9 @@ import java.util.Objects;
  * Excelブックを開くための情報を保持する不変クラスです。<br>
  * 
  * @author nmby
+ * 
+ * @param bookPath Excelブックのパス
+ * @param readPassword Excelブックの読み取りパスワード
  */
 public record BookOpenInfo(
         Path bookPath,
@@ -14,6 +17,15 @@ public record BookOpenInfo(
     
     // [static members] ********************************************************
     
+    /**
+     * 2つのExcelブックが同一のブックを指すかを返します。<br>
+     * 本メソッドは、{@link #bookPath()} の値に基づいて同一性を判断します。<br>
+     * 
+     * @param bookOpenInfo1 Excelブックオープン情報1
+     * @param bookOpenInfo2 Excelブックオープン情報2
+     * @return 2つのExcelブックが同一のブックを指す場合は {@code true}
+     * @throws NullPointerException {@code bookOpenInfo1}, {@code bookOpenInfo2} のいずれかが {@code null} の場合
+     */
     public static boolean isSameBook(
             BookOpenInfo bookOpenInfo1,
             BookOpenInfo bookOpenInfo2) {
@@ -28,6 +40,13 @@ public record BookOpenInfo(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ<br>
+     * 
+     * @param bookPath Excelブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     */
     public BookOpenInfo {
         Objects.requireNonNull(bookPath, "bookPath");
     }
