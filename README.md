@@ -117,7 +117,7 @@ Web上の各種情報を参考に、ご自身の責任でご実施ください�
 「方眼Diff」には以下の第三者著作物が含まれており、それらのライセンス許諾に従って nmby が再頒布しています。
 
 - OpenJDK（Eclipse Temurin Java SE）バイナリ
-    - 各種オープンソースライセンスにより提供されており、方眼Diffでは Apache License, Version 2.0 ライセンスに基づいて利用および再頒布しています。
+    - GPL v2 with Classpath Exception ライセンスにより提供されています。
     - 詳細は LICENSE.txt, NOTICE.txt 両ファイルおよび[Eclipse FoundationのWebサイト](https://projects.eclipse.org/projects/adoptium)をご参照ください。
 - OpenJFX
     - GPL v2 with Classpath Exception ライセンスにより提供されています。
