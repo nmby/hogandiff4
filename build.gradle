@@ -54,7 +54,6 @@ task jlinkForWinX64 {
             commandLine project['myprop.cmd.jlink'],
                     '--no-header-files',
                     '--no-man-pages',
-                    '--compress=2',
                     '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-win-x64'),
@@ -73,7 +72,6 @@ task jlinkForMacX64 {
             commandLine project['myprop.cmd.jlink'],
                     '--no-header-files',
                     '--no-man-pages',
-                    '--compress=2',
                     '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
                     '--add-modules', requiredMods,
                     '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
@@ -91,7 +89,7 @@ task exewrapForWinX64(dependsOn: pickupAndExpandFatJar) {
         exec {
             commandLine project['myprop.cmd.exewrap'],
                     '-g',
-                    '-t', '20',
+                    '-t', '21',
                     '-i', baseDir.resolve('resources/favicon.ico'),
                     '-v', version,
                     '-V', version,
@@ -221,7 +219,7 @@ task checkDependencies(dependsOn: pickupAndExpandFatJar) {
     doLast {
         exec {
             commandLine project['myprop.cmd.jdeps'],
-                    '--multi-release', 20,
+                    '--multi-release', 21,
                     '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']}",
                     '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
         }
