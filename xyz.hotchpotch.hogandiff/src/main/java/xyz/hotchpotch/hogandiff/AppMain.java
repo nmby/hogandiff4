@@ -30,7 +30,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションで利用するリソース */
-    public static AppResource appResource = AppResource.fromProperties();
+    public static AppResource appResource = null;
     
     /** メインステージ */
     public static Stage stage;
@@ -51,7 +51,7 @@ public class AppMain extends Application {
      * @param args アプリケーション実行時引数
      */
     public static void main(String[] args) {
-        appResource.reflectArgs(args);
+        appResource = AppResource.of(args);
         
         launch(args);
     }
