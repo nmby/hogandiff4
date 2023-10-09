@@ -200,11 +200,11 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
             currFlowsAB[i][j]++;
             
             while (!path.isEmpty()) {
-                int i2 = path.remove();
-                int j2 = path.remove();
-                currFlowsAB[i2][j]--;
-                currFlowsAB[i2][j2]++;
-                j = j2;
+                i = path.remove();
+                currFlowsAB[i][j]--;
+                
+                j = path.remove();
+                currFlowsAB[i][j]++;
             }
             
             currFlowsBT[j]++;
