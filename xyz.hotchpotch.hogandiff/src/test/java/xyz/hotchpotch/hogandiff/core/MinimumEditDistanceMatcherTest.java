@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
-class MinimumEditDistanceMatcher2Test {
+class MinimumEditDistanceMatcherTest {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -31,21 +31,21 @@ class MinimumEditDistanceMatcher2Test {
     void testConstructor() {
         assertThrows(
                 AssertionError.class,
-                () -> new MinimumEditDistanceMatcher2<>(null, diffEvaluator));
+                () -> new MinimumEditDistanceMatcher<>(null, diffEvaluator));
         assertThrows(
                 AssertionError.class,
-                () -> new MinimumEditDistanceMatcher2<>(gapEvaluator, null));
+                () -> new MinimumEditDistanceMatcher<>(gapEvaluator, null));
         assertThrows(
                 AssertionError.class,
-                () -> new MinimumEditDistanceMatcher2<>(null, null));
+                () -> new MinimumEditDistanceMatcher<>(null, null));
         
         assertDoesNotThrow(
-                () -> new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator));
+                () -> new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator));
     }
     
     @Test
     void testMakePairs1_パラメータチェック() {
-        MinimumEditDistanceMatcher2<Character> testee = new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator);
+        MinimumEditDistanceMatcher<Character> testee = new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
         
         assertThrows(
                 NullPointerException.class,
@@ -63,7 +63,7 @@ class MinimumEditDistanceMatcher2Test {
     
     @Test
     void testMakePairs2_マッチングロジック_同じ内容() {
-        MinimumEditDistanceMatcher2<Character> testee = new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator);
+        MinimumEditDistanceMatcher<Character> testee = new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
         
         // 同一インスタンス
         assertEquals(
@@ -90,7 +90,7 @@ class MinimumEditDistanceMatcher2Test {
     
     @Test
     void testMakePairs3_マッチングロジック_異なる内容() {
-        MinimumEditDistanceMatcher2<Character> testee = new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator);
+        MinimumEditDistanceMatcher<Character> testee = new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
         
         // 一方が長さゼロ
         assertEquals(

@@ -94,7 +94,7 @@ public interface Matcher<T> {
         Objects.requireNonNull(gapEvaluator, "gapEvaluator");
         Objects.requireNonNull(diffEvaluator, "diffEvaluator");
         
-        return new MinimumEditDistanceMatcher2<>(gapEvaluator, diffEvaluator);
+        return new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
     }
     
     /**
