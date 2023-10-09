@@ -45,14 +45,14 @@ public class StringDiffUtil {
             return 0;
         }
         if (str1.length() == 0) {
-            return str2.length();
+            return str2.codePointCount(0, str2.length());
         }
         if (str2.length() == 0) {
-            return str1.length();
+            return str1.codePointCount(0, str1.length());
         }
         
         // 一般ケース
-        // サロゲートペアの扱いは、・・・まぁ、これで良いでしょ
+        // サロゲートペアの扱いはこれで良いはず
         List<Integer> codePoints1 = str1.codePoints().boxed().toList();
         List<Integer> codePoints2 = str2.codePoints().boxed().toList();
         List<IntPair> pairs = codeMatcher.makeIdxPairs(codePoints1, codePoints2);
