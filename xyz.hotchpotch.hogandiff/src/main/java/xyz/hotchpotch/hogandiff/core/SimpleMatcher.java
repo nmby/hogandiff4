@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
- * 2つのリストの要素同士を、リストの先頭から順に対応付ける {@link Matcher} の実装です。<br>
+ * 要素の値に関わりなく、2つのリストの要素同士をリストの先頭から順に対応付ける {@link Matcher} の実装です。<br>
  *
  * @param <T> リストの要素の型
  * @author nmby
@@ -24,7 +24,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     /**
      * {@inheritDoc}
      * <br>
-     * この実装は、2つのリストの要素同士をリストの先頭から組み合わせていきます。<br>
+     * この実装は、要素の値に関わりなく
+     * 2つのリストの要素同士をリストの先頭から組み合わせていきます。<br>
      * 
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
@@ -37,10 +38,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         Objects.requireNonNull(listB, "listB");
         
         return IntStream.range(0, Math.max(listA.size(), listB.size()))
-                .mapToObj(n -> listA.size() <= n
-                        ? IntPair.onlyB(n)
-                        : listB.size() <= n
-                                ? IntPair.onlyA(n)
+                .mapToObj(n -> listA.size() <= n ? IntPair.onlyB(n)
+                        : listB.size() <= n ? IntPair.onlyA(n)
                                 : IntPair.of(n, n))
                 .toList();
     }
