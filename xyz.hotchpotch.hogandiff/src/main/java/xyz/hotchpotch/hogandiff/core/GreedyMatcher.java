@@ -107,7 +107,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert diffEvaluator != null;
     }
     
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

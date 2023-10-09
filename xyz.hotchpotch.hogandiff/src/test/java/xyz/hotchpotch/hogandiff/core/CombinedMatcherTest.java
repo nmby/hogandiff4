@@ -16,7 +16,7 @@ class CombinedMatcherTest {
     
     // "A" から始まる要素同士だけを単純マッチングさせるマッチャー
     private static Matcher<String> matcherA = (list1, list2) -> Matcher
-            .identityMatcher().makePairs(list1, list2).stream()
+            .identityMatcher().makeIdxPairs(list1, list2).stream()
             .flatMap(p -> !p.isPaired()
                     ? Stream.of(p)
                     : list1.get(p.a()).startsWith("A") && list2.get(p.b()).startsWith("A")
@@ -26,7 +26,7 @@ class CombinedMatcherTest {
     
     // "B" から始まる要素同士だけを単純マッチングさせるマッチャー
     private static Matcher<String> matcherB = (list1, list2) -> Matcher
-            .identityMatcher().makePairs(list1, list2).stream()
+            .identityMatcher().makeIdxPairs(list1, list2).stream()
             .flatMap(p -> !p.isPaired()
                     ? Stream.of(p)
                     : list1.get(p.a()).startsWith("B") && list2.get(p.b()).startsWith("B")
@@ -49,7 +49,7 @@ class CombinedMatcherTest {
                         new Pair<>("B-001", null),
                         new Pair<>("B-002", null),
                         new Pair<>(null, "B-999")),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("A-001", "A-002", "A-003", "B-001", "B-002", "B-003"),
                         List.of("B-999", "A-002", "B-003", "A-001")));
         
@@ -61,7 +61,7 @@ class CombinedMatcherTest {
                         new Pair<>("B-001", null),
                         new Pair<>("B-002", null),
                         new Pair<>("B-003", null)),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("A-001", "A-002", "A-003", "B-001", "B-002", "B-003"),
                         List.of("A-002", "A-001")));
         
@@ -69,7 +69,7 @@ class CombinedMatcherTest {
                 List.of(
                         new Pair<>("A-001", "A-001"),
                         new Pair<>("A-002", "A-002")),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("A-001", "A-002"),
                         List.of("A-002", "A-001")));
     }

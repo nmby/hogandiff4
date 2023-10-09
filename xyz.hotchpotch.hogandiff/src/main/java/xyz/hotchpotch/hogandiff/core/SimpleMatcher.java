@@ -29,7 +29,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<IntPair> makePairs(
+    public List<IntPair> makeIdxPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         

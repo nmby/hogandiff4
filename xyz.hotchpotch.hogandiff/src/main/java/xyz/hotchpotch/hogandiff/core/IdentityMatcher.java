@@ -43,7 +43,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected void makePairsPrecheck(
+    protected void makeIdxPairsPrecheck(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -65,7 +65,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

@@ -30,16 +30,16 @@ class IdentityMatcherTest {
         
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, list0_1));
+                () -> testee.makeIdxPairs(null, list0_1));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(list0_1, null));
+                () -> testee.makeIdxPairs(list0_1, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, null));
+                () -> testee.makeIdxPairs(null, null));
         
         assertDoesNotThrow(
-                () -> testee.makePairs(list0_1, list0_1));
+                () -> testee.makeIdxPairs(list0_1, list0_1));
     }
     
     @Test
@@ -48,10 +48,10 @@ class IdentityMatcherTest {
         
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.makePairs(listABC_1, listXXX_1));
+                () -> testee.makeIdxPairs(listABC_1, listXXX_1));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.makePairs(listXXX_1, listABC_1));
+                () -> testee.makeIdxPairs(listXXX_1, listABC_1));
     }
     
     @Test
@@ -61,24 +61,24 @@ class IdentityMatcherTest {
         // 同一インスタンス
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_1));
+                testee.makeIdxPairs(list0_1, list0_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_1));
+                testee.makeIdxPairs(listABC_1, listABC_1));
         
         // 別インスタンス同一内容
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_2));
+                testee.makeIdxPairs(list0_1, list0_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_2));
+                testee.makeIdxPairs(listABC_1, listABC_2));
     }
     
     @Test
@@ -91,13 +91,13 @@ class IdentityMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(2)),
-                testee.makePairs(list0_1, listABC_1));
+                testee.makeIdxPairs(list0_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.onlyA(0),
                         IntPair.onlyA(1),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, list0_1));
+                testee.makeIdxPairs(listABC_1, list0_1));
         
         // 同じ長さでギャップ無し
         assertEquals(
@@ -105,13 +105,13 @@ class IdentityMatcherTest {
                         IntPair.of(0, 2),
                         IntPair.of(1, 0),
                         IntPair.of(2, 1)),
-                testee.makePairs(listABC_1, listBCA_1));
+                testee.makeIdxPairs(listABC_1, listBCA_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 1),
                         IntPair.of(1, 2),
                         IntPair.of(2, 0)),
-                testee.makePairs(listBCA_1, listABC_1));
+                testee.makeIdxPairs(listBCA_1, listABC_1));
         
         // ギャップあり
         assertEquals(
@@ -122,7 +122,7 @@ class IdentityMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(4)),
-                testee.makePairs(listABC_1, listXYBAZ_1));
+                testee.makeIdxPairs(listABC_1, listXYBAZ_1));
         assertEquals(
                 List.of(
                         IntPair.of(2, 1),
@@ -131,7 +131,7 @@ class IdentityMatcherTest {
                         IntPair.onlyA(1),
                         IntPair.onlyA(4),
                         IntPair.onlyB(2)),
-                testee.makePairs(listXYBAZ_1, listABC_1));
+                testee.makeIdxPairs(listXYBAZ_1, listABC_1));
     }
     
     @Test
@@ -152,7 +152,7 @@ class IdentityMatcherTest {
                         new Pair<>(null, "thu"),
                         new Pair<>(null, "fri"),
                         new Pair<>(null, "sat")),
-                new IdentityMatcher<>().makePairs2(
+                new IdentityMatcher<>().makeItemPairs(
                         List.of("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"),
                         List.of("sun", "mon", "tue", "wed", "thu", "fri", "sat")));
         
@@ -165,7 +165,7 @@ class IdentityMatcherTest {
                         new Pair<>("THU", "thu"),
                         new Pair<>("FRI", "fri"),
                         new Pair<>("SAT", "sat")),
-                new IdentityMatcher<String>(String::toUpperCase).makePairs2(
+                new IdentityMatcher<String>(String::toUpperCase).makeItemPairs(
                         List.of("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"),
                         List.of("sun", "mon", "tue", "wed", "thu", "fri", "sat")));
     }

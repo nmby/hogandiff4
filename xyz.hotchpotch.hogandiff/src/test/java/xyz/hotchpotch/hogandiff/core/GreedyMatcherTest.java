@@ -53,16 +53,16 @@ class GreedyMatcherTest {
     void testMakePairs1_パラメータチェック() {
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, list0_1));
+                () -> testee.makeIdxPairs(null, list0_1));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(list0_1, null));
+                () -> testee.makeIdxPairs(list0_1, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, null));
+                () -> testee.makeIdxPairs(null, null));
         
         assertDoesNotThrow(
-                () -> testee.makePairs(list0_1, list0_1));
+                () -> testee.makeIdxPairs(list0_1, list0_1));
     }
     
     @Test
@@ -70,30 +70,30 @@ class GreedyMatcherTest {
         // 同一インスタンス
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_1));
+                testee.makeIdxPairs(list0_1, list0_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_1));
+                testee.makeIdxPairs(listABC_1, listABC_1));
         
         // 別インスタンス同一内容
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_2));
+                testee.makeIdxPairs(list0_1, list0_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_2));
+                testee.makeIdxPairs(listABC_1, listABC_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listXXX_1, listXXX_2));
+                testee.makeIdxPairs(listXXX_1, listXXX_2));
     }
     
     @Test
@@ -104,13 +104,13 @@ class GreedyMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(2)),
-                testee.makePairs(list0_1, listABC_1));
+                testee.makeIdxPairs(list0_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.onlyA(0),
                         IntPair.onlyA(1),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, list0_1));
+                testee.makeIdxPairs(listABC_1, list0_1));
         
         // 同じ長さでギャップ無し
         assertEquals(
@@ -118,13 +118,13 @@ class GreedyMatcherTest {
                         IntPair.of(1, 0),
                         IntPair.of(2, 1),
                         IntPair.of(0, 2)),
-                testee.makePairs(listABC_1, listBCA_1));
+                testee.makeIdxPairs(listABC_1, listBCA_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 1),
                         IntPair.of(1, 2),
                         IntPair.of(2, 0)),
-                testee.makePairs(listBCA_1, listABC_1));
+                testee.makeIdxPairs(listBCA_1, listABC_1));
         
         // ギャップあり
         assertEquals(
@@ -135,7 +135,7 @@ class GreedyMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(4)),
-                testee.makePairs(listABC_1, listXXBAX_1));
+                testee.makeIdxPairs(listABC_1, listXXBAX_1));
         assertEquals(
                 List.of(
                         IntPair.of(2, 1),
@@ -144,18 +144,18 @@ class GreedyMatcherTest {
                         IntPair.onlyA(1),
                         IntPair.onlyA(4),
                         IntPair.onlyB(2)),
-                testee.makePairs(listXXBAX_1, listABC_1));
+                testee.makeIdxPairs(listXXBAX_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.of(1, 0),
                         IntPair.onlyA(0),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, listBB_1));
+                testee.makeIdxPairs(listABC_1, listBB_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 1),
                         IntPair.onlyB(0),
                         IntPair.onlyB(2)),
-                testee.makePairs(listBB_1, listABC_1));
+                testee.makeIdxPairs(listBB_1, listABC_1));
     }
 }

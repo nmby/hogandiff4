@@ -55,7 +55,7 @@ public class StringDiffUtil {
         // サロゲートペアの扱いは、・・・まぁ、これで良いでしょ
         List<Integer> codePoints1 = str1.codePoints().boxed().toList();
         List<Integer> codePoints2 = str2.codePoints().boxed().toList();
-        List<IntPair> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
+        List<IntPair> pairs = codeMatcher.makeIdxPairs(codePoints1, codePoints2);
         
         return (int) pairs.stream()
                 .filter(Predicate.not(IntPair::isPaired))

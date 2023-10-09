@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 2つのリストの要素同士の最適な組み合わせを返すマッチャーを表します。<br>
- * これは、{@link #makePairs(List, List)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #makeIdxPairs(List, List)} を関数メソッドに持つ関数型インタフェースです。<br>
  * 
  * @param <T> リストの要素の型
  * @author nmby
@@ -141,7 +141,7 @@ public interface Matcher<T> {
      * @param listB リストB
      * @return リストA, Bの要素同士の最適な組み合わせを表す、要素のインデックスのペアのリスト
      */
-    List<IntPair> makePairs(
+    List<IntPair> makeIdxPairs(
             List<? extends T> listA,
             List<? extends T> listB);
     
@@ -151,17 +151,17 @@ public interface Matcher<T> {
      * 
      * @param listA リストA
      * @param listB リストB
-     * @return リストA, Bの要素同士の最適な組み合わせのリスト
+     * @return リストA, Bの要素同士の最適な組み合わせを表す、要素のペアのリスト
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
-    default List<Pair<T>> makePairs2(
+    default List<Pair<T>> makeItemPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listA, "listB");
         
-        List<IntPair> pairs = makePairs(listA, listB);
+        List<IntPair> pairs = makeIdxPairs(listA, listB);
         
         return pairs.stream()
                 .map(p -> new Pair<>(

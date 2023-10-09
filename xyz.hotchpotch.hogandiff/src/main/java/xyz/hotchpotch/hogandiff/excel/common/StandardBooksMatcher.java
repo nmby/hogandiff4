@@ -52,7 +52,7 @@ public class StandardBooksMatcher implements BooksMatcher {
         Objects.requireNonNull(dirInfo1, "dirInfo1");
         Objects.requireNonNull(dirInfo2, "dirInfo2");
         
-        return coreMatcher.makePairs2(
+        return coreMatcher.makeItemPairs(
                 dirInfo1.bookNames(),
                 dirInfo2.bookNames());
     }

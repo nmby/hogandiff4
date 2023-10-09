@@ -49,16 +49,16 @@ class MinimumEditDistanceMatcher2Test {
         
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, list0_1));
+                () -> testee.makeIdxPairs(null, list0_1));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(list0_1, null));
+                () -> testee.makeIdxPairs(list0_1, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, null));
+                () -> testee.makeIdxPairs(null, null));
         
         assertDoesNotThrow(
-                () -> testee.makePairs(list0_1, list0_1));
+                () -> testee.makeIdxPairs(list0_1, list0_1));
     }
     
     @Test
@@ -68,24 +68,24 @@ class MinimumEditDistanceMatcher2Test {
         // 同一インスタンス
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_1));
+                testee.makeIdxPairs(list0_1, list0_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_1));
+                testee.makeIdxPairs(listABC_1, listABC_1));
         
         // 別インスタンス同一内容
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_2));
+                testee.makeIdxPairs(list0_1, list0_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_2));
+                testee.makeIdxPairs(listABC_1, listABC_2));
     }
     
     @Test
@@ -98,13 +98,13 @@ class MinimumEditDistanceMatcher2Test {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(2)),
-                testee.makePairs(list0_1, listABC_1));
+                testee.makeIdxPairs(list0_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.onlyA(0),
                         IntPair.onlyA(1),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, list0_1));
+                testee.makeIdxPairs(listABC_1, list0_1));
         
         // 一般
         // K ITTE N
@@ -121,7 +121,7 @@ class MinimumEditDistanceMatcher2Test {
                         IntPair.onlyB(4),
                         IntPair.of(5, 5),
                         IntPair.onlyB(6)),
-                testee.makePairs(listKITTEN, listSITTING));
+                testee.makeIdxPairs(listKITTEN, listSITTING));
         // S ITTI NG
         //   |||  |
         //  KITT EN
@@ -136,6 +136,6 @@ class MinimumEditDistanceMatcher2Test {
                         IntPair.onlyB(4),
                         IntPair.of(5, 5),
                         IntPair.onlyA(6)),
-                testee.makePairs(listSITTING, listKITTEN));
+                testee.makeIdxPairs(listSITTING, listKITTEN));
     }
 }
