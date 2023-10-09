@@ -117,11 +117,11 @@ public class Factory {
      * @return Excelブック名同士の対応関係を決めるマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public BookNamesMatcher bookNamesMatcher(Settings settings) {
+    public BooksMatcher bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
-        return BookNamesMatcher.of(matchNamesStrictly);
+        return BooksMatcher.of(matchNamesStrictly);
     }
     
     /**
