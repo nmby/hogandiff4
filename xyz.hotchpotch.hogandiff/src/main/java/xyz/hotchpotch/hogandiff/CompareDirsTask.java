@@ -142,7 +142,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", i, bookNamePair)).append(BR);
+                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
             }
             
             str.append(BR);

@@ -248,7 +248,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> bookNamePair = data.bookNamePairs().get(i);
             
             str.append(indent
-                    + DirResult.formatBookNamesPair(dirId, i, bookNamePair));
+                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
             updateMessage(str.toString());
             
             if (bookNamePair.isPaired()) {

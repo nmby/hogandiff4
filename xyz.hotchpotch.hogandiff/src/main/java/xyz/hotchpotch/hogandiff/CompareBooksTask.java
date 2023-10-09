@@ -101,7 +101,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<Pair<String>> pairs = getSheetNamePairs(bookOpenInfo1, bookOpenInfo2);
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
-                str.append(BookResult.formatSheetNamesPair(i, pair)).append(BR);
+                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
             }
             str.append(BR);
             
@@ -144,7 +144,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<String> sheetNamePair = sheetNamePairs.get(i);
                 
                 if (sheetNamePair.isPaired()) {
-                    str.append(BookResult.formatSheetNamesPair(i, sheetNamePair));
+                    str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
                     updateMessage(str.toString());
                     
                     Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, sheetNamePair.a());
