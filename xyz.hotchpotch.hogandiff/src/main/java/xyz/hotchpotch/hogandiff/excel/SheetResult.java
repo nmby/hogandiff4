@@ -28,7 +28,7 @@ public record SheetResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>

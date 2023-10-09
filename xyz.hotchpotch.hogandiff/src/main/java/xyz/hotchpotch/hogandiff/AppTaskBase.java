@@ -60,7 +60,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected final StringBuilder str = new StringBuilder();
     
     /** このアプリケーションのリソースバンドル */
-    protected final ResourceBundle rb = AppMain.appResource.get();
+    protected final ResourceBundle rb = AppMain.appResource().get();
     
     /*package*/ AppTaskBase(
             Settings settings,

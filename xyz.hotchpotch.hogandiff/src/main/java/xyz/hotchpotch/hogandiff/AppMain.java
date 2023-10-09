@@ -30,7 +30,19 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションで利用するリソース */
-    public static AppResource appResource = null;
+    private static AppResource appResource = null;
+    
+    public static AppResource appResource() {
+        // TODO: リソース管理まわりの改善
+        // JavaFXアプリとしての通常の実行では、main を迂回して appResurce が要求されることはない。
+        // しかしテスト実行においてはそれが起こるため、次の初期化コードがないと
+        // NullPointerException が発生する。
+        // 不細工なので改善する。
+        if (appResource == null) {
+            appResource = AppResource.of(new String[] {});
+        }
+        return appResource;
+    }
     
     /** メインステージ */
     public static Stage stage;

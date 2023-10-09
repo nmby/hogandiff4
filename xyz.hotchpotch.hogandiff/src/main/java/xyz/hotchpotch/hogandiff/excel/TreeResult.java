@@ -29,7 +29,7 @@ public record TreeResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
