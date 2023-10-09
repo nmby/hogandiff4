@@ -75,7 +75,7 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
             sizeA = listA.size();
             sizeB = listB.size();
             
-            costs = IntStream.range(0, sizeA + 1)
+            costs = IntStream.range(0, sizeA + 1).parallel()
                     .mapToObj(i -> IntStream.range(0, sizeB + 1)
                             .map(j -> {
                                 if (i < sizeA && j < sizeB) {
