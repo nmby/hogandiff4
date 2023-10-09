@@ -115,8 +115,10 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         }
         
         private List<Integer> calcBestPath() {
-            int[] bestCostsA = IntStream.range(0, sizeA + 1).map(i -> Integer.MAX_VALUE).toArray();
-            int[] bestCostsB = IntStream.range(0, sizeB + 1).map(j -> Integer.MAX_VALUE).toArray();
+            int[] bestCostsA = new int[sizeA + 1];
+            int[] bestCostsB = new int[sizeB + 1];
+            Arrays.fill(bestCostsA, Integer.MAX_VALUE);
+            Arrays.fill(bestCostsB, Integer.MAX_VALUE);
             int bestCostT = Integer.MAX_VALUE;
             
             @SuppressWarnings("unchecked")
