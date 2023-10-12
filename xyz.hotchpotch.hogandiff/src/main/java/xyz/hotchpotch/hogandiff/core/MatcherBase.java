@@ -25,12 +25,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         this.diffEvaluator = diffEvaluator;
     }
     
-    protected void makePairsPrecheck(
+    protected void makeIdxPairsPrecheck(
             List<? extends T> listA,
             List<? extends T> listB) {
     }
     
-    protected abstract List<IntPair> makePairsMain(
+    protected abstract List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB);
     
@@ -40,14 +40,14 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
      * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
      */
     @Override
-    public List<IntPair> makePairs(
+    public List<IntPair> makeIdxPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
         Objects.requireNonNull(listA, "listA");
         Objects.requireNonNull(listB, "listB");
         
-        makePairsPrecheck(listA, listB);
+        makeIdxPairsPrecheck(listA, listB);
         
         if (listA.isEmpty() && listB.isEmpty()) {
             return List.of();
@@ -64,6 +64,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             return IntStream.range(0, listA.size()).mapToObj(IntPair::onlyA).toList();
         }
         
-        return makePairsMain(listA, listB);
+        return makeIdxPairsMain(listA, listB);
     }
 }

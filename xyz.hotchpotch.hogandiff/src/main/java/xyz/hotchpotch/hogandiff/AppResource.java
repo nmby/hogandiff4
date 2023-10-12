@@ -18,6 +18,12 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * アプリケーションのリソースを保持するクラスです。<br>
+ * ここで言うリソースとは、以下の3つを含みます。<br>
+ * <ul>
+ *   <li>実行時引数から得た設定</li>
+ *   <li>プロパティファイルから得た設定</li>
+ *   <li>リソースバンドルファイルから得られたメッセージリソース</li>
+ * </ul>
  * 
  * @author nmby
  */
@@ -67,22 +73,39 @@ public class AppResource {
     }
     
     /**
-     * このアプリケーションで利用するリソースをプロパティファイルから構成します。<br>
+     * このアプリケーションで利用するリソースを構成して返します。<br>
      * 
+     * @param args アプリケーション実行時引数
      * @return このアプリケーションで利用するリソース
+     * @throws NullPointerException {@code args} が {@code null} の場合
      */
-    public static AppResource fromProperties() {
+    public static AppResource of(String[] args) {
+        Objects.requireNonNull(args, "args");
+        
+        // まず、プロパティファイルから設定を抽出する。
         Properties properties = loadProperties();
         Settings settings;
         
         try {
-            // プロパティファイルから設定を抽出する。
-            Settings.Builder builder = Settings.builder(properties, SettingKeys.storableKeys);
-            settings = builder.build();
-            
+            settings = Settings.builder(properties, SettingKeys.storableKeys).build();
         } catch (RuntimeException e) {
-            // 何らかの実行時例外が発生した場合は空の設定を返すことにする。
             settings = Settings.builder().build();
+        }
+        
+        // 次に、アプリケーション実行時引数から設定を抽出する。
+        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
+        
+        // アプリケーション実行時引数から設定を抽出できた場合は、
+        // その内容で設定を上書きする。
+        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
+        if (fromArgs.isPresent()) {
+            settings = Settings.builder()
+                    .setAll(settings)
+                    .setAll(fromArgs.get())
+                    .build();
+            
+        } else if (0 < args.length) {
+            System.err.println(AppArgsParser.USAGE);
         }
         
         return new AppResource(properties, settings);
@@ -124,32 +147,6 @@ public class AppResource {
      */
     public ResourceBundle get() {
         return rb;
-    }
-    
-    /**
-     * このリソースにアプリケーション実行時引数の内容を反映させます。<br>
-     * 
-     * @param args アプリケーション実行時引数
-     * @throws NullPointerException {@code args} が {@code null} の場合
-     */
-    public void reflectArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
-        
-        // アプリケーション実行時引数から設定を抽出する。
-        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
-        
-        // アプリケーション実行時引数から設定を抽出できた場合は、
-        // その内容で既存の内容を上書きする。
-        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
-        if (fromArgs.isPresent()) {
-            settings = Settings.builder()
-                    .setAll(settings)
-                    .setAll(fromArgs.get())
-                    .build();
-            
-        } else if (0 < args.length) {
-            System.err.println(AppArgsParser.USAGE);
-        }
     }
     
     private boolean storeProperties() {

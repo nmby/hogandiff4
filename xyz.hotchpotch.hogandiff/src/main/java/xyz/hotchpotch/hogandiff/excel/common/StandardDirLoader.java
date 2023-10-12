@@ -12,8 +12,8 @@ import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.util.Tuple2;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
 /**
  * {@link DirLoader} の標準的な実装です。<br>
@@ -88,8 +88,8 @@ public class StandardDirLoader implements DirLoader {
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
                             .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
-                            .filter(t -> t.item1() != null)
-                            .map(Tuple2::item1)
+                            .filter(r -> r.result() != null)
+                            .map(ResultOrThrown::result)
                             .sorted()
                             .toList()
                     : List.of());

@@ -53,7 +53,7 @@ public class MainController extends VBox {
     private final BooleanProperty isReady = new SimpleBooleanProperty(false);
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
-    private final AppResource ar = AppMain.appResource;
+    private final AppResource ar = AppMain.appResource();
     private final ResourceBundle rb = ar.get();
     
     /**

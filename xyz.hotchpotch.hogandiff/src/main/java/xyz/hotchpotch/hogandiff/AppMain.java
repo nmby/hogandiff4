@@ -21,7 +21,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.17.2";
+    private static final String VERSION = "v0.17.3";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -30,7 +30,19 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションで利用するリソース */
-    public static AppResource appResource = AppResource.fromProperties();
+    private static AppResource appResource = null;
+    
+    public static AppResource appResource() {
+        // TODO: リソース管理まわりの改善
+        // JavaFXアプリとしての通常の実行では、main を迂回して appResurce が要求されることはない。
+        // しかしテスト実行においてはそれが起こるため、次の初期化コードがないと
+        // NullPointerException が発生する。
+        // 不細工なので改善する。
+        if (appResource == null) {
+            appResource = AppResource.of(new String[] {});
+        }
+        return appResource;
+    }
     
     /** メインステージ */
     public static Stage stage;
@@ -51,7 +63,7 @@ public class AppMain extends Application {
      * @param args アプリケーション実行時引数
      */
     public static void main(String[] args) {
-        appResource.reflectArgs(args);
+        appResource = AppResource.of(args);
         
         launch(args);
     }

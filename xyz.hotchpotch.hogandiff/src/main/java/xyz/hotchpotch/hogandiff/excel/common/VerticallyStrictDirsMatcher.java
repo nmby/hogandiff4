@@ -32,9 +32,9 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
                 List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
                 
-                int gapChildren = (int) Matcher.identityMatcher().makePairs(childrenNames1, childrenNames2)
+                int gapChildren = (int) Matcher.identityMatcher().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcher().makePairs(d1.bookNames(), d2.bookNames())
+                int gapBookNames = (int) Matcher.identityMatcher().makeIdxPairs(d1.bookNames(), d2.bookNames())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
@@ -89,7 +89,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
         assert dirInfo1 != null;
         assert dirInfo2 != null;
         
-        List<Pair<DirInfo>> dirPairs = coreMatcher.makePairs2(
+        List<Pair<DirInfo>> dirPairs = coreMatcher.makeItemPairs(
                 dirInfo1.children(),
                 dirInfo2.children());
         

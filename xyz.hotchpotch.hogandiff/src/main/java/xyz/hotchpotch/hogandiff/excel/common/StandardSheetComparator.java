@@ -76,7 +76,7 @@ public class StandardSheetComparator extends SheetComparatorBase {
                     List::size,
                     (list1, list2) -> evaluateDiff(list1, list2, comparator));
             
-            return matcher.makePairs(cellsList1, cellsList2).stream()
+            return matcher.makeIdxPairs(cellsList1, cellsList2).stream()
                     .map(p -> p.map(i -> i + start))
                     .toList();
         };

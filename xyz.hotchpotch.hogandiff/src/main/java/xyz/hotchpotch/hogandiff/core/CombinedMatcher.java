@@ -35,7 +35,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -52,7 +52,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         List<? extends T> tmpB = listB;
         
         for (Matcher<? super T> matcher : matchers) {
-            List<IntPair> res = matcher.makePairs(tmpA, tmpB);
+            List<IntPair> res = matcher.makeIdxPairs(tmpA, tmpB);
             BitSet pairedA = new BitSet(tmpA.size());
             BitSet pairedB = new BitSet(tmpB.size());
             

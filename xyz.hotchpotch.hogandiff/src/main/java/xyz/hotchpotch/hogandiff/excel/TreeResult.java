@@ -29,7 +29,7 @@ public record TreeResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
@@ -39,7 +39,10 @@ public record TreeResult(
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
      */
-    public static String formatDirsPair(String id, Pair<DirInfo> dirPair) {
+    public static String formatDirsPair(
+            String id,
+            Pair<DirInfo> dirPair) {
+        
         Objects.requireNonNull(dirPair, "dirPair");
         
         return "    - %s%n    - %s%n".formatted(
@@ -76,24 +79,17 @@ public record TreeResult(
         this.dirResults = Map.copyOf(dirResults);
     }
     
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        
-        str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(topDirPair.a().path())
-                .append(BR);
-        str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(topDirPair.b().path())
-                .append(BR);
-        
-        str.append(BR);
-        str.append(rb.getString("excel.TreeResult.030")).append(BR);
-        str.append(getDiffSummary());
-        str.append(rb.getString("excel.TreeResult.040")).append(BR);
-        str.append(getDiffDetail());
-        
-        return str.toString();
+    /**
+     * この比較結果における差分の有無を返します。<br>
+     * 
+     * @return 差分ありの場合は {@code true}
+     */
+    public boolean hasDiff() {
+        return pairDataList.stream()
+                .map(DirPairData::dirPair)
+                .map(p -> p.map(DirInfo::path))
+                .map(dirResults::get)
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
     
     private String getDiffSummary() {
@@ -123,6 +119,26 @@ public record TreeResult(
                 str.append(BR);
             }
         }
+        
+        return str.toString();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append(rb.getString("excel.TreeResult.020").formatted("A"))
+                .append(topDirPair.a().path())
+                .append(BR);
+        str.append(rb.getString("excel.TreeResult.020").formatted("B"))
+                .append(topDirPair.b().path())
+                .append(BR);
+        
+        str.append(BR);
+        str.append(rb.getString("excel.TreeResult.030")).append(BR);
+        str.append(getDiffSummary());
+        str.append(rb.getString("excel.TreeResult.040")).append(BR);
+        str.append(getDiffDetail());
         
         return str.toString();
     }
