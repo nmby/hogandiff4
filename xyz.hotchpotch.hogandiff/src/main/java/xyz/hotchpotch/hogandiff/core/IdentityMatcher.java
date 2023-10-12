@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * リスト内における要素の順番に関わりなく、
- * 2つのリストの等しい要素同士を対応付ける {@link Matcher} の実装です。<br>
+ * 2つのリスト内の等しい要素同士を対応付ける {@link Matcher} の実装です。<br>
  * <br>
  * <strong>注意：</strong>
  * この実装は、重複要素を持つリストを受け付けません。<br>
@@ -32,8 +32,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     private Map<?, Integer> mapB;
     
     /*package*/ IdentityMatcher() {
-        super(null, null);
-        this.idExtractor = Function.identity();
+        this(Function.identity());
     }
     
     /*package*/ IdentityMatcher(Function<? super T, ?> extractor) {
@@ -43,7 +42,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected void makePairsPrecheck(
+    protected void makeIdxPairsPrecheck(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -65,7 +64,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

@@ -22,7 +22,7 @@ public class StringDiffUtil {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher2<>(
+    private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher<>(
             x -> 1,
             (x, y) -> x.equals(y) ? 0 : 3);
     
@@ -45,17 +45,17 @@ public class StringDiffUtil {
             return 0;
         }
         if (str1.length() == 0) {
-            return str2.length();
+            return str2.codePointCount(0, str2.length());
         }
         if (str2.length() == 0) {
-            return str1.length();
+            return str1.codePointCount(0, str1.length());
         }
         
         // 一般ケース
-        // サロゲートペアの扱いは、・・・まぁ、これで良いでしょ
+        // サロゲートペアの扱いはこれで良いはず
         List<Integer> codePoints1 = str1.codePoints().boxed().toList();
         List<Integer> codePoints2 = str2.codePoints().boxed().toList();
-        List<IntPair> pairs = codeMatcher.makePairs(codePoints1, codePoints2);
+        List<IntPair> pairs = codeMatcher.makeIdxPairs(codePoints1, codePoints2);
         
         return (int) pairs.stream()
                 .filter(Predicate.not(IntPair::isPaired))

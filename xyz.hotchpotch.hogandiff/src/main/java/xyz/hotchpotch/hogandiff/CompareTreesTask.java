@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
+import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
@@ -109,7 +109,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     topDirPair.a(),
                     topDirPair.b());
             
-            BookNamesMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
+            BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
             BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> bookNamePairs = (side, dirPair) -> dirPair
                     .get(side).bookNames().stream()
                     .map(bookName -> side == Side.A ? new Pair<>(bookName, null) : new Pair<>(null, bookName))

@@ -55,4 +55,20 @@ class StringDiffUtilTest {
         assertEquals(4, StringDiffUtil.levenshteinDistance("abcd", "bxde"));
         assertEquals(10, StringDiffUtil.levenshteinDistance("abcde", "vwxyz"));
     }
+    
+    @Test
+    void testLevenshteinDistance4_サロゲートペア関連() {
+        String str1 = "abc💩def👨ghi";
+        
+        // 事前確認
+        assertEquals(13, str1.length());
+        assertEquals(11, str1.codePointCount(0, str1.length()));
+        
+        // test
+        assertEquals(11, StringDiffUtil.levenshteinDistance(str1, ""));
+        assertEquals(1, StringDiffUtil.levenshteinDistance(str1, "abcdef👨ghi"));
+        assertEquals(1, StringDiffUtil.levenshteinDistance(str1, "abc💩🎂def👨ghi"));
+        assertEquals(2, StringDiffUtil.levenshteinDistance(str1, "abcXdef👨ghi"));
+        assertEquals(2, StringDiffUtil.levenshteinDistance(str1, "abc🐶def👨ghi"));
+    }
 }

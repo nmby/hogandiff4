@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
+import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
@@ -132,7 +132,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareDirsTask.030")).append(BR);
             updateMessage(str.toString());
             
-            BookNamesMatcher matcher = factory.bookNamesMatcher(settings);
+            BooksMatcher matcher = factory.bookNamesMatcher(settings);
             List<Pair<String>> bookNamePairs = matcher.pairingBooks(
                     dirPair.a(),
                     dirPair.b());
@@ -142,7 +142,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             for (int i = 0; i < bookNamePairs.size(); i++) {
                 Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", i, bookNamePair)).append(BR);
+                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
             }
             
             str.append(BR);

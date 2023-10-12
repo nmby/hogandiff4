@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @param <T> リストの要素の型
  * @author nmby
  */
-/*package*/ class MinimumEditDistanceMatcher2<T> extends MatcherBase<T> {
+/*package*/ class MinimumEditDistanceMatcher<T> extends MatcherBase<T> {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
@@ -68,7 +68,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    /*package*/ MinimumEditDistanceMatcher2(
+    /*package*/ MinimumEditDistanceMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
@@ -78,7 +78,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert diffEvaluator != null;
     }
     
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

@@ -30,31 +30,29 @@ public record DirResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * Excelブック名ペアをユーザー表示用に整形して返します。<br>
      * 
      * @param dirId 親フォルダのペアを示す識別子。
-     * @param i このExcelブック名ペアの番号。{@code i + 1} をユーザー向けに表示します。
+     * @param bookId このExcelブック名ペアを示す識別子。
      * @param pair Excelブック名ペア
      * @return Excelブック名ペアの整形済み文字列
-     * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code dirId}, {@code bookId}, {@code pair} のいずれかが {@code null} の場合
      */
     public static String formatBookNamesPair(
             String dirId,
-            int i,
+            String bookId,
             Pair<String> pair) {
         
         Objects.requireNonNull(dirId, "dirId");
+        Objects.requireNonNull(bookId, "bookId");
         Objects.requireNonNull(pair, "pair");
-        if (i < 0) {
-            throw new IllegalArgumentException("i: %d".formatted(i));
-        }
         
         return "    %s  vs  %s".formatted(
-                pair.hasA() ? "【A%s-%d】%s".formatted(dirId, i + 1, pair.a()) : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "【B%s-%d】%s".formatted(dirId, i + 1, pair.b()) : rb.getString("excel.DResult.010"));
+                pair.hasA() ? "【A%s-%s】%s".formatted(dirId, bookId, pair.a()) : rb.getString("excel.DResult.010"),
+                pair.hasB() ? "【B%s-%s】%s".formatted(dirId, bookId, pair.b()) : rb.getString("excel.DResult.010"));
     }
     
     // [instance members] ******************************************************
@@ -88,7 +86,7 @@ public record DirResult(
     }
     
     /**
-     * 差分ありの場合は {@code true}<br>
+     * この比較結果における差分の有無を返します。<br>
      * 
      * @return 差分ありの場合は {@code true}
      */
@@ -96,84 +94,6 @@ public record DirResult(
         return bookNamePairs.stream()
                 .map(bookResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        
-        str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirPair.a().path())
-                .append(BR);
-        str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirPair.b().path())
-                .append(BR);
-        
-        for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> bookNamePair = bookNamePairs.get(i);
-            str.append(formatBookNamesPair(dirId, i, bookNamePair)).append(BR);
-        }
-        
-        str.append(BR);
-        str.append(rb.getString("excel.DResult.030")).append(BR);
-        str.append(getDiffSummary()).append(BR);
-        str.append(rb.getString("excel.DResult.040")).append(BR);
-        str.append(getDiffDetail());
-        
-        return str.toString();
-    }
-    
-    private String getDiffSummary() {
-        return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
-                ? bResult.get().getDiffSimpleSummary()
-                : rb.getString("excel.DResult.050")),
-                false);
-    }
-    
-    /**
-     * 差分内容の詳細を返します。<br>
-     * 
-     * @return 差分内容の詳細を表す文字列
-     */
-    public String getDiffDetail() {
-        return getDiffText(bResult -> bResult.isPresent()
-                ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : BR + "        " + rb.getString("excel.DResult.050") + BR + BR,
-                true);
-    }
-    
-    private String getDiffText(
-            Function<Optional<BookResult>, String> diffDescriptor,
-            boolean isDetailMode) {
-        
-        StringBuilder str = new StringBuilder();
-        
-        if (bookResults.isEmpty()) {
-            str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
-            if (isDetailMode) {
-                // TODO: とても不細工なのでどうにかしたい
-                str.append(BR);
-            }
-            return str.toString();
-        }
-        
-        for (int i = 0; i < bookNamePairs.size(); i++) {
-            Pair<String> bookNamePair = bookNamePairs.get(i);
-            Optional<BookResult> bResult = bookResults.get(bookNamePair);
-            
-            str.append(formatBookNamesPair(dirId, i, bookNamePair));
-            
-            if (bookNamePair.isPaired()) {
-                str.append(diffDescriptor.apply(bResult));
-            } else {
-                str.append(BR);
-                if (isDetailMode) {
-                    // TODO: とても不細工なのでどうにかしたい
-                    str.append(BR);
-                }
-            }
-        }
-        return str.toString();
     }
     
     /**
@@ -219,6 +139,84 @@ public record DirResult(
             }
             str.append(rb.getString("excel.DResult.090").formatted(failed));
         }
+        
+        return str.toString();
+    }
+    
+    private String getDiffSummary() {
+        return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
+                ? bResult.get().getDiffSimpleSummary()
+                : rb.getString("excel.DResult.050")),
+                false);
+    }
+    
+    /**
+     * 差分内容の詳細を返します。<br>
+     * 
+     * @return 差分内容の詳細を表す文字列
+     */
+    public String getDiffDetail() {
+        return getDiffText(bResult -> bResult.isPresent()
+                ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
+                : BR + "        " + rb.getString("excel.DResult.050") + BR + BR,
+                true);
+    }
+    
+    private String getDiffText(
+            Function<Optional<BookResult>, String> diffDescriptor,
+            boolean isDetailMode) {
+        
+        StringBuilder str = new StringBuilder();
+        
+        if (bookResults.isEmpty()) {
+            str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
+            if (isDetailMode) {
+                // TODO: とても不細工なのでどうにかしたい
+                str.append(BR);
+            }
+            return str.toString();
+        }
+        
+        for (int i = 0; i < bookNamePairs.size(); i++) {
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            Optional<BookResult> bResult = bookResults.get(bookNamePair);
+            
+            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
+            
+            if (bookNamePair.isPaired()) {
+                str.append(diffDescriptor.apply(bResult));
+            } else {
+                str.append(BR);
+                if (isDetailMode) {
+                    // TODO: とても不細工なのでどうにかしたい
+                    str.append(BR);
+                }
+            }
+        }
+        return str.toString();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append(rb.getString("excel.DResult.020").formatted("A"))
+                .append(dirPair.a().path())
+                .append(BR);
+        str.append(rb.getString("excel.DResult.020").formatted("B"))
+                .append(dirPair.b().path())
+                .append(BR);
+        
+        for (int i = 0; i < bookNamePairs.size(); i++) {
+            Pair<String> bookNamePair = bookNamePairs.get(i);
+            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair)).append(BR);
+        }
+        
+        str.append(BR);
+        str.append(rb.getString("excel.DResult.030")).append(BR);
+        str.append(getDiffSummary()).append(BR);
+        str.append(rb.getString("excel.DResult.040")).append(BR);
+        str.append(getDiffDetail());
         
         return str.toString();
     }

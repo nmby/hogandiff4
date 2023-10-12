@@ -32,7 +32,7 @@ public enum SheetType {
     private SheetType(String descriptionKey) {
         assert descriptionKey != null;
         
-        ResourceBundle rb = AppMain.appResource.get();
+        ResourceBundle rb = AppMain.appResource().get();
         this.description = rb.getString(descriptionKey);
     }
     

@@ -31,27 +31,27 @@ public record BookResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * シート名ペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param idx シート名ペアのインデックス。{@code idx + 1} が番号として表示されます。
+     * @param id シート名ペアの識別子。
      * @param pair シート名ペア
      * @return シート名ペアの整形済み文字列
-     * @throws NullPointerException {@code pair} が {@code null} の場合
-     * @throws IndexOutOfBoundsException {@code idx} が {@code 0} 未満の場合
+     * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
      */
-    public static String formatSheetNamesPair(int idx, Pair<String> pair) {
+    public static String formatSheetNamesPair(
+            String id,
+            Pair<String> pair) {
+        
+        Objects.requireNonNull(id, "id");
         Objects.requireNonNull(pair, "pair");
-        if (idx < 0) {
-            throw new IndexOutOfBoundsException(idx);
-        }
         
         //ResourceBundle rb = AppMain.appResource.get();
         
-        return "    %d) %s  vs  %s".formatted(
-                idx + 1,
+        return "    %s) %s  vs  %s".formatted(
+                id,
                 pair.hasA() ? "A[ " + pair.a() + " ]" : rb.getString("excel.BResult.010"),
                 pair.hasB() ? "B[ " + pair.b() + " ]" : rb.getString("excel.BResult.010"));
     }
@@ -82,17 +82,6 @@ public record BookResult(
     }
     
     /**
-     * ひとつでも差分があるかを返します。<br>
-     * 
-     * @return ひとつでも差分がある場合は {@code true}
-     */
-    public boolean hasDiff() {
-        return sheetPairs.stream()
-                .map(sheetResults::get)
-                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
-    }
-    
-    /**
      * 片側のExcelブックについての差分内容を返します。<br>
      * 
      * @param side Excelブックの側
@@ -108,43 +97,15 @@ public record BookResult(
                         entry -> entry.getValue().map(s -> s.getPiece(side))));
     }
     
-    private String getDiffText(Function<SheetResult, String> diffDescriptor) {
-        StringBuilder str = new StringBuilder();
-        
-        for (int i = 0; i < sheetPairs.size(); i++) {
-            Pair<String> pair = sheetPairs.get(i);
-            Optional<SheetResult> sResult = sheetResults.get(pair);
-            
-            if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
-                continue;
-            }
-            
-            str.append(formatSheetNamesPair(i, pair));
-            str.append(diffDescriptor.apply(sResult.get()));
-            str.append(BR);
-        }
-        
-        return str.isEmpty()
-                ? "    " + rb.getString("excel.BResult.020") + BR
-                : str.toString();
-    }
-    
     /**
-     * 比較結果の差分サマリを返します。<br>
+     * この比較結果における差分の有無を返します。<br>
      * 
-     * @return 比較結果の差分サマリ
+     * @return 差分ありの場合は {@code true}
      */
-    public String getDiffSummary() {
-        return getDiffText(sResult -> "  -  " + sResult.getDiffSummary());
-    }
-    
-    /**
-     * 比較結果の差分詳細を返します。<br>
-     * 
-     * @return 比較結果の差分詳細
-     */
-    public String getDiffDetail() {
-        return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
+    public boolean hasDiff() {
+        return sheetPairs.stream()
+                .map(sheetResults::get)
+                .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
     
     /**
@@ -175,6 +136,45 @@ public record BookResult(
         return str.toString();
     }
     
+    /**
+     * 比較結果の差分サマリを返します。<br>
+     * 
+     * @return 比較結果の差分サマリ
+     */
+    public String getDiffSummary() {
+        return getDiffText(sResult -> "  -  " + sResult.getDiffSummary());
+    }
+    
+    /**
+     * 比較結果の差分詳細を返します。<br>
+     * 
+     * @return 比較結果の差分詳細
+     */
+    public String getDiffDetail() {
+        return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
+    }
+    
+    private String getDiffText(Function<SheetResult, String> diffDescriptor) {
+        StringBuilder str = new StringBuilder();
+        
+        for (int i = 0; i < sheetPairs.size(); i++) {
+            Pair<String> pair = sheetPairs.get(i);
+            Optional<SheetResult> sResult = sheetResults.get(pair);
+            
+            if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
+                continue;
+            }
+            
+            str.append(formatSheetNamesPair(Integer.toString(i + 1), pair));
+            str.append(diffDescriptor.apply(sResult.get()));
+            str.append(BR);
+        }
+        
+        return str.isEmpty()
+                ? "    " + rb.getString("excel.BResult.020") + BR
+                : str.toString();
+    }
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -188,7 +188,7 @@ public record BookResult(
         
         for (int i = 0; i < sheetPairs.size(); i++) {
             Pair<String> pair = sheetPairs.get(i);
-            str.append(formatSheetNamesPair(i, pair)).append(BR);
+            str.append(formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
         }
         
         str.append(BR);

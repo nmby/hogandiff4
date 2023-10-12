@@ -54,16 +54,16 @@ class MinimumCostFlowMatcherTest {
     void testMakePairs1_パラメータチェック() {
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, list0_1));
+                () -> testee.makeIdxPairs(null, list0_1));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(list0_1, null));
+                () -> testee.makeIdxPairs(list0_1, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, null));
+                () -> testee.makeIdxPairs(null, null));
         
         assertDoesNotThrow(
-                () -> testee.makePairs(list0_1, list0_1));
+                () -> testee.makeIdxPairs(list0_1, list0_1));
     }
     
     @Test
@@ -71,30 +71,30 @@ class MinimumCostFlowMatcherTest {
         // 同一インスタンス
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_1));
+                testee.makeIdxPairs(list0_1, list0_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_1));
+                testee.makeIdxPairs(listABC_1, listABC_1));
         
         // 別インスタンス同一内容
         assertEquals(
                 List.of(),
-                testee.makePairs(list0_1, list0_2));
+                testee.makeIdxPairs(list0_1, list0_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC_1, listABC_2));
+                testee.makeIdxPairs(listABC_1, listABC_2));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listXXX_1, listXXX_2));
+                testee.makeIdxPairs(listXXX_1, listXXX_2));
     }
     
     @Test
@@ -105,13 +105,13 @@ class MinimumCostFlowMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(2)),
-                testee.makePairs(list0_1, listABC_1));
+                testee.makeIdxPairs(list0_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.onlyA(0),
                         IntPair.onlyA(1),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, list0_1));
+                testee.makeIdxPairs(listABC_1, list0_1));
         
         // 同じ長さでギャップ無し
         assertEquals(
@@ -119,13 +119,13 @@ class MinimumCostFlowMatcherTest {
                         IntPair.of(0, 2),
                         IntPair.of(1, 0),
                         IntPair.of(2, 1)),
-                testee.makePairs(listABC_1, listBCA_1));
+                testee.makeIdxPairs(listABC_1, listBCA_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 1),
                         IntPair.of(1, 2),
                         IntPair.of(2, 0)),
-                testee.makePairs(listBCA_1, listABC_1));
+                testee.makeIdxPairs(listBCA_1, listABC_1));
         
         // ギャップあり
         assertEquals(
@@ -136,7 +136,7 @@ class MinimumCostFlowMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(4)),
-                testee.makePairs(listABC_1, listXXBAX_1));
+                testee.makeIdxPairs(listABC_1, listXXBAX_1));
         assertEquals(
                 List.of(
                         IntPair.of(2, 1),
@@ -145,19 +145,19 @@ class MinimumCostFlowMatcherTest {
                         IntPair.onlyA(1),
                         IntPair.onlyA(4),
                         IntPair.onlyB(2)),
-                testee.makePairs(listXXBAX_1, listABC_1));
+                testee.makeIdxPairs(listXXBAX_1, listABC_1));
         assertEquals(
                 List.of(
                         IntPair.of(1, 0),
                         IntPair.onlyA(0),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC_1, listBB_1));
+                testee.makeIdxPairs(listABC_1, listBB_1));
         assertEquals(
                 List.of(
                         IntPair.of(0, 1),
                         IntPair.onlyB(0),
                         IntPair.onlyB(2)),
-                testee.makePairs(listBB_1, listABC_1));
+                testee.makeIdxPairs(listBB_1, listABC_1));
     }
     
     @Test
@@ -171,7 +171,7 @@ class MinimumCostFlowMatcherTest {
                         new Pair<>("Thursday", "Thursday"),
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday")),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
                         List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")));
         
@@ -184,7 +184,7 @@ class MinimumCostFlowMatcherTest {
                         new Pair<>("Thursday", "Thursday"),
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday")),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
                         List.of("Saturday", "Wednesday", "Sunday", "Tuesday", "Thursday", "Friday", "Monday")));
         
@@ -197,7 +197,7 @@ class MinimumCostFlowMatcherTest {
                         new Pair<>("Sunday", null),
                         new Pair<>("Monday", null),
                         new Pair<>("Saturday", null)),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
                         List.of("Thursday", "Friday", "Tuesday", "Tuesday")));
         
@@ -210,7 +210,7 @@ class MinimumCostFlowMatcherTest {
                         new Pair<>(null, "Sunday"),
                         new Pair<>(null, "Monday"),
                         new Pair<>(null, "Saturday")),
-                testee.makePairs2(
+                testee.makeItemPairs(
                         List.of("Thursday", "Friday", "Tuesday", "Tuesday"),
                         List.of("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")));
     }

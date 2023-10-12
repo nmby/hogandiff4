@@ -50,7 +50,7 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
         Objects.requireNonNull(bookInfo1, "bookInfo1");
         Objects.requireNonNull(bookInfo2, "bookInfo2");
         
-        return coreMatcher.makePairs2(
+        return coreMatcher.makeItemPairs(
                 bookInfo1.sheetNames(),
                 bookInfo2.sheetNames());
     }

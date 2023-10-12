@@ -105,7 +105,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     settings.get(SettingKeys.CURR_SHEET_NAME1),
                     settings.get(SettingKeys.CURR_SHEET_NAME2));
             
-            str.append(BookResult.formatSheetNamesPair(0, pair));
+            str.append(BookResult.formatSheetNamesPair("1", pair));
             updateMessage(str.toString());
             
             Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());

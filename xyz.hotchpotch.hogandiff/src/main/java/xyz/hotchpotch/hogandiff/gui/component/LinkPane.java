@@ -29,7 +29,7 @@ public class LinkPane extends HBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final AppResource ar = AppMain.appResource;
+    private final AppResource ar = AppMain.appResource();
     private final ResourceBundle rb = ar.get();
     
     @FXML

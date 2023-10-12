@@ -290,7 +290,8 @@ public class XSSFBookPainterWithStax implements BookPainter {
         try (FileSystem inFs = FileSystems.newFileSystem(srcBookOpenInfo.bookPath());
                 FileSystem outFs = FileSystems.newFileSystem(dstBookOpenInfo.bookPath())) {
             
-            // TODO: 空のシートに着色されないというバグがあるので直す。
+            // 空のシートに着色されないというバグがあるので直す。
+            // -> 空のシートなら着色しなくとも一目瞭然なので良しとする。
             
             // 2-1. xl/sharedStrings.xml エントリに対する処理
             processSharedStringsEntry(inFs, outFs);

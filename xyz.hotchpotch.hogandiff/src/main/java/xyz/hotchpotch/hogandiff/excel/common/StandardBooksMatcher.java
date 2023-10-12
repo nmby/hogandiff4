@@ -5,16 +5,16 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.excel.BookNamesMatcher;
+import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * {@link BookNamesMatcher} の標準的な実装です。<br>
+ * {@link BooksMatcher} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class StandardBookNamesMatcher implements BookNamesMatcher {
+public class StandardBooksMatcher implements BooksMatcher {
     
     // [static members] ********************************************************
     
@@ -24,8 +24,8 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
      * @param matchNamesStrictly Excelブック名のゆらぎを許容する場合は {@code true}
      * @return Excelブック名同士の対応関係を決めるマッチャー
      */
-    public static StandardBookNamesMatcher of(boolean matchNamesStrictly) {
-        return new StandardBookNamesMatcher(matchNamesStrictly
+    public static StandardBooksMatcher of(boolean matchNamesStrictly) {
+        return new StandardBooksMatcher(matchNamesStrictly
                 ? Matcher.identityMatcher()
                 : Matcher.combinedMatcher(List.of(
                         Matcher.identityMatcher(),
@@ -38,7 +38,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
     
     private final Matcher<String> coreMatcher;
     
-    private StandardBookNamesMatcher(Matcher<String> coreMatcher) {
+    private StandardBooksMatcher(Matcher<String> coreMatcher) {
         assert coreMatcher != null;
         
         this.coreMatcher = coreMatcher;
@@ -52,7 +52,7 @@ public class StandardBookNamesMatcher implements BookNamesMatcher {
         Objects.requireNonNull(dirInfo1, "dirInfo1");
         Objects.requireNonNull(dirInfo2, "dirInfo2");
         
-        return coreMatcher.makePairs2(
+        return coreMatcher.makeItemPairs(
                 dirInfo1.bookNames(),
                 dirInfo2.bookNames());
     }

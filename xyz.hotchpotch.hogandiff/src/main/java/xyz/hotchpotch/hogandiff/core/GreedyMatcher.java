@@ -47,8 +47,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             if (cost != other.cost) {
                 // コストそのものが異なる場合は、それに基づいて比較する。
                 return cost < other.cost ? -1 : 1;
-            }
-            if (idxs.isPaired() && other.idxs.isPaired()) {
+                
+            } else if (idxs.isPaired() && other.idxs.isPaired()) {
                 // コストが同じでともにペアリング済みの場合
                 
                 int iA = idxs.a();
@@ -107,7 +107,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert diffEvaluator != null;
     }
     
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         

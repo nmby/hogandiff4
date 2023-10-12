@@ -31,16 +31,16 @@ class SimpleMatcherTest {
         
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, list0));
+                () -> testee.makeIdxPairs(null, list0));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(list0, null));
+                () -> testee.makeIdxPairs(list0, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.makePairs(null, null));
+                () -> testee.makeIdxPairs(null, null));
         
         assertDoesNotThrow(
-                () -> testee.makePairs(list0, list0));
+                () -> testee.makeIdxPairs(list0, list0));
     }
     
     @Test
@@ -50,19 +50,19 @@ class SimpleMatcherTest {
         // 長さが同じ場合
         assertEquals(
                 List.of(),
-                testee.makePairs(list0, list0));
+                testee.makeIdxPairs(list0, list0));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC, listABC));
+                testee.makeIdxPairs(listABC, listABC));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
                         IntPair.of(1, 1),
                         IntPair.of(2, 2)),
-                testee.makePairs(listABC, listXYZ));
+                testee.makeIdxPairs(listABC, listXYZ));
         
         // 長さが異なる場合
         assertEquals(
@@ -70,13 +70,13 @@ class SimpleMatcherTest {
                         IntPair.onlyB(0),
                         IntPair.onlyB(1),
                         IntPair.onlyB(2)),
-                testee.makePairs(list0, listABC));
+                testee.makeIdxPairs(list0, listABC));
         assertEquals(
                 List.of(
                         IntPair.onlyA(0),
                         IntPair.onlyA(1),
                         IntPair.onlyA(2)),
-                testee.makePairs(listABC, list0));
+                testee.makeIdxPairs(listABC, list0));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
@@ -84,7 +84,7 @@ class SimpleMatcherTest {
                         IntPair.of(2, 2),
                         IntPair.onlyB(3),
                         IntPair.onlyB(4)),
-                testee.makePairs(listXYZ, listVWXYZ));
+                testee.makeIdxPairs(listXYZ, listVWXYZ));
         assertEquals(
                 List.of(
                         IntPair.of(0, 0),
@@ -92,6 +92,6 @@ class SimpleMatcherTest {
                         IntPair.of(2, 2),
                         IntPair.onlyA(3),
                         IntPair.onlyA(4)),
-                testee.makePairs(listVWXYZ, listXYZ));
+                testee.makeIdxPairs(listVWXYZ, listXYZ));
     }
 }

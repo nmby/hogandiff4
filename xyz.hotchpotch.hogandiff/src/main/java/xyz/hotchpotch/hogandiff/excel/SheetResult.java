@@ -1,11 +1,8 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -31,7 +28,7 @@ public record SheetResult(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
+    private static final ResourceBundle rb = AppMain.appResource().get();
     
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
@@ -99,7 +96,7 @@ public record SheetResult(
     // [instance members] ******************************************************
     
     /**
-     * Excelシート同士の比較結果を生成します。<br>
+     * コンストラクタ<br>
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
@@ -279,58 +276,5 @@ public record SheetResult(
     @Override
     public String toString() {
         return getDiffDetail();
-    }
-    
-    /**
-     * 比較結果のコマンドライン出力用文字列を返します。<br>
-     * 
-     * @return 比較結果のコマンドライン出力用文字列
-     */
-    public String getDiff() {
-        StringBuilder str = new StringBuilder();
-        
-        if (0 < redundantRows.a().length || 0 < redundantRows.b().length) {
-            str.append("Row Gaps :").append(BR);
-            
-            Function<int[], String> rowsToStr = rows -> Arrays.stream(rows)
-                    .map(i -> i + 1)
-                    .mapToObj(String::valueOf)
-                    .collect(Collectors.joining(", "));
-            
-            if (0 < redundantRows.a().length) {
-                str.append("- ").append(rowsToStr.apply(redundantRows.a())).append(BR);
-            }
-            if (0 < redundantRows.b().length) {
-                str.append("+ ").append(rowsToStr.apply(redundantRows.b())).append(BR);
-            }
-            str.append(BR);
-        }
-        
-        if (0 < redundantColumns.a().length || 0 < redundantColumns.b().length) {
-            str.append("Column Gaps :").append(BR);
-            
-            Function<int[], String> columnsToStr = columns -> Arrays.stream(columns)
-                    .mapToObj(CellsUtil::columnIdxToStr)
-                    .collect(Collectors.joining(", "));
-            
-            if (0 < redundantColumns.a().length) {
-                str.append("- ").append(columnsToStr.apply(redundantColumns.a())).append(BR);
-            }
-            if (0 < redundantColumns.b().length) {
-                str.append("+ ").append(columnsToStr.apply(redundantColumns.b())).append(BR);
-            }
-            str.append(BR);
-        }
-        
-        if (!diffCells.isEmpty()) {
-            str.append("Diff Cells :").append(BR);
-            
-            str.append(diffCells.stream()
-                    .map(diffCell -> "- %s%n+ %s%n".formatted(diffCell.a(), diffCell.b()))
-                    .collect(Collectors.joining(BR)));
-            
-        }
-        
-        return str.toString();
     }
 }

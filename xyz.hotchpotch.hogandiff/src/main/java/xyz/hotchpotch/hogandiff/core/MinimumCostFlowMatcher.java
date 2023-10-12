@@ -38,7 +38,7 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         assert diffEvaluator != null;
     }
     
-    protected List<IntPair> makePairsMain(
+    protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
         
@@ -75,7 +75,7 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
             sizeA = listA.size();
             sizeB = listB.size();
             
-            costs = IntStream.range(0, sizeA + 1)
+            costs = IntStream.range(0, sizeA + 1).parallel()
                     .mapToObj(i -> IntStream.range(0, sizeB + 1)
                             .map(j -> {
                                 if (i < sizeA && j < sizeB) {
@@ -115,8 +115,10 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         }
         
         private List<Integer> calcBestPath() {
-            int[] bestCostsA = IntStream.range(0, sizeA + 1).map(i -> Integer.MAX_VALUE).toArray();
-            int[] bestCostsB = IntStream.range(0, sizeB + 1).map(j -> Integer.MAX_VALUE).toArray();
+            int[] bestCostsA = new int[sizeA + 1];
+            int[] bestCostsB = new int[sizeB + 1];
+            Arrays.fill(bestCostsA, Integer.MAX_VALUE);
+            Arrays.fill(bestCostsB, Integer.MAX_VALUE);
             int bestCostT = Integer.MAX_VALUE;
             
             @SuppressWarnings("unchecked")
@@ -198,11 +200,11 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
             currFlowsAB[i][j]++;
             
             while (!path.isEmpty()) {
-                int i2 = path.remove();
-                int j2 = path.remove();
-                currFlowsAB[i2][j]--;
-                currFlowsAB[i2][j2]++;
-                j = j2;
+                i = path.remove();
+                currFlowsAB[i][j]--;
+                
+                j = path.remove();
+                currFlowsAB[i][j]++;
             }
             
             currFlowsBT[j]++;

@@ -60,7 +60,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected final StringBuilder str = new StringBuilder();
     
     /** このアプリケーションのリソースバンドル */
-    protected final ResourceBundle rb = AppMain.appResource.get();
+    protected final ResourceBundle rb = AppMain.appResource().get();
     
     /*package*/ AppTaskBase(
             Settings settings,
@@ -74,20 +74,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     /**
-     * このタスクの比較対象Excelブックが同じ同一ブックかを返します。<br>
+     * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
      * 
      * @return 同一ブックの場合は {@code true}
      * @throws IllegalStateException 今回の実行メニューがブック同士の比較でもシート同士の比較でもない場合
      */
     protected boolean isSameBook() {
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
-        if (menu != AppMenu.COMPARE_SHEETS && menu != AppMenu.COMPARE_BOOKS) {
-            throw new IllegalStateException("not suitable for COMPARE_DIRS");
-        }
         
-        return BookOpenInfo.isSameBook(
-                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+        switch (menu) {
+            case COMPARE_BOOKS:
+            case COMPARE_SHEETS:
+                return BookOpenInfo.isSameBook(
+                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
+                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+            
+            default:
+                throw new IllegalStateException("not suitable for " + menu);
+        }
     }
     
     // 実装メモ：
@@ -244,7 +248,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> bookNamePair = data.bookNamePairs().get(i);
             
             str.append(indent
-                    + DirResult.formatBookNamesPair(dirId, i, bookNamePair));
+                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
             updateMessage(str.toString());
             
             if (bookNamePair.isPaired()) {
