@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -94,8 +92,6 @@ public class SettingsPane2 extends VBox implements ChildController {
     @FXML
     private Button deleteWorkDirButton;
     
-    private Property<Path> workDirBase = new SimpleObjectProperty<>();
-    
     /**
      * コンストラクタ<br>
      * 
@@ -108,12 +104,49 @@ public class SettingsPane2 extends VBox implements ChildController {
         loader.load();
     }
     
-    private final EventHandler<ActionEvent> openDir = event -> {
-        try {
-            if (!Files.isDirectory(workDirBase.getValue())) {
-                Files.createDirectories(workDirBase.getValue());
+    @Override
+    public void init(MainController parent, Object... param) {
+        Objects.requireNonNull(parent, "parent");
+        
+        // 1.disableプロパティのバインディング
+        disableProperty().bind(parent.isRunning());
+        
+        // 2.項目ごとの各種設定
+        localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
+        localeComboBox.setButtonCell(cellFactory(false).call(null));
+        localeComboBox.setCellFactory(cellFactory(true));
+        
+        openWorkDirButton.setOnAction(openDir);
+        changeWorkDirButton.setOnAction(changeDir);
+        deleteWorkDirButton.setOnAction(deleteDir);
+        
+        // 3.初期値の設定
+        Locale locale = ar.settings().getOrDefault(SettingKeys.APP_LOCALE);
+        localeComboBox.setValue(LocaleItem.of(locale));
+        
+        // 4.値変更時のイベントハンドラの設定
+        localeComboBox.setOnAction(event -> {
+            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
+                new Alert(
+                        AlertType.INFORMATION,
+                        "%s%n%n%s%n%n%s".formatted(
+                                rb.getString("gui.component.SettingsPane2.051"),
+                                rb.getString("gui.component.SettingsPane2.052"),
+                                rb.getString("gui.component.SettingsPane2.053")),
+                        ButtonType.OK)
+                                .showAndWait();
             }
-            Desktop.getDesktop().open(workDirBase.getValue().toFile());
+        });
+    }
+    
+    private final EventHandler<ActionEvent> openDir = event -> {
+        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
+        
+        try {
+            if (!Files.isDirectory(workDirBase)) {
+                Files.createDirectories(workDirBase);
+            }
+            Desktop.getDesktop().open(workDirBase.toFile());
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,23 +154,27 @@ public class SettingsPane2 extends VBox implements ChildController {
                     AlertType.WARNING,
                     "%s%n%s".formatted(
                             rb.getString("gui.component.SettingsPane2.010"),
-                            workDirBase.getValue()),
+                            workDirBase),
                     ButtonType.OK)
                             .showAndWait();
         }
     };
     
     private final EventHandler<ActionEvent> changeDir = event -> {
-        DirectoryChooser dirChooser = new DirectoryChooser();
-        
-        dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
-        dirChooser.setInitialDirectory(workDirBase.getValue().toFile());
+        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
         
         File newDir = null;
         try {
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
+            dirChooser.setInitialDirectory(workDirBase.toFile());
             newDir = dirChooser.showDialog(getScene().getWindow());
+            
         } catch (IllegalArgumentException e) {
-            newDir = SettingKeys.WORK_DIR_BASE.defaultValueSupplier().get().toFile();
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
+            newDir = dirChooser.showDialog(getScene().getWindow());
+            
         }
         
         if (newDir != null) {
@@ -145,7 +182,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
                 newPath = newPath.resolve(AppMain.APP_DOMAIN);
             }
-            if (newPath.equals(workDirBase.getValue())) {
+            if (newPath.equals(workDirBase)) {
                 return;
             }
             
@@ -164,16 +201,18 @@ public class SettingsPane2 extends VBox implements ChildController {
                     return;
                 }
             }
-            workDirBase.setValue(newPath);
+            ar.changeSetting(SettingKeys.WORK_DIR_BASE, newPath);
         }
     };
     
     private final EventHandler<ActionEvent> deleteDir = event -> {
+        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
+        
         Optional<ButtonType> result = new Alert(
                 AlertType.CONFIRMATION,
                 "%s%n%s".formatted(
                         rb.getString("gui.component.SettingsPane2.040"),
-                        workDirBase.getValue()))
+                        workDirBase))
                                 .showAndWait();
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -182,7 +221,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                     ? path -> desktop.moveToTrash(path.toFile())
                     : Files::deleteIfExists;
             
-            try (Stream<Path> children = Files.list(workDirBase.getValue())) {
+            try (Stream<Path> children = Files.list(workDirBase)) {
                 children.forEach(path -> {
                     try {
                         deleteAction.accept(path);
@@ -221,45 +260,5 @@ public class SettingsPane2 extends VBox implements ChildController {
                 }
             }
         };
-    }
-    
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
-        
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        
-        // 2.項目ごとの各種設定
-        localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
-        localeComboBox.setButtonCell(cellFactory(false).call(null));
-        localeComboBox.setCellFactory(cellFactory(true));
-        
-        openWorkDirButton.setOnAction(openDir);
-        changeWorkDirButton.setOnAction(changeDir);
-        deleteWorkDirButton.setOnAction(deleteDir);
-        
-        // 3.初期値の設定
-        Locale locale = ar.settings().getOrDefault(SettingKeys.APP_LOCALE);
-        localeComboBox.setValue(LocaleItem.of(locale));
-        
-        workDirBase.setValue(ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE));
-        
-        // 4.値変更時のイベントハンドラの設定
-        localeComboBox.setOnAction(event -> {
-            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
-                new Alert(
-                        AlertType.INFORMATION,
-                        "%s%n%n%s%n%n%s".formatted(
-                                rb.getString("gui.component.SettingsPane2.051"),
-                                rb.getString("gui.component.SettingsPane2.052"),
-                                rb.getString("gui.component.SettingsPane2.053")),
-                        ButtonType.OK)
-                                .showAndWait();
-            }
-        });
-        
-        workDirBase.addListener(
-                (target, oldValue, newValue) -> ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase.getValue()));
     }
 }
