@@ -45,60 +45,48 @@ task pickupAndExpandFatJar(type: Copy) {
 }
 
 // executable on [win-x64, mac-x64]
-task jlinkForWinX64 {
+task jlinkForWinX64(type: Exec) {
     group 'distribution_win_x64'
 
-    doLast {
-        exec {
-            commandLine project['myprop.cmd.jlink'],
-                    '--no-header-files',
-                    '--no-man-pages',
-                    '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
-                    '--add-modules', requiredMods,
-                    '--output', outputDir.resolve('tmp/jre-min-win-x64'),
-                    '--strip-debug',
-                    '--verbose'
-        }
-    }
+    commandLine project['myprop.cmd.jlink'],
+            '--no-header-files',
+            '--no-man-pages',
+            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
+            '--add-modules', requiredMods,
+            '--output', outputDir.resolve('tmp/jre-min-win-x64'),
+            '--strip-debug',
+            '--verbose'
 }
 
 // executable on [win-x64, mac-x64]
-task jlinkForMacX64 {
+task jlinkForMacX64(type: Exec) {
     group 'distribution_mac_x64'
 
-    doLast {
-        exec {
-            commandLine project['myprop.cmd.jlink'],
-                    '--no-header-files',
-                    '--no-man-pages',
-                    '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
-                    '--add-modules', requiredMods,
-                    '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
-                    '--strip-debug',
-                    '--verbose'
-        }
-    }
+    commandLine project['myprop.cmd.jlink'],
+            '--no-header-files',
+            '--no-man-pages',
+            '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
+            '--add-modules', requiredMods,
+            '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
+            '--strip-debug',
+            '--verbose'
 }
 
 // executable on [win-x64]
-task exewrapForWinX64(dependsOn: pickupAndExpandFatJar) {
+task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
     group 'distribution_win_x64'
 
-    doLast {
-        exec {
-            commandLine project['myprop.cmd.exewrap'],
-                    '-g',
-                    '-t', '21',
-                    '-i', baseDir.resolve('resources/favicon.ico'),
-                    '-v', version,
-                    '-V', version,
-                    '-d', '方眼Diff',
-                    '-p', '方眼Diff',
-                    '-c', '(c) 2018-2023 nmby',
-                    '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
-                    '-o', outputDirWinX64.resolve('方眼Diff.exe')
-        }
-    }
+    commandLine project['myprop.cmd.exewrap'],
+            '-g',
+            '-t', '21',
+            '-i', baseDir.resolve('resources/favicon.ico'),
+            '-v', version,
+            '-V', version,
+            '-d', '方眼Diff',
+            '-p', '方眼Diff',
+            '-c', '(c) 2018-2023 nmby',
+            '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
+            '-o', outputDirWinX64.resolve('方眼Diff.exe')
 }
 
 // executable on [win-x64, mac-x64]
@@ -197,12 +185,12 @@ task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
 }
 
 // executable on [win-x64]
-task allForWinX64(dependsOn: /* jpackageForWinX64 */ zipForWinX64) {
+task allForWinX64(dependsOn: zipForWinX64) {
     group 'distribution_win_x64'
 }
 
 // executable on [win-x64, mac-x64]
-task allForMacX64(dependsOn: /* jpackageForMacX64 */ zipForMacX64) {
+task allForMacX64(dependsOn: zipForMacX64) {
     group 'distribution_mac_x64'
 }
 
@@ -212,15 +200,11 @@ task all(dependsOn: [allForWinX64, allForMacX64]) {
 }
 
 // executable on [win-x64, mac-x64]
-task checkDependencies(dependsOn: pickupAndExpandFatJar) {
+task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
     group 'test'
 
-    doLast {
-        exec {
-            commandLine project['myprop.cmd.jdeps'],
-                    '--multi-release', 21,
-                    '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']}",
-                    '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
-        }
-    }
+    commandLine project['myprop.cmd.jdeps'],
+            '--multi-release', 21,
+            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']}",
+            '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
 }
