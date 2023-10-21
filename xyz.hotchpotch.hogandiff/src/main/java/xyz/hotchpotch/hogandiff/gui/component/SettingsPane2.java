@@ -174,7 +174,6 @@ public class SettingsPane2 extends VBox implements ChildController {
             DirectoryChooser dirChooser = new DirectoryChooser();
             dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
             newDir = dirChooser.showDialog(getScene().getWindow());
-            
         }
         
         if (newDir != null) {
