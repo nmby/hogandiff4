@@ -75,14 +75,9 @@ public class AppResource {
     /**
      * このアプリケーションで利用するリソースを構成して返します。<br>
      * 
-     * @param args アプリケーション実行時引数
      * @return このアプリケーションで利用するリソース
-     * @throws NullPointerException {@code args} が {@code null} の場合
      */
-    public static AppResource of(String[] args) {
-        Objects.requireNonNull(args, "args");
-        
-        // まず、プロパティファイルから設定を抽出する。
+    public static AppResource fromProperties() {
         Properties properties = loadProperties();
         Settings settings;
         
@@ -90,22 +85,6 @@ public class AppResource {
             settings = Settings.builder(properties, SettingKeys.storableKeys).build();
         } catch (RuntimeException e) {
             settings = Settings.builder().build();
-        }
-        
-        // 次に、アプリケーション実行時引数から設定を抽出する。
-        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
-        
-        // アプリケーション実行時引数から設定を抽出できた場合は、
-        // その内容で設定を上書きする。
-        // つまり、アプリケーション実行時引数で指定された内容を優先させる。
-        if (fromArgs.isPresent()) {
-            settings = Settings.builder()
-                    .setAll(settings)
-                    .setAll(fromArgs.get())
-                    .build();
-            
-        } else if (0 < args.length) {
-            System.err.println(AppArgsParser.USAGE);
         }
         
         return new AppResource(properties, settings);
@@ -187,6 +166,18 @@ public class AppResource {
             return storeProperties();
         } else {
             return true;
+        }
+    }
+    
+    public void reflectArgs(String[] args) {
+        Objects.requireNonNull(args, "args");
+        
+        Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
+        
+        if (fromArgs.isPresent()) {
+            settings = Settings.builder().setAll(settings).setAll(fromArgs.get()).build();
+            properties = settings.toProperties();
+            storeProperties();
         }
     }
 }
