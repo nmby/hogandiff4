@@ -49,9 +49,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         // 1. ディレクトリ情報の抽出
         Pair<DirInfo> dirPair = extractDirs();
         
-        // 2. 作業用ディレクトリの作成
-        Path workDir = createWorkDir(0, 2);
-        
         // 3. 出力用ディレクトリの作成
         Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
         

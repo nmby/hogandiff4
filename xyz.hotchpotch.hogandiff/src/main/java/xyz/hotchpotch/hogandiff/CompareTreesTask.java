@@ -52,9 +52,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         // 1. ディレクトリ情報の抽出
         Pair<DirInfo> topDirPair = extractDirs();
         
-        // 2. 作業用ディレクトリの作成
-        Path workDir = createWorkDir(0, 2);
-        
         // 3. 比較するフォルダとExcelブック名の組み合わせの決定
         List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
         
