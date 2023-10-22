@@ -44,16 +44,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected void call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
         
         // 1. ディレクトリ情報の抽出
         Pair<DirInfo> topDirPair = extractDirs();
-        
-        // 2. 作業用ディレクトリの作成
-        Path workDir = createWorkDir(0, 2);
         
         // 3. 比較するフォルダとExcelブック名の組み合わせの決定
         List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
@@ -69,8 +66,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 7. 処理終了のアナウンス
         announceEnd();
-        
-        return null;
     }
     
     // 0. 処理開始のアナウンス

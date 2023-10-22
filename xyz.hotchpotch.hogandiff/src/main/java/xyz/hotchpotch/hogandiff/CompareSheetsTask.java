@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,16 +38,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected void call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
         
-        // 1. 作業用ディレクトリの作成
-        Path workDir = createWorkDir(0, 2);
-        
         // 2. シート同士の比較
-        BookResult bResult = compareSheets(5, 75);
+        BookResult bResult = compareSheets(0, 75);
         
         // 3. 比較結果の表示（テキスト）
         saveAndShowResultText(workDir, bResult.toString(), 75, 80);
@@ -58,8 +54,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 5. 処理終了のアナウンス
         announceEnd();
-        
-        return null;
     }
     
     // 0. 処理開始のアナウンス

@@ -1,5 +1,8 @@
 package xyz.hotchpotch.hogandiff.gui;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,6 +19,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
@@ -140,10 +144,9 @@ public class MainController extends VBox {
             throw new IllegalStateException();
         }
         
-        Settings settings = ar.settings();
-        AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
+        AppMenu menu = ar.settings().getOrDefault(SettingKeys.CURR_MENU);
         
-        if (!menu.isValidTargets(settings)) {
+        if (!menu.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
                     rb.getString("gui.MainController.010"),
@@ -154,18 +157,29 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
-        Task<Void> task = menu.getTask(settings, Factory.of());
+        Path workDir = createWorkDir(ar.settings());
+        if (workDir == null) {
+            new Alert(
+                    AlertType.WARNING,
+                    rb.getString("gui.MainController.070"),
+                    ButtonType.OK)
+                            .showAndWait();
+            
+            isRunning.set(false);
+            return;
+        }
+        
+        Task<Void> task = menu.getTask(ar.settings(), Factory.of());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(task);
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
             row3Pane.unbind();
             
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
+                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -174,7 +188,7 @@ public class MainController extends VBox {
                                 .showAndWait();
             }
             
-            if (settings.getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
+            if (ar.settings().getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);
@@ -188,8 +202,8 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
+                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -209,5 +223,48 @@ public class MainController extends VBox {
             
             isRunning.set(false);
         });
+        
+        executor.submit(task);
+    }
+    
+    private Path createWorkDir(Settings settings) {
+        String timestamp = SettingKeys.CURR_TIMESTAMP.defaultValueSupplier().get();
+        Path workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE).resolve(timestamp);
+        
+        while (true) {
+            try {
+                Files.createDirectories(workDir);
+                ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDir.getParent());
+                ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
+                return workDir;
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                
+                new Alert(
+                        AlertType.WARNING,
+                        "%s%n%s%n%n%s".formatted(
+                                rb.getString("gui.MainController.040"),
+                                workDir.getParent(),
+                                rb.getString("gui.MainController.050")),
+                        ButtonType.OK)
+                                .showAndWait();
+                
+                DirectoryChooser dirChooser = new DirectoryChooser();
+                dirChooser.setTitle(rb.getString("gui.MainController.060"));
+                File newDir = dirChooser.showDialog(AppMain.stage);
+                
+                if (newDir != null) {
+                    Path newPath = newDir.toPath();
+                    if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
+                        newPath = newPath.resolve(AppMain.APP_DOMAIN);
+                    }
+                    workDir = newPath.resolve(timestamp);
+                    
+                } else {
+                    return null;
+                }
+            }
+        }
     }
 }

@@ -41,16 +41,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected void call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
         
         // 1. ディレクトリ情報の抽出
         Pair<DirInfo> dirPair = extractDirs();
-        
-        // 2. 作業用ディレクトリの作成
-        Path workDir = createWorkDir(0, 2);
         
         // 3. 出力用ディレクトリの作成
         Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
@@ -73,8 +70,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 8. 処理終了のアナウンス
         announceEnd();
-        
-        return null;
     }
     
     // 0. 処理開始のアナウンス

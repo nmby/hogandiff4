@@ -56,6 +56,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** 各種インスタンスのファクトリ */
     protected final Factory factory;
     
+    /** 今回の実行における作業用ディレクトリ */
+    protected final Path workDir;
+    
     /** ユーザー向け表示文字列を保持する {@link StringBuilder} */
     protected final StringBuilder str = new StringBuilder();
     
@@ -71,7 +74,25 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         this.settings = settings;
         this.factory = factory;
+        this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
+                .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
+    
+    @Override
+    protected Void call() throws Exception {
+        try {
+            call2();
+            return null;
+            
+        } catch (OutOfMemoryError e) {
+            str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+        }
+    }
+    
+    protected abstract void call2() throws Exception;
     
     /**
      * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
@@ -141,48 +162,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         DirInfo dirInfo2 = dirLoader.loadDir(dirPath2);
         
         return new Pair<>(dirInfo1, dirInfo2);
-    }
-    
-    /**
-     * 今回の実行のための作業要ディレクトリを作成してそのパスを返します。<br>
-     * 
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter 進捗率（終了時）
-     * @return 作業用ディレクトリのパス
-     * @throws ApplicationException 処理に失敗した場合
-     */
-    protected Path createWorkDir(
-            int progressBefore,
-            int progressAfter)
-            throws ApplicationException {
-        
-        assert 0 <= progressBefore;
-        assert progressBefore <= progressAfter;
-        assert progressAfter <= PROGRESS_MAX;
-        
-        Path workDir = null;
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
-            workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
-                    .resolve(settings.getOrDefault(SettingKeys.CURR_TIMESTAMP));
-            
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.010"), workDir));
-            updateMessage(str.toString());
-            
-            workDir = Files.createDirectories(workDir);
-            
-            updateProgress(progressAfter, PROGRESS_MAX);
-            return workDir;
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.020")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("AppTaskBase.020"), workDir),
-                    e);
-        }
     }
     
     protected BookResult compareBooks(
