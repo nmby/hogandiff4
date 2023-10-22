@@ -38,7 +38,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected void call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
@@ -54,8 +54,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 5. 処理終了のアナウンス
         announceEnd();
-        
-        return null;
     }
     
     // 0. 処理開始のアナウンス

@@ -78,6 +78,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
+    @Override
+    protected Void call() throws Exception {
+        try {
+            call2();
+            return null;
+            
+        } catch (OutOfMemoryError e) {
+            str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+        }
+    }
+    
+    protected abstract void call2() throws Exception;
+    
     /**
      * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
      * 
