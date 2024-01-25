@@ -150,10 +150,10 @@ public interface UnsafeFunction<T, R> {
     }
     
     /**
-     * この {@link UnsafeFunction} を、関数の実行結果または例外を保持する {@link Tuple2} を返す
+     * この {@link UnsafeFunction} を、関数の実行結果または例外を保持するタプル {@link ResultOrThrown} を返す
      * {@link Function} に変換します。<br>
      * 
-     * @return 関数の実行結果または例外を保持する {@link Tuple2}
+     * @return 関数の実行結果または例外を保持するタプル {@link ResultOrThrown} を返す {@link Function}
      */
     default Function<T, ResultOrThrown<R>> convert() {
         return t -> {
