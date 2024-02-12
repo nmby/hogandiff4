@@ -74,7 +74,6 @@ public class Factory {
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
         boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
-        boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
         return CellsLoader.of(bookOpenInfo, useCachedValue);
     }
@@ -147,12 +146,8 @@ public class Factory {
         
         boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
-        return SheetComparator.of(
-                considerRowGaps,
-                considerColumnGaps,
-                saveMemory);
+        return SheetComparator.of(considerRowGaps, considerColumnGaps);
     }
     
     /**

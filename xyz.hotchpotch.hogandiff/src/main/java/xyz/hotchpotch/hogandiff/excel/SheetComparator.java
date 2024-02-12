@@ -23,15 +23,8 @@ public interface SheetComparator {
      * @param saveMemory 省メモリモードの場合は {@code true}
      * @return コンパレータ
      */
-    public static SheetComparator of(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean saveMemory) {
-        
-        return StandardSheetComparator.of(
-                considerRowGaps,
-                considerColumnGaps,
-                saveMemory);
+    public static SheetComparator of(boolean considerRowGaps, boolean considerColumnGaps) {
+        return StandardSheetComparator.of(considerRowGaps, considerColumnGaps);
     }
     
     // [instance members] ******************************************************

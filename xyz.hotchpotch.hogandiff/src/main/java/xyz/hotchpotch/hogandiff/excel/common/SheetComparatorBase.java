@@ -60,24 +60,15 @@ public abstract class SheetComparatorBase implements SheetComparator {
     /** 比較において列の余剰／欠損を考慮する場合は {@code true} */
     protected final boolean considerColumnGaps;
     
-    /** 省メモリモードの場合は {@code true} */
-    protected final boolean saveMemory;
-    
     /**
      * コンストラクタ<br>
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
-     * @param saveMemory 省メモリモードの場合は {@code true}
      */
-    protected SheetComparatorBase(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean saveMemory) {
-        
+    protected SheetComparatorBase(boolean considerRowGaps, boolean considerColumnGaps) {
         this.considerRowGaps = considerRowGaps;
         this.considerColumnGaps = considerColumnGaps;
-        this.saveMemory = saveMemory;
     }
     
     /**
