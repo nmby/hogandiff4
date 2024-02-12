@@ -184,8 +184,8 @@ public abstract class SheetComparatorBase implements SheetComparator {
                 return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
                         ? null
                         : new Pair<>(
-                                cell1 != null ? cell1 : CellData.empty(row1, column1, saveMemory),
-                                cell2 != null ? cell2 : CellData.empty(row2, column2, saveMemory));
+                                cell1 != null ? cell1 : CellData.empty(row1, column1),
+                                cell2 != null ? cell2 : CellData.empty(row2, column2));
             }).filter(Objects::nonNull);
         }).toList();
     }

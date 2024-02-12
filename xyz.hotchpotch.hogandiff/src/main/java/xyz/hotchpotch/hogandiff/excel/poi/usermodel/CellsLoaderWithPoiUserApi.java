@@ -139,7 +139,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
                     cells.remove(original);
                     cells.add(original.withComment(comment));
                 } else {
-                    cells.add(CellData.of(address, "", saveMemory).withComment(comment));
+                    cells.add(CellData.of(address, "", comment));
                 }
             });
             

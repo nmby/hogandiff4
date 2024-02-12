@@ -181,7 +181,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellData.of(address, value, saveMemory));
+                    cells.add(CellData.of(address, value, null));
                 }
                 
                 qNames.removeFirst();
@@ -239,7 +239,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                     cells.remove(original);
                     cells.add(original.withComment(comment.toString()));
                 } else {
-                    cells.add(CellData.of(address, "", saveMemory).withComment(comment.toString()));
+                    cells.add(CellData.of(address, "", comment.toString()));
                 }
                 
                 address = null;

@@ -305,6 +305,7 @@ public class SettingKeys {
             true);
     
     /** 実行オプション：省メモリモードで比較するか */
+    @Deprecated
     public static final Key<Boolean> SAVE_MEMORY = new Key<Boolean>(
             "execution.saveMemory",
             () -> false,

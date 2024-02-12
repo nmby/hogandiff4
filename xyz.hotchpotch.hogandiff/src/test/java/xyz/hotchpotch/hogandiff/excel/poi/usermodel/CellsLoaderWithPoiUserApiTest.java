@@ -22,11 +22,11 @@ class CellsLoaderWithPoiUserApiTest {
     
     private static final boolean saveMemory = false;
     
-    private static final Function<Cell, CellData> converter = cell -> CellData.of(
+    private static final Function<Cell, CellData> converter = cell -> new CellData(
             cell.getRowIndex(),
             cell.getColumnIndex(),
             PoiUtil.getCellContentAsString(cell, false),
-            saveMemory);
+            null);
     
     private static BookOpenInfo test1_xls;
     private static BookOpenInfo test1_xlsb;
@@ -154,33 +154,33 @@ class CellsLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
-                        CellData.of(2, 1, "X", saveMemory),
-                        CellData.of(3, 1, "Y", saveMemory),
-                        CellData.of(4, 1, "Z", saveMemory),
-                        CellData.of(2, 2, "90", saveMemory),
-                        CellData.of(3, 2, "20", saveMemory),
-                        CellData.of(4, 2, "60", saveMemory)),
+                        new CellData(0, 0, "これはワークシートです。", null),
+                        new CellData(2, 1, "X", null),
+                        new CellData(3, 1, "Y", null),
+                        new CellData(4, 1, "Z", null),
+                        new CellData(2, 2, "90", null),
+                        new CellData(3, 2, "20", null),
+                        new CellData(4, 2, "60", null)),
                 testee1.loadCells(test1_xls, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
-                        CellData.of(2, 1, "X", saveMemory),
-                        CellData.of(3, 1, "Y", saveMemory),
-                        CellData.of(4, 1, "Z", saveMemory),
-                        CellData.of(2, 2, "90", saveMemory),
-                        CellData.of(3, 2, "20", saveMemory),
-                        CellData.of(4, 2, "60", saveMemory)),
+                        new CellData(0, 0, "これはワークシートです。", null),
+                        new CellData(2, 1, "X", null),
+                        new CellData(3, 1, "Y", null),
+                        new CellData(4, 1, "Z", null),
+                        new CellData(2, 2, "90", null),
+                        new CellData(3, 2, "20", null),
+                        new CellData(4, 2, "60", null)),
                 testee1.loadCells(test1_xlsx, "A1_ワークシート"));
         assertEquals(
                 Set.of(
-                        CellData.of(0, 0, "これはワークシートです。", saveMemory),
-                        CellData.of(2, 1, "X", saveMemory),
-                        CellData.of(3, 1, "Y", saveMemory),
-                        CellData.of(4, 1, "Z", saveMemory),
-                        CellData.of(2, 2, "90", saveMemory),
-                        CellData.of(3, 2, "20", saveMemory),
-                        CellData.of(4, 2, "60", saveMemory)),
+                        new CellData(0, 0, "これはワークシートです。", null),
+                        new CellData(2, 1, "X", null),
+                        new CellData(3, 1, "Y", null),
+                        new CellData(4, 1, "Z", null),
+                        new CellData(2, 2, "90", null),
+                        new CellData(3, 2, "20", null),
+                        new CellData(4, 2, "60", null)),
                 testee1.loadCells(test1_xlsm, "A1_ワークシート"));
     }
     
@@ -190,21 +190,21 @@ class CellsLoaderWithPoiUserApiTest {
         
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", saveMemory).withComment("Authorなし"),
-                        CellData.of(10, 1, "", saveMemory).withComment("非表示"),
-                        CellData.of(14, 1, "", saveMemory).withComment("書式設定"),
-                        CellData.of(18, 1, "セル値あり", saveMemory).withComment("コメント"),
-                        CellData.of(22, 1, "空コメント", saveMemory).withComment("")),
+                        new CellData(2, 1, "", "Author:\nComment\nComment"),
+                        new CellData(6, 1, "", "Authorなし"),
+                        new CellData(10, 1, "", "非表示"),
+                        new CellData(14, 1, "", "書式設定"),
+                        new CellData(18, 1, "セル値あり", "コメント"),
+                        new CellData(22, 1, "空コメント", "")),
                 testee1.loadCells(test4_xls, "コメント"));
         assertEquals(
                 Set.of(
-                        CellData.of(2, 1, "", saveMemory).withComment("Author:\nComment\nComment"),
-                        CellData.of(6, 1, "", saveMemory).withComment("Authorなし"),
-                        CellData.of(10, 1, "", saveMemory).withComment("非表示"),
-                        CellData.of(14, 1, "", saveMemory).withComment("書式設定"),
-                        CellData.of(18, 1, "セル値あり", saveMemory).withComment("コメント"),
-                        CellData.of(22, 1, "空コメント", saveMemory).withComment("")),
+                        new CellData(2, 1, "", "Author:\nComment\nComment"),
+                        new CellData(6, 1, "", "Authorなし"),
+                        new CellData(10, 1, "", "非表示"),
+                        new CellData(14, 1, "", "書式設定"),
+                        new CellData(18, 1, "セル値あり", "コメント"),
+                        new CellData(22, 1, "空コメント", "")),
                 testee1.loadCells(test4_xlsx, "コメント"));
     }
 }

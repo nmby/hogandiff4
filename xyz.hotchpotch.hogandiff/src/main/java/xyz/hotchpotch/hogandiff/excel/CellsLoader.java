@@ -46,11 +46,11 @@ public interface CellsLoader {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return "".equals(content)
                     ? null
-                    : CellData.of(
+                    : new CellData(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,
-                            saveMemory);
+                            null);
         };
         
         switch (bookOpenInfo.bookType()) {
