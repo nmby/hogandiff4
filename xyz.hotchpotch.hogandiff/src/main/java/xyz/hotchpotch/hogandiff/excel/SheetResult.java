@@ -155,14 +155,12 @@ public record SheetResult(
                 .toList();
         
         List<CellData> diffCellComments = diffCells.stream()
-                .filter(p -> p.a().hasComment() && p.b().hasComment())
-                .filter(p -> !p.a().commentEquals(p.b()))
+                .filter(p -> p.a().hasComment() && p.b().hasComment() && !p.a().commentEquals(p.b()))
                 .map(p -> p.get(side))
                 .toList();
         
         List<CellData> redundantCellComments = diffCells.stream()
-                .filter(p -> p.get(side).hasComment())
-                .filter(p -> !p.get(side.opposite()).hasComment())
+                .filter(p -> p.get(side).hasComment() && !p.get(side.opposite()).hasComment())
                 .map(p -> p.get(side))
                 .toList();
         

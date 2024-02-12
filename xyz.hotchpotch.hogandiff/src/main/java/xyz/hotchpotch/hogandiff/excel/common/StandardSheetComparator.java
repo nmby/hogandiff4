@@ -223,28 +223,16 @@ public class StandardSheetComparator extends SheetComparatorBase {
      * 
      * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
      * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
-     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいコンパレータ
      */
-    public static SheetComparator of(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean saveMemory) {
-        
-        return new StandardSheetComparator(
-                considerRowGaps,
-                considerColumnGaps,
-                saveMemory);
+    public static SheetComparator of(boolean considerRowGaps, boolean considerColumnGaps) {
+        return new StandardSheetComparator(considerRowGaps, considerColumnGaps);
     }
     
     // [instance members] ******************************************************
     
-    private StandardSheetComparator(
-            boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean saveMemory) {
-        
-        super(considerRowGaps, considerColumnGaps, saveMemory);
+    private StandardSheetComparator(boolean considerRowGaps, boolean considerColumnGaps) {
+        super(considerRowGaps, considerColumnGaps);
     }
     
     @Override
