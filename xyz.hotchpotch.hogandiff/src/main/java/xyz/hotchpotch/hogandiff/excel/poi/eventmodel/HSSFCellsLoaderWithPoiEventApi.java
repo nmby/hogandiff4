@@ -99,7 +99,6 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
         
         private final String sheetName;
         private final boolean extractCachedValue;
-        private final boolean saveMemory;
         private final Map<String, CellData> cells = new HashMap<>();
         private final Map<Integer, String> comments = new HashMap<>();
         
@@ -110,16 +109,11 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
         private FormulaRecord prevFormulaRec;
         private CommonObjectDataSubRecord prevFtCmoRec;
         
-        private Listener1(
-                String sheetName,
-                boolean extractCachedValue,
-                boolean saveMemory) {
-            
+        private Listener1(String sheetName, boolean extractCachedValue) {
             assert sheetName != null;
             
             this.sheetName = sheetName;
             this.extractCachedValue = extractCachedValue;
-            this.saveMemory = saveMemory;
         }
         
         /**
@@ -444,29 +438,18 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
-     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return 新しいローダー
      */
-    public static CellsLoader of(
-            boolean extractCachedValue,
-            boolean saveMemory) {
-        
-        return new HSSFCellsLoaderWithPoiEventApi(
-                extractCachedValue,
-                saveMemory);
+    public static CellsLoader of(boolean extractCachedValue) {
+        return new HSSFCellsLoaderWithPoiEventApi(extractCachedValue);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
-    private final boolean saveMemory;
     
-    private HSSFCellsLoaderWithPoiEventApi(
-            boolean extractCachedValue,
-            boolean saveMemory) {
-        
+    private HSSFCellsLoaderWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
-        this.saveMemory = saveMemory;
     }
     
     /**
@@ -499,10 +482,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
-            Listener1 listener1 = new Listener1(
-                    sheetName,
-                    extractCachedValue,
-                    saveMemory);
+            Listener1 listener1 = new Listener1(sheetName, extractCachedValue);
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);

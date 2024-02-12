@@ -76,10 +76,7 @@ public class Factory {
         boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
         boolean saveMemory = settings.getOrDefault(SettingKeys.SAVE_MEMORY);
         
-        return CellsLoader.of(
-                bookOpenInfo,
-                useCachedValue,
-                saveMemory);
+        return CellsLoader.of(bookOpenInfo, useCachedValue);
     }
     
     /**

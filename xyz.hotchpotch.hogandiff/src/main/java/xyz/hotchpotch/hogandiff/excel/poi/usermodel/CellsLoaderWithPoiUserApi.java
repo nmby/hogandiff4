@@ -41,7 +41,6 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
     /**
      * 新しいローダーを構成します。<br>
      * 
-     * @param saveMemory 省メモリモードの場合は {@code true}
      * @param converter セル変換関数
      * @return 新しいローダー
      * @throws NullPointerException {@code extractContents} が {@code true}
@@ -49,29 +48,19 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
      * @throw IllegalArgumentException {@code extractContents} が {@code false}
      *                               かつ {@code converter} が {@code null} 以外の場合
      */
-    public static CellsLoader of(
-            boolean saveMemory,
-            Function<Cell, CellData> converter) {
-        
+    public static CellsLoader of(Function<Cell, CellData> converter) {
         Objects.requireNonNull(converter, "converter");
         
-        return new CellsLoaderWithPoiUserApi(
-                saveMemory,
-                converter);
+        return new CellsLoaderWithPoiUserApi(converter);
     }
     
     // [instance members] ******************************************************
     
-    private final boolean saveMemory;
     private final Function<Cell, CellData> converter;
     
-    private CellsLoaderWithPoiUserApi(
-            boolean saveMemory,
-            Function<Cell, CellData> converter) {
-        
+    private CellsLoaderWithPoiUserApi(Function<Cell, CellData> converter) {
         assert converter != null;
         
-        this.saveMemory = saveMemory;
         this.converter = converter;
     }
     

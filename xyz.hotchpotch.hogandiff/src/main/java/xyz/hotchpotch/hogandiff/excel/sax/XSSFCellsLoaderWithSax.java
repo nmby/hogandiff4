@@ -94,7 +94,6 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         // [instance members] --------------------------------------------------
         
         private final boolean extractCachedValue;
-        private final boolean saveMemory;
         private final List<String> sst;
         
         private final Deque<String> qNames = new ArrayDeque<>();
@@ -106,13 +105,11 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         
         private Handler1(
                 boolean extractCachedValue,
-                boolean saveMemory,
                 List<String> sst) {
             
             assert sst != null;
             
             this.extractCachedValue = extractCachedValue;
-            this.saveMemory = saveMemory;
             this.sst = sst;
         }
         
@@ -200,18 +197,16 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         
         private final Set<CellData> cells;
         private final Map<String, CellData> cellsMap;
-        private final boolean saveMemory;
         
         private String address;
         private StringBuilder comment;
         
-        private Handler2(Set<CellData> cells, boolean saveMemory) {
+        private Handler2(Set<CellData> cells) {
             assert cells != null;
             
             this.cells = cells;
             this.cellsMap = cells.parallelStream()
                     .collect(Collectors.toMap(CellData::address, Function.identity()));
-            this.saveMemory = saveMemory;
         }
         
         @Override
@@ -254,7 +249,6 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
-     * @param saveMemory 省メモリモードの場合は {@code true}
      * @param bookOpenInfo Excelブックの情報
      * @return 新しいローダー
      * @throws NullPointerException
@@ -267,7 +261,6 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      */
     public static CellsLoader of(
             boolean extractCachedValue,
-            boolean saveMemory,
             BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
@@ -276,23 +269,18 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                 XSSFCellsLoaderWithSax.class,
                 bookOpenInfo.bookType());
         
-        return new XSSFCellsLoaderWithSax(
-                extractCachedValue,
-                saveMemory,
-                bookOpenInfo);
+        return new XSSFCellsLoaderWithSax(extractCachedValue, bookOpenInfo);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
-    private final boolean saveMemory;
     private final BookOpenInfo bookOpenInfo;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
-            boolean saveMemory,
             BookOpenInfo bookOpenInfo)
             throws ExcelHandlingException {
         
@@ -300,7 +288,6 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         assert CommonUtil.isSupportedBookType(getClass(), bookOpenInfo.bookType());
         
         this.extractCachedValue = extractCachedValue;
-        this.saveMemory = saveMemory;
         this.bookOpenInfo = bookOpenInfo;
         this.nameToInfo = SaxUtil.loadSheetInfo(bookOpenInfo).stream()
                 .collect(Collectors.toMap(
@@ -356,14 +343,14 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             SAXParser parser = factory.newSAXParser();
             Set<CellData> cells = null;
             
-            Handler1 handler1 = new Handler1(extractCachedValue, saveMemory, sst);
+            Handler1 handler1 = new Handler1(extractCachedValue, sst);
             try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
                 parser.parse(is, handler1);
             }
             cells = handler1.cells;
             
             if (info.commentSource() != null) {
-                Handler2 handler2 = new Handler2(cells, saveMemory);
+                Handler2 handler2 = new Handler2(cells);
                 try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
                     parser.parse(is, handler2);
                 }
