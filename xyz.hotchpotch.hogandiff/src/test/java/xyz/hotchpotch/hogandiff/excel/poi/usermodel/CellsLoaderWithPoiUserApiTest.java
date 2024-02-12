@@ -20,8 +20,6 @@ class CellsLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
-    
     private static final Function<Cell, CellData> converter = cell -> new CellData(
             cell.getRowIndex(),
             cell.getColumnIndex(),

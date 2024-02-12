@@ -46,17 +46,6 @@ public record CellData(
         return new CellData(row, column, "", null);
     }
     
-    /**
-     * 新たな空のセルデータを生成します。<br>
-     * 
-     * @param address セルアドレス（{@code "A1"} 形式）
-     * @return 新たな空のセルデータ
-     * @throws NullPointerException {@code address} が {@code null} の場合
-     */
-    public static CellData empty(String address) {
-        return CellData.of(address, "", null);
-    }
-    
     // [instance members] ******************************************************
     
     public CellData {
@@ -109,7 +98,9 @@ public record CellData(
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
     public boolean contentEquals(CellData cell) {
-        return cell != null && content.equals(cell.content);
+        Objects.requireNonNull(cell, "cell");
+        
+        return content.equals(cell.content);
     }
     
     /**
@@ -120,10 +111,9 @@ public record CellData(
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
     public boolean commentEquals(CellData cell) {
-        return cell != null
-                && (comment == null
-                        ? cell.comment == null
-                        : comment.equals(cell.comment));
+        return comment == null
+                ? cell.comment == null
+                : comment.equals(cell.comment);
     }
     
     /**
@@ -134,7 +124,7 @@ public record CellData(
      * @throws NullPointerException {@code cell} が {@code null} の場合
      */
     public boolean dataEquals(CellData cell) {
-        return cell != null && contentEquals(cell) && commentEquals(cell);
+        return contentEquals(cell) && commentEquals(cell);
     }
     
     /**

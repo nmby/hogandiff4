@@ -172,7 +172,7 @@ public abstract class SheetComparatorBase implements SheetComparator {
                 CellData cell1 = map1.get(address1);
                 CellData cell2 = map2.get(address2);
                 
-                return (cell1 == null ? cell2 == null : cell1.dataEquals(cell2))
+                return (cell1 != null && cell2 != null && cell1.dataEquals(cell2) || cell1 == null && cell2 == null)
                         ? null
                         : new Pair<>(
                                 cell1 != null ? cell1 : CellData.empty(row1, column1),

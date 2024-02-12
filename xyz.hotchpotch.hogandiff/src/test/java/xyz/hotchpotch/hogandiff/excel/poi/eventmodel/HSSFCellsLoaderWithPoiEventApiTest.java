@@ -20,8 +20,6 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
-    
     private static BookOpenInfo test1_xls;
     private static BookOpenInfo test1_xlsb;
     private static BookOpenInfo test1_xlsm;

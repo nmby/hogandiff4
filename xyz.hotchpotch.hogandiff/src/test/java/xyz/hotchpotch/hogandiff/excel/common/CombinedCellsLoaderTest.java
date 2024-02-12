@@ -18,8 +18,6 @@ class CombinedCellsLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final boolean saveMemory = false;
-    
     private static final CellData cell1 = new CellData(1, 2, "success", null);
     
     private static final CellsLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
