@@ -19,6 +19,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  *
  * @author nmby
  */
+@Deprecated
 public abstract class SheetComparatorBase implements SheetComparator {
     
     // [static members] ********************************************************

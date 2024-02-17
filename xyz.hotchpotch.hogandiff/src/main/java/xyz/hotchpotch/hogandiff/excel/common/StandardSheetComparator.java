@@ -19,6 +19,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  *
  * @author nmby
  */
+@Deprecated
 public class StandardSheetComparator extends SheetComparatorBase {
     
     // [static members] ********************************************************
