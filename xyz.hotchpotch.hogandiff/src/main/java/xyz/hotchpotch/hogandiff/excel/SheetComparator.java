@@ -23,7 +23,7 @@ public interface SheetComparator {
      * @return コンパレータ
      */
     public static SheetComparator of(boolean considerRowGaps, boolean considerColumnGaps) {
-        return RCSheetComparator.of(considerRowGaps, considerColumnGaps, true);
+        return RCSheetComparator.of(considerRowGaps, considerColumnGaps);
     }
     
     // [instance members] ******************************************************

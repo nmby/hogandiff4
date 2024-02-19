@@ -1,14 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel.common.rc;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
-import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
@@ -16,56 +14,46 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [static members] ********************************************************
     
-    private static final ToIntFunction<List<CellData>> fastGapEvaluator = List::size;
-    
-    private static final ToIntFunction<List<CellData>> accurateGapEvaluator = list -> list.stream()
-            // セルコメントも加味すべきかもしれないが、一旦セルコンテンツだけでやってみる。
-            // TODO: セルコメント加味の要否について再検討する。
-            .mapToInt(c -> c.content().length())
-            .sum();
+    private static final ToIntFunction<List<CellData>> gapEvaluator = List::size;
     
     private static ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
-            Comparator<CellData> horizontalSorter,
-            ToIntFunction<CellData> cellGapEvaluator,
-            ToIntBiFunction<CellData, CellData> cellDiffEvaluator) {
+            Comparator<CellData> horizontalComparator) {
         
         return (list1, list2) -> {
-            Iterator<CellData> itr1 = list1.iterator();
-            Iterator<CellData> itr2 = list2.iterator();
-            CellData cell1 = null;
-            CellData cell2 = null;
+            int idx1 = 0;
+            int idx2 = 0;
             int comp = 0;
             int cost = 0;
+            CellData cell1 = null;
+            CellData cell2 = null;
             
-            while (itr1.hasNext() && itr2.hasNext()) {
+            while (idx1 < list1.size() && idx2 < list2.size()) {
                 if (comp <= 0) {
-                    cell1 = itr1.next();
+                    cell1 = list1.get(idx1);
+                    idx1++;
                 }
                 if (0 <= comp) {
-                    cell2 = itr2.next();
+                    cell2 = list2.get(idx2);
+                    idx2++;
                 }
                 
-                comp = horizontalSorter.compare(cell1, cell2);
+                comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += cellGapEvaluator.applyAsInt(cell1);
+                    cost++;
                 } else if (0 < comp) {
-                    cost += cellGapEvaluator.applyAsInt(cell2);
-                } else {
+                    cost++;
+                } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += cell1.contentEquals(cell2)
-                            ? 0
-                            : cellDiffEvaluator.applyAsInt(cell1, cell2);
+                    cost += 2;
                 }
             }
             
-            while (itr1.hasNext()) {
-                cell1 = itr1.next();
-                cost += cellGapEvaluator.applyAsInt(cell1);
+            if (idx1 < list1.size()) {
+                cost += list1.size() - idx1;
             }
-            while (itr2.hasNext()) {
-                cell2 = itr2.next();
-                cost += cellGapEvaluator.applyAsInt(cell2);
+            if (idx2 < list2.size()) {
+                cost += list2.size() - idx2;
             }
             return cost;
         };
@@ -75,8 +63,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             boolean considerVGaps,
-            boolean considerHGaps,
-            boolean quicknessFirst) {
+            boolean considerHGaps) {
         
         if (!considerVGaps) {
             return new V0(vertical);
@@ -90,45 +77,30 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         return new V1(
                 vertical,
                 horizontalComparator,
-                quicknessFirst
-                        ? RCMatcherUtil.fastGapEvaluator
-                        : RCMatcherUtil.accurateGapEvaluator,
-                quicknessFirst
-                        ? RCMatcherUtil.diffEvaluator(
-                                horizontalComparator,
-                                c -> 1,
-                                (c1, c2) -> 2)
-                        : RCMatcherUtil.diffEvaluator(
-                                horizontalComparator,
-                                // TODO: セルコメント加味の要否について再検討する。
-                                c -> c.content().length(),
-                                (c1, c2) -> StringDiffUtil.levenshteinDistance(c1.content(), c2.content())));
+                RCMatcherUtil.gapEvaluator,
+                RCMatcherUtil.diffEvaluator(horizontalComparator));
     }
     
     public static BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> rowsMatcherOf(
             boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean quicknessFirst) {
+            boolean considerColumnGaps) {
         
         return matcherOf(
                 CellData::row,
                 CellData::column,
                 considerRowGaps,
-                considerColumnGaps,
-                quicknessFirst);
+                considerColumnGaps);
     }
     
     public static BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> columnsMatcherOf(
             boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean quicknessFirst) {
+            boolean considerColumnGaps) {
         
         return matcherOf(
                 CellData::column,
                 CellData::row,
                 considerColumnGaps,
-                considerRowGaps,
-                quicknessFirst);
+                considerRowGaps);
     }
     
     // [instance members] ******************************************************

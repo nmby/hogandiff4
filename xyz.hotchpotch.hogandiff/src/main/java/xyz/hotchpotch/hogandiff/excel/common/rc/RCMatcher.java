@@ -15,24 +15,18 @@ public interface RCMatcher {
     
     public static RCMatcher of(
             boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean quicknessFirst) {
+            boolean considerColumnGaps) {
         
-        if (quicknessFirst) {
-            BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> rowsMatcher = RCMatcherUtil
-                    .rowsMatcherOf(considerRowGaps, considerColumnGaps, quicknessFirst);
-            BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> columnsMatcher = RCMatcherUtil
-                    .columnsMatcherOf(considerRowGaps, considerColumnGaps, quicknessFirst);
-            
-            return (cells1, cells2) -> {
-                List<IntPair> rowPairs = rowsMatcher.apply(cells1, cells2);
-                List<IntPair> columnPairs = columnsMatcher.apply(cells1, cells2);
-                return new Pair<>(rowPairs, columnPairs);
-            };
-            
-        } else {
-            throw new AssertionError("not implemented");
-        }
+        BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> rowsMatcher = RCMatcherUtil
+                .rowsMatcherOf(considerRowGaps, considerColumnGaps);
+        BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> columnsMatcher = RCMatcherUtil
+                .columnsMatcherOf(considerRowGaps, considerColumnGaps);
+        
+        return (cells1, cells2) -> {
+            List<IntPair> rowPairs = rowsMatcher.apply(cells1, cells2);
+            List<IntPair> columnPairs = columnsMatcher.apply(cells1, cells2);
+            return new Pair<>(rowPairs, columnPairs);
+        };
     }
     
     // [instance members] ******************************************************

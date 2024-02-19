@@ -29,14 +29,12 @@ public class RCSheetComparator implements SheetComparator {
     
     public static RCSheetComparator of(
             boolean considerRowGaps,
-            boolean considerColumnGaps,
-            boolean quicknessFirst) {
+            boolean considerColumnGaps) {
         
         return new RCSheetComparator(
                 RCMatcher.of(
                         considerRowGaps,
-                        considerColumnGaps,
-                        quicknessFirst));
+                        considerColumnGaps));
     }
     
     // [instance members] ******************************************************
