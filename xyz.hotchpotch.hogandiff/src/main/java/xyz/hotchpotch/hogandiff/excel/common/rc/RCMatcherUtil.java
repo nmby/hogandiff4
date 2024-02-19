@@ -2,13 +2,10 @@ package xyz.hotchpotch.hogandiff.excel.common.rc;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /* package */ class RCMatcherUtil {
     
@@ -59,14 +56,14 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         };
     }
     
-    private static BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> matcherOf(
+    private static ItemMatcher matcherOf(
             ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             boolean considerVGaps,
             boolean considerHGaps) {
         
         if (!considerVGaps) {
-            return new V0(vertical);
+            return new ItemMatcherImpl0(vertical);
         }
         
         Comparator<CellData> horizontalComparator = considerHGaps
@@ -74,14 +71,14 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 ? Comparator.comparing(CellData::content)
                 : Comparator.comparingInt(horizontal);
         
-        return new V1(
+        return new ItemMatcherImpl1(
                 vertical,
                 horizontalComparator,
                 RCMatcherUtil.gapEvaluator,
                 RCMatcherUtil.diffEvaluator(horizontalComparator));
     }
     
-    public static BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> rowsMatcherOf(
+    public static ItemMatcher rowsMatcherOf(
             boolean considerRowGaps,
             boolean considerColumnGaps) {
         
@@ -92,7 +89,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 considerColumnGaps);
     }
     
-    public static BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> columnsMatcherOf(
+    public static ItemMatcher columnsMatcherOf(
             boolean considerRowGaps,
             boolean considerColumnGaps) {
         

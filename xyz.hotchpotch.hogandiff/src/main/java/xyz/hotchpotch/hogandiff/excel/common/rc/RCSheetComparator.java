@@ -74,7 +74,7 @@ public class RCSheetComparator implements SheetComparator {
             }
         }
         
-        Pair<List<IntPair>> pairs = rcMatcher.makePairs(cells1, cells2);
+        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cells1, cells2);
         List<IntPair> rowPairs = pairs.a();
         List<IntPair> columnPairs = pairs.b();
         

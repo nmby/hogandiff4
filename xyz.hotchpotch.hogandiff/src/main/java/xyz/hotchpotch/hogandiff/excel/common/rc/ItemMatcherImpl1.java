@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -16,11 +15,11 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
- * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link BiFunction} の実装です。<br>
+ * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link ItemMatcher} の実装です。<br>
  * 
  * @author nmby
  */
-public class V1 implements BiFunction<Set<CellData>, Set<CellData>, List<IntPair>> {
+public class ItemMatcherImpl1 implements ItemMatcher {
     
     // [static members] ********************************************************
     
@@ -30,7 +29,7 @@ public class V1 implements BiFunction<Set<CellData>, Set<CellData>, List<IntPair
     private final Comparator<CellData> horizontalComparator;
     private final Matcher<List<CellData>> matcher;
     
-    /* package */ V1(
+    /* package */ ItemMatcherImpl1(
             ToIntFunction<CellData> vertical,
             Comparator<CellData> horizontalComparator,
             ToIntFunction<List<CellData>> gapEvaluator,
@@ -49,7 +48,7 @@ public class V1 implements BiFunction<Set<CellData>, Set<CellData>, List<IntPair
     }
     
     @Override
-    public List<IntPair> apply(Set<CellData> cells1, Set<CellData> cells2) {
+    public List<IntPair> makePairs(Set<CellData> cells1, Set<CellData> cells2) {
         Objects.requireNonNull(cells1, "cells1");
         Objects.requireNonNull(cells2, "cells2");
         
