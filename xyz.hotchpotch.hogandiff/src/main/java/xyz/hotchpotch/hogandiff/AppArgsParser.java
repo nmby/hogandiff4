@@ -78,6 +78,9 @@ public class AppArgsParser {
             remainingParams.remove();
             remainingParams.remove();
             
+            // 廃止した --save-memory オプションは無視する。
+            remainingParams.removeIf(p -> p.startsWith("--save-memory="));
+            
             Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
             
             // オプションのパース
