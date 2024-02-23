@@ -18,10 +18,10 @@ public interface RCMatcher {
         
         return (cells1, cells2) -> {
             ItemMatcher rowsMatcher = ItemMatcher.rowsMatcherOf(considerRowGaps, considerColumnGaps);
-            List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2);
+            List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, null);
             
             ItemMatcher columnsMatcher = ItemMatcher.columnsMatcherOf(considerRowGaps, considerColumnGaps);
-            List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2);
+            List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2, null);
             
             return new Pair<>(rowPairs, columnPairs);
         };

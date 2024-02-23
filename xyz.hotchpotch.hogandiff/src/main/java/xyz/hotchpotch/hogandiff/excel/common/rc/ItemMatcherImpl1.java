@@ -73,17 +73,21 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     // [instance members] ******************************************************
     
     private final Function<CellData, Integer> vertical;
+    private final Function<CellData, Integer> horizontal;
     private final Comparator<CellData> horizontalComparator;
     private final Matcher<List<CellData>> matcher;
     
     /* package */ ItemMatcherImpl1(
             Function<CellData, Integer> vertical,
+            Function<CellData, Integer> horizontal,
             Comparator<CellData> horizontalComparator) {
         
         assert vertical != null;
+        assert horizontal != null;
         assert horizontalComparator != null;
         
         this.vertical = vertical;
+        this.horizontal = horizontal;
         this.horizontalComparator = horizontalComparator;
         this.matcher = Matcher.minimumEditDistanceMatcherOf(
                 gapEvaluator,
@@ -91,18 +95,39 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     }
     
     @Override
-    public List<IntPair> makePairs(Set<CellData> cells1, Set<CellData> cells2) {
+    public List<IntPair> makePairs(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
+            List<IntPair> horizontalPairs) {
+        
         Objects.requireNonNull(cells1, "cells1");
         Objects.requireNonNull(cells2, "cells2");
         
-        List<List<CellData>> list1 = convert(cells1);
-        List<List<CellData>> list2 = convert(cells2);
+        Set<Integer> redundants1 = horizontalPairs == null
+                ? null
+                : horizontalPairs.stream()
+                        .filter(IntPair::isOnlyA)
+                        .map(IntPair::a)
+                        .collect(Collectors.toSet());
+        List<List<CellData>> list1 = convert(cells1, redundants1);
+        
+        Set<Integer> redundants2 = horizontalPairs == null
+                ? null
+                : horizontalPairs.stream()
+                        .filter(IntPair::isOnlyB)
+                        .map(IntPair::b)
+                        .collect(Collectors.toSet());
+        List<List<CellData>> list2 = convert(cells2, redundants2);
         
         return matcher.makeIdxPairs(list1, list2);
     }
     
-    private List<List<CellData>> convert(Set<CellData> cells) {
+    private List<List<CellData>> convert(
+            Set<CellData> cells,
+            Set<Integer> redundants) {
+        
         Map<Integer, List<CellData>> map = cells.parallelStream()
+                .filter(cell -> redundants == null || !redundants.contains(horizontal.apply(cell)))
                 .collect(Collectors.groupingBy(vertical));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);

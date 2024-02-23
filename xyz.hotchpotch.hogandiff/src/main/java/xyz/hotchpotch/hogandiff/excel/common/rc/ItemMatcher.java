@@ -30,6 +30,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         return new ItemMatcherImpl1(
                 vertical,
+                horizontal,
                 horizontalComparator);
     }
     
@@ -57,5 +58,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ******************************************************
     
-    List<IntPair> makePairs(Set<CellData> cells1, Set<CellData> cells2);
+    List<IntPair> makePairs(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
+            List<IntPair> horizontalPairs);
 }

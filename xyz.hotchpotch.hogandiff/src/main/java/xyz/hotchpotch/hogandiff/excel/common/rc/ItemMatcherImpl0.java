@@ -30,7 +30,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     @Override
-    public List<IntPair> makePairs(Set<CellData> cells1, Set<CellData> cells2) {
+    public List<IntPair> makePairs(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
+            List<IntPair> horizontalPairs) {
+        
         Objects.requireNonNull(cells1, "cells1");
         Objects.requireNonNull(cells2, "cells2");
         
