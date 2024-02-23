@@ -113,9 +113,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         // まず、全ての組み合わせのコストを計算する。
         Stream<Cost> gapCostsA = IntStream.range(0, listA.size()).parallel()
-                .mapToObj(i -> new Cost(IntPair.onlyA(i), gapEvaluator.applyAsInt(listA.get(i))));
+                .mapToObj(i -> new Cost(IntPair.onlyA(i), gapEvaluatorA.applyAsInt(listA.get(i))));
         Stream<Cost> gapCostsB = IntStream.range(0, listB.size()).parallel()
-                .mapToObj(j -> new Cost(IntPair.onlyB(j), gapEvaluator.applyAsInt(listB.get(j))));
+                .mapToObj(j -> new Cost(IntPair.onlyB(j), gapEvaluatorB.applyAsInt(listB.get(j))));
         Stream<Cost> diffCosts = IntStream.range(0, listA.size()).parallel()
                 .boxed()
                 .flatMap(i -> IntStream.range(0, listB.size()).parallel()

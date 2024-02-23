@@ -81,9 +81,9 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
                                 if (i < sizeA && j < sizeB) {
                                     return diffEvaluator.applyAsInt(listA.get(i), listB.get(j));
                                 } else if (i < sizeA) {
-                                    return gapEvaluator.applyAsInt(listA.get(i));
+                                    return gapEvaluatorA.applyAsInt(listA.get(i));
                                 } else if (j < sizeB) {
-                                    return gapEvaluator.applyAsInt(listB.get(j));
+                                    return gapEvaluatorB.applyAsInt(listB.get(j));
                                 } else {
                                     return 0;
                                 }
