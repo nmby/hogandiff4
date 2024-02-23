@@ -17,7 +17,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             Function<CellData, Integer> vertical,
             Function<CellData, Integer> horizontal,
             boolean considerVGaps,
-            boolean considerHGaps) {
+            boolean considerHGaps,
+            boolean prioritizeAccuracy) {
         
         if (!considerVGaps) {
             return new ItemMatcherImpl0(vertical);
@@ -28,32 +29,41 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 ? Comparator.comparing(CellData::content)
                 : Comparator.comparing(horizontal);
         
-        return new ItemMatcherImpl2(
-                vertical,
-                horizontal,
-                horizontalComparator);
+        return prioritizeAccuracy
+                ? new ItemMatcherImpl2(
+                        vertical,
+                        horizontal,
+                        horizontalComparator)
+                : new ItemMatcherImpl1(
+                        vertical,
+                        horizontal,
+                        horizontalComparator);
     }
     
     public static ItemMatcher rowsMatcherOf(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            boolean prioritizeAccuracy) {
         
         return matcherOf(
                 CellData::row,
                 CellData::column,
                 considerRowGaps,
-                considerColumnGaps);
+                considerColumnGaps,
+                prioritizeAccuracy);
     }
     
     public static ItemMatcher columnsMatcherOf(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            boolean prioritizeAccuracy) {
         
         return matcherOf(
                 CellData::column,
                 CellData::row,
                 considerColumnGaps,
-                considerRowGaps);
+                considerRowGaps,
+                prioritizeAccuracy);
     }
     
     // [instance members] ******************************************************

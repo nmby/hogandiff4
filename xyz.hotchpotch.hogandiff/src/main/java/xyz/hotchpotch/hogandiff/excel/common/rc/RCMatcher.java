@@ -14,13 +14,16 @@ public interface RCMatcher {
     
     public static RCMatcher of(
             boolean considerRowGaps,
-            boolean considerColumnGaps) {
+            boolean considerColumnGaps,
+            boolean prioritizeAccuracy) {
+        
+        ItemMatcher rowsMatcher = ItemMatcher
+                .rowsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeAccuracy);
+        ItemMatcher columnsMatcher = ItemMatcher
+                .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeAccuracy);
         
         if (considerRowGaps && considerColumnGaps) {
             return (cells1, cells2) -> {
-                ItemMatcher rowsMatcher = ItemMatcher.rowsMatcherOf(considerRowGaps, considerColumnGaps);
-                ItemMatcher columnsMatcher = ItemMatcher.columnsMatcherOf(considerRowGaps, considerColumnGaps);
-                
                 List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2, null);
                 List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, columnPairs);
                 
@@ -29,11 +32,8 @@ public interface RCMatcher {
             
         } else {
             return (cells1, cells2) -> {
-                ItemMatcher rowsMatcher = ItemMatcher.rowsMatcherOf(considerRowGaps, considerColumnGaps);
-                ItemMatcher columnsMatcher = ItemMatcher.columnsMatcherOf(considerRowGaps, considerColumnGaps);
-                
-                List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, null);
                 List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2, null);
+                List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, null);
                 
                 return new Pair<>(rowPairs, columnPairs);
             };

@@ -22,8 +22,15 @@ public interface SheetComparator {
      * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
      * @return コンパレータ
      */
-    public static SheetComparator of(boolean considerRowGaps, boolean considerColumnGaps) {
-        return RCSheetComparator.of(considerRowGaps, considerColumnGaps);
+    public static SheetComparator of(
+            boolean considerRowGaps,
+            boolean considerColumnGaps,
+            boolean prioritizeAccuracy) {
+        
+        return RCSheetComparator.of(
+                considerRowGaps,
+                considerColumnGaps,
+                prioritizeAccuracy);
     }
     
     // [instance members] ******************************************************
