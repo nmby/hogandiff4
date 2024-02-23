@@ -14,14 +14,24 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ******************************************************
     
-    protected final ToIntFunction<? super T> gapEvaluator;
+    protected final ToIntFunction<? super T> gapEvaluatorA;
+    protected final ToIntFunction<? super T> gapEvaluatorB;
     protected final ToIntBiFunction<? super T, ? super T> diffEvaluator;
     
     protected MatcherBase(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        this.gapEvaluator = gapEvaluator;
+        this(gapEvaluator, gapEvaluator, diffEvaluator);
+    }
+    
+    protected MatcherBase(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        this.gapEvaluatorA = gapEvaluatorA;
+        this.gapEvaluatorB = gapEvaluatorB;
         this.diffEvaluator = diffEvaluator;
     }
     

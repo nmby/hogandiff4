@@ -12,15 +12,11 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
- * @param considerRowGaps 行の挿入／削除を考慮する場合は {@code true}
- * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true} 
  * @param redundantRows 余剰行の配列のペア
  * @param redundantColumns 余剰列の配列のペア
  * @param diffCells 差分セルのペアのリスト
  */
 public record SheetResult(
-        boolean considerRowGaps,
-        boolean considerColumnGaps,
         Pair<int[]> redundantRows,
         Pair<int[]> redundantColumns,
         List<Pair<CellData>> diffCells) {
@@ -98,8 +94,6 @@ public record SheetResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param considerRowGaps 比較において行の余剰／欠損を考慮したか
-     * @param considerColumnGaps 比較において列の余剰／欠損を考慮したか
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
@@ -116,13 +110,6 @@ public record SheetResult(
         
         if (!redundantRows.isPaired() || !redundantColumns.isPaired()) {
             throw new IllegalArgumentException("illegal result");
-        }
-        
-        if (!considerRowGaps && (0 < redundantRows.a().length || 0 < redundantRows.b().length)) {
-            throw new IllegalArgumentException("illegal row result");
-        }
-        if (!considerColumnGaps && (0 < redundantColumns.a().length || 0 < redundantColumns.b().length)) {
-            throw new IllegalArgumentException("illegal column result");
         }
         
         // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。

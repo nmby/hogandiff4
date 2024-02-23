@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.common.StandardSheetComparator;
+import xyz.hotchpotch.hogandiff.excel.common.rc.RCSheetComparator;
 
 /**
  * 2つのシートから抽出したセルセット同士を比較するコンパレータを表します。<br>
@@ -22,8 +22,15 @@ public interface SheetComparator {
      * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
      * @return コンパレータ
      */
-    public static SheetComparator of(boolean considerRowGaps, boolean considerColumnGaps) {
-        return StandardSheetComparator.of(considerRowGaps, considerColumnGaps);
+    public static SheetComparator of(
+            boolean considerRowGaps,
+            boolean considerColumnGaps,
+            boolean prioritizeSpeed) {
+        
+        return RCSheetComparator.of(
+                considerRowGaps,
+                considerColumnGaps,
+                prioritizeSpeed);
     }
     
     // [instance members] ******************************************************

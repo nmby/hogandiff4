@@ -38,6 +38,18 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         assert diffEvaluator != null;
     }
     
+    /*package*/ MinimumCostFlowMatcher(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        super(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
+        
+        assert gapEvaluatorA != null;
+        assert gapEvaluatorB != null;
+        assert diffEvaluator != null;
+    }
+    
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
@@ -81,9 +93,9 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
                                 if (i < sizeA && j < sizeB) {
                                     return diffEvaluator.applyAsInt(listA.get(i), listB.get(j));
                                 } else if (i < sizeA) {
-                                    return gapEvaluator.applyAsInt(listA.get(i));
+                                    return gapEvaluatorA.applyAsInt(listA.get(i));
                                 } else if (j < sizeB) {
-                                    return gapEvaluator.applyAsInt(listB.get(j));
+                                    return gapEvaluatorB.applyAsInt(listB.get(j));
                                 } else {
                                     return 0;
                                 }

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel.common;
+package xyz.hotchpotch.hogandiff.excel.common.rc;
 
 import java.util.List;
 import java.util.Map;
@@ -15,75 +15,39 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * {@link SheetComparator} の基底実装です。<br>
+ * 行同士の対応関係と列同士の対応関係をそれぞれ求めることによりセル同士の対応関係を決定する
+ * {@link SheetComparator} の実装です。<br>
  *
  * @author nmby
  */
-public abstract class SheetComparatorBase implements SheetComparator {
+public class RCSheetComparator implements SheetComparator {
     
     // [static members] ********************************************************
     
     private static final int[] EMPTY_INT_ARRAY = new int[] {};
     private static final Pair<int[]> EMPTY_INT_ARRAY_PAIR = new Pair<>(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY);
     
-    /**
-     * 行同士または列同士の対応関係を決定するマッパーを表します。<br>
-     * これは、{@link #makePairs(Set, Set)} を関数メソッドに持つ関数型インタフェースです。<br>
-     *
-     * @author nmby
-     */
-    @FunctionalInterface
-    protected static interface Mapper {
+    public static RCSheetComparator of(
+            boolean considerRowGaps,
+            boolean considerColumnGaps,
+            boolean prioritizeSpeed) {
         
-        // [static members] ----------------------------------------------------
-        
-        // [instance members] --------------------------------------------------
-        
-        /**
-         * 行同士または列同士の対応関係を決定し、
-         * インデックスのペアのリストとして返します、<br>
-         * 
-         * @param cells1 セルセット1
-         * @param cells2 セルセット2
-         * @return 行同士または列同士の対応関係
-         */
-        List<IntPair> makePairs(
-                Set<CellData> cells1,
-                Set<CellData> cells2);
+        return new RCSheetComparator(
+                RCMatcher.of(
+                        considerRowGaps,
+                        considerColumnGaps,
+                        prioritizeSpeed));
     }
     
     // [instance members] ******************************************************
     
-    /** 比較において行の余剰／欠損を考慮する場合は {@code true} */
-    protected final boolean considerRowGaps;
+    private final RCMatcher rcMatcher;
     
-    /** 比較において列の余剰／欠損を考慮する場合は {@code true} */
-    protected final boolean considerColumnGaps;
-    
-    /**
-     * コンストラクタ<br>
-     * 
-     * @param considerRowGaps 比較において行の余剰／欠損を考慮する場合は {@code true}
-     * @param considerColumnGaps 比較において列の余剰／欠損を考慮する場合は {@code true}
-     */
-    protected SheetComparatorBase(boolean considerRowGaps, boolean considerColumnGaps) {
-        this.considerRowGaps = considerRowGaps;
-        this.considerColumnGaps = considerColumnGaps;
+    private RCSheetComparator(RCMatcher rcMatcher) {
+        assert rcMatcher != null;
+        
+        this.rcMatcher = rcMatcher;
     }
-    
-    /**
-     * 行同士の対応関係を決定するマッパーを返します。<br>
-     * 
-     * @return 行同士の対応関係を決定するマッパー
-     */
-    abstract protected Mapper rowsMapper();
-    
-    /**
-     * 列同士の対応関係を決定するマッパーを返します。<br>
-     * 
-     * @return 列同士の対応関係を決定するマッパー
-     */
-    abstract protected Mapper columnsMapper();
     
     /**
      * {@inheritDoc}
@@ -104,8 +68,6 @@ public abstract class SheetComparatorBase implements SheetComparator {
         if (cells1 == cells2) {
             if (cells1.isEmpty()) {
                 return new SheetResult(
-                        considerRowGaps,
-                        considerColumnGaps,
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -114,8 +76,9 @@ public abstract class SheetComparatorBase implements SheetComparator {
             }
         }
         
-        List<IntPair> rowPairs = rowsMapper().makePairs(cells1, cells2);
-        List<IntPair> columnPairs = columnsMapper().makePairs(cells1, cells2);
+        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cells1, cells2);
+        List<IntPair> rowPairs = pairs.a();
+        List<IntPair> columnPairs = pairs.b();
         
         // 余剰行の収集
         int[] redundantRows1 = rowPairs.stream()
@@ -134,8 +97,6 @@ public abstract class SheetComparatorBase implements SheetComparator {
                 cells1, cells2, rowPairs, columnPairs);
         
         return new SheetResult(
-                considerRowGaps,
-                considerColumnGaps,
                 new Pair<>(redundantRows1, redundantRows2),
                 new Pair<>(redundantColumns1, redundantColumns2),
                 diffCells);

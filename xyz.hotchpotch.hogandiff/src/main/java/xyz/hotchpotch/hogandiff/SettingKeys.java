@@ -304,6 +304,15 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
+    /** 実行オプション：早さ優先か精度優先か */
+    // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
+    public static final Key<Boolean> PRIORITIZE_SPEED = new Key<Boolean>(
+            "execution.prioritizeSpeed",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが
     // 保証されないということなので、一応 Set#copyOf でラップしておく。
