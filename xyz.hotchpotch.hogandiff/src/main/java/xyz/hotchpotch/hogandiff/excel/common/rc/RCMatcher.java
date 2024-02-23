@@ -15,12 +15,12 @@ public interface RCMatcher {
     public static RCMatcher of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean prioritizeAccuracy) {
+            boolean prioritizeSpeed) {
         
         ItemMatcher rowsMatcher = ItemMatcher
-                .rowsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeAccuracy);
+                .rowsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
         ItemMatcher columnsMatcher = ItemMatcher
-                .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeAccuracy);
+                .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
         
         if (considerRowGaps && considerColumnGaps) {
             return (cells1, cells2) -> {

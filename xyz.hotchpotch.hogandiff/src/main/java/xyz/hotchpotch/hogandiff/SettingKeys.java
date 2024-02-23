@@ -306,8 +306,8 @@ public class SettingKeys {
     
     /** 実行オプション：早さ優先か精度優先か */
     // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
-    public static final Key<Boolean> PRIORITIZE_ACCURACY = new Key<Boolean>(
-            "execution.prioritizeAccuracy",
+    public static final Key<Boolean> PRIORITIZE_SPEED = new Key<Boolean>(
+            "execution.prioritizeSpeed",
             () -> false,
             String::valueOf,
             Boolean::valueOf,

@@ -146,9 +146,9 @@ public class Factory {
         
         boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean prioritizeAccuracy = settings.getOrDefault(SettingKeys.PRIORITIZE_ACCURACY);
+        boolean prioritizeSpeed = settings.getOrDefault(SettingKeys.PRIORITIZE_SPEED);
         
-        return SheetComparator.of(considerRowGaps, considerColumnGaps, prioritizeAccuracy);
+        return SheetComparator.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
     }
     
     /**

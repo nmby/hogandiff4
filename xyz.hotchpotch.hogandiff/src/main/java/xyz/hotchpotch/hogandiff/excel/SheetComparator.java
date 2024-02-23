@@ -25,12 +25,12 @@ public interface SheetComparator {
     public static SheetComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean prioritizeAccuracy) {
+            boolean prioritizeSpeed) {
         
         return RCSheetComparator.of(
                 considerRowGaps,
                 considerColumnGaps,
-                prioritizeAccuracy);
+                prioritizeSpeed);
     }
     
     // [instance members] ******************************************************

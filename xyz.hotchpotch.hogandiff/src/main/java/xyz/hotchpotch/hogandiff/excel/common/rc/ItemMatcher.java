@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             Function<CellData, Integer> horizontal,
             boolean considerVGaps,
             boolean considerHGaps,
-            boolean prioritizeAccuracy) {
+            boolean prioritizeSpeed) {
         
         if (!considerVGaps) {
             return new ItemMatcherImpl0(vertical);
@@ -29,12 +29,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 ? Comparator.comparing(CellData::content)
                 : Comparator.comparing(horizontal);
         
-        return prioritizeAccuracy
-                ? new ItemMatcherImpl2(
+        return prioritizeSpeed
+                ? new ItemMatcherImpl1(
                         vertical,
                         horizontal,
                         horizontalComparator)
-                : new ItemMatcherImpl1(
+                : new ItemMatcherImpl2(
                         vertical,
                         horizontal,
                         horizontalComparator);
@@ -43,27 +43,27 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     public static ItemMatcher rowsMatcherOf(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean prioritizeAccuracy) {
+            boolean prioritizeSpeed) {
         
         return matcherOf(
                 CellData::row,
                 CellData::column,
                 considerRowGaps,
                 considerColumnGaps,
-                prioritizeAccuracy);
+                prioritizeSpeed);
     }
     
     public static ItemMatcher columnsMatcherOf(
             boolean considerRowGaps,
             boolean considerColumnGaps,
-            boolean prioritizeAccuracy) {
+            boolean prioritizeSpeed) {
         
         return matcherOf(
                 CellData::column,
                 CellData::row,
                 considerColumnGaps,
                 considerRowGaps,
-                prioritizeAccuracy);
+                prioritizeSpeed);
     }
     
     // [instance members] ******************************************************
