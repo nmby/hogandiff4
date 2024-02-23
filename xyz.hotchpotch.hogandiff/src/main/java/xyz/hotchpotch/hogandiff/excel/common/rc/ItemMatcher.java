@@ -28,7 +28,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 ? Comparator.comparing(CellData::content)
                 : Comparator.comparing(horizontal);
         
-        return new ItemMatcherImpl1(
+        return new ItemMatcherImpl2(
                 vertical,
                 horizontal,
                 horizontalComparator);
