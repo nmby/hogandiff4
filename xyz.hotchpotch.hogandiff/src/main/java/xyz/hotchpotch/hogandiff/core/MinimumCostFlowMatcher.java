@@ -38,6 +38,18 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         assert diffEvaluator != null;
     }
     
+    /*package*/ MinimumCostFlowMatcher(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        super(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
+        
+        assert gapEvaluatorA != null;
+        assert gapEvaluatorB != null;
+        assert diffEvaluator != null;
+    }
+    
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
