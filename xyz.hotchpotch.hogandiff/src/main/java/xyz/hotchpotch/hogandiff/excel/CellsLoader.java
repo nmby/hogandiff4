@@ -29,58 +29,40 @@ public interface CellsLoader {
      * 
      * @param bookOpenInfo Excelブックオープン情報
      * @param useCachedValue 数式ではなく値で比較する場合は {@code true}
-     * @param saveMemory 省メモリモードの場合は {@code true}
      * @return Excelシートからセルデータを抽出するローダー
      * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
      * @throws UnsupportedOperationException
      *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
-    public static CellsLoader of(
-            BookOpenInfo bookOpenInfo,
-            boolean useCachedValue,
-            boolean saveMemory) {
-        
+    public static CellsLoader of(BookOpenInfo bookOpenInfo, boolean useCachedValue) {
         Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
             return "".equals(content)
                     ? null
-                    : CellData.of(
+                    : new CellData(
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
                             content,
-                            saveMemory);
+                            null);
         };
         
         switch (bookOpenInfo.bookType()) {
             case XLS:
                 return useCachedValue
                         ? CombinedCellsLoader.of(List.of(
-                                () -> HSSFCellsLoaderWithPoiEventApi.of(
-                                        useCachedValue,
-                                        saveMemory),
-                                () -> CellsLoaderWithPoiUserApi.of(
-                                        saveMemory,
-                                        converter)))
-                        : CellsLoaderWithPoiUserApi.of(
-                                saveMemory,
-                                converter);
+                                () -> HSSFCellsLoaderWithPoiEventApi.of(useCachedValue),
+                                () -> CellsLoaderWithPoiUserApi.of(converter)))
+                        : CellsLoaderWithPoiUserApi.of(converter);
             
             case XLSX:
             case XLSM:
                 return useCachedValue
                         ? CombinedCellsLoader.of(List.of(
-                                () -> XSSFCellsLoaderWithSax.of(
-                                        useCachedValue,
-                                        saveMemory,
-                                        bookOpenInfo),
-                                () -> CellsLoaderWithPoiUserApi.of(
-                                        saveMemory,
-                                        converter)))
-                        : CellsLoaderWithPoiUserApi.of(
-                                saveMemory,
-                                converter);
+                                () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookOpenInfo),
+                                () -> CellsLoaderWithPoiUserApi.of(converter)))
+                        : CellsLoaderWithPoiUserApi.of(converter);
             
             case XLSB:
                 // FIXME: [No.2 .xlsbのサポート]

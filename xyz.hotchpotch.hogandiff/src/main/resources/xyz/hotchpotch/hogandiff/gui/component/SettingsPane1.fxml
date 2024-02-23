@@ -92,11 +92,19 @@
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
 					</GridPane.margin>
 				</CheckBox>
-				<CheckBox fx:id="saveMemoryCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.execute.020" GridPane.columnIndex="1" GridPane.rowIndex="1">
-					<GridPane.margin>
-						<Insets bottom="5.0" left="7.0" right="7.0" top="1.0" />
-					</GridPane.margin>
-				</CheckBox>
+            <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <RadioButton fx:id="prioritizeSpeedRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.execute.030">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="prioritizeSpeedOrAccuracy" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="prioritizeAccuracyRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.SettingsPane1.execute.040" toggleGroup="$prioritizeSpeedOrAccuracy" />
+               </children>
+               <GridPane.margin>
+                  <Insets bottom="5.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </HBox>
 			</children>
 		</GridPane>
 	</children>

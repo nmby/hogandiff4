@@ -41,8 +41,8 @@ public class AppArgsParser {
             + SettingKeys.SHOW_RESULT_TEXT.defaultValueSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
             + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
-            + "    --save-memory=[true|false]           : default value is "
-            + SettingKeys.SAVE_MEMORY.defaultValueSupplier().get() + BR
+            + "    --prioritize-speed=[true|false]      : default value is "
+            + SettingKeys.PRIORITIZE_SPEED.defaultValueSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
@@ -52,7 +52,7 @@ public class AppArgsParser {
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
-            "--save-memory", SettingKeys.SAVE_MEMORY);
+            "--prioritize-speed", SettingKeys.PRIORITIZE_SPEED);
     
     /**
      * アプリケーション実行時引数を解析してアプリケーション設定に変換します。<br>
@@ -80,6 +80,9 @@ public class AppArgsParser {
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
             remainingParams.remove();
             remainingParams.remove();
+            
+            // 廃止した --save-memory オプションは無視する。
+            remainingParams.removeIf(p -> p.startsWith("--save-memory="));
             
             Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
             

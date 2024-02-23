@@ -78,6 +78,30 @@ public interface Matcher<T> {
     }
     
     /**
+     * 2つのリストの要素同士の組み合わせの中で、リスト内における要素の順番に関わりなく
+     * 最も一致度の高いペアから対応付けを確定していくマッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @param gapEvaluatorA 比較対象Aに適用する余剰コスト評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
+     * @param diffEvaluator 差分コスト評価関数
+     * @return 新しいマッチャー
+     * @throws NullPointerException
+     *              {@code gapEvaluatorA}, {@code gapEvaluatorB}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     */
+    public static <T> Matcher<T> greedyMatcherOf(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
+        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
+        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        
+        return new GreedyMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
+    }
+    
+    /**
      * 2つのリスト間の編集距離が最小となるように要素同士を対応付けるマッチャーを返します。<br>
      * 
      * @param <T> リストの要素の型
@@ -95,6 +119,29 @@ public interface Matcher<T> {
         Objects.requireNonNull(diffEvaluator, "diffEvaluator");
         
         return new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
+    }
+    
+    /**
+     * 2つのリスト間の編集距離が最小となるように要素同士を対応付けるマッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @param gapEvaluatorA 比較対象Aに適用する余剰コスト評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
+     * @param diffEvaluator 差分コスト評価関数
+     * @return 新しいマッチャー
+     * @throws NullPointerException
+     *              {@code gapEvaluatorA}, {@code gapEvaluatorB}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     */
+    public static <T> Matcher<T> minimumEditDistanceMatcherOf(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
+        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
+        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        
+        return new MinimumEditDistanceMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
     }
     
     /**
@@ -116,6 +163,29 @@ public interface Matcher<T> {
         Objects.requireNonNull(diffEvaluator, "diffEvaluator");
         
         return new MinimumCostFlowMatcher<>(gapEvaluator, diffEvaluator);
+    }
+    
+    /**
+     * 2つのリストの要素同士の組み合わせで得られる差分コストが最小となるような対応付けを行う
+     * マッチャーを返します。<br>
+     * 
+     * @param <T> リストの要素の型
+     * @param gapEvaluator 余剰コスト評価関数
+     * @param diffEvaluator 差分コスト評価関数
+     * @return 新しいマッチャー
+     * @throws NullPointerException
+     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     */
+    public static <T> Matcher<T> minimumCostFlowMatcherOf(
+            ToIntFunction<? super T> gapEvaluatorA,
+            ToIntFunction<? super T> gapEvaluatorB,
+            ToIntBiFunction<? super T, ? super T> diffEvaluator) {
+        
+        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
+        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
+        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        
+        return new MinimumCostFlowMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
     }
     
     /**

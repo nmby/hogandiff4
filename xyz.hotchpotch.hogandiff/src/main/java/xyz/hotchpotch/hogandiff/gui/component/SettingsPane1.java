@@ -58,7 +58,13 @@ public class SettingsPane1 extends VBox implements ChildController {
     private CheckBox exitWhenFinishedCheckBox;
     
     @FXML
-    private CheckBox saveMemoryCheckBox;
+    private ToggleGroup prioritizeSpeedOrAccuracy;
+    
+    @FXML
+    private RadioButton prioritizeSpeedRadioButton;
+    
+    @FXML
+    private RadioButton prioritizeAccuracyRadioButton;
     
     /**
      * コンストラクタ<br>
@@ -92,7 +98,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
-        applicator.accept(SettingKeys.SAVE_MEMORY, saveMemoryCheckBox::setSelected);
+        applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
         
         // 4.値変更時のイベントハンドラの設定
         BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
@@ -103,9 +109,10 @@ public class SettingsPane1 extends VBox implements ChildController {
         addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
         addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_TEXT);
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
-        addListener.accept(saveMemoryCheckBox, SettingKeys.SAVE_MEMORY);
         
         compareValuesOrFormulas.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
+        prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
+                .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
     }
 }

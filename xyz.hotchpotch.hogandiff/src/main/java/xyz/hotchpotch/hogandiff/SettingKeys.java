@@ -304,9 +304,10 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
-    /** 実行オプション：省メモリモードで比較するか */
-    public static final Key<Boolean> SAVE_MEMORY = new Key<Boolean>(
-            "execution.saveMemory",
+    /** 実行オプション：早さ優先か精度優先か */
+    // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
+    public static final Key<Boolean> PRIORITIZE_SPEED = new Key<Boolean>(
+            "execution.prioritizeSpeed",
             () -> false,
             String::valueOf,
             Boolean::valueOf,
