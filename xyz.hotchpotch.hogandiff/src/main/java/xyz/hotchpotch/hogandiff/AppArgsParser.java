@@ -41,6 +41,8 @@ public class AppArgsParser {
             + SettingKeys.SHOW_RESULT_TEXT.defaultValueSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
             + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
+            + "    --prioritize-speed=[true|false]      : default value is "
+            + SettingKeys.PRIORITIZE_SPEED.defaultValueSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
@@ -49,7 +51,8 @@ public class AppArgsParser {
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_TEXT,
-            "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED);
+            "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
+            "--prioritize-speed", SettingKeys.PRIORITIZE_SPEED);
     
     /**
      * アプリケーション実行時引数を解析してアプリケーション設定に変換します。<br>
