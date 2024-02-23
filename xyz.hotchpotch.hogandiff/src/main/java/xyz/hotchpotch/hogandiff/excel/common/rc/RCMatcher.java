@@ -16,12 +16,13 @@ public interface RCMatcher {
             boolean considerRowGaps,
             boolean considerColumnGaps) {
         
-        ItemMatcher rowsMatcher = RCMatcherUtil.rowsMatcherOf(considerRowGaps, considerColumnGaps);
-        ItemMatcher columnsMatcher = RCMatcherUtil.columnsMatcherOf(considerRowGaps, considerColumnGaps);
-        
         return (cells1, cells2) -> {
+            ItemMatcher rowsMatcher = ItemMatcher.rowsMatcherOf(considerRowGaps, considerColumnGaps);
             List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2);
+            
+            ItemMatcher columnsMatcher = ItemMatcher.columnsMatcherOf(considerRowGaps, considerColumnGaps);
             List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2);
+            
             return new Pair<>(rowPairs, columnPairs);
         };
     }
