@@ -59,7 +59,7 @@ public class TreeResultBookCreator {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource().get();
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
