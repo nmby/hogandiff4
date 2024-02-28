@@ -16,7 +16,7 @@ class CombinedMatcherTest {
     
     // "A" から始まる要素同士だけを単純マッチングさせるマッチャー
     private static Matcher<String> matcherA = (list1, list2) -> Matcher
-            .identityMatcher().makeIdxPairs(list1, list2).stream()
+            .identityMatcherOf().makeIdxPairs(list1, list2).stream()
             .flatMap(p -> !p.isPaired()
                     ? Stream.of(p)
                     : list1.get(p.a()).startsWith("A") && list2.get(p.b()).startsWith("A")
@@ -26,7 +26,7 @@ class CombinedMatcherTest {
     
     // "B" から始まる要素同士だけを単純マッチングさせるマッチャー
     private static Matcher<String> matcherB = (list1, list2) -> Matcher
-            .identityMatcher().makeIdxPairs(list1, list2).stream()
+            .identityMatcherOf().makeIdxPairs(list1, list2).stream()
             .flatMap(p -> !p.isPaired()
                     ? Stream.of(p)
                     : list1.get(p.a()).startsWith("B") && list2.get(p.b()).startsWith("B")

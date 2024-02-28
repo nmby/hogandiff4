@@ -21,7 +21,7 @@ public class PasswordDialog extends Dialog<String> {
     
     // instance members ********************************************************
     
-    private final ResourceBundle rb = AppMain.appResource().get();
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * 新しいダイアログを構成します。<br>
