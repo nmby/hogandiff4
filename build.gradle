@@ -21,8 +21,8 @@ final def targetFatZip = baseDir.resolve('xyz.hotchpotch.hogandiff/build/distrib
 
 final def outputDir = baseDir.resolve('build/' + timetag)
 final def outputDirTmpJars = outputDir.resolve("tmp/fat/xyz.hotchpotch.hogandiff/lib")
-final def outputDirWinX64 = outputDir.resolve("方眼Diff-${version}-win-x64")
-final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
+final def outputDirWinX64 = outputDir.resolve("hogandiff-${version}-win-x64")
+final def outputDirMacX64 = outputDir.resolve("hogandiff-${version}-mac-x64")
 
 final def requiredMods = '' \
     + 'java.base,' \
@@ -86,7 +86,7 @@ task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
             '-p', '方眼Diff',
             '-c', '(c) 2018-2023 nmby',
             '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
-            '-o', outputDirWinX64.resolve('方眼Diff.exe')
+            '-o', outputDirWinX64.resolve('hogandiff.exe')
 }
 
 // executable on [win-x64, mac-x64]
@@ -101,7 +101,7 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
         }
         copy {
             from baseDir.resolve('resources')
-            include '方眼Diff.exe.vmoptions'
+            include 'hogandiff.exe.vmoptions'
             into outputDirWinX64
         }
         copy {
