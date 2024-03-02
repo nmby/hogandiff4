@@ -132,32 +132,32 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
 
     doLast {
         copy {
-            from baseDir.resolve('resources/方眼Diff.app')
+            from baseDir.resolve('resources/hogandiff.app')
             exclude '**/.gitkeep'
-            into outputDirMacX64.resolve('方眼Diff.app')
+            into outputDirMacX64.resolve('hogandiff.app')
         }
         copy {
             from baseDir
             include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Resources')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Resources')
         }
         copy {
             from outputDirTmpJars
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java')
         }
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/PlugIns/jre-min')
         }
         copy {
             from project['myprop.poi.src']
             include 'LICENSE', 'NOTICE'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/poi')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/poi')
         }
         copy {
             from project['myprop.log4j.bin']
             include 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/log4j')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/log4j')
         }
     }
 }
