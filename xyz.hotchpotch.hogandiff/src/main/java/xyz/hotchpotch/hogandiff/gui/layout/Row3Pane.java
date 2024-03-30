@@ -27,7 +27,7 @@ public class Row3Pane extends StackPane implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final AppResource ar = AppMain.appResource();
+    private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
     
     @FXML

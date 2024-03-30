@@ -38,7 +38,7 @@ public interface Matcher<T> {
      * @param <T> リストの要素の型
      * @return 新しいマッチャー
      */
-    public static <T> Matcher<T> identityMatcher() {
+    public static <T> Matcher<T> identityMatcherOf() {
         return new IdentityMatcher<>();
     }
     
@@ -51,7 +51,7 @@ public interface Matcher<T> {
      * @return 新しいマッチャー
      * @throws NullPointerException {@code idExtractor} が {@code null} の場合
      */
-    public static <T> Matcher<T> identityMatcher(Function<? super T, ?> idExtractor) {
+    public static <T> Matcher<T> identityMatcherOf(Function<? super T, ?> idExtractor) {
         Objects.requireNonNull(idExtractor, "idExtractor");
         return new IdentityMatcher<>(idExtractor);
     }
@@ -196,7 +196,7 @@ public interface Matcher<T> {
      * @return 新しいマッチャー
      * @throws NullPointerException {@code matchers} が {@code null} の場合
      */
-    public static <T> Matcher<T> combinedMatcher(List<Matcher<? super T>> matchers) {
+    public static <T> Matcher<T> combinedMatcherOf(List<Matcher<? super T>> matchers) {
         Objects.requireNonNull(matchers, "matchers");
         return new CombinedMatcher<>(matchers);
     }

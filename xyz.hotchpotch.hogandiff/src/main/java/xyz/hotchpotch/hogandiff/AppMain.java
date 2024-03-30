@@ -21,7 +21,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.18.0";
+    private static final String VERSION = "v0.19.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -30,11 +30,7 @@ public class AppMain extends Application {
     public static final String WEB_URL = "https://hogandiff.hotchpotch.xyz/";
     
     /** このアプリケーションで利用するリソース */
-    private static AppResource appResource = AppResource.fromProperties();
-    
-    public static AppResource appResource() {
-        return appResource;
-    }
+    public static final AppResource appResource = AppResource.fromProperties();
     
     /** メインステージ */
     public static Stage stage;

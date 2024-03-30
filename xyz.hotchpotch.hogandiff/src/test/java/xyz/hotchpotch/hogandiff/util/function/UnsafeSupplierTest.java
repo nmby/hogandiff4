@@ -3,10 +3,10 @@ package xyz.hotchpotch.hogandiff.util.function;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 class UnsafeSupplierTest {
     
@@ -61,7 +61,7 @@ class UnsafeSupplierTest {
     @Test
     void testToSupplier1_2() {
         UnsafeSupplier<String> testee = () -> {
-            throw new SQLException("Hello!!");
+            throw new SAXException("Hello!!");
         };
         Supplier<String> transformed = testee.toSupplier();
         
@@ -79,7 +79,7 @@ class UnsafeSupplierTest {
         }
         
         assertSame(
-                SQLException.class,
+                SAXException.class,
                 thrown.getCause().getClass());
         assertEquals(
                 "Hello!!",

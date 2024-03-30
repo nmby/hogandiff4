@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.18.0'
+final def version = '0.19.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 final def baseDir = projectDir.toPath()
@@ -21,14 +21,13 @@ final def targetFatZip = baseDir.resolve('xyz.hotchpotch.hogandiff/build/distrib
 
 final def outputDir = baseDir.resolve('build/' + timetag)
 final def outputDirTmpJars = outputDir.resolve("tmp/fat/xyz.hotchpotch.hogandiff/lib")
-final def outputDirWinX64 = outputDir.resolve("方眼Diff-${version}-win-x64")
-final def outputDirMacX64 = outputDir.resolve("方眼Diff-${version}-mac-x64")
+final def outputDirWinX64 = outputDir.resolve("hogandiff-${version}-win-x64")
+final def outputDirMacX64 = outputDir.resolve("hogandiff-${version}-mac-x64")
 
+// TODO: module-info.java なんもわからん
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.management,' \
-    + 'java.naming,' \
     + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
@@ -78,15 +77,16 @@ task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
 
     commandLine project['myprop.cmd.exewrap'],
             '-g',
+            // 直近の LTS-version とする。
             '-t', '21',
             '-i', baseDir.resolve('resources/favicon.ico'),
             '-v', version,
             '-V', version,
             '-d', '方眼Diff',
             '-p', '方眼Diff',
-            '-c', '(c) 2018-2023 nmby',
+            '-c', '(c) 2018-2024 nmby',
             '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
-            '-o', outputDirWinX64.resolve('方眼Diff.exe')
+            '-o', outputDirWinX64.resolve('hogandiff.exe')
 }
 
 // executable on [win-x64, mac-x64]
@@ -101,7 +101,7 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
         }
         copy {
             from baseDir.resolve('resources')
-            include '方眼Diff.exe.vmoptions'
+            include 'hogandiff.exe.vmoptions'
             into outputDirWinX64
         }
         copy {
@@ -132,32 +132,32 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
 
     doLast {
         copy {
-            from baseDir.resolve('resources/方眼Diff.app')
+            from baseDir.resolve('resources/hogandiff.app')
             exclude '**/.gitkeep'
-            into outputDirMacX64.resolve('方眼Diff.app')
+            into outputDirMacX64.resolve('hogandiff.app')
         }
         copy {
             from baseDir
             include 'README.md', 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Resources')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Resources')
         }
         copy {
             from outputDirTmpJars
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java')
         }
         copy {
             from outputDir.resolve('tmp/jre-min-mac-x64')
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/PlugIns/jre-min')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/PlugIns/jre-min')
         }
         copy {
             from project['myprop.poi.src']
             include 'LICENSE', 'NOTICE'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/poi')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/poi')
         }
         copy {
             from project['myprop.log4j.bin']
             include 'LICENSE.txt', 'NOTICE.txt'
-            into outputDirMacX64.resolve('方眼Diff.app/Contents/Java/legal/log4j')
+            into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/log4j')
         }
     }
 }
@@ -204,7 +204,8 @@ task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
     group 'test'
 
     commandLine project['myprop.cmd.jdeps'],
+            // 直近の LTS-version とする。
             '--multi-release', 21,
-            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']}",
+            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']};${outputDirTmpJars}",
             '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
 }

@@ -71,7 +71,7 @@ public class SettingKeys {
             Double::valueOf,
             true);
     
-    /** 設定エリアを表示するか */
+    /** ウィンドウ最大表示化 */
     public static final Key<Boolean> STAGE_MAXIMIZED = new Key<Boolean>(
             "application.maximized",
             () -> false,
@@ -155,10 +155,7 @@ public class SettingKeys {
             Path::of,
             false);
     
-    /**
-     * Excelシート同士の比較において、
-     * 行の挿入／削除を考慮する（{@code true}）か考慮しない（{@code false}）かを表します。<br>
-     */
+    /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<Boolean>(
             "compare.considerRowGaps",
             () -> true,
@@ -166,10 +163,7 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
-    /**
-     * Excelシート同士の比較において、
-     * 列の挿入／削除を考慮する（{@code true}）か考慮しない（{@code false}）かを表します。<br>
-     */
+    /** 列の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_COLUMN_GAPS = new Key<Boolean>(
             "compare.considerColumnGaps",
             () -> false,
@@ -178,9 +172,8 @@ public class SettingKeys {
             true);
     
     /**
-     * Excelセル内容の比較において、セルの内容が数式の場合に
-     * 数式文字列を比較する（{@code true}）か
-     * Excelファイルにキャッシュされている計算結果の値を比較する（{@code false}）かを表します。<br>
+     * セルの内容が数式の場合に数式文字列を比較する（{@code true}）か、
+     * Excelファイルにキャッシュされている計算結果の値を比較する（{@code false}）か
      */
     public static final Key<Boolean> COMPARE_ON_FORMULA_STRING = new Key<Boolean>(
             "compare.compareOnFormulaString",
@@ -190,8 +183,8 @@ public class SettingKeys {
             true);
     
     /**
-     * シート名同士の対応付けにおいて完全一致（{@code true}）でマッチングするか
-     * ある程度の揺らぎを許容する（{@code flase}）かを表します。<br>
+     * シート名同士の対応付けにおいて完全一致でマッチングする（{@code true}）か、
+     * ある程度の揺らぎを許容する（{@code flase}）か
      */
     public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<Boolean>(
             "compare.matchNamesStrictly",
@@ -200,9 +193,7 @@ public class SettingKeys {
             Boolean::valueOf,
             false);
     
-    /**
-     * フォルダ同士の比較において子フォルダも再帰的に比較する（{@code true}）かを表します。
-     */
+    /** 子フォルダも再帰的に比較するか */
     public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<Boolean>(
             "compare.compareDirsRecursively",
             () -> false,
@@ -210,9 +201,7 @@ public class SettingKeys {
             Boolean::valueOf,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、余剰行・余剰列に着ける色のインデックス値を表します。<br>
-     */
+    /** 比較結果レポートにおける、余剰行・余剰列に着ける色のインデックス値 */
     public static final Key<Short> REDUNDANT_COLOR = new Key<Short>(
             "report.redundantColor",
             () -> IndexedColors.CORAL.getIndex(),
@@ -220,9 +209,7 @@ public class SettingKeys {
             Short::valueOf,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、差分セルに着ける色のインデックス値を表します。<br>
-     */
+    /** 比較結果レポートにおける、差分セルに着ける色のインデックス値 */
     public static final Key<Short> DIFF_COLOR = new Key<Short>(
             "report.diffColor",
             () -> IndexedColors.YELLOW.getIndex(),
@@ -230,9 +217,7 @@ public class SettingKeys {
             Short::valueOf,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、余剰セルコメントに着ける色を表します。<br>
-     */
+    /** 比較結果レポートにおける、余剰セルコメントに着ける色 */
     public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<Color>(
             "report.redundantCommentColor",
             () -> new Color(255, 128, 128),
@@ -240,9 +225,7 @@ public class SettingKeys {
             Color::decode,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、差分セルコメントに着ける色を表します。<br>
-     */
+    /** 比較結果レポートにおける、差分セルコメントに着ける色 */
     public static final Key<Color> DIFF_COMMENT_COLOR = new Key<Color>(
             "report.diffCommentColor",
             () -> Color.YELLOW,
@@ -250,9 +233,7 @@ public class SettingKeys {
             Color::decode,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、余剰シートの見出しに着ける色を表します。<br>
-     */
+    /** 比較結果レポートにおける、余剰シートの見出しに着ける色 */
     public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<Color>(
             "report.redundantSheetColor",
             () -> Color.RED,
@@ -260,9 +241,7 @@ public class SettingKeys {
             Color::decode,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、差分シートの見出しに着ける色を表します。<br>
-     */
+    /** 比較結果レポートにおける、差分シートの見出しに着ける色 */
     public static final Key<Color> DIFF_SHEET_COLOR = new Key<Color>(
             "report.diffSheetColor",
             () -> Color.YELLOW,
@@ -270,9 +249,7 @@ public class SettingKeys {
             Color::decode,
             false);
     
-    /**
-     * 比較結果のレポートにおいて、差分無しシートの見出しに着ける色を表します。<br>
-     */
+    /** 比較結果レポートにおける、差分無しシートの見出しに着ける色 */
     public static final Key<Color> SAME_SHEET_COLOR = new Key<Color>(
             "report.sameSheetColor",
             () -> Color.CYAN,

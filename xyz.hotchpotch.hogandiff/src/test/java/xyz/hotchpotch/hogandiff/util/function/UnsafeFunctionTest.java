@@ -3,10 +3,10 @@ package xyz.hotchpotch.hogandiff.util.function;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 class UnsafeFunctionTest {
     
@@ -18,7 +18,7 @@ class UnsafeFunctionTest {
         throw new IOException("unsafe2_1");
     };
     private static final UnsafeFunction<Integer, String> unsafe2_2 = i -> {
-        throw new SQLException("unsafe2_2");
+        throw new SAXException("unsafe2_2");
     };
     private static final UnsafeFunction<String, Integer> unsafe2_3 = i -> {
         throw new IllegalArgumentException("unsafe2_3");
@@ -73,7 +73,7 @@ class UnsafeFunctionTest {
                 () -> unsafe2_1.apply("abcde"),
                 "unsafe2_1");
         assertThrows(
-                SQLException.class,
+                SAXException.class,
                 () -> unsafe2_2.apply(5),
                 "unsafe2_2");
     }
@@ -97,7 +97,7 @@ class UnsafeFunctionTest {
         
         // 成功 -> 失敗
         assertThrows(
-                SQLException.class,
+                SAXException.class,
                 () -> unsafe2_2.compose(unsafe1_1).apply("abcde"),
                 "unsafe2_2");
         
@@ -128,7 +128,7 @@ class UnsafeFunctionTest {
         
         // 成功 -> 失敗
         assertThrows(
-                SQLException.class,
+                SAXException.class,
                 () -> unsafe2_2.compose(safe1_1).apply("abcde"),
                 "unsafe2_2");
         
@@ -159,7 +159,7 @@ class UnsafeFunctionTest {
         
         // 成功 -> 失敗
         assertThrows(
-                SQLException.class,
+                SAXException.class,
                 () -> unsafe1_1.andThen(unsafe2_2).apply("abcde"),
                 "unsafe2_2");
         

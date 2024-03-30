@@ -29,7 +29,7 @@ public class ReportingPane extends VBox implements ChildController {
     
     // [instance members] ******************************************************
     
-    private final AppResource ar = AppMain.appResource();
+    private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
     
     @FXML

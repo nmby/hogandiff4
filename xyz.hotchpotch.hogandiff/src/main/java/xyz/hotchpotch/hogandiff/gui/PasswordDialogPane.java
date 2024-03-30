@@ -22,7 +22,7 @@ public class PasswordDialogPane extends VBox {
     
     // instance members ********************************************************
     
-    private final ResourceBundle rb = AppMain.appResource().get();
+    private final ResourceBundle rb = AppMain.appResource.get();
     
     @FXML
     private Label errorMsgLabel;
