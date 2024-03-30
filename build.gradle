@@ -77,6 +77,7 @@ task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
 
     commandLine project['myprop.cmd.exewrap'],
             '-g',
+            // 直近の LTS-version とする。
             '-t', '21',
             '-i', baseDir.resolve('resources/favicon.ico'),
             '-v', version,
@@ -203,6 +204,7 @@ task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
     group 'test'
 
     commandLine project['myprop.cmd.jdeps'],
+            // 直近の LTS-version とする。
             '--multi-release', 21,
             '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']};${outputDirTmpJars}",
             '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")

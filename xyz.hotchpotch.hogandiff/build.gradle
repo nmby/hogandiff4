@@ -23,6 +23,7 @@ test {
 }
 
 java {
+    // 直近の LTS-version とする。
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
@@ -32,6 +33,7 @@ tasks.withType(JavaCompile) {
 }
 
 javafx {
+	// 直近の LTS-version とする。
     version = 21
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
