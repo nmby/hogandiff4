@@ -543,7 +543,7 @@ public class PoiUtil {
                     new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
                     new DefaultIndexedColorMap()));
             
-        } else if (sheet instanceof HSSFSheet hSheet) {
+        } else if (sheet instanceof HSSFSheet) {
             // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
         }
     }
