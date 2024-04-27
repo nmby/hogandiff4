@@ -57,7 +57,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private static Path prevSelectedBookPath;
     
-    private static boolean isTargetDirs(AppMenu menu) {
+    private static boolean isDirOperation(AppMenu menu) {
         return menu == AppMenu.COMPARE_DIRS || menu == AppMenu.COMPARE_TREES;
     }
     
@@ -133,23 +133,23 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 parent.menu()));
         
         dirPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isTargetDirs(parent.menu().getValue()),
+                () -> isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         dirPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isTargetDirs(parent.menu().getValue()),
+                () -> isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         dirPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isTargetDirs(parent.menu().getValue()),
+                () -> isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         
         bookPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isTargetDirs(parent.menu().getValue()),
+                () -> !isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         bookPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isTargetDirs(parent.menu().getValue()),
+                () -> !isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         bookPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isTargetDirs(parent.menu().getValue()),
+                () -> !isDirOperation(parent.menu().getValue()),
                 parent.menu()));
         
         // 2.項目ごとの各種設定
@@ -172,11 +172,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         isReady.bind(Bindings.createBooleanBinding(
                 () -> switch (parent.menu().getValue()) {
-                    case COMPARE_BOOKS -> bookOpenInfo.getValue() != null;
-                    case COMPARE_SHEETS -> bookOpenInfo.getValue() != null && sheetName.getValue() != null;
-                    case COMPARE_DIRS -> dirPath.getValue() != null;
-                    case COMPARE_TREES -> dirPath.getValue() != null;
-                    default -> throw new AssertionError("unknown menu");
+                case COMPARE_BOOKS -> bookOpenInfo.getValue() != null;
+                case COMPARE_SHEETS -> bookOpenInfo.getValue() != null && sheetName.getValue() != null;
+                case COMPARE_DIRS -> dirPath.getValue() != null;
+                case COMPARE_TREES -> dirPath.getValue() != null;
+                default -> throw new AssertionError("unknown menu");
                 },
                 parent.menu(), bookOpenInfo, sheetName, dirPath));
         
@@ -205,21 +205,27 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     }
     
     private void onDragOver(DragEvent event) {
-        event.consume();
-        Predicate<File> isAcceptableType = isTargetDirs(parent.menu().getValue())
-                ? File::isDirectory
-                : File::isFile;
-        
-        if (!event.getDragboard().hasFiles()) {
-            return;
+        try {
+            event.consume();
+            Predicate<File> isAcceptableType = isDirOperation(parent.menu().getValue())
+                    ? File::isDirectory
+                    : File::isFile;
+            
+            if (!event.getDragboard().hasFiles()) {
+                return;
+            }
+            File file = event.getDragboard().getFiles().get(0);
+            if (!isAcceptableType.test(file)) {
+                return;
+            }
+            // ファイルの拡張子は確認しないことにする。
+            
+            event.acceptTransferModes(TransferMode.LINK);
+            
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // nop
         }
-        File file = event.getDragboard().getFiles().get(0);
-        if (!isAcceptableType.test(file)) {
-            return;
-        }
-        // ファイルの拡張子は確認しないことにする。
-        
-        event.acceptTransferModes(TransferMode.LINK);
     }
     
     private void onDragDropped(DragEvent event) {
@@ -228,7 +234,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             event.consume();
             
             AppMenu menu = parent.menu().getValue();
-            Predicate<File> isAcceptableType = isTargetDirs(menu)
+            Predicate<File> isAcceptableType = isDirOperation(menu)
                     ? File::isDirectory
                     : File::isFile;
             
@@ -242,7 +248,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 return;
             }
             
-            if (isTargetDirs(menu)) {
+            if (isDirOperation(menu)) {
                 setDirPath(files.get(0).toPath());
                 event.setDropCompleted(true);
                 
@@ -258,6 +264,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     opposite.validateAndSetTarget(files.get(1).toPath(), null);
                 }
             }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            event.setDropCompleted(false);
+            // nop
+            
         } finally {
             isBusy.set(false);
         }
@@ -282,6 +293,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             if (selected != null) {
                 setDirPath(selected.toPath());
             }
+            
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // nop
+            
         } finally {
             isBusy.set(false);
         }
@@ -312,6 +328,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             if (selected != null) {
                 validateAndSetTarget(selected.toPath(), null);
             }
+            
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            // nop
+            
         } finally {
             isBusy.set(false);
         }
