@@ -133,5 +133,5 @@ Web上の各種情報を参考に、ご自身の責任でご実施ください�
 
 ## 連絡先
 
-e-mail  : nmby@hotchpotch.xyz  
+e-mail  : hogandiff@hotchpotch.xyz  
 website : https://hogandiff.hotchpotch.xyz/
