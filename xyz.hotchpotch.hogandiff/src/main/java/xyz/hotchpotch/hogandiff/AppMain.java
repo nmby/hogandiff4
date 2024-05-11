@@ -21,7 +21,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.19.1";
+    public static final String VERSION = "v0.19.1";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -114,9 +114,26 @@ public class AppMain extends Application {
         
         primaryStage.show();
         
+        announceNewFeature(settings);
+        
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.execute();
         }
+    }
+    
+    private void announceNewFeature(Settings settings) {
+        String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
+        
+        if (VERSION.equals(prevVersion)) {
+            return;
+        }
+        
+        switch (VERSION) {
+        default:
+            // nop
+        }
+        
+        appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
     }
 }
