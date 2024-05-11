@@ -25,6 +25,14 @@ public class SettingKeys {
     
     // [static members] ********************************************************
     
+    /** このアプリケーションの実行したことのあるバージョン */
+    public static final Key<String> APP_VERSION = new Key<>(
+            "application.appVersion",
+            () -> null,
+            Function.identity(),
+            Function.identity(),
+            true);
+    
     /** このアプリケーションのロケール（表示言語） */
     public static final Key<Locale> APP_LOCALE = new Key<>(
             "application.appLocale",
