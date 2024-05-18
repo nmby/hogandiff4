@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.util.UUID;
+
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
@@ -114,7 +116,8 @@ public class AppMain extends Application {
         
         primaryStage.show();
         
-        announceNewFeature(settings);
+        generateUUID();
+        announceNewFeature();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
@@ -122,7 +125,15 @@ public class AppMain extends Application {
         }
     }
     
-    private void announceNewFeature(Settings settings) {
+    private void generateUUID() {
+        UUID uuid = appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID);
+        if (uuid == null) {
+            appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
+        }
+        System.out.println(appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID));
+    }
+    
+    private void announceNewFeature() {
         String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
         
         if (VERSION.equals(prevVersion)) {
