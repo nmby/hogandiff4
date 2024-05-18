@@ -12,15 +12,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
- * @param redundantRows 余剰行の配列のペア
- * @param redundantColumns 余剰列の配列のペア
- * @param diffCells 差分セルのペアのリスト
  */
-public record SheetResult(
-        Pair<int[]> redundantRows,
-        Pair<int[]> redundantColumns,
-        List<Pair<CellData>> diffCells)
-        implements Result {
+public final class SheetResult implements Result {
     
     // [static members] ********************************************************
     
@@ -92,6 +85,10 @@ public record SheetResult(
     
     // [instance members] ******************************************************
     
+    private final Pair<int[]> redundantRows;
+    private final Pair<int[]> redundantColumns;
+    private final List<Pair<CellData>> diffCells;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -104,7 +101,11 @@ public record SheetResult(
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public SheetResult {
+    public SheetResult(
+            Pair<int[]> redundantRows,
+            Pair<int[]> redundantColumns,
+            List<Pair<CellData>> diffCells) {
+        
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
@@ -113,7 +114,8 @@ public record SheetResult(
             throw new IllegalArgumentException("illegal result");
         }
         
-        // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
+        // クラスの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
+        
         //if (redundantRows.isPaired()) {
         //    redundantRows = Pair.of(
         //            Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
@@ -125,6 +127,10 @@ public record SheetResult(
         //            Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
         //}
         //diffCells = List.copyOf(diffCells);
+        
+        this.redundantRows = redundantRows;
+        this.redundantColumns = redundantColumns;
+        this.diffCells = diffCells;
     }
     
     /**
