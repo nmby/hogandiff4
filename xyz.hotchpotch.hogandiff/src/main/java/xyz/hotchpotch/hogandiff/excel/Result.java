@@ -1,6 +1,8 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-public interface Result {
+//あんまり意味はないが sealed を使ってみる
+public sealed interface Result
+        permits SheetResult, BookResult, DirResult, TreeResult {
     
     // [static members] ********************************************************
     
