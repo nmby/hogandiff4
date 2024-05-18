@@ -24,7 +24,8 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public record TreeResult(
         Pair<DirInfo> topDirPair,
         List<DirPairData> pairDataList,
-        Map<Pair<Path>, Optional<DirResult>> dirResults) {
+        Map<Pair<Path>, Optional<DirResult>> dirResults)
+        implements Result {
     
     // [static members] ********************************************************
     

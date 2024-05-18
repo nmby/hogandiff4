@@ -26,7 +26,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public record BookResult(
         Pair<Path> bookPaths,
         List<Pair<String>> sheetPairs,
-        Map<Pair<String>, Optional<SheetResult>> sheetResults) {
+        Map<Pair<String>, Optional<SheetResult>> sheetResults)
+        implements Result {
     
     // [static members] ********************************************************
     

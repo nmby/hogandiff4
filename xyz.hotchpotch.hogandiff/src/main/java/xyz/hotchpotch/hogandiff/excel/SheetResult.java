@@ -19,7 +19,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public record SheetResult(
         Pair<int[]> redundantRows,
         Pair<int[]> redundantColumns,
-        List<Pair<CellData>> diffCells) {
+        List<Pair<CellData>> diffCells)
+        implements Result {
     
     // [static members] ********************************************************
     

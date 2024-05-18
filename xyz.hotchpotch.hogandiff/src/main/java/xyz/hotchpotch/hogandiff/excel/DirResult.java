@@ -25,7 +25,8 @@ public record DirResult(
         Pair<DirInfo> dirPair,
         List<Pair<String>> bookNamePairs,
         Map<Pair<String>, Optional<BookResult>> bookResults,
-        String dirId) {
+        String dirId)
+        implements Result {
     
     // [static members] ********************************************************
     
