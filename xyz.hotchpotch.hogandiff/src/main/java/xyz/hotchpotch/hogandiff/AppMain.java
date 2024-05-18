@@ -116,7 +116,6 @@ public class AppMain extends Application {
         
         primaryStage.show();
         
-        generateUUID();
         announceNewFeature();
         
         MainController controller = loader.getController();
@@ -125,26 +124,21 @@ public class AppMain extends Application {
         }
     }
     
-    private void generateUUID() {
+    private void announceNewFeature() {
+        // UUIDが未採番の場合は採番する。
         UUID uuid = appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID);
         if (uuid == null) {
             appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
         }
-        System.out.println(appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID));
-    }
-    
-    private void announceNewFeature() {
+        
+        // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
         String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
-        
-        if (VERSION.equals(prevVersion)) {
-            return;
+        if (!VERSION.equals(prevVersion)) {
+            switch (VERSION) {
+            default:
+                // nop
+            }
+            appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
-        
-        switch (VERSION) {
-        default:
-            // nop
-        }
-        
-        appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
     }
 }
