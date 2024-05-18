@@ -15,6 +15,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 
@@ -93,7 +94,7 @@ public class ReportingPane extends VBox implements ChildController {
      * 
      * @param task タスク
      */
-    public void bind(Task<Void> task) {
+    public void bind(Task<Result> task) {
         Objects.requireNonNull(task, "task");
         
         reportingProgressBar.progressProperty().bind(task.progressProperty());

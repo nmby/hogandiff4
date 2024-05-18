@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -64,11 +65,11 @@ public enum AppMenu {
     
     // [instance members] ******************************************************
     
-    private final BiFunction<Settings, Factory, Task<Void>> taskFactory;
+    private final BiFunction<Settings, Factory, Task<Result>> taskFactory;
     private final Predicate<Settings> targetValidator;
     
     private AppMenu(
-            BiFunction<Settings, Factory, Task<Void>> taskFactory,
+            BiFunction<Settings, Factory, Task<Result>> taskFactory,
             Predicate<Settings> targetValidator) {
         
         assert taskFactory != null;
@@ -101,7 +102,7 @@ public enum AppMenu {
      * @return 新しいタスク
      * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
      */
-    public Task<Void> getTask(Settings settings, Factory factory) {
+    public Task<Result> getTask(Settings settings, Factory factory) {
         Objects.requireNonNull(settings, "settings");
         Objects.requireNonNull(factory, "factory");
         

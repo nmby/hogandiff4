@@ -26,6 +26,7 @@ import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
@@ -41,7 +42,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract class AppTaskBase extends Task<Void> {
+/*package*/ abstract class AppTaskBase extends Task<Result> {
     
     // [static members] ********************************************************
     
@@ -79,10 +80,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected Result call() throws Exception {
         try {
-            call2();
-            return null;
+            return call2();
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
@@ -92,7 +92,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    protected abstract void call2() throws Exception;
+    protected abstract Result call2() throws Exception;
+    
+    // ↓↓↓ common operations / utilities ↓↓↓
     
     /**
      * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
@@ -104,14 +106,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
         switch (menu) {
-            case COMPARE_BOOKS:
-            case COMPARE_SHEETS:
-                return BookOpenInfo.isSameBook(
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
-            
-            default:
-                throw new IllegalStateException("not suitable for " + menu);
+        case COMPARE_BOOKS:
+        case COMPARE_SHEETS:
+            return BookOpenInfo.isSameBook(
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+        
+        default:
+            throw new IllegalStateException("not suitable for " + menu);
         }
     }
     

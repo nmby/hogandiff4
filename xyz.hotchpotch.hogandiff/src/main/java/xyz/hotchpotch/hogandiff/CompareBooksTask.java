@@ -11,6 +11,7 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -39,7 +40,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected void call2() throws Exception {
+    protected Result call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
@@ -58,6 +59,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 6. 処理終了のアナウンス
         announceEnd();
+        
+        return bResult;
     }
     
     // 0. 処理開始のアナウンス
