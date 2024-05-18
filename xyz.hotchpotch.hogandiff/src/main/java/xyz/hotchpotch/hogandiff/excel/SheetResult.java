@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -83,11 +84,36 @@ public final class SheetResult implements Result {
         }
     }
     
+    /**
+     * 比較処理の統計情報<br>
+     * 
+     * @param maxRows 比較対象シートの行数の大きい方
+     * @param maxColumns 比較対象シートの列数の大きい方
+     * @param maxCells 比較対象シートのセル数の大きい方
+     * @param sumRedundantRows 双方のシートの余剰行数の和
+     * @param sumRedundantColumns 双方のシートの余剰列数の和
+     * @param sumDiffCells 差分セル数
+     */
+    public static record Stats(
+            int maxRows,
+            int maxColumns,
+            int maxCells,
+            int sumRedundantRows,
+            int sumRedundantColumns,
+            int sumDiffCells) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+    }
+    
     // [instance members] ******************************************************
     
     private final Pair<int[]> redundantRows;
     private final Pair<int[]> redundantColumns;
     private final List<Pair<CellData>> diffCells;
+    private final Stats stats;
     
     /**
      * コンストラクタ<br>
@@ -102,10 +128,14 @@ public final class SheetResult implements Result {
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
     public SheetResult(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
             Pair<int[]> redundantRows,
             Pair<int[]> redundantColumns,
             List<Pair<CellData>> diffCells) {
         
+        Objects.requireNonNull(cells1, "cells1");
+        Objects.requireNonNull(cells2, "cells2");
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
@@ -116,21 +146,29 @@ public final class SheetResult implements Result {
         
         // クラスの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
         
-        //if (redundantRows.isPaired()) {
-        //    redundantRows = Pair.of(
-        //            Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
-        //            Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
-        //}
-        //if (redundantColumns.isPaired()) {
-        //    redundantColumns = Pair.of(
-        //            Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
-        //            Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
-        //}
+        //redundantRows = Pair.of(
+        //        Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
+        //        Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
+        //redundantColumns = Pair.of(
+        //        Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
+        //        Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
         //diffCells = List.copyOf(diffCells);
         
         this.redundantRows = redundantRows;
         this.redundantColumns = redundantColumns;
         this.diffCells = diffCells;
+        
+        this.stats = new Stats(
+                Math.max(
+                        cells1.stream().mapToInt(CellData::row).max().orElse(0),
+                        cells2.stream().mapToInt(CellData::row).max().orElse(0)),
+                Math.max(
+                        cells1.stream().mapToInt(CellData::column).max().orElse(0),
+                        cells2.stream().mapToInt(CellData::column).max().orElse(0)),
+                Math.max(cells1.size(), cells2.size()),
+                redundantRows.a().length + redundantRows.b().length,
+                redundantColumns.a().length + redundantColumns.b().length,
+                diffCells.size());
     }
     
     /**
@@ -164,6 +202,10 @@ public final class SheetResult implements Result {
                 diffCellContents,
                 diffCellComments,
                 redundantCellComments);
+    }
+    
+    public Stats getStats() {
+        return stats;
     }
     
     /**
