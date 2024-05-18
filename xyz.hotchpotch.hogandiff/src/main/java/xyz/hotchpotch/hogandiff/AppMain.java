@@ -114,12 +114,11 @@ public class AppMain extends Application {
         
         primaryStage.show();
         
+        announceNewFeature(settings);
+        
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.execute();
-            
-        } else {
-            announceNewFeature(settings);
         }
     }
     
