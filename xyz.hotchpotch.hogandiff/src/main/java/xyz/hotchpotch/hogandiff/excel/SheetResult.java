@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -12,14 +13,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * Excelシート同士の比較結果を表す不変クラスです。<br>
  * 
  * @author nmby
- * @param redundantRows 余剰行の配列のペア
- * @param redundantColumns 余剰列の配列のペア
- * @param diffCells 差分セルのペアのリスト
  */
-public record SheetResult(
-        Pair<int[]> redundantRows,
-        Pair<int[]> redundantColumns,
-        List<Pair<CellData>> diffCells) {
+public final class SheetResult implements Result {
     
     // [static members] ********************************************************
     
@@ -89,7 +84,46 @@ public record SheetResult(
         }
     }
     
+    /**
+     * 比較処理の統計情報<br>
+     * 
+     * @param rows1 比較対象シート1の行数
+     * @param rows2 比較対象シート2の行数
+     * @param columns1 比較対象シート1の列数
+     * @param columns2 比較対象シート2の列数
+     * @param cells1 比較対象シート1のセル数
+     * @param cells2 比較対象シート2のセル数
+     * @param redundantRows1 比較対象シート1の余剰行数
+     * @param redundantRows2 比較対象シート2の余剰行数
+     * @param redundantColumns1 比較対象シート1の余剰列数
+     * @param redundantColumns2 比較対象シート2の余剰列数
+     * @param diffCells 差分セル数
+     */
+    public static record Stats(
+            int rows1,
+            int rows2,
+            int columns1,
+            int columns2,
+            int cells1,
+            int cells2,
+            int redundantRows1,
+            int redundantRows2,
+            int redundantColumns1,
+            int redundantColumns2,
+            int diffCells) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+    }
+    
     // [instance members] ******************************************************
+    
+    private final Pair<int[]> redundantRows;
+    private final Pair<int[]> redundantColumns;
+    private final List<Pair<CellData>> diffCells;
+    private final Stats stats;
     
     /**
      * コンストラクタ<br>
@@ -103,7 +137,15 @@ public record SheetResult(
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public SheetResult {
+    public SheetResult(
+            Set<CellData> cells1,
+            Set<CellData> cells2,
+            Pair<int[]> redundantRows,
+            Pair<int[]> redundantColumns,
+            List<Pair<CellData>> diffCells) {
+        
+        Objects.requireNonNull(cells1, "cells1");
+        Objects.requireNonNull(cells2, "cells2");
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
@@ -112,18 +154,32 @@ public record SheetResult(
             throw new IllegalArgumentException("illegal result");
         }
         
-        // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
-        //if (redundantRows.isPaired()) {
-        //    redundantRows = Pair.of(
-        //            Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
-        //            Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
-        //}
-        //if (redundantColumns.isPaired()) {
-        //    redundantColumns = Pair.of(
-        //            Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
-        //            Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
-        //}
+        // クラスの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
+        
+        //redundantRows = Pair.of(
+        //        Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
+        //        Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
+        //redundantColumns = Pair.of(
+        //        Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
+        //        Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
         //diffCells = List.copyOf(diffCells);
+        
+        this.redundantRows = redundantRows;
+        this.redundantColumns = redundantColumns;
+        this.diffCells = diffCells;
+        
+        this.stats = new Stats(
+                cells1.stream().mapToInt(CellData::row).max().orElse(0),
+                cells2.stream().mapToInt(CellData::row).max().orElse(0),
+                cells1.stream().mapToInt(CellData::column).max().orElse(0),
+                cells2.stream().mapToInt(CellData::column).max().orElse(0),
+                cells1.size(),
+                cells2.size(),
+                redundantRows.a().length,
+                redundantRows.b().length,
+                redundantColumns.a().length,
+                redundantColumns.b().length,
+                diffCells.size());
     }
     
     /**
@@ -261,5 +317,10 @@ public record SheetResult(
     @Override
     public String toString() {
         return getDiffDetail();
+    }
+    
+    @Override
+    public List<Stats> getSheetStats() {
+        return List.of(stats);
     }
 }

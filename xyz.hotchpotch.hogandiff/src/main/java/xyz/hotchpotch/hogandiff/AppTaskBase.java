@@ -5,6 +5,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
@@ -41,7 +44,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract class AppTaskBase extends Task<Void> {
+/*package*/ abstract class AppTaskBase extends Task<Report> {
     
     // [static members] ********************************************************
     
@@ -79,10 +82,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Void call() throws Exception {
+    protected Report call() throws Exception {
         try {
-            call2();
-            return null;
+            Instant time1 = Instant.now();
+            Result result = call2();
+            Instant time2 = Instant.now();
+            
+            return new Report(
+                    settings,
+                    result,
+                    Duration.between(time1, time2));
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
@@ -92,7 +101,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    protected abstract void call2() throws Exception;
+    protected abstract Result call2() throws Exception;
+    
+    // ↓↓↓ common operations / utilities ↓↓↓
     
     /**
      * このタスクの比較対象Excelブックが同一ブックかを返します。<br>

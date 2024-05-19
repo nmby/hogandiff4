@@ -16,6 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -44,7 +45,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected void call2() throws Exception {
+    protected Result call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
@@ -66,6 +67,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 7. 処理終了のアナウンス
         announceEnd();
+        
+        return tResult;
     }
     
     // 0. 処理開始のアナウンス

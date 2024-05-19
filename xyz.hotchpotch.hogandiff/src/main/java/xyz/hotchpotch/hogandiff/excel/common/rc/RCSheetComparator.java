@@ -68,6 +68,8 @@ public class RCSheetComparator implements SheetComparator {
         if (cells1 == cells2) {
             if (cells1.isEmpty()) {
                 return new SheetResult(
+                        cells1,
+                        cells2,
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -97,6 +99,8 @@ public class RCSheetComparator implements SheetComparator {
                 cells1, cells2, rowPairs, columnPairs);
         
         return new SheetResult(
+                cells1,
+                cells2,
                 new Pair<>(redundantRows1, redundantRows2),
                 new Pair<>(redundantColumns1, redundantColumns2),
                 diffCells);

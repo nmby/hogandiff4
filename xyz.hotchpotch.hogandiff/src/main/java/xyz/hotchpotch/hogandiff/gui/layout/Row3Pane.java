@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.StackPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.component.ReportingPane;
@@ -71,7 +72,7 @@ public class Row3Pane extends StackPane implements ChildController {
      * 
      * @param task タスク
      */
-    public void bind(Task<Void> task) {
+    public void bind(Task<Report> task) {
         Objects.requireNonNull(task, "task");
         
         reportingPane.bind(task);
