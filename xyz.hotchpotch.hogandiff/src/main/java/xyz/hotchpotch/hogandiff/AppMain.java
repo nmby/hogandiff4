@@ -1,5 +1,8 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
 import java.util.UUID;
 
 import org.apache.poi.openxml4j.util.ZipSecureFile;
@@ -134,10 +137,17 @@ public class AppMain extends Application {
         // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
         String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
-            switch (VERSION) {
-            default:
+            
+            assert VERSION.equals("v0.19.1");
+            // v0.19.1 では新機能紹介ページを表示する。
+            
+            try {
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-19-1/"));
+            } catch (IOException e) {
+                e.printStackTrace();
                 // nop
             }
+            
             appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }
