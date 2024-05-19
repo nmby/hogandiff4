@@ -58,18 +58,14 @@ public class RCSheetComparator implements SheetComparator {
      *              {@code cells1}, {@code cells2} が同一インスタンスの場合
      */
     @Override
-    public SheetResult compare(
-            Set<CellData> cells1,
-            Set<CellData> cells2) {
+    public SheetResult compare(Pair<Set<CellData>> cellsSets) {
+        Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
-        
-        if (cells1 == cells2) {
-            if (cells1.isEmpty()) {
+        if (cellsSets.a() == cellsSets.b()) {
+            if (cellsSets.a().isEmpty()) {
                 return new SheetResult(
-                        cells1,
-                        cells2,
+                        cellsSets.a(),
+                        cellsSets.b(),
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -78,7 +74,7 @@ public class RCSheetComparator implements SheetComparator {
             }
         }
         
-        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cells1, cells2);
+        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cellsSets.a(), cellsSets.b());
         List<IntPair> rowPairs = pairs.a();
         List<IntPair> columnPairs = pairs.b();
         
@@ -96,11 +92,11 @@ public class RCSheetComparator implements SheetComparator {
         
         // 差分セルの収集
         List<Pair<CellData>> diffCells = extractDiffs(
-                cells1, cells2, rowPairs, columnPairs);
+                cellsSets.a(), cellsSets.b(), rowPairs, columnPairs);
         
         return new SheetResult(
-                cells1,
-                cells2,
+                cellsSets.a(),
+                cellsSets.b(),
                 new Pair<>(redundantRows1, redundantRows2),
                 new Pair<>(redundantColumns1, redundantColumns2),
                 diffCells);

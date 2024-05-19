@@ -151,7 +151,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
                     Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, sheetNamePair.a());
                     Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, sheetNamePair.b());
                     
-                    SheetResult result = comparator.compare(cells1, cells2);
+                    SheetResult result = comparator.compare(new Pair<>(cells1, cells2));
                     results.put(sheetNamePair, Optional.of(result));
                     
                     str.append("  -  ").append(result.getDiffSummary()).append(BR);

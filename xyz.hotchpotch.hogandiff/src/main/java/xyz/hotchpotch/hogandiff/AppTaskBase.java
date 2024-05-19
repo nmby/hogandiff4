@@ -152,7 +152,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
                 side -> sheetNamesLoaders.get(side).loadSheetNames(bookOpenInfos.get(side)));
         
         SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
-        return matcher.pairingSheetNames(bookInfos.a(), bookInfos.b());
+        return matcher.pairingSheetNames(bookInfos);
     }
     
     /**
@@ -193,9 +193,9 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
             
             if (sheetNamePair.isPaired()) {
                 Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                        sidr -> loaders.get(sidr).loadCells(bookOpenInfos.get(sidr), sheetNamePair.get(sidr)));
+                        side -> loaders.get(side).loadCells(bookOpenInfos.get(side), sheetNamePair.get(side)));
                 
-                SheetResult result = comparator.compare(cellsSets.a(), cellsSets.b());
+                SheetResult result = comparator.compare(cellsSets);
                 results.put(sheetNamePair, Optional.of(result));
                 
             } else {
@@ -231,6 +231,8 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
         }
         
         for (int i = 0; i < data.bookNamePairs().size(); i++) {
+            int ii = i;
+            
             Pair<String> bookNamePair = data.bookNamePairs().get(i);
             
             str.append(indent
@@ -241,7 +243,6 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
                 
                 Pair<BookOpenInfo> srcInfos = Side.map(side -> new BookOpenInfo(
                         data.dirPair().get(side).path().resolve(bookNamePair.get(side)), null));
-                int ii = i;
                 Pair<BookOpenInfo> dstInfos = Side.map(side -> new BookOpenInfo(
                         outputDirs.get(side).resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))),
                         null));
