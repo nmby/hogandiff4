@@ -87,20 +87,30 @@ public final class SheetResult implements Result {
     /**
      * 比較処理の統計情報<br>
      * 
-     * @param maxRows 比較対象シートの行数の大きい方
-     * @param maxColumns 比較対象シートの列数の大きい方
-     * @param maxCells 比較対象シートのセル数の大きい方
-     * @param sumRedundantRows 双方のシートの余剰行数の和
-     * @param sumRedundantColumns 双方のシートの余剰列数の和
-     * @param sumDiffCells 差分セル数
+     * @param rows1 比較対象シート1の行数
+     * @param rows2 比較対象シート2の行数
+     * @param columns1 比較対象シート1の列数
+     * @param columns2 比較対象シート2の列数
+     * @param cells1 比較対象シート1のセル数
+     * @param cells2 比較対象シート2のセル数
+     * @param redundantRows1 比較対象シート1の余剰行数
+     * @param redundantRows2 比較対象シート2の余剰行数
+     * @param redundantColumns1 比較対象シート1の余剰列数
+     * @param redundantColumns2 比較対象シート2の余剰列数
+     * @param diffCells 差分セル数
      */
     public static record Stats(
-            int maxRows,
-            int maxColumns,
-            int maxCells,
-            int sumRedundantRows,
-            int sumRedundantColumns,
-            int sumDiffCells) {
+            int rows1,
+            int rows2,
+            int columns1,
+            int columns2,
+            int cells1,
+            int cells2,
+            int redundantRows1,
+            int redundantRows2,
+            int redundantColumns1,
+            int redundantColumns2,
+            int diffCells) {
         
         // [static members] ----------------------------------------------------
         
@@ -159,15 +169,16 @@ public final class SheetResult implements Result {
         this.diffCells = diffCells;
         
         this.stats = new Stats(
-                Math.max(
-                        cells1.stream().mapToInt(CellData::row).max().orElse(0),
-                        cells2.stream().mapToInt(CellData::row).max().orElse(0)),
-                Math.max(
-                        cells1.stream().mapToInt(CellData::column).max().orElse(0),
-                        cells2.stream().mapToInt(CellData::column).max().orElse(0)),
-                Math.max(cells1.size(), cells2.size()),
-                redundantRows.a().length + redundantRows.b().length,
-                redundantColumns.a().length + redundantColumns.b().length,
+                cells1.stream().mapToInt(CellData::row).max().orElse(0),
+                cells2.stream().mapToInt(CellData::row).max().orElse(0),
+                cells1.stream().mapToInt(CellData::column).max().orElse(0),
+                cells2.stream().mapToInt(CellData::column).max().orElse(0),
+                cells1.size(),
+                cells2.size(),
+                redundantRows.a().length,
+                redundantRows.b().length,
+                redundantColumns.a().length,
+                redundantColumns.b().length,
                 diffCells.size());
     }
     
@@ -202,10 +213,6 @@ public final class SheetResult implements Result {
                 diffCellContents,
                 diffCellComments,
                 redundantCellComments);
-    }
-    
-    public Stats getStats() {
-        return stats;
     }
     
     /**
@@ -310,5 +317,10 @@ public final class SheetResult implements Result {
     @Override
     public String toString() {
         return getDiffDetail();
+    }
+    
+    @Override
+    public List<Stats> getSheetStats() {
+        return List.of(stats);
     }
 }

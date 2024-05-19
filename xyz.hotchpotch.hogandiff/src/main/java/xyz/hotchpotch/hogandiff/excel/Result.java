@@ -1,6 +1,10 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-//あんまり意味はないが sealed を使ってみる
+import java.util.List;
+
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+
+// sealed を使ってみる
 public sealed interface Result
         permits SheetResult, BookResult, DirResult, TreeResult {
     
@@ -8,4 +12,5 @@ public sealed interface Result
     
     // [instance members] ******************************************************
     
+    List<Stats> getSheetStats();
 }

@@ -10,6 +10,7 @@ import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -142,5 +143,15 @@ public record TreeResult(
         str.append(getDiffDetail());
         
         return str.toString();
+    }
+    
+    @Override
+    public List<Stats> getSheetStats() {
+        return dirResults.values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(DirResult::getSheetStats)
+                .flatMap(List::stream)
+                .toList();
     }
 }

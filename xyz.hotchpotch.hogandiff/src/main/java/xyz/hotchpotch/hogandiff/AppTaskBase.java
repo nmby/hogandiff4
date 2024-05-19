@@ -5,6 +5,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract class AppTaskBase extends Task<Result> {
+/*package*/ abstract class AppTaskBase extends Task<Report> {
     
     // [static members] ********************************************************
     
@@ -80,9 +82,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Result call() throws Exception {
+    protected Report call() throws Exception {
         try {
-            return call2();
+            Instant time1 = Instant.now();
+            Result result = call2();
+            Instant time2 = Instant.now();
+            
+            return new Report(
+                    settings,
+                    result,
+                    Duration.between(time1, time2));
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
@@ -106,14 +115,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
         switch (menu) {
-        case COMPARE_BOOKS:
-        case COMPARE_SHEETS:
-            return BookOpenInfo.isSameBook(
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
-        
-        default:
-            throw new IllegalStateException("not suitable for " + menu);
+            case COMPARE_BOOKS:
+            case COMPARE_SHEETS:
+                return BookOpenInfo.isSameBook(
+                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
+                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+            
+            default:
+                throw new IllegalStateException("not suitable for " + menu);
         }
     }
     

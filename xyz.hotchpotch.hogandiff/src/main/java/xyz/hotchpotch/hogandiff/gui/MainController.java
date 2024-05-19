@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,9 +24,9 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
@@ -170,13 +171,22 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Result> task = menu.getTask(ar.settings(), Factory.of());
+        Task<Report> task = menu.getTask(ar.settings(), Factory.of());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
             row3Pane.unbind();
+            
+            try {
+                Report report = task.get();
+                System.out.println(report.toJsonString());
+                
+            } catch (InterruptedException | ExecutionException | RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
             
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null

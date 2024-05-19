@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -199,5 +200,15 @@ public record BookResult(
         str.append(getDiffDetail());
         
         return str.toString();
+    }
+    
+    @Override
+    public List<Stats> getSheetStats() {
+        return sheetResults.values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(SheetResult::getSheetStats)
+                .flatMap(List::stream)
+                .toList();
     }
 }
