@@ -7,7 +7,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 2つのExcelブックに含まれるシート名同士の対応関係を決めるマッチャーを表します。<br>
- * これは、{@link #pairingSheetNames(BookInfo, BookInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #pairingSheetNames(Pair)} を関数メソッドに持つ関数型インタフェースです。<br>
  * 
  * @author nmby
  */
@@ -31,11 +31,8 @@ public interface SheetNamesMatcher {
     /**
      * 2つのExcelブックに含まれるシート同士の組み合わせを決定して返します。<br>
      * 
-     * @param bookInfo1 比較対象Excelブック情報1
-     * @param bookInfo2 比較対象Excelブック情報2
+     * @param bookInfos 比較対象Excelブック情報
      * @return シート同士の組み合わせを表すリスト
      */
-    public List<Pair<String>> pairingSheetNames(
-            BookInfo bookInfo1,
-            BookInfo bookInfo2);
+    public List<Pair<String>> pairingSheetNames(Pair<BookInfo> bookInfos);
 }

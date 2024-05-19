@@ -30,7 +30,7 @@ public class CombinedCellsLoader implements CellsLoader {
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static CellsLoader of(List<UnsafeSupplier<CellsLoader>> suppliers) {
+    public static CellsLoader of(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers, "suppliers");
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
@@ -41,9 +41,9 @@ public class CombinedCellsLoader implements CellsLoader {
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<CellsLoader>> suppliers;
+    private final List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers;
     
-    private CombinedCellsLoader(List<UnsafeSupplier<CellsLoader>> suppliers) {
+    private CombinedCellsLoader(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -83,7 +83,7 @@ public class CombinedCellsLoader implements CellsLoader {
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s - %s".formatted(bookOpenInfo, sheetName));
         
-        Iterator<UnsafeSupplier<CellsLoader>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 CellsLoader loader = itr.next().get();

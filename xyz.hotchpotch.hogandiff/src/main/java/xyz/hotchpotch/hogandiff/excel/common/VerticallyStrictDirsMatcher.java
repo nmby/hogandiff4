@@ -64,39 +64,33 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     }
     
     @Override
-    public List<Pair<DirInfo>> pairingDirs(
-            DirInfo topDirInfo1,
-            DirInfo topDirInfo2) {
-        
-        Objects.requireNonNull(topDirInfo1, "topDirInfo1");
-        Objects.requireNonNull(topDirInfo2, "topDirInfo2");
+    public List<Pair<DirInfo>> pairingDirs(Pair<DirInfo> topDirInfos) {
+        Objects.requireNonNull(topDirInfos, "topDirInfos");
         
         List<Pair<DirInfo>> resultPairs = new ArrayList<>();
         
-        resultPairs.add(new Pair<>(topDirInfo1, topDirInfo2));
+        resultPairs.add(topDirInfos);
         
-        pairingDirs2(resultPairs, topDirInfo1, topDirInfo2);
+        pairingDirs2(resultPairs, topDirInfos);
         
         return List.copyOf(resultPairs);
     }
     
     private void pairingDirs2(
             List<Pair<DirInfo>> resultPairs,
-            DirInfo dirInfo1,
-            DirInfo dirInfo2) {
+            Pair<DirInfo> dirInfos) {
         
         assert resultPairs != null;
-        assert dirInfo1 != null;
-        assert dirInfo2 != null;
+        assert dirInfos != null;
         
         List<Pair<DirInfo>> dirPairs = coreMatcher.makeItemPairs(
-                dirInfo1.children(),
-                dirInfo2.children());
+                dirInfos.a().children(),
+                dirInfos.b().children());
         
         for (Pair<DirInfo> dirPair : dirPairs) {
             if (dirPair.isPaired()) {
                 resultPairs.add(dirPair);
-                pairingDirs2(resultPairs, dirPair.a(), dirPair.b());
+                pairingDirs2(resultPairs, dirPair);
                 
             } else if (dirPair.isOnlyA()) {
                 setAloneDirs(resultPairs, dirPair.a(), Side.A);

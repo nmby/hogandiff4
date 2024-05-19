@@ -87,7 +87,7 @@ public class StandardDirLoader implements DirLoader {
             me.setChildren(recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirInfo>) (p -> loadDir2(p, me, true))).convert())
+                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (p -> loadDir2(p, me, true))).convert())
                             .filter(r -> r.result() != null)
                             .map(ResultOrThrown::result)
                             .sorted()

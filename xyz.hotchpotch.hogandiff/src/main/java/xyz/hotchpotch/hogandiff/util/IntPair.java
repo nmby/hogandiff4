@@ -236,6 +236,19 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         return EMPTY;
     }
     
+    /**
+     * 新たなペアを生成します。<br>
+     * 
+     * @param pair 元のペア
+     * @return 新たなペア
+     */
+    public static IntPair from(Pair<Integer> pair) {
+        return pair.isPaired() ? IntPair.of(pair.a(), pair.b())
+                : pair.isOnlyA() ? IntPair.onlyA(pair.a())
+                        : pair.isOnlyB() ? IntPair.onlyB(pair.b())
+                                : EMPTY;
+    }
+    
     // [instance members] ******************************************************
     
     private IntPair() {
@@ -316,6 +329,18 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
      */
     public final boolean isOnlyB() {
         return !hasA() && hasB();
+    }
+    
+    /**
+     * 指定された側の値だけが存在するかを返します。<br>
+     * 
+     * @return 指定された側の値だけが存在する場合は {@code true}
+     * @throws NullPointerException {@code side} が {@code null} の場合
+     */
+    public final boolean isOnly(Side side) {
+        Objects.requireNonNull(side, "side");
+        
+        return side == Side.A ? isOnlyA() : isOnlyB();
     }
     
     /**

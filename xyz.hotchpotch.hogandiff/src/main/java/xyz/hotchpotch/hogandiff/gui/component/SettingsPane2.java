@@ -216,7 +216,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Desktop desktop = Desktop.getDesktop();
-            UnsafeConsumer<Path> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
+            UnsafeConsumer<Path, Exception> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
                     ? path -> desktop.moveToTrash(path.toFile())
                     : Files::deleteIfExists;
             

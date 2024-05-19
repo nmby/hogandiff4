@@ -1,5 +1,10 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.util.UUID;
+
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
@@ -21,7 +26,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    private static final String VERSION = "v0.19.0";
+    public static final String VERSION = "v0.19.1";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -114,9 +119,36 @@ public class AppMain extends Application {
         
         primaryStage.show();
         
+        announceNewFeature();
+        
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.execute();
+        }
+    }
+    
+    private void announceNewFeature() {
+        // UUIDが未採番の場合は採番する。
+        UUID uuid = appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID);
+        if (uuid == null) {
+            appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
+        }
+        
+        // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
+        String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
+        if (!VERSION.equals(prevVersion)) {
+            
+            assert VERSION.equals("v0.19.1");
+            // v0.19.1 では新機能紹介ページを表示する。
+            
+            try {
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-19-1/"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                // nop
+            }
+            
+            appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }
 }

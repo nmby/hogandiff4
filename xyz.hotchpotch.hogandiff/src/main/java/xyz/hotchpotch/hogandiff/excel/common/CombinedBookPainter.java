@@ -33,7 +33,7 @@ public class CombinedBookPainter implements BookPainter {
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static BookPainter of(List<UnsafeSupplier<BookPainter>> suppliers) {
+    public static BookPainter of(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
@@ -44,9 +44,9 @@ public class CombinedBookPainter implements BookPainter {
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<BookPainter>> suppliers;
+    private final List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers;
     
-    private CombinedBookPainter(List<UnsafeSupplier<BookPainter>> suppliers) {
+    private CombinedBookPainter(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -101,7 +101,7 @@ public class CombinedBookPainter implements BookPainter {
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
         
-        Iterator<UnsafeSupplier<BookPainter>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<BookPainter, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 BookPainter painter = itr.next().get();

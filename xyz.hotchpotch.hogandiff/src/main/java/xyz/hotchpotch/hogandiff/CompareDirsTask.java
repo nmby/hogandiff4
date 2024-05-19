@@ -14,8 +14,10 @@ import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -41,7 +43,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected void call2() throws Exception {
+    protected Result call2() throws Exception {
         
         // 0. 処理開始のアナウンス
         announceStart(0, 0);
@@ -70,6 +72,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         // 8. 処理終了のアナウンス
         announceEnd();
+        
+        return tResult;
     }
     
     // 0. 処理開始のアナウンス
@@ -79,13 +83,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
-        Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
         
         str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                 rb.getString("CompareDirsTask.010"),
-                dirPath1,
-                dirPath2));
+                dirPaths.a(),
+                dirPaths.b()));
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
@@ -97,20 +100,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair)
             throws ApplicationException {
         
-        Path outputDir1 = workDir.resolve("【A】" + dirPair.a().path().getFileName());
-        Path outputDir2 = workDir.resolve("【B】" + dirPair.b().path().getFileName());
+        Pair<Path> outputDirs = Side.map(
+                side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
         
         try {
-            return new Pair<>(
-                    Files.createDirectory(outputDir1),
-                    Files.createDirectory(outputDir2));
+            return outputDirs.unsafeMap(Files::createDirectory);
             
         } catch (IOException e) {
             str.append(rb.getString("CompareDirsTask.020")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(
-                    "%s%n%s%n%s".formatted(rb.getString("CompareDirsTask.020"), outputDir1, outputDir2),
+                    "%s%n%s%n%s".formatted(rb.getString("CompareDirsTask.020"), outputDirs.a(), outputDirs.b()),
                     e);
         }
     }
@@ -128,9 +129,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BooksMatcher matcher = factory.bookNamesMatcher(settings);
-            List<Pair<String>> bookNamePairs = matcher.pairingBooks(
-                    dirPair.a(),
-                    dirPair.b());
+            List<Pair<String>> bookNamePairs = matcher.pairingBooks(dirPair);
             
             if (bookNamePairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);

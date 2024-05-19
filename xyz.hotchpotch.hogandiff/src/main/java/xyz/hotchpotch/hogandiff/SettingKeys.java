@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -24,6 +26,22 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
 public class SettingKeys {
     
     // [static members] ********************************************************
+    
+    /** クライアント上で生成されたUUID */
+    public static final Key<UUID> CLIENT_UUID = new Key<UUID>(
+            "client.uuid",
+            () -> null,
+            UUID::toString,
+            UUID::fromString,
+            true);
+    
+    /** このアプリケーションの実行したことのあるバージョン */
+    public static final Key<String> APP_VERSION = new Key<>(
+            "application.appVersion",
+            () -> null,
+            Function.identity(),
+            Function.identity(),
+            true);
     
     /** このアプリケーションのロケール（表示言語） */
     public static final Key<Locale> APP_LOCALE = new Key<>(
@@ -115,6 +133,10 @@ public class SettingKeys {
             null,
             false);
     
+    public static final Pair<Key<BookOpenInfo>> CURR_BOOK_OPEN_INFOS = new Pair<>(
+            CURR_BOOK_OPEN_INFO1,
+            CURR_BOOK_OPEN_INFO2);
+    
     /** 今回の実行における比較対象Excelシート1の名前 */
     public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(
             "current.sheetName1",
@@ -135,6 +157,10 @@ public class SettingKeys {
             Function.identity(),
             false);
     
+    public static final Pair<Key<String>> CURR_SHEET_NAMES = new Pair<>(
+            CURR_SHEET_NAME1,
+            CURR_SHEET_NAME2);
+    
     /** 今回の実行における比較対象フォルダ1のパス */
     public static final Key<Path> CURR_DIR_PATH1 = new Key<Path>(
             "current.dirPath1",
@@ -154,6 +180,10 @@ public class SettingKeys {
             Path::toString,
             Path::of,
             false);
+    
+    public static final Pair<Key<Path>> CURR_DIR_PATHS = new Pair<>(
+            CURR_DIR_PATH1,
+            CURR_DIR_PATH2);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<Boolean>(

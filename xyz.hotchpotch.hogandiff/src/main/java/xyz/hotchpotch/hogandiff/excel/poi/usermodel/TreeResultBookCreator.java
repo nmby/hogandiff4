@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
@@ -128,16 +129,14 @@ public class TreeResultBookCreator {
                 Pair<DirInfo> dirPair = pairData.dirPair();
                 Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::path));
                 
-                Pair<String> dirRelNames = new Pair<>(
-                        dirPair.hasA() ? relPath.apply(Side.A, dirPair.a().path()) : null,
-                        dirPair.hasB() ? relPath.apply(Side.B, dirPair.b().path()) : null);
+                Pair<String> dirRelNames = Side.map(
+                        side -> dirPair.has(side) ? relPath.apply(side, dirPair.get(side).path()) : null);
                 
-                Pair<Path> outputDirs = new Pair<>(Side.A, Side.B)
-                        .map(side -> dirPair.has(side)
-                                ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent())
-                                        .resolve("【%s%s】%s".formatted(side, pairData.id(),
-                                                dirPair.get(side).path().getFileName().toString()))
-                                : null);
+                Pair<Path> outputDirs = Side.map(side -> dirPair.has(side)
+                        ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent())
+                                .resolve("【%s%s】%s".formatted(side, pairData.id(),
+                                        dirPair.get(side).path().getFileName().toString()))
+                        : null);
                 
                 for (Side side : Side.values()) {
                     if (dirPair.has(side)) {
@@ -182,6 +181,8 @@ public class TreeResultBookCreator {
                 }
                 rowNo++;
             }
+            
+            sheet.setAutoFilter(new CellRangeAddress(ROW_LIST_START - 1, rowNo, COL_DIFF, COL_DIFF));
             
             // 5. Excelブックを上書き保存する。
             try (OutputStream os = Files.newOutputStream(dstBookPath)) {

@@ -23,6 +23,7 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
@@ -169,7 +170,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Void> task = menu.getTask(ar.settings(), Factory.of());
+        Task<Report> task = menu.getTask(ar.settings(), Factory.of());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         

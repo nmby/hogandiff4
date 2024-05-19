@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 縦方向の挿入／削除を考慮せずに単純に縦インデックスで縦方向の対応付けを行う
@@ -31,17 +32,15 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     @Override
     public List<IntPair> makePairs(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
+        Objects.requireNonNull(cellsSets, "cellsSets");
         
-        int min1 = cells1.parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
-        int max1 = cells1.parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
-        int min2 = cells2.parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
-        int max2 = cells2.parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
+        int min1 = cellsSets.a().parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
+        int max1 = cellsSets.a().parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
+        int min2 = cellsSets.b().parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
+        int max2 = cellsSets.b().parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
         
         return IntStream.rangeClosed(Math.min(min1, min2), Math.max(max1, max2))
                 .mapToObj(n -> IntPair.of(n, n))

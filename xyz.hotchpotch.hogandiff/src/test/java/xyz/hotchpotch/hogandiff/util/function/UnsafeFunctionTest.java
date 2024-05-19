@@ -12,15 +12,15 @@ class UnsafeFunctionTest {
     
     // [static members] ********************************************************
     
-    private static final UnsafeFunction<String, Integer> unsafe1_1 = String::length;
-    private static final UnsafeFunction<Integer, String> unsafe1_2 = "x"::repeat;
-    private static final UnsafeFunction<String, Integer> unsafe2_1 = s -> {
+    private static final UnsafeFunction<String, Integer, Exception> unsafe1_1 = String::length;
+    private static final UnsafeFunction<Integer, String, Exception> unsafe1_2 = "x"::repeat;
+    private static final UnsafeFunction<String, Integer, Exception> unsafe2_1 = s -> {
         throw new IOException("unsafe2_1");
     };
-    private static final UnsafeFunction<Integer, String> unsafe2_2 = i -> {
+    private static final UnsafeFunction<Integer, String, Exception> unsafe2_2 = i -> {
         throw new SAXException("unsafe2_2");
     };
-    private static final UnsafeFunction<String, Integer> unsafe2_3 = i -> {
+    private static final UnsafeFunction<String, Integer, Exception> unsafe2_3 = i -> {
         throw new IllegalArgumentException("unsafe2_3");
     };
     
@@ -37,7 +37,7 @@ class UnsafeFunctionTest {
     
     @Test
     void testIdentity() throws Exception {
-        UnsafeFunction<Object, Object> testee = UnsafeFunction.identity();
+        UnsafeFunction<Object, Object, Exception> testee = UnsafeFunction.identity();
         
         assertTrue(
                 testee instanceof UnsafeFunction);

@@ -38,7 +38,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testGet2() throws Exception {
-        UnsafeSupplier<Void> testee = () -> {
+        UnsafeSupplier<Void, Exception> testee = () -> {
             throw new IOException("Hello!!");
         };
         
@@ -50,7 +50,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testToSupplier1_1() {
-        UnsafeSupplier<String> testee = () -> "Hello!!";
+        UnsafeSupplier<String, Exception> testee = () -> "Hello!!";
         Supplier<String> transformed = testee.toSupplier();
         
         assertEquals(
@@ -60,7 +60,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testToSupplier1_2() {
-        UnsafeSupplier<String> testee = () -> {
+        UnsafeSupplier<String, Exception> testee = () -> {
             throw new SAXException("Hello!!");
         };
         Supplier<String> transformed = testee.toSupplier();
@@ -88,7 +88,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testToSupplier1_3() {
-        UnsafeSupplier<String> testee = () -> {
+        UnsafeSupplier<String, Exception> testee = () -> {
             throw new IllegalArgumentException("Hello!!");
         };
         Supplier<String> transformed = testee.toSupplier();
@@ -112,7 +112,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testToSupplier2_2() {
-        UnsafeSupplier<String> testee = () -> {
+        UnsafeSupplier<String, Exception> testee = () -> {
             throw new IOException("Hello!!");
         };
         Supplier<String> transformed = testee.toSupplier(UnsupportedOperationException::new);
@@ -140,7 +140,7 @@ class UnsafeSupplierTest {
     
     @Test
     void testToSupplier2_3() {
-        UnsafeSupplier<String> testee = () -> {
+        UnsafeSupplier<String, Exception> testee = () -> {
             throw new IllegalArgumentException("Hello!!");
         };
         Supplier<String> transformed = testee.toSupplier(UnsupportedOperationException::new);
