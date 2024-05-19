@@ -4,7 +4,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -178,15 +177,6 @@ public class MainController extends VBox {
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
             executor.shutdown();
             row3Pane.unbind();
-            
-            try {
-                Report report = task.get();
-                System.out.println(report.toJsonString());
-                
-            } catch (InterruptedException | ExecutionException | RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
             
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null

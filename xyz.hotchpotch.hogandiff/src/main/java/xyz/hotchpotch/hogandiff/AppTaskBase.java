@@ -88,10 +88,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Result result = call2();
             Instant time2 = Instant.now();
             
-            return new Report(
+            Report report = new Report(
                     settings,
                     result,
                     Duration.between(time1, time2));
+            
+            report(report);
+            
+            return report;
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
@@ -102,6 +106,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     protected abstract Result call2() throws Exception;
+    
+    private void report(Report report) {
+        Path reportPath = workDir.resolve("report.json");
+        try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
+            writer.write(report.toJsonString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // nop
+        }
+    }
     
     // ↓↓↓ common operations / utilities ↓↓↓
     
