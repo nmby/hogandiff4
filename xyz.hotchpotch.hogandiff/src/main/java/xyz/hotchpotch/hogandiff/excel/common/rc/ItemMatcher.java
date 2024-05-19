@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 @FunctionalInterface
 /* package */ interface ItemMatcher {
@@ -69,7 +70,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     // [instance members] ******************************************************
     
     List<IntPair> makePairs(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs);
 }

@@ -332,6 +332,18 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
     }
     
     /**
+     * 指定された側の値だけが存在するかを返します。<br>
+     * 
+     * @return 指定された側の値だけが存在する場合は {@code true}
+     * @throws NullPointerException {@code side} が {@code null} の場合
+     */
+    public final boolean isOnly(Side side) {
+        Objects.requireNonNull(side, "side");
+        
+        return side == Side.A ? isOnlyA() : isOnlyB();
+    }
+    
+    /**
      * このペアが空かを返します。<br>
      * 
      * @return このペアが空の場合は {@code true}

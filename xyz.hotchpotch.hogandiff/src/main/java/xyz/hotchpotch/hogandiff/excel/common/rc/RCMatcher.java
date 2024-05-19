@@ -23,17 +23,17 @@ public interface RCMatcher {
                 .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
         
         if (considerRowGaps && considerColumnGaps) {
-            return (cells1, cells2) -> {
-                List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2, null);
-                List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, columnPairs);
+            return cellsSets -> {
+                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSets, null);
+                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSets, columnPairs);
                 
                 return new Pair<>(rowPairs, columnPairs);
             };
             
         } else {
-            return (cells1, cells2) -> {
-                List<IntPair> columnPairs = columnsMatcher.makePairs(cells1, cells2, null);
-                List<IntPair> rowPairs = rowsMatcher.makePairs(cells1, cells2, null);
+            return cellsSets -> {
+                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSets, null);
+                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSets, null);
                 
                 return new Pair<>(rowPairs, columnPairs);
             };
@@ -42,5 +42,5 @@ public interface RCMatcher {
     
     // [instance members] ******************************************************
     
-    Pair<List<IntPair>> make2Pairs(Set<CellData> cells1, Set<CellData> cells2);
+    Pair<List<IntPair>> make2Pairs(Pair<Set<CellData>> cellsSets);
 }
