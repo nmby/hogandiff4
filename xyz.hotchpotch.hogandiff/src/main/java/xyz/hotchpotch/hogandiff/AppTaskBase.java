@@ -136,24 +136,18 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
      * 指定された2つのExcelブックに含まれるシート名をロードし、
      * 設定内容に基づいてシート名をペアリングして返します。<br>
      * 
-     * @param bookOpenInfo1 Excelブック情報1
-     * @param bookOpenInfo2 Excelブック情報2
+     * @param bookOpenInfos Excelブック情報
      * @return シート名のペアのリスト
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     protected List<Pair<String>> getSheetNamePairs(
-            BookOpenInfo bookOpenInfo1,
-            BookOpenInfo bookOpenInfo2)
+            Pair<BookOpenInfo> bookOpenInfos)
             throws ExcelHandlingException {
         
-        assert bookOpenInfo1 != null;
-        assert bookOpenInfo2 != null;
-        assert !Objects.equals(bookOpenInfo1.bookPath(), bookOpenInfo2.bookPath());
-        
-        Pair<BookOpenInfo> bookOpenInfos = new Pair<>(bookOpenInfo1, bookOpenInfo2);
+        assert bookOpenInfos != null;
+        assert !Objects.equals(bookOpenInfos.a().bookPath(), bookOpenInfos.b().bookPath());
         
         Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos.unsafeMap(factory::sheetNamesLoader);
-        
         Pair<BookInfo> bookInfos = Side.unsafeMap(
                 side -> sheetNamesLoaders.get(side).loadSheetNames(bookOpenInfos.get(side)));
         
@@ -176,23 +170,18 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
         Pair<Path> dirPaths = keys.map(settings::get);
         
         DirLoader dirLoader = factory.dirLoader(settings);
-        Pair<DirInfo> dirInfos = dirPaths.unsafeMap(dirLoader::loadDir);
-        
-        return new Pair<>(dirInfos.a(), dirInfos.b());
+        return dirPaths.unsafeMap(dirLoader::loadDir);
     }
     
     protected BookResult compareBooks(
-            BookOpenInfo bookOpenInfo1,
-            BookOpenInfo bookOpenInfo2,
+            Pair<BookOpenInfo> bookOpenInfos,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        Pair<BookOpenInfo> bookOpenInfos = new Pair<>(bookOpenInfo1, bookOpenInfo2);
-        
-        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfos.a(), bookOpenInfos.b());
+        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfos);
         
         Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
         
@@ -219,9 +208,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
         }
         
         return new BookResult(
-                new Pair<>(
-                        bookOpenInfo1.bookPath(),
-                        bookOpenInfo2.bookPath()),
+                bookOpenInfos.map(BookOpenInfo::bookPath),
                 sheetNamePairs,
                 results);
     }
@@ -263,8 +250,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
                 try {
                     
                     bookResult = compareBooks(
-                            srcInfos.a(),
-                            srcInfos.b(),
+                            srcInfos,
                             progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
                     bookResults.put(bookNamePair, Optional.of(bookResult));

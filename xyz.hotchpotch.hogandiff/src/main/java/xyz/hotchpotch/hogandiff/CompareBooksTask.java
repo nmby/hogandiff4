@@ -16,6 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * Excelブック同士の比較処理を実行するためのタスクです。<br>
@@ -92,10 +93,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
+            Pair<Key<BookOpenInfo>> keys = new Pair<>(
+                    SettingKeys.CURR_BOOK_OPEN_INFO1,
+                    SettingKeys.CURR_BOOK_OPEN_INFO2);
             
-            List<Pair<String>> pairs = getSheetNamePairs(bookOpenInfo1, bookOpenInfo2);
+            Pair<BookOpenInfo> bookOpenInfos = keys.map(settings::get);
+            List<Pair<String>> pairs = getSheetNamePairs(bookOpenInfos);
+            
             for (int i = 0; i < pairs.size(); i++) {
                 Pair<String> pair = pairs.get(i);
                 str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
