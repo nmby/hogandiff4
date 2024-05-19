@@ -57,7 +57,7 @@ public record Report(
             str.append(stringProperty("menu", SettingKeys.CURR_MENU)).append(COMMA);
             str.append("\"elapsedMillis\": ").append(elapsedTime.toMillis()).append(COMMA);
             
-            switch (settings.get(SettingKeys.CURR_MENU)) {
+            switch (settings.getOrDefault(SettingKeys.CURR_MENU)) {
                 case COMPARE_TREES:
                     IntPair dPairs = dirPairs(result);
                     str.append("\"dirPairs\": [ %d, %d ]".formatted(dPairs.a(), dPairs.b())).append(COMMA);
@@ -89,11 +89,11 @@ public record Report(
     }
     
     private String stringProperty(String jsonKey, Key<?> settingKey) {
-        return "\"%s\": \"%s\"".formatted(jsonKey, settings.get(settingKey));
+        return "\"%s\": \"%s\"".formatted(jsonKey, settings.getOrDefault(settingKey));
     }
     
     private String booleanProperty(String jsonKey, Key<Boolean> settingKey) {
-        return "\"%s\": %b".formatted(jsonKey, settings.get(settingKey));
+        return "\"%s\": %b".formatted(jsonKey, settings.getOrDefault(settingKey));
     }
     
     private String statsToJson(Stats stats) {
