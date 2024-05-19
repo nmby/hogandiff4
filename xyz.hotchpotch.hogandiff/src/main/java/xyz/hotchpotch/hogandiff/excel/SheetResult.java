@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -87,29 +88,19 @@ public final class SheetResult implements Result {
     /**
      * 比較処理の統計情報<br>
      * 
-     * @param rows1 比較対象シート1の行数
-     * @param rows2 比較対象シート2の行数
-     * @param columns1 比較対象シート1の列数
-     * @param columns2 比較対象シート2の列数
-     * @param cells1 比較対象シート1のセル数
-     * @param cells2 比較対象シート2のセル数
-     * @param redundantRows1 比較対象シート1の余剰行数
-     * @param redundantRows2 比較対象シート2の余剰行数
-     * @param redundantColumns1 比較対象シート1の余剰列数
-     * @param redundantColumns2 比較対象シート2の余剰列数
+     * @param rows 各比較対象シートの行数
+     * @param columns 各比較対象シートの列数
+     * @param cells 各比較対象シートのセル数
+     * @param redundantRows 各比較対象シートの余剰行数
+     * @param redundantColumns 各比較対象シートの余剰列数
      * @param diffCells 差分セル数
      */
     public static record Stats(
-            int rows1,
-            int rows2,
-            int columns1,
-            int columns2,
-            int cells1,
-            int cells2,
-            int redundantRows1,
-            int redundantRows2,
-            int redundantColumns1,
-            int redundantColumns2,
+            IntPair rows,
+            IntPair columns,
+            IntPair cells,
+            IntPair redundantRows,
+            IntPair redundantColumns,
             int diffCells) {
         
         // [static members] ----------------------------------------------------
@@ -128,6 +119,7 @@ public final class SheetResult implements Result {
     /**
      * コンストラクタ<br>
      * 
+     * @param cellsSets 各シートに含まれるセル
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
@@ -138,14 +130,12 @@ public final class SheetResult implements Result {
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
     public SheetResult(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             Pair<int[]> redundantRows,
             Pair<int[]> redundantColumns,
             List<Pair<CellData>> diffCells) {
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
+        Objects.requireNonNull(cellsSets, "cellsSets");
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
@@ -169,16 +159,11 @@ public final class SheetResult implements Result {
         this.diffCells = diffCells;
         
         this.stats = new Stats(
-                cells1.stream().mapToInt(CellData::row).max().orElse(0),
-                cells2.stream().mapToInt(CellData::row).max().orElse(0),
-                cells1.stream().mapToInt(CellData::column).max().orElse(0),
-                cells2.stream().mapToInt(CellData::column).max().orElse(0),
-                cells1.size(),
-                cells2.size(),
-                redundantRows.a().length,
-                redundantRows.b().length,
-                redundantColumns.a().length,
-                redundantColumns.b().length,
+                IntPair.from(cellsSets.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
+                IntPair.from(cellsSets.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
+                IntPair.from(cellsSets.map(Set::size)),
+                IntPair.from(redundantRows.map(rows -> rows.length)),
+                IntPair.from(redundantColumns.map(columns -> columns.length)),
                 diffCells.size());
     }
     

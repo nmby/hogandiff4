@@ -101,13 +101,14 @@ public record Report(
         
         str.append("{ ");
         {
-            str.append("\"rows\": [ %d, %d ]".formatted(stats.rows1(), stats.rows2())).append(COMMA);
-            str.append("\"columns\": [ %d, %d ]".formatted(stats.columns1(), stats.columns2())).append(COMMA);
-            str.append("\"cells\": [ %d, %d ]".formatted(stats.cells1(), stats.cells2())).append(COMMA);
-            str.append("\"redundantRows\": [ %d, %d ]".formatted(stats.redundantRows1(), stats.redundantRows2()))
+            str.append("\"rows\": [ %d, %d ]".formatted(stats.rows().a(), stats.rows().b())).append(COMMA);
+            str.append("\"columns\": [ %d, %d ]".formatted(stats.columns().a(), stats.columns().b())).append(COMMA);
+            str.append("\"cells\": [ %d, %d ]".formatted(stats.cells().a(), stats.cells().b())).append(COMMA);
+            str.append("\"redundantRows\": [ %d, %d ]"
+                    .formatted(stats.redundantRows().a(), stats.redundantRows().b()))
                     .append(COMMA);
-            str.append(
-                    "\"redundantColumns\": [ %d, %d ]".formatted(stats.redundantColumns1(), stats.redundantColumns2()))
+            str.append("\"redundantColumns\": [ %d, %d ]"
+                    .formatted(stats.redundantColumns().a(), stats.redundantColumns().b()))
                     .append(COMMA);
             str.append("\"diffCells\": %d".formatted(stats.diffCells()));
         }

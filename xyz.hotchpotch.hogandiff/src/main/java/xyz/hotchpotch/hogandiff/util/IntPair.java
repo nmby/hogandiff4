@@ -236,6 +236,19 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         return EMPTY;
     }
     
+    /**
+     * 新たなペアを生成します。<br>
+     * 
+     * @param pair 元のペア
+     * @return 新たなペア
+     */
+    public static IntPair from(Pair<Integer> pair) {
+        return pair.isPaired() ? IntPair.of(pair.a(), pair.b())
+                : pair.isOnlyA() ? IntPair.onlyA(pair.a())
+                        : pair.isOnlyB() ? IntPair.onlyB(pair.b())
+                                : EMPTY;
+    }
+    
     // [instance members] ******************************************************
     
     private IntPair() {

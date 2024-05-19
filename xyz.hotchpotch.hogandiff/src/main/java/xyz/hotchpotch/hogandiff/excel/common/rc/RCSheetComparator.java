@@ -64,8 +64,7 @@ public class RCSheetComparator implements SheetComparator {
         if (cellsSets.a() == cellsSets.b()) {
             if (cellsSets.a().isEmpty()) {
                 return new SheetResult(
-                        cellsSets.a(),
-                        cellsSets.b(),
+                        cellsSets,
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -95,8 +94,7 @@ public class RCSheetComparator implements SheetComparator {
                 cellsSets.a(), cellsSets.b(), rowPairs, columnPairs);
         
         return new SheetResult(
-                cellsSets.a(),
-                cellsSets.b(),
+                cellsSets,
                 new Pair<>(redundantRows1, redundantRows2),
                 new Pair<>(redundantColumns1, redundantColumns2),
                 diffCells);
