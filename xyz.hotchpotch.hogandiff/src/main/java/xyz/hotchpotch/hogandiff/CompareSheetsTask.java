@@ -14,7 +14,9 @@ import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * Excelシート同士の比較処理を実行するためのタスクです。<br>
@@ -66,15 +68,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-        BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-        String sheetName1 = settings.get(SettingKeys.CURR_SHEET_NAME1);
-        String sheetName2 = settings.get(SettingKeys.CURR_SHEET_NAME2);
+        Pair<Key<BookOpenInfo>> bookOpenInfoKeys = new Pair<>(
+                SettingKeys.CURR_BOOK_OPEN_INFO1,
+                SettingKeys.CURR_BOOK_OPEN_INFO2);
+        Pair<Key<String>> sheetNameKeys = new Pair<>(
+                SettingKeys.CURR_SHEET_NAME1,
+                SettingKeys.CURR_SHEET_NAME2);
+        
+        Pair<BookOpenInfo> bookOpenInfos = bookOpenInfoKeys.map(settings::get);
+        Pair<String> sheetNames = sheetNameKeys.map(settings::get);
         
         str.append(rb.getString("CompareSheetsTask.010")).append(BR);
         str.append(isSameBook()
-                ? "%s%n[A] %s%n[B] %s%n%n".formatted(bookOpenInfo1, sheetName1, sheetName2)
-                : "[A] %s - %s%n[B] %s - %s%n%n".formatted(bookOpenInfo1, sheetName1, bookOpenInfo2, sheetName2));
+                ? "%s%n[A] %s%n[B] %s%n%n".formatted(
+                        bookOpenInfos.a(), sheetNames.a(), sheetNames.b())
+                : "[A] %s - %s%n[B] %s - %s%n%n".formatted(
+                        bookOpenInfos.a(), sheetNames.a(), bookOpenInfos.b(), sheetNames.b()));
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
@@ -91,34 +100,32 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo bookOpenInfo1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            BookOpenInfo bookOpenInfo2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            CellsLoader loader1 = factory.cellsLoader(settings, bookOpenInfo1);
-            CellsLoader loader2 = isSameBook()
-                    ? loader1
-                    : factory.cellsLoader(settings, bookOpenInfo2);
+            Pair<Key<BookOpenInfo>> bookOpenInfoKeys = new Pair<>(
+                    SettingKeys.CURR_BOOK_OPEN_INFO1,
+                    SettingKeys.CURR_BOOK_OPEN_INFO2);
+            Pair<Key<String>> sheetNameKeys = new Pair<>(
+                    SettingKeys.CURR_SHEET_NAME1,
+                    SettingKeys.CURR_SHEET_NAME2);
             
-            Pair<String> pair = new Pair<>(
-                    settings.get(SettingKeys.CURR_SHEET_NAME1),
-                    settings.get(SettingKeys.CURR_SHEET_NAME2));
+            Pair<BookOpenInfo> bookOpenInfos = bookOpenInfoKeys.map(settings::get);
+            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
+            Pair<String> pair = sheetNameKeys.map(settings::get);
             
             str.append(BookResult.formatSheetNamesPair("1", pair));
             updateMessage(str.toString());
             
-            Set<CellData> cells1 = loader1.loadCells(bookOpenInfo1, pair.a());
-            Set<CellData> cells2 = loader2.loadCells(bookOpenInfo2, pair.b());
+            Pair<Set<CellData>> cellsSets = Side.unsafeMap(
+                    side -> loaders.get(side).loadCells(bookOpenInfos.get(side), pair.get(side)));
             
             SheetComparator comparator = factory.comparator(settings);
-            SheetResult result = comparator.compare(new Pair<>(cells1, cells2));
+            SheetResult result = comparator.compare(cellsSets);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    new Pair<>(
-                            bookOpenInfo1.bookPath(),
-                            bookOpenInfo2.bookPath()),
+                    bookOpenInfos.map(BookOpenInfo::bookPath),
                     List.of(pair),
                     Map.of(pair, Optional.of(result)));
             
