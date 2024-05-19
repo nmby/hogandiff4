@@ -10,11 +10,12 @@ import java.util.function.Function;
  * {@link UnsafeConsumer#accept(Object)} はスローできます。<br>
  *
  * @param <T> 引数の型
+ * @param <E> スローしうるチェック例外の型
  * @author nmby
  * @see Consumer
  */
 @FunctionalInterface
-public interface UnsafeConsumer<T> {
+public interface UnsafeConsumer<T, E extends Exception> {
     
     // [static members] ********************************************************
     
@@ -22,11 +23,12 @@ public interface UnsafeConsumer<T> {
      * {@link Consumer} を {@link UnsafeConsumer} に変換します。<br>
      * 
      * @param <T> 引数の型
+     * @param <E> スローしうるチェック例外の型
      * @param safer コンシューマ
      * @return 型だけが変換されたコンシューマ
      * @throws NullPointerException {@code safer} が {@code null} の場合
      */
-    public static <T> UnsafeConsumer<T> from(Consumer<T> safer) {
+    public static <T, E extends Exception> UnsafeConsumer<T, E> from(Consumer<T> safer) {
         Objects.requireNonNull(safer, "safer");
         
         return safer::accept;
@@ -35,13 +37,13 @@ public interface UnsafeConsumer<T> {
     // [instance members] ******************************************************
     
     /**
-     * {@link Consumer#accept(Object)} の {@link Exception} をスローできるバージョンです。<br>
+     * {@link Consumer#accept(Object)} のチェック例外をスローできるバージョンです。<br>
      * アクションを実行します。<br>
      * 
      * @param t 入力値
-     * @throws Exception 何らかのチェック例外
+     * @throws E 何らかのチェック例外
      */
-    void accept(T t) throws Exception;
+    void accept(T t) throws E;
     
     /**
      * この {@link UnsafeConsumer} を {@link Consumer} に変換します。<br>

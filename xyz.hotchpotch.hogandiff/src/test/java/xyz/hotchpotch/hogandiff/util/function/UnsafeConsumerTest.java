@@ -11,11 +11,11 @@ class UnsafeConsumerTest {
     
     // [static members] ********************************************************
     
-    private static final UnsafeConsumer<String> unsafe1 = x -> {};
-    private static final UnsafeConsumer<String> unsafe2 = x -> {
+    private static final UnsafeConsumer<String, Exception> unsafe1 = x -> {};
+    private static final UnsafeConsumer<String, IOException> unsafe2 = x -> {
         throw new IOException("unsafe2");
     };
-    private static final UnsafeConsumer<String> unsafe3 = x -> {
+    private static final UnsafeConsumer<String, Exception> unsafe3 = x -> {
         throw new IllegalArgumentException("unsafe3");
     };
     

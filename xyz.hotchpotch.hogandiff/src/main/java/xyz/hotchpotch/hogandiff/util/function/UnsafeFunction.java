@@ -10,11 +10,12 @@ import java.util.function.Function;
  *
  * @param <T> 入力の型
  * @param <R> 出力の型
+ * @param <E> スローしうるチェック例外の型
  * @author nmby
  * @see Function
  */
 @FunctionalInterface
-public interface UnsafeFunction<T, R> {
+public interface UnsafeFunction<T, R, E extends Exception> {
     
     // [static members] ********************************************************
     
@@ -25,9 +26,10 @@ public interface UnsafeFunction<T, R> {
      * 常に入力引数を返す関数を返します。<br>
      * 
      * @param <T> 関数の入力および出力の型
+     * @param <E> スローしうるチェック例外の型
      * @return 常に入力引数を返す関数
      */
-    public static <T> UnsafeFunction<T, T> identity() {
+    public static <T, E extends Exception> UnsafeFunction<T, T, E> identity() {
         return t -> t;
     }
     
@@ -36,11 +38,12 @@ public interface UnsafeFunction<T, R> {
      * 
      * @param <T> 入力の型
      * @param <R> 出力の型
+     * @param <E> スローしうるチェック例外の型
      * @param safer 関数
      * @return 型だけが変換された関数
      * @throws NullPointerException {@code safer} が {@code null} の場合
      */
-    public static <T, R> UnsafeFunction<T, R> from(Function<T, R> safer) {
+    public static <T, R, E extends Exception> UnsafeFunction<T, R, E> from(Function<T, R> safer) {
         Objects.requireNonNull(safer, "safer");
         
         return safer::apply;
@@ -49,13 +52,13 @@ public interface UnsafeFunction<T, R> {
     // [instance members] ******************************************************
     
     /**
-     * 指定された引数にこの関数を適用します。<br>
+     * {@link Function#apply} のチェック例外をスローできるバージョンです。<br>
      * 
      * @param t 関数の引数
      * @return {@code t} 関数の結果
-     * @throws Exception 何らかのチェック例外
+     * @throws E 何らかのチェック例外
      */
-    R apply(T t) throws Exception;
+    R apply(T t) throws E;
     
     /**
      * {@link Function#compose(Function)} の説明を参照してください。<br>
@@ -65,7 +68,9 @@ public interface UnsafeFunction<T, R> {
      * @return まず {@code before} を適用し、次にこの関数を適用する合成関数
      * @throws NullPointerException {@code before} が {@code null} の場合
      */
-    default <V> UnsafeFunction<V, R> compose(UnsafeFunction<? super V, ? extends T> before) {
+    default <V> UnsafeFunction<V, R, E> compose(
+            UnsafeFunction<? super V, ? extends T, ? extends E> before) {
+        
         Objects.requireNonNull(before, "before");
         
         return v -> apply(before.apply(v));
@@ -79,7 +84,7 @@ public interface UnsafeFunction<T, R> {
      * @return まず {@code before} を適用し、次にこの関数を適用する合成関数
      * @throws NullPointerException {@code before} が {@code null} の場合
      */
-    default <V> UnsafeFunction<V, R> compose(Function<? super V, ? extends T> before) {
+    default <V> UnsafeFunction<V, R, E> compose(Function<? super V, ? extends T> before) {
         Objects.requireNonNull(before, "before");
         
         return v -> apply(before.apply(v));
@@ -93,7 +98,9 @@ public interface UnsafeFunction<T, R> {
      * @return まずこの関数を適用し、次に {@code after} 関数を適用する合成関数
      * @throws NullPointerException {@code after} が {@code null} の場合
      */
-    default <V> UnsafeFunction<T, V> andThen(UnsafeFunction<? super R, ? extends V> after) {
+    default <V> UnsafeFunction<T, V, E> andThen(
+            UnsafeFunction<? super R, ? extends V, ? extends E> after) {
+        
         Objects.requireNonNull(after, "after");
         
         return t -> after.apply(apply(t));
@@ -107,7 +114,7 @@ public interface UnsafeFunction<T, R> {
      * @return まずこの関数を適用し、次に {@code after} 関数を適用する合成関数
      * @throws NullPointerException {@code after} が {@code null} の場合
      */
-    default <V> UnsafeFunction<T, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> UnsafeFunction<T, V, E> andThen(Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after");
         
         return t -> after.apply(apply(t));
