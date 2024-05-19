@@ -16,7 +16,6 @@ import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
-import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * Excelシート同士の比較処理を実行するためのタスクです。<br>
@@ -68,15 +67,8 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        Pair<Key<BookOpenInfo>> bookOpenInfoKeys = new Pair<>(
-                SettingKeys.CURR_BOOK_OPEN_INFO1,
-                SettingKeys.CURR_BOOK_OPEN_INFO2);
-        Pair<Key<String>> sheetNameKeys = new Pair<>(
-                SettingKeys.CURR_SHEET_NAME1,
-                SettingKeys.CURR_SHEET_NAME2);
-        
-        Pair<BookOpenInfo> bookOpenInfos = bookOpenInfoKeys.map(settings::get);
-        Pair<String> sheetNames = sheetNameKeys.map(settings::get);
+        Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
+        Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
         
         str.append(rb.getString("CompareSheetsTask.010")).append(BR);
         str.append(isSameBook()
@@ -100,16 +92,9 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Key<BookOpenInfo>> bookOpenInfoKeys = new Pair<>(
-                    SettingKeys.CURR_BOOK_OPEN_INFO1,
-                    SettingKeys.CURR_BOOK_OPEN_INFO2);
-            Pair<Key<String>> sheetNameKeys = new Pair<>(
-                    SettingKeys.CURR_SHEET_NAME1,
-                    SettingKeys.CURR_SHEET_NAME2);
-            
-            Pair<BookOpenInfo> bookOpenInfos = bookOpenInfoKeys.map(settings::get);
+            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
             Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
-            Pair<String> pair = sheetNameKeys.map(settings::get);
+            Pair<String> pair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(BookResult.formatSheetNamesPair("1", pair));
             updateMessage(str.toString());

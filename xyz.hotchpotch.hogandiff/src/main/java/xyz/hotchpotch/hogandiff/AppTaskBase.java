@@ -38,7 +38,6 @@ import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
-import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
  * 比較タスクの基底クラスです。<br>
@@ -163,12 +162,7 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     protected Pair<DirInfo> extractDirs() throws ExcelHandlingException {
-        Pair<Key<Path>> keys = new Pair<>(
-                SettingKeys.CURR_DIR_PATH1,
-                SettingKeys.CURR_DIR_PATH2);
-        
-        Pair<Path> dirPaths = keys.map(settings::get);
-        
+        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
         DirLoader dirLoader = factory.dirLoader(settings);
         return dirPaths.unsafeMap(dirLoader::loadDir);
     }

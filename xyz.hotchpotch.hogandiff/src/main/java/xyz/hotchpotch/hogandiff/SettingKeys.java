@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -132,6 +133,10 @@ public class SettingKeys {
             null,
             false);
     
+    public static final Pair<Key<BookOpenInfo>> CURR_BOOK_OPEN_INFOS = new Pair<>(
+            CURR_BOOK_OPEN_INFO1,
+            CURR_BOOK_OPEN_INFO2);
+    
     /** 今回の実行における比較対象Excelシート1の名前 */
     public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(
             "current.sheetName1",
@@ -152,6 +157,10 @@ public class SettingKeys {
             Function.identity(),
             false);
     
+    public static final Pair<Key<String>> CURR_SHEET_NAMES = new Pair<>(
+            CURR_SHEET_NAME1,
+            CURR_SHEET_NAME2);
+    
     /** 今回の実行における比較対象フォルダ1のパス */
     public static final Key<Path> CURR_DIR_PATH1 = new Key<Path>(
             "current.dirPath1",
@@ -171,6 +180,10 @@ public class SettingKeys {
             Path::toString,
             Path::of,
             false);
+    
+    public static final Pair<Key<Path>> CURR_DIR_PATHS = new Pair<>(
+            CURR_DIR_PATH1,
+            CURR_DIR_PATH2);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<Boolean>(
