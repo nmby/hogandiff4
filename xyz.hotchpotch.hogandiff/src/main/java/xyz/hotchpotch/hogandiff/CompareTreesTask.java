@@ -102,9 +102,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             DirsMatcher dirMatcher = factory.dirsMatcher(settings);
-            List<Pair<DirInfo>> dirPairs = dirMatcher.pairingDirs(
-                    topDirPair.a(),
-                    topDirPair.b());
+            List<Pair<DirInfo>> dirPairs = dirMatcher.pairingDirs(topDirPair);
             
             BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
             BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> bookNamePairs = (side, dirPair) -> dirPair

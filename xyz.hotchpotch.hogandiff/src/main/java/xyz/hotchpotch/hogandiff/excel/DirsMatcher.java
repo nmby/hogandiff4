@@ -7,7 +7,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーです。<br>
- * これは、{@link #pairingDirs(DirInfo, DirInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #pairingDirs(Pair)} を関数メソッドに持つ関数型インタフェースです。<br>
  * 
  * @author nmby
  */
@@ -44,11 +44,8 @@ public interface DirsMatcher {
     /**
      * フォルダツリーに含まれるフォルダ同士の組み合わせを決定して返します。<br>
      * 
-     * @param topDirInfo1 トップフォルダ1
-     * @param topDirInfo2 トップフォルダ2
+     * @param topDirInfos トップフォルダ
      * @return フォルダ同士の組み合わせを表すリスト
      */
-    public List<Pair<DirInfo>> pairingDirs(
-            DirInfo topDirInfo1,
-            DirInfo topDirInfo2);
+    public List<Pair<DirInfo>> pairingDirs(Pair<DirInfo> topDirInfos);
 }
