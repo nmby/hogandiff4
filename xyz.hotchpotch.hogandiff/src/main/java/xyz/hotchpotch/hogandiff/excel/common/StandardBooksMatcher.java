@@ -45,15 +45,11 @@ public class StandardBooksMatcher implements BooksMatcher {
     }
     
     @Override
-    public List<Pair<String>> pairingBooks(
-            DirInfo dirInfo1,
-            DirInfo dirInfo2) {
-        
-        Objects.requireNonNull(dirInfo1, "dirInfo1");
-        Objects.requireNonNull(dirInfo2, "dirInfo2");
+    public List<Pair<String>> pairingBooks(Pair<DirInfo> dirInfos) {
+        Objects.requireNonNull(dirInfos, "dirInfos");
         
         return coreMatcher.makeItemPairs(
-                dirInfo1.bookNames(),
-                dirInfo2.bookNames());
+                dirInfos.a().bookNames(),
+                dirInfos.b().bookNames());
     }
 }
