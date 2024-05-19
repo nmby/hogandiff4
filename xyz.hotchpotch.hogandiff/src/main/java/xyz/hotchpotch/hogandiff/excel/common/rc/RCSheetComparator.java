@@ -13,6 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 行同士の対応関係と列同士の対応関係をそれぞれ求めることによりセル同士の対応関係を決定する
@@ -58,18 +59,13 @@ public class RCSheetComparator implements SheetComparator {
      *              {@code cells1}, {@code cells2} が同一インスタンスの場合
      */
     @Override
-    public SheetResult compare(
-            Set<CellData> cells1,
-            Set<CellData> cells2) {
+    public SheetResult compare(Pair<Set<CellData>> cellsSets) {
+        Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
-        
-        if (cells1 == cells2) {
-            if (cells1.isEmpty()) {
+        if (cellsSets.a() == cellsSets.b()) {
+            if (cellsSets.a().isEmpty()) {
                 return new SheetResult(
-                        cells1,
-                        cells2,
+                        cellsSets,
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -78,71 +74,59 @@ public class RCSheetComparator implements SheetComparator {
             }
         }
         
-        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cells1, cells2);
+        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cellsSets);
         List<IntPair> rowPairs = pairs.a();
         List<IntPair> columnPairs = pairs.b();
         
         // 余剰行の収集
-        int[] redundantRows1 = rowPairs.stream()
-                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
-        int[] redundantRows2 = rowPairs.stream()
-                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
+        Pair<int[]> redundantRows = Side.map(side -> rowPairs.stream()
+                .filter(pair -> pair.isOnly(side))
+                .mapToInt(pair -> pair.get(side))
+                .toArray());
         
         // 余剰列の収集
-        int[] redundantColumns1 = columnPairs.stream()
-                .filter(IntPair::isOnlyA).mapToInt(IntPair::a).toArray();
-        int[] redundantColumns2 = columnPairs.stream()
-                .filter(IntPair::isOnlyB).mapToInt(IntPair::b).toArray();
+        Pair<int[]> redundantColumns = Side.map(side -> columnPairs.stream()
+                .filter(pair -> pair.isOnly(side))
+                .mapToInt(pair -> pair.get(side))
+                .toArray());
         
         // 差分セルの収集
-        List<Pair<CellData>> diffCells = extractDiffs(
-                cells1, cells2, rowPairs, columnPairs);
+        List<Pair<CellData>> diffCells = extractDiffs(cellsSets, rowPairs, columnPairs);
         
         return new SheetResult(
-                cells1,
-                cells2,
-                new Pair<>(redundantRows1, redundantRows2),
-                new Pair<>(redundantColumns1, redundantColumns2),
+                cellsSets,
+                redundantRows,
+                redundantColumns,
                 diffCells);
     }
     
     private List<Pair<CellData>> extractDiffs(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             List<IntPair> rowPairs,
             List<IntPair> columnPairs) {
         
-        assert cells1 != null;
-        assert cells2 != null;
-        assert cells1 != cells2;
+        assert cellsSets != null;
+        assert cellsSets.a() != cellsSets.b();
         assert rowPairs != null;
         assert columnPairs != null;
         
-        Map<String, CellData> map1 = cells1.stream()
-                .collect(Collectors.toMap(CellData::address, Function.identity()));
-        Map<String, CellData> map2 = cells2.stream()
-                .collect(Collectors.toMap(CellData::address, Function.identity()));
+        Pair<Map<String, CellData>> maps = cellsSets.map(cells -> cells.stream()
+                .collect(Collectors.toMap(CellData::address, Function.identity())));
         
         List<IntPair> columnPairsFiltered = columnPairs.stream().filter(IntPair::isPaired).toList();
         
-        return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(rp -> {
-            int row1 = rp.a();
-            int row2 = rp.b();
-            
-            return columnPairsFiltered.stream().map(cp -> {
-                int column1 = cp.a();
-                int column2 = cp.b();
-                String address1 = CellsUtil.idxToAddress(row1, column1);
-                String address2 = CellsUtil.idxToAddress(row2, column2);
-                CellData cell1 = map1.get(address1);
-                CellData cell2 = map2.get(address2);
-                
-                return (cell1 != null && cell2 != null && cell1.dataEquals(cell2) || cell1 == null && cell2 == null)
-                        ? null
-                        : new Pair<>(
-                                cell1 != null ? cell1 : CellData.empty(row1, column1),
-                                cell2 != null ? cell2 : CellData.empty(row2, column2));
-            }).filter(Objects::nonNull);
-        }).toList();
+        return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(
+                rows -> columnPairsFiltered.stream().map(columns -> {
+                    Pair<String> addresses = Side.map(
+                            side -> CellsUtil.idxToAddress(rows.get(side), columns.get(side)));
+                    Pair<CellData> cells = Side.map(side -> maps.get(side).get(addresses.get(side)));
+                    
+                    return (cells.a() != null && cells.b() != null && cells.a().dataEquals(cells.b())
+                            || cells.a() == null && cells.b() == null)
+                                    ? null
+                                    : Side.map(side -> cells.get(side) != null
+                                            ? cells.get(side)
+                                            : CellData.empty(rows.get(side), columns.get(side)));
+                }).filter(Objects::nonNull)).toList();
     }
 }

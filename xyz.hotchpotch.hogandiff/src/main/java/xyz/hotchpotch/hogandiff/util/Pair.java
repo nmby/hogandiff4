@@ -2,7 +2,11 @@ package xyz.hotchpotch.hogandiff.util;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
+
+import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 
 /**
  * 同型の2つの要素を保持する不変コンテナです。<br>
@@ -30,6 +34,66 @@ public record Pair<T>(T a, T b) {
         
         /** B-side */
         B;
+        
+        /**
+         * 各側に関数を適用して得られる要素からなるペアを返します。<br>
+         * 
+         * @param <T> 新たな要素の型
+         * @param mapper 各側に適用する関数
+         * @return 新たなペア
+         * @throws NullPointerException {@code mapper} が {@code null} の場合
+         */
+        public static <T> Pair<T> map(Function<Side, ? extends T> mapper) {
+            Objects.requireNonNull(mapper, "mapper");
+            
+            return new Pair<>(
+                    mapper.apply(A),
+                    mapper.apply(B));
+        }
+        
+        /**
+         * 各側に関数を適用して得られる要素からなるペアを返します。<br>
+         * 
+         * @param <T> 新たな要素の型
+         * @param <E> {@code mapper} がスローしうるチェック例外の型
+         * @param mapper 各側に適用する関数
+         * @return 新たなペア
+         * @throws NullPointerException {@code mapper} が {@code null} の場合
+         */
+        public static <T, E extends Exception> Pair<T> unsafeMap(UnsafeFunction<Side, ? extends T, E> mapper) throws E {
+            Objects.requireNonNull(mapper, "mapper");
+            
+            return new Pair<>(
+                    mapper.apply(A),
+                    mapper.apply(B));
+        }
+        
+        /**
+         * 各側に指定されたオペレーションを適用します。<br>
+         * 
+         * @param operation 各側に適用するオペレーション
+         * @throws NullPointerException {@code operation} が {@code null} の場合
+         */
+        public static void forEach(Consumer<Side> operation) {
+            Objects.requireNonNull(operation, "operation");
+            
+            operation.accept(A);
+            operation.accept(B);
+        }
+        
+        /**
+         * 各側に指定されたオペレーションを適用します。<br>
+         * 
+         * @param <E> {@code operation} がスローしうるチェック例外の型
+         * @param operation 各側に適用するオペレーション
+         * @throws NullPointerException {@code operation} が {@code null} の場合
+         */
+        public static <E extends Exception> void unsafeForEach(UnsafeConsumer<Side, E> operation) throws E {
+            Objects.requireNonNull(operation, "operation");
+            
+            operation.accept(A);
+            operation.accept(B);
+        }
         
         // [instance members] --------------------------------------------------
         
@@ -154,5 +218,41 @@ public record Pair<T>(T a, T b) {
         return new Pair<>(
                 a == null ? null : mapper.apply(a),
                 b == null ? null : mapper.apply(b));
+    }
+    
+    /**
+     * このペアの各要素に関数を適用して得られる新たな要素からなるペアを返します。<br>
+     * 
+     * @param <U> 新たな要素の型
+     * @param <E> {@code mapper} がスローしうるチェック例外の型
+     * @param mapper 各要素に適用する関数
+     * @return 新たなペア
+     * @throws NullPointerException {@code mapper} が {@code null} の場合
+     * @throws E {@code mapper.apply} が失敗した場合
+     */
+    public <U, E extends Exception> Pair<U> unsafeMap(UnsafeFunction<? super T, ? extends U, E> mapper) throws E {
+        Objects.requireNonNull(mapper, "mapper");
+        
+        return new Pair<>(
+                a == null ? null : mapper.apply(a),
+                b == null ? null : mapper.apply(b));
+    }
+    
+    /**
+     * このペアの各要素に指定されたオペレーションを適用します。
+     * 要素が存在しない場合はオペレーションを適用しません。<br>
+     * 
+     * @param operation 各要素に適用するオペレーション
+     * @throws NullPointerException {@code operation} が {@code null} の場合
+     */
+    public void forEach(Consumer<? super T> operation) {
+        Objects.requireNonNull(operation, "operation");
+        
+        if (a != null) {
+            operation.accept(a);
+        }
+        if (b != null) {
+            operation.accept(b);
+        }
     }
 }

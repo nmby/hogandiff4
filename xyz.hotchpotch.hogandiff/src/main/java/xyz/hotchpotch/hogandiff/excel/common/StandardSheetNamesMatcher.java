@@ -44,14 +44,12 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
     
     @Override
     public List<Pair<String>> pairingSheetNames(
-            BookInfo bookInfo1,
-            BookInfo bookInfo2) {
+            Pair<BookInfo> bookInfos) {
         
-        Objects.requireNonNull(bookInfo1, "bookInfo1");
-        Objects.requireNonNull(bookInfo2, "bookInfo2");
+        Objects.requireNonNull(bookInfos, "bookInfos");
         
         return coreMatcher.makeItemPairs(
-                bookInfo1.sheetNames(),
-                bookInfo2.sheetNames());
+                bookInfos.a().sheetNames(),
+                bookInfos.b().sheetNames());
     }
 }

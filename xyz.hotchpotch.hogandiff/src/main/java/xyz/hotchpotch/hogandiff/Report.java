@@ -24,7 +24,7 @@ public record Report(
     // [static members] ********************************************************
     
     private static final String COMMA = ", ";
-    private static final BinaryOperator<IntPair> plus = (p1, p2) -> IntPair.of(p1.a() + p2.a(), p1.b() + p2.b());
+    private static final BinaryOperator<IntPair> sumIntPairs = (p1, p2) -> IntPair.of(p1.a() + p2.a(), p1.b() + p2.b());
     
     // [instance members] ******************************************************
     
@@ -55,8 +55,7 @@ public record Report(
             str.append(" }").append(COMMA);
             
             str.append(stringProperty("menu", SettingKeys.CURR_MENU)).append(COMMA);
-            
-            str.append(longProperty("elapsedMillis", elapsedTime.toMillis())).append(COMMA);
+            str.append("\"elapsedMillis\": ").append(elapsedTime.toMillis()).append(COMMA);
             
             switch (settings.get(SettingKeys.CURR_MENU)) {
                 case COMPARE_TREES:
@@ -97,22 +96,19 @@ public record Report(
         return "\"%s\": %b".formatted(jsonKey, settings.get(settingKey));
     }
     
-    private String longProperty(String jsonKey, long value) {
-        return "\"%s\": %d".formatted(jsonKey, value);
-    }
-    
     private String statsToJson(Stats stats) {
         StringBuilder str = new StringBuilder();
         
         str.append("{ ");
         {
-            str.append("\"rows\": [ %d, %d ]".formatted(stats.rows1(), stats.rows2())).append(COMMA);
-            str.append("\"columns\": [ %d, %d ]".formatted(stats.columns1(), stats.columns2())).append(COMMA);
-            str.append("\"cells\": [ %d, %d ]".formatted(stats.cells1(), stats.cells2())).append(COMMA);
-            str.append("\"redundantRows\": [ %d, %d ]".formatted(stats.redundantRows1(), stats.redundantRows2()))
+            str.append("\"rows\": [ %d, %d ]".formatted(stats.rows().a(), stats.rows().b())).append(COMMA);
+            str.append("\"columns\": [ %d, %d ]".formatted(stats.columns().a(), stats.columns().b())).append(COMMA);
+            str.append("\"cells\": [ %d, %d ]".formatted(stats.cells().a(), stats.cells().b())).append(COMMA);
+            str.append("\"redundantRows\": [ %d, %d ]"
+                    .formatted(stats.redundantRows().a(), stats.redundantRows().b()))
                     .append(COMMA);
-            str.append(
-                    "\"redundantColumns\": [ %d, %d ]".formatted(stats.redundantColumns1(), stats.redundantColumns2()))
+            str.append("\"redundantColumns\": [ %d, %d ]"
+                    .formatted(stats.redundantColumns().a(), stats.redundantColumns().b()))
                     .append(COMMA);
             str.append("\"diffCells\": %d".formatted(stats.diffCells()));
         }
@@ -132,12 +128,12 @@ public record Report(
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(this::sheetPairs)
-                    .reduce(IntPair.of(0, 0), plus);
+                    .reduce(IntPair.of(0, 0), sumIntPairs);
             case TreeResult tResult -> tResult.dirResults().values().stream()
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(this::sheetPairs)
-                    .reduce(IntPair.of(0, 0), plus);
+                    .reduce(IntPair.of(0, 0), sumIntPairs);
         };
     }
     
@@ -153,7 +149,7 @@ public record Report(
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(this::bookPairs)
-                    .reduce(IntPair.of(0, 0), plus);
+                    .reduce(IntPair.of(0, 0), sumIntPairs);
         };
     }
     

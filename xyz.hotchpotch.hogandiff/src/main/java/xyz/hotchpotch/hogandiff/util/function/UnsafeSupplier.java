@@ -10,11 +10,12 @@ import java.util.function.Supplier;
  * {@link UnsafeSupplier#get()} はスローできます。<br>
  *
  * @param <T> 生成される値の型
+ * @param <E> スローしうるチェック例外の型
  * @author nmby
  * @see Supplier
  */
 @FunctionalInterface
-public interface UnsafeSupplier<T> {
+public interface UnsafeSupplier<T, E extends Exception> {
     
     // [static members] ********************************************************
     
@@ -22,11 +23,12 @@ public interface UnsafeSupplier<T> {
      * {@link Supplier} を {@link UnsafeSupplier} に変換します。<br>
      * 
      * @param <T> 生成される値の型
+     * @param <E> スローしうるチェック例外の型
      * @param safer サプライヤ
      * @return 型だけが変換されたサプライヤ
      * @throws NullPointerException {@code safer} が {@code null} の場合
      */
-    public static <T> UnsafeSupplier<T> from(Supplier<T> safer) {
+    public static <T, E extends Exception> UnsafeSupplier<T, E> from(Supplier<T> safer) {
         Objects.requireNonNull(safer, "safer");
         
         return safer::get;
@@ -35,13 +37,13 @@ public interface UnsafeSupplier<T> {
     // [instance members] ******************************************************
     
     /**
-     * {@link Supplier#get} の {@link Exception} をスローできるバージョンです。<br>
+     * {@link Supplier#get} のチェック例外をスローできるバージョンです。<br>
      * 値を取得します。<br>
      * 
      * @return 出力値
-     * @throws Exception 何らかのチェック例外
+     * @throws E 何らかのチェック例外
      */
-    T get() throws Exception;
+    T get() throws E;
     
     /**
      * この {@link UnsafeSupplier} を {@link Supplier} に変換します。<br>

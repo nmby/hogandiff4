@@ -30,7 +30,7 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static SheetNamesLoader of(List<UnsafeSupplier<SheetNamesLoader>> suppliers) {
+    public static SheetNamesLoader of(List<UnsafeSupplier<SheetNamesLoader, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
@@ -41,9 +41,9 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<SheetNamesLoader>> suppliers;
+    private final List<UnsafeSupplier<SheetNamesLoader, ExcelHandlingException>> suppliers;
     
-    private CombinedSheetNamesLoader(List<UnsafeSupplier<SheetNamesLoader>> suppliers) {
+    private CombinedSheetNamesLoader(List<UnsafeSupplier<SheetNamesLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -79,7 +79,7 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
         
         List<Exception> suppressed = new ArrayList<>();
-        Iterator<UnsafeSupplier<SheetNamesLoader>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<SheetNamesLoader, ExcelHandlingException>> itr = suppliers.iterator();
         boolean passwordIssue = false;
         
         while (itr.hasNext()) {

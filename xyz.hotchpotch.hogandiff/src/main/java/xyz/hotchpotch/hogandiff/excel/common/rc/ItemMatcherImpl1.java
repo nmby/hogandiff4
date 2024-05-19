@@ -14,6 +14,8 @@ import java.util.stream.IntStream;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link ItemMatcher} の実装です。<br>
@@ -96,30 +98,22 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     
     @Override
     public List<IntPair> makePairs(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
+        Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Set<Integer> horizontalRedundants1 = horizontalPairs == null
-                ? null
-                : horizontalPairs.stream()
-                        .filter(IntPair::isOnlyA)
-                        .map(IntPair::a)
-                        .collect(Collectors.toSet());
-        List<List<CellData>> list1 = convert(cells1, horizontalRedundants1);
+        Pair<List<List<CellData>>> lists = Side.map(side -> {
+            Set<Integer> horizontalRedundants = horizontalPairs == null
+                    ? null
+                    : horizontalPairs.stream()
+                            .filter(pair -> pair.isOnly(side))
+                            .map(pair -> pair.get(side))
+                            .collect(Collectors.toSet());
+            return convert(cellsSets.get(side), horizontalRedundants);
+        });
         
-        Set<Integer> horizontalRedundants2 = horizontalPairs == null
-                ? null
-                : horizontalPairs.stream()
-                        .filter(IntPair::isOnlyB)
-                        .map(IntPair::b)
-                        .collect(Collectors.toSet());
-        List<List<CellData>> list2 = convert(cells2, horizontalRedundants2);
-        
-        return matcher.makeIdxPairs(list1, list2);
+        return matcher.makeIdxPairs(lists.a(), lists.b());
     }
     
     private List<List<CellData>> convert(

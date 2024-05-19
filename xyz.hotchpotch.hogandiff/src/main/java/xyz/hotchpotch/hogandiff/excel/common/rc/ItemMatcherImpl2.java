@@ -16,6 +16,8 @@ import java.util.stream.IntStream;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link ItemMatcher} の実装です。<br>
@@ -50,37 +52,31 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     @Override
     public List<IntPair> makePairs(
-            Set<CellData> cells1,
-            Set<CellData> cells2,
+            Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cells1, "cells1");
-        Objects.requireNonNull(cells2, "cells2");
+        Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Set<Integer> horizontalRedundants1 = horizontalPairs == null
-                ? null
-                : horizontalPairs.stream()
-                        .filter(IntPair::isOnlyA)
-                        .map(IntPair::a)
-                        .collect(Collectors.toSet());
-        List<List<CellData>> list1 = convert(cells1, horizontalRedundants1);
-        Map<Integer, Double> weights1 = weights(cells1, horizontalRedundants1);
+        Pair<Set<Integer>> horizontalRedundants = Side.map(
+                side -> horizontalPairs == null
+                        ? null
+                        : horizontalPairs.stream()
+                                .filter(pair -> pair.isOnly(side))
+                                .map(pair -> pair.get(side))
+                                .collect(Collectors.toSet()));
         
-        Set<Integer> horizontalRedundants2 = horizontalPairs == null
-                ? null
-                : horizontalPairs.stream()
-                        .filter(IntPair::isOnlyB)
-                        .map(IntPair::b)
-                        .collect(Collectors.toSet());
-        List<List<CellData>> list2 = convert(cells2, horizontalRedundants2);
-        Map<Integer, Double> weights2 = weights(cells2, horizontalRedundants2);
+        Pair<List<List<CellData>>> lists = Side.unsafeMap(
+                side -> convert(cellsSets.get(side), horizontalRedundants.get(side)));
+        
+        Pair<Map<Integer, Double>> weights = Side.map(
+                side -> weights(cellsSets.get(side), horizontalRedundants.get(side)));
         
         Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
-                gapEvaluator(weights1),
-                gapEvaluator(weights2),
-                diffEvaluator(horizontalComparator, weights1, weights2));
+                gapEvaluator(weights.a()),
+                gapEvaluator(weights.b()),
+                diffEvaluator(horizontalComparator, weights));
         
-        return matcher.makeIdxPairs(list1, list2);
+        return matcher.makeIdxPairs(lists.a(), lists.b());
     }
     
     private List<List<CellData>> convert(
@@ -135,8 +131,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     private ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
             Comparator<CellData> horizontalComparator,
-            Map<Integer, Double> weights1,
-            Map<Integer, Double> weights2) {
+            Pair<Map<Integer, Double>> weights) {
         
         return (list1, list2) -> {
             int comp = 0;
@@ -157,22 +152,22 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += weights1.get(horizontal.apply(cell1));
+                    cost += weights.a().get(horizontal.apply(cell1));
                 } else if (0 < comp) {
-                    cost += weights2.get(horizontal.apply(cell2));
+                    cost += weights.b().get(horizontal.apply(cell2));
                 } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += weights1.get(horizontal.apply(cell1)) + weights2.get(horizontal.apply(cell2));
+                    cost += weights.a().get(horizontal.apply(cell1)) + weights.b().get(horizontal.apply(cell2));
                 }
             }
             
             while (itr1.hasNext()) {
                 cell1 = itr1.next();
-                cost += weights1.get(horizontal.apply(cell1));
+                cost += weights.a().get(horizontal.apply(cell1));
             }
             while (itr2.hasNext()) {
                 cell2 = itr2.next();
-                cost += weights2.get(horizontal.apply(cell2));
+                cost += weights.b().get(horizontal.apply(cell2));
             }
             return (int) cost;
         };
