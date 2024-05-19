@@ -78,13 +78,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        Path dirPath1 = settings.get(SettingKeys.CURR_DIR_PATH1);
-        Path dirPath2 = settings.get(SettingKeys.CURR_DIR_PATH2);
+        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
         
         str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                 rb.getString("CompareTreesTask.010"),
-                dirPath1,
-                dirPath2));
+                dirPaths.a(),
+                dirPaths.b()));
         
         updateMessage(str.toString());
         updateProgress(progressAfter, PROGRESS_MAX);
@@ -158,8 +157,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateMessage(str.toString());
         
         Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
-        Map<Path, Path> outputDirs1 = new HashMap<>();
-        Map<Path, Path> outputDirs2 = new HashMap<>();
+        Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
         
         int dirPairsCount = (int) pairDataList.stream()
                 .filter(data -> data.dirPair().isPaired())
@@ -167,34 +165,34 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         int num = 0;
         
         for (int i = 0; i < pairDataList.size(); i++) {
+            int ii = i;
+            
             DirPairData data = pairDataList.get(i);
             
             str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
             updateMessage(str.toString());
             
-            Path outputDir1 = null;
-            Path outputDir2 = null;
+            Pair<Path> outputDirs = null;
             
             try {
-                // 出力先ディレクトリの作成
-                if (data.dirPair().hasA()) {
-                    DirInfo targetDir1 = data.dirPair().a();
-                    Path parentDir = targetDir1.equals(topDirPair.a())
-                            ? workDir
-                            : outputDirs1.get(targetDir1.parent().path());
-                    outputDir1 = parentDir.resolve("【A%d】%s".formatted(i + 1, targetDir1.path().getFileName()));
-                    Files.createDirectories(outputDir1);
-                    outputDirs1.put(targetDir1.path(), outputDir1);
-                }
-                if (data.dirPair().hasB()) {
-                    DirInfo targetDir2 = data.dirPair().b();
-                    Path parentDir = targetDir2.equals(topDirPair.b())
-                            ? workDir
-                            : outputDirs2.get(targetDir2.parent().path());
-                    outputDir2 = parentDir.resolve("【B%d】%s".formatted(i + 1, targetDir2.path().getFileName()));
-                    Files.createDirectories(outputDir2);
-                    outputDirs2.put(targetDir2.path(), outputDir2);
-                }
+                outputDirs = Side.unsafeMap(side -> {
+                    // 出力先ディレクトリの作成
+                    if (data.dirPair().has(side)) {
+                        DirInfo targetDir = data.dirPair().get(side);
+                        Path parentDir = targetDir.equals(topDirPair.get(side))
+                                ? workDir
+                                : outputDirsPair.get(side).get(targetDir.parent().path());
+                        
+                        Path outputDir = parentDir
+                                .resolve("【%s%d】%s".formatted(side, ii + 1, targetDir.path().getFileName()));
+                        Files.createDirectories(outputDir);
+                        outputDirsPair.get(side).put(targetDir.path(), outputDir);
+                        return outputDir;
+                    } else {
+                        return null;
+                    }
+                });
+                
             } catch (IOException e) {
                 dirResults.putIfAbsent(data.dirPair().map(DirInfo::path), Optional.empty());
                 str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
@@ -208,7 +206,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         String.valueOf(i + 1),
                         "      ",
                         data,
-                        new Pair<>(outputDir1, outputDir2),
+                        outputDirs,
                         progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                         progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
                 dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
