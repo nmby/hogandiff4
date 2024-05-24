@@ -172,13 +172,14 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * 
      * @return 関数の実行結果または例外を保持するタプル {@link ResultOrThrown} を返す {@link Function}
      */
-    @SuppressWarnings("unchecked")
     default Function<T, ResultOrThrown<R, E>> convert() {
         return t -> {
             try {
                 return new ResultOrThrown<>(apply(t), null);
             } catch (Exception e) {
-                return new ResultOrThrown<>(null, (E) e);
+                @SuppressWarnings("unchecked")
+                E ee = (E) e;
+                return new ResultOrThrown<>(null, ee);
             }
         };
     }
