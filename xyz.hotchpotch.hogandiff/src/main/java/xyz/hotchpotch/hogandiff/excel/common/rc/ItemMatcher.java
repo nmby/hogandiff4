@@ -9,6 +9,12 @@ import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
+/**
+ * 行方向または列方向の対応付けを行うマッチャーを表します。<br>
+ * 既に決定済みの横方向の対応付けを加味することにより、縦方向の対応付けを精度高く行うことを目指したマッチャーです。<br>
+ * 
+ * @author nmby
+ */
 @FunctionalInterface
 /* package */ interface ItemMatcher {
     
@@ -69,6 +75,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     // [instance members] ******************************************************
     
+    /**
+     * 行方向または列方向の対応付けを行い結果を返します。<br>
+     * 
+     * @param cellsSets 比較対象シートのセルセット
+     * @param horizontalPairs 既に決定済みの横方向の対応付け
+     * @return 縦方向の対応付け
+     */
     List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs);

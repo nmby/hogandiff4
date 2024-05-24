@@ -59,7 +59,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         
         Pair<Set<Integer>> horizontalRedundants = Side.map(
                 side -> horizontalPairs == null
-                        ? null
+                        ? Set.of()
                         : horizontalPairs.stream()
                                 .filter(pair -> pair.isOnly(side))
                                 .map(pair -> pair.get(side))
@@ -84,7 +84,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             Set<Integer> horizontalRedundants) {
         
         Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.apply(cell)))
                 .collect(Collectors.groupingBy(vertical));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
@@ -107,7 +107,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             Set<Integer> horizontalRedundants) {
         
         Map<Integer, Set<String>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.apply(cell)))
                 .collect(Collectors.groupingBy(
                         horizontal,
                         Collectors.mapping(CellData::content, Collectors.toSet())));
