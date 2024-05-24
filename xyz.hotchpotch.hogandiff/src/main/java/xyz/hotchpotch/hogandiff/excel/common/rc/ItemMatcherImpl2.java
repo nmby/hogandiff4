@@ -126,7 +126,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
         return (list) -> (int) list.parallelStream()
-                .mapToInt(horizontal::applyAsInt)
+                .mapToInt(horizontal)
                 .mapToDouble(i -> weights[i])
                 .sum();
     }
