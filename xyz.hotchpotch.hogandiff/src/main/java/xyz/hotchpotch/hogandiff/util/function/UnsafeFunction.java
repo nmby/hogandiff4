@@ -19,6 +19,15 @@ public interface UnsafeFunction<T, R, E extends Exception> {
     
     // [static members] ********************************************************
     
+    /**
+     * 正常な出力または例外を保持するレコードです。<br>
+     * 
+     * @author nmby
+     * 
+     * @param <R> 出力の型
+     * @param result 正常な出力
+     * @param thrown 例外
+     */
     public static record ResultOrThrown<R>(R result, Exception thrown) {
     };
     

@@ -16,6 +16,15 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
+/**
+ * 比較実行結果の統計情報を表すレコードです。<br>
+ * 
+ * @author nmby
+ * 
+ * @param settings 比較実行時の設定セット
+ * @param result 比較結果
+ * @param elapsedTime 比較にかかった時間
+ */
 public record Report(
         Settings settings,
         Result result,
@@ -28,6 +37,11 @@ public record Report(
     
     // [instance members] ******************************************************
     
+    /**
+     * このレコードの内容をJSON形式の文字列として返します。<br>
+     * 
+     * @return このレコードの内容を表すJSON形式の文字列
+     */
     public String toJsonString() {
         // 大したことする訳じゃないので、Gsonなどは使わず頑張る！
         // 配布物のサイズを小さくすることの方が重要！

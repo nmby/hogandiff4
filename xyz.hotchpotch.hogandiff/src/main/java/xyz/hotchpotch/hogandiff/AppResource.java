@@ -169,6 +169,12 @@ public class AppResource {
         }
     }
     
+    /**
+     * このリソースセットにアプリケーション実行時引数から得られる内容を上書きで反映します。<br>
+     * 
+     * @param args アプリケーション実行時引数
+     * @throws NullPointerException {@code args} が {@code null} の場合
+     */
     public void reflectArgs(String[] args) {
         Objects.requireNonNull(args, "args");
         

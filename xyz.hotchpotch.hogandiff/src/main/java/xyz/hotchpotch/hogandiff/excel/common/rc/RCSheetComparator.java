@@ -28,6 +28,14 @@ public class RCSheetComparator implements SheetComparator {
     private static final int[] EMPTY_INT_ARRAY = new int[] {};
     private static final Pair<int[]> EMPTY_INT_ARRAY_PAIR = new Pair<>(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY);
     
+    /**
+     * 新たなコンパレータを返します。<br>
+     * 
+     * @param considerRowGaps 行の挿入／削除を考慮する場合は {@code true}
+     * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
+     * @param prioritizeSpeed 比較処理の速度を優先する場合は {@code true}
+     * @return 新たなコンパレータ
+     */
     public static RCSheetComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
