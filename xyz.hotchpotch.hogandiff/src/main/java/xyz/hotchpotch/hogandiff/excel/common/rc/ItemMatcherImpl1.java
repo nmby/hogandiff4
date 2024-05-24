@@ -75,13 +75,13 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     // [instance members] ******************************************************
     
     private final Function<CellData, Integer> vertical;
-    private final Function<CellData, Integer> horizontal;
+    private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     private final Matcher<List<CellData>> matcher;
     
     /* package */ ItemMatcherImpl1(
             Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
         assert vertical != null;
@@ -105,7 +105,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
         
         Pair<List<List<CellData>>> lists = Side.map(side -> {
             Set<Integer> horizontalRedundants = horizontalPairs == null
-                    ? null
+                    ? Set.of()
                     : horizontalPairs.stream()
                             .filter(pair -> pair.isOnly(side))
                             .map(pair -> pair.get(side))
@@ -121,7 +121,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
             Set<Integer> horizontalRedundants) {
         
         Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
                 .collect(Collectors.groupingBy(vertical));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);

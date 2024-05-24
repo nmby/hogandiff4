@@ -32,12 +32,12 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     // [instance members] ******************************************************
     
     private final Function<CellData, Integer> vertical;
-    private final Function<CellData, Integer> horizontal;
+    private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     
     /* package */ ItemMatcherImpl2(
             Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
         assert vertical != null;
@@ -83,7 +83,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             Set<Integer> horizontalRedundants) {
         
         Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
                 .collect(Collectors.groupingBy(vertical));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
@@ -106,9 +106,9 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             Set<Integer> horizontalRedundants) {
         
         Map<Integer, Set<String>> map = cells.parallelStream()
-                .filter(cell -> !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
                 .collect(Collectors.groupingBy(
-                        horizontal,
+                        horizontal::applyAsInt,
                         Collectors.mapping(CellData::content, Collectors.toSet())));
         
         int max = map.keySet().stream().mapToInt(i -> i).max().orElse(0);
@@ -126,7 +126,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
         return (list) -> (int) list.parallelStream()
-                .mapToInt(horizontal::apply)
+                .mapToInt(horizontal::applyAsInt)
                 .mapToDouble(i -> weights[i])
                 .sum();
     }
@@ -154,22 +154,22 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += weights.a()[horizontal.apply(cell1)];
+                    cost += weights.a()[horizontal.applyAsInt(cell1)];
                 } else if (0 < comp) {
-                    cost += weights.b()[horizontal.apply(cell2)];
+                    cost += weights.b()[horizontal.applyAsInt(cell2)];
                 } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += weights.a()[horizontal.apply(cell1)] + weights.b()[horizontal.apply(cell2)];
+                    cost += weights.a()[horizontal.applyAsInt(cell1)] + weights.b()[horizontal.applyAsInt(cell2)];
                 }
             }
             
             while (itr1.hasNext()) {
                 cell1 = itr1.next();
-                cost += weights.a()[horizontal.apply(cell1)];
+                cost += weights.a()[horizontal.applyAsInt(cell1)];
             }
             while (itr2.hasNext()) {
                 cell2 = itr2.next();
-                cost += weights.b()[horizontal.apply(cell2)];
+                cost += weights.b()[horizontal.applyAsInt(cell2)];
             }
             return (int) cost;
         };

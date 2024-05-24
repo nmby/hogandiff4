@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -22,7 +23,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     private static ItemMatcher matcherOf(
             Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> horizontal,
             boolean considerVGaps,
             boolean considerHGaps,
             boolean prioritizeSpeed) {
@@ -34,7 +35,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         Comparator<CellData> horizontalComparator = considerHGaps
                 // TODO: セルコメント加味の要否について再検討する。
                 ? Comparator.comparing(CellData::content)
-                : Comparator.comparing(horizontal);
+                : Comparator.comparingInt(horizontal);
         
         return prioritizeSpeed
                 ? new ItemMatcherImpl1(
