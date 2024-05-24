@@ -75,14 +75,17 @@ public record Report(
                 case COMPARE_TREES:
                     IntPair dPairs = dirPairs(result);
                     str.append("\"dirPairs\": [ %d, %d ]".formatted(dPairs.a(), dPairs.b())).append(COMMA);
+                    // fallthrough
                     
                 case COMPARE_DIRS:
                     IntPair bPairs = bookPairs(result);
                     str.append("\"bookPairs\": [ %d, %d ]".formatted(bPairs.a(), bPairs.b())).append(COMMA);
+                    // fallthrough
                     
                 case COMPARE_BOOKS:
                     IntPair sPairs = sheetPairs(result);
                     str.append("\"sheetPairs\": [ %d, %d ]".formatted(sPairs.a(), sPairs.b())).append(COMMA);
+                    // fallthrough
                     
                 case COMPARE_SHEETS:
                     // nop
