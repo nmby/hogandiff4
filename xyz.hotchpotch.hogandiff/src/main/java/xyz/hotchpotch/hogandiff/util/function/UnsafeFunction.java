@@ -19,7 +19,17 @@ public interface UnsafeFunction<T, R, E extends Exception> {
     
     // [static members] ********************************************************
     
-    public static record ResultOrThrown<R>(R result, Exception thrown) {
+    /**
+     * 正常な出力または例外を保持するレコードです。<br>
+     * 
+     * @author nmby
+     * 
+     * @param <R> 出力の型
+     * @param <E> 例外の型
+     * @param result 正常な出力
+     * @param thrown 例外
+     */
+    public static record ResultOrThrown<R, E>(R result, E thrown) {
     };
     
     /**
@@ -162,12 +172,14 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * 
      * @return 関数の実行結果または例外を保持するタプル {@link ResultOrThrown} を返す {@link Function}
      */
-    default Function<T, ResultOrThrown<R>> convert() {
+    default Function<T, ResultOrThrown<R, E>> convert() {
         return t -> {
             try {
                 return new ResultOrThrown<>(apply(t), null);
             } catch (Exception e) {
-                return new ResultOrThrown<>(null, e);
+                @SuppressWarnings("unchecked")
+                E ee = (E) e;
+                return new ResultOrThrown<>(null, ee);
             }
         };
     }

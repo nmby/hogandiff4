@@ -133,6 +133,7 @@ public class SettingKeys {
             null,
             false);
     
+    /** {@link #CURR_BOOK_OPEN_INFO1} と {@link #CURR_BOOK_OPEN_INFO2} のペア */
     public static final Pair<Key<BookOpenInfo>> CURR_BOOK_OPEN_INFOS = new Pair<>(
             CURR_BOOK_OPEN_INFO1,
             CURR_BOOK_OPEN_INFO2);
@@ -157,6 +158,7 @@ public class SettingKeys {
             Function.identity(),
             false);
     
+    /** {@link #CURR_SHEET_NAME1} と {@link #CURR_SHEET_NAME2} のペア */
     public static final Pair<Key<String>> CURR_SHEET_NAMES = new Pair<>(
             CURR_SHEET_NAME1,
             CURR_SHEET_NAME2);
@@ -181,6 +183,7 @@ public class SettingKeys {
             Path::of,
             false);
     
+    /** {@link #CURR_DIR_PATH1} と {@link #CURR_DIR_PATH2} のペア */
     public static final Pair<Key<Path>> CURR_DIR_PATHS = new Pair<>(
             CURR_DIR_PATH1,
             CURR_DIR_PATH2);

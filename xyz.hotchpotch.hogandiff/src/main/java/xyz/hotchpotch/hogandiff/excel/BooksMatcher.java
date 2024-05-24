@@ -7,7 +7,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 2つのフォルダに含まれるExcelブック同士の対応関係を決めるマッチャーを表します。<br>
- * これは、{@link #pairingBooks(DirInfo, DirInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #pairingBooks(Pair)} を関数メソッドに持つ関数型インタフェースです。<br>
  * 
  * @author nmby
  */

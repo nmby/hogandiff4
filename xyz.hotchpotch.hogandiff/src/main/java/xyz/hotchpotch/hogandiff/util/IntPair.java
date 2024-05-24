@@ -334,6 +334,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
     /**
      * 指定された側の値だけが存在するかを返します。<br>
      * 
+     * @param side 検査する側
      * @return 指定された側の値だけが存在する場合は {@code true}
      * @throws NullPointerException {@code side} が {@code null} の場合
      */
