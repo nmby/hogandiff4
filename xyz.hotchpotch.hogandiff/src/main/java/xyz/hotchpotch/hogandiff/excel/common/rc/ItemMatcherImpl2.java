@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -68,7 +67,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         Pair<List<List<CellData>>> lists = Side.unsafeMap(
                 side -> convert(cellsSets.get(side), horizontalRedundants.get(side)));
         
-        Pair<Map<Integer, Double>> weights = Side.map(
+        Pair<double[]> weights = Side.map(
                 side -> weights(cellsSets.get(side), horizontalRedundants.get(side)));
         
         Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
@@ -102,7 +101,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 .toList();
     }
     
-    private Map<Integer, Double> weights(
+    private double[] weights(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
         
@@ -112,26 +111,29 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                         horizontal,
                         Collectors.mapping(CellData::content, Collectors.toSet())));
         
-        return map.entrySet().parallelStream()
-                .map(entry -> {
-                    int key = entry.getKey();
-                    Set<String> strs = entry.getValue();
-                    int sumLen = strs.parallelStream().mapToInt(String::length).sum();
-                    return Map.entry(key, Math.sqrt(sumLen));
-                })
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        int max = map.keySet().stream().mapToInt(i -> i).max().orElse(0);
+        double[] weights = new double[max + 1];
+        
+        map.entrySet().parallelStream().forEach(entry -> {
+            int key = entry.getKey();
+            Set<String> strs = entry.getValue();
+            int sumLen = strs.parallelStream().mapToInt(String::length).sum();
+            weights[key] = Math.sqrt(sumLen);
+        });
+        
+        return weights;
     }
     
-    private ToIntFunction<List<CellData>> gapEvaluator(Map<Integer, Double> weights) {
+    private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
         return (list) -> (int) list.parallelStream()
                 .mapToInt(horizontal::apply)
-                .mapToDouble(weights::get)
+                .mapToDouble(i -> weights[i])
                 .sum();
     }
     
     private ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
             Comparator<CellData> horizontalComparator,
-            Pair<Map<Integer, Double>> weights) {
+            Pair<double[]> weights) {
         
         return (list1, list2) -> {
             int comp = 0;
@@ -152,22 +154,22 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += weights.a().get(horizontal.apply(cell1));
+                    cost += weights.a()[horizontal.apply(cell1)];
                 } else if (0 < comp) {
-                    cost += weights.b().get(horizontal.apply(cell2));
+                    cost += weights.b()[horizontal.apply(cell2)];
                 } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += weights.a().get(horizontal.apply(cell1)) + weights.b().get(horizontal.apply(cell2));
+                    cost += weights.a()[horizontal.apply(cell1)] + weights.b()[horizontal.apply(cell2)];
                 }
             }
             
             while (itr1.hasNext()) {
                 cell1 = itr1.next();
-                cost += weights.a().get(horizontal.apply(cell1));
+                cost += weights.a()[horizontal.apply(cell1)];
             }
             while (itr2.hasNext()) {
                 cell2 = itr2.next();
-                cost += weights.b().get(horizontal.apply(cell2));
+                cost += weights.b()[horizontal.apply(cell2)];
             }
             return (int) cost;
         };
