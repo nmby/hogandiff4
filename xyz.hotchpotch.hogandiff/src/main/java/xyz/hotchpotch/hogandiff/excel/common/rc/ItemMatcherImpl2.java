@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.common.rc;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,15 +139,17 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             double cost = 0d;
             CellData cell1 = null;
             CellData cell2 = null;
-            Iterator<CellData> itr1 = list1.iterator();
-            Iterator<CellData> itr2 = list2.iterator();
+            int idx1 = 0;
+            int idx2 = 0;
             
-            while (itr1.hasNext() && itr2.hasNext()) {
+            while (idx1 < list1.size() && idx2 < list2.size()) {
                 if (comp <= 0) {
-                    cell1 = itr1.next();
+                    cell1 = list1.get(idx1);
+                    idx1++;
                 }
                 if (0 <= comp) {
-                    cell2 = itr2.next();
+                    cell2 = list2.get(idx2);
+                    idx2++;
                 }
                 
                 comp = horizontalComparator.compare(cell1, cell2);
@@ -163,13 +164,15 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 }
             }
             
-            while (itr1.hasNext()) {
-                cell1 = itr1.next();
-                cost += weights.a()[horizontal.applyAsInt(cell1)];
+            if (idx1 < list1.size()) {
+                cost += list1.subList(idx1, list1.size()).stream()
+                        .mapToDouble(c1 -> weights.a()[horizontal.applyAsInt(c1)])
+                        .sum();
             }
-            while (itr2.hasNext()) {
-                cell2 = itr2.next();
-                cost += weights.b()[horizontal.applyAsInt(cell2)];
+            if (idx2 < list2.size()) {
+                cost += list2.subList(idx2, list2.size()).stream()
+                        .mapToDouble(c2 -> weights.b()[horizontal.applyAsInt(c2)])
+                        .sum();
             }
             return (int) cost;
         };
