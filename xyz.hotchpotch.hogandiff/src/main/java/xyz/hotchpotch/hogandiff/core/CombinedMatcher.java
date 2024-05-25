@@ -14,6 +14,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * ペアを構成しなかった要素（残要素）を対象に、二つめのマッチャーで対応付けを行います。<br>
  * さらに残要素を三つ目以降のマッチャーで対応付けを行います。<br>
  * 
+ * @param <T> リストの要素の型
  * @author nmby
  */
 /*package*/ class CombinedMatcher<T> extends MatcherBase<T> {
@@ -24,6 +25,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     private final List<Matcher<? super T>> matchers;
     
+    /**
+     * コンストラクタ
+     * 
+     * @param matchers このマッチャーを構成する要素マッチャー
+     */
     /*package*/ CombinedMatcher(
             List<Matcher<? super T>> matchers) {
         
@@ -38,6 +44,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
+        
+        // 親クラスでバリデーションチェック済み
         
         List<IntPair> result = new ArrayList<>();
         

@@ -30,6 +30,7 @@ public class PasswordDialogPane extends VBox {
     @FXML
     private Label mainMsgLabel;
     
+    /** パスワード入力欄 */
     @FXML
     /*package*/ PasswordField passwordField;
     
@@ -45,10 +46,17 @@ public class PasswordDialogPane extends VBox {
         loader.load();
     }
     
+    /**
+     * このダイアログボックス要素を初期化します。<br>
+     * 
+     * @param parent 親要素
+     * @param bookOpenInfo 開こうとしているExcelブック
+     */
     /*package*/ void init(
             PasswordDialog parent,
             BookOpenInfo bookOpenInfo) {
         
+        assert parent != null;
         assert bookOpenInfo != null;
         
         errorMsgLabel.setVisible(bookOpenInfo.readPassword() != null);
