@@ -92,7 +92,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Report call() throws Exception {
+    protected Report call() throws ApplicationException {
         try {
             Instant time1 = Instant.now();
             Result result = call2();
@@ -119,9 +119,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * タスク本体。タスクを実行し結果を返します。<br>
      * 
      * @return タスクの結果
-     * @throws Exception 処理が失敗した場合
+     * @throws ApplicationException 処理が失敗した場合
      */
-    protected abstract Result call2() throws Exception;
+    protected abstract Result call2() throws ApplicationException;
     
     private void report(Report report) {
         Path reportPath = workDir.resolve("report.json");
@@ -189,12 +189,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * トップフォルダの情報のペアを返します。<br>
      * 
      * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
-     * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws ApplicationException 処理に失敗した場合
      */
-    protected Pair<DirInfo> extractDirs() throws ExcelHandlingException {
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        DirLoader dirLoader = factory.dirLoader(settings);
-        return dirPaths.unsafeMap(dirLoader::loadDir);
+    protected Pair<DirInfo> extractDirs() throws ApplicationException {
+        Pair<Path> dirPaths = null;
+        try {
+            dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            DirLoader dirLoader = factory.dirLoader(settings);
+            return dirPaths.unsafeMap(dirLoader::loadDir);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.190")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(
+                    "%s%n%s%n%s".formatted(rb.getString("AppTaskBase.190"), dirPaths.a(), dirPaths.b()), e);
+        }
     }
     
     /**
@@ -606,10 +616,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
         Path resultBookPath = null;
-        
         try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
             resultBookPath = workDir.resolve("result.xlsx");
             str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
             updateMessage(str.toString());
@@ -617,7 +627,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             TreeResultBookCreator creator = new TreeResultBookCreator();
             creator.createResultBook(resultBookPath, tResult);
             
-        } catch (ExcelHandlingException e) {
+        } catch (Exception e) {
             str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
@@ -632,7 +642,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
-        } catch (IOException e) {
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
             str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
@@ -640,15 +652,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
                     e);
         }
-        updateProgress(progressAfter, PROGRESS_MAX);
     }
     
     /**
      * 処理修了をアナウンスする。<br>
+     * 
+     * @throws ApplicationException 処理に失敗した場合
      */
-    protected void announceEnd() {
-        str.append(rb.getString("AppTaskBase.120"));
-        updateMessage(str.toString());
-        updateProgress(PROGRESS_MAX, PROGRESS_MAX);
+    protected void announceEnd() throws ApplicationException {
+        try {
+            str.append(rb.getString("AppTaskBase.120"));
+            updateMessage(str.toString());
+            updateProgress(PROGRESS_MAX, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
 }

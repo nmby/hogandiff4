@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -49,55 +48,75 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> dirPair = extractDirs();
-        
-        // 3. 出力用ディレクトリの作成
-        Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
-        
-        // 4. 比較するExcelブックの組み合わせの決定
-        List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
-        
-        // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 93);
-        
-        // 6. 比較結果テキストの作成と表示
-        saveAndShowResultText(workDir, dResult.toString(), 93, 95);
-        
-        // 7. 比較結果Excelの作成と表示
-        TreeResult tResult = new TreeResult(
-                dirPair,
-                List.of(new DirPairData("", dirPair, bookNamePairs)),
-                Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
-        createSaveAndShowResultBook(workDir, tResult, 95, 99);
-        
-        // 8. 処理終了のアナウンス
-        announceEnd();
-        
-        return tResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 0);
+            
+            // 1. ディレクトリ情報の抽出
+            Pair<DirInfo> dirPair = extractDirs();
+            
+            // 3. 出力用ディレクトリの作成
+            Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
+            
+            // 4. 比較するExcelブックの組み合わせの決定
+            List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
+            
+            // 5. フォルダ同士の比較
+            DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 93);
+            
+            // 6. 比較結果テキストの作成と表示
+            saveAndShowResultText(workDir, dResult.toString(), 93, 95);
+            
+            // 7. 比較結果Excelの作成と表示
+            TreeResult tResult = new TreeResult(
+                    dirPair,
+                    List.of(new DirPairData("", dirPair, bookNamePairs)),
+                    Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
+            
+            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            
+            // 8. 処理終了のアナウンス
+            announceEnd();
+            
+            return tResult;
+            
+        } catch (ApplicationException e) {
+            throw e;
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
     
     // 0. 処理開始のアナウンス
     private void announceStart(
             int progressBefore,
-            int progressAfter) {
+            int progressAfter)
+            throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
-                rb.getString("CompareDirsTask.010"),
-                dirPaths.a(),
-                dirPaths.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            
+            str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
+                    rb.getString("CompareDirsTask.010"),
+                    dirPaths.a(),
+                    dirPaths.b()));
+            
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
     
     // 3. 出力用ディレクトリの作成
@@ -106,13 +125,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair)
             throws ApplicationException {
         
-        Pair<Path> outputDirs = Side.map(
-                side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
-        
+        Pair<Path> outputDirs = null;
         try {
+            outputDirs = Side.map(
+                    side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
+            
             return outputDirs.unsafeMap(Files::createDirectory);
             
-        } catch (IOException e) {
+        } catch (Exception e) {
             str.append(rb.getString("CompareDirsTask.020")).append(BR).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
@@ -168,27 +188,34 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        if (0 < bookNamePairs.size()) {
-            str.append(rb.getString("CompareDirsTask.050")).append(BR);
-            updateMessage(str.toString());
-            return compareDirs(
-                    "",
-                    "",
-                    new DirPairData("", dirPair, bookNamePairs),
-                    outputDirs,
-                    progressBefore,
-                    progressAfter);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            if (0 < bookNamePairs.size()) {
+                str.append(rb.getString("CompareDirsTask.050")).append(BR);
+                updateMessage(str.toString());
+                return compareDirs(
+                        "",
+                        "",
+                        new DirPairData("", dirPair, bookNamePairs),
+                        outputDirs,
+                        progressBefore,
+                        progressAfter);
+                
+            } else {
+                return new DirResult(
+                        dirPair,
+                        bookNamePairs,
+                        bookNamePairs.stream().collect(Collectors.toMap(
+                                Function.identity(),
+                                name -> Optional.empty())),
+                        "");
+            }
             
-        } else {
-            return new DirResult(
-                    dirPair,
-                    bookNamePairs,
-                    bookNamePairs.stream().collect(Collectors.toMap(
-                            Function.identity(),
-                            name -> Optional.empty())),
-                    "");
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
         }
-        
     }
 }

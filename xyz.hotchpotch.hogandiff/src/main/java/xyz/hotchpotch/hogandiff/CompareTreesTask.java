@@ -51,48 +51,67 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> topDirPair = extractDirs();
-        
-        // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-        List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
-        
-        // 4. フォルダツリー同士の比較
-        TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
-        
-        // 5. 比較結果テキストの作成と表示
-        saveAndShowResultText(workDir, tResult.toString(), 93, 95);
-        
-        // 6. 比較結果Excelの作成と表示
-        createSaveAndShowResultBook(workDir, tResult, 95, 99);
-        
-        // 7. 処理終了のアナウンス
-        announceEnd();
-        
-        return tResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 0);
+            
+            // 1. ディレクトリ情報の抽出
+            Pair<DirInfo> topDirPair = extractDirs();
+            
+            // 3. 比較するフォルダとExcelブック名の組み合わせの決定
+            List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
+            
+            // 4. フォルダツリー同士の比較
+            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
+            
+            // 5. 比較結果テキストの作成と表示
+            saveAndShowResultText(workDir, tResult.toString(), 93, 95);
+            
+            // 6. 比較結果Excelの作成と表示
+            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            
+            // 7. 処理終了のアナウンス
+            announceEnd();
+            
+            return tResult;
+            
+        } catch (ApplicationException e) {
+            throw e;
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
     
     // 0. 処理開始のアナウンス
     private void announceStart(
             int progressBefore,
-            int progressAfter) {
+            int progressAfter)
+            throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
-                rb.getString("CompareTreesTask.010"),
-                dirPaths.a(),
-                dirPaths.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            
+            str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
+                    rb.getString("CompareTreesTask.010"),
+                    dirPaths.a(),
+                    dirPaths.b()));
+            
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
     
     // 3. 比較するフォルダとExcelブック名の組み合わせの決定
@@ -156,78 +175,86 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        str.append(rb.getString("CompareTreesTask.040")).append(BR);
-        updateMessage(str.toString());
-        
-        Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
-        Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
-        
-        int dirPairsCount = (int) pairDataList.stream()
-                .filter(data -> data.dirPair().isPaired())
-                .count();
-        int num = 0;
-        
-        for (int i = 0; i < pairDataList.size(); i++) {
-            int ii = i;
-            
-            DirPairData data = pairDataList.get(i);
-            
-            str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> outputDirs = null;
+            Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
+            Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
-            try {
-                outputDirs = Side.unsafeMap(side -> {
-                    // 出力先ディレクトリの作成
-                    if (data.dirPair().has(side)) {
-                        DirInfo targetDir = data.dirPair().get(side);
-                        Path parentDir = targetDir.equals(topDirPair.get(side))
-                                ? workDir
-                                : outputDirsPair.get(side).get(targetDir.parent().path());
-                        
-                        Path outputDir = parentDir
-                                .resolve("【%s%d】%s".formatted(side, ii + 1, targetDir.path().getFileName()));
-                        Files.createDirectories(outputDir);
-                        outputDirsPair.get(side).put(targetDir.path(), outputDir);
-                        return outputDir;
-                    } else {
-                        return null;
-                    }
-                });
+            int dirPairsCount = (int) pairDataList.stream()
+                    .filter(data -> data.dirPair().isPaired())
+                    .count();
+            int num = 0;
+            
+            for (int i = 0; i < pairDataList.size(); i++) {
+                int ii = i;
                 
-            } catch (IOException e) {
-                dirResults.putIfAbsent(data.dirPair().map(DirInfo::path), Optional.empty());
-                str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
+                DirPairData data = pairDataList.get(i);
+                
+                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
                 updateMessage(str.toString());
-                e.printStackTrace();
-                continue;
+                
+                Pair<Path> outputDirs = null;
+                
+                try {
+                    outputDirs = Side.unsafeMap(side -> {
+                        // 出力先ディレクトリの作成
+                        if (data.dirPair().has(side)) {
+                            DirInfo targetDir = data.dirPair().get(side);
+                            Path parentDir = targetDir.equals(topDirPair.get(side))
+                                    ? workDir
+                                    : outputDirsPair.get(side).get(targetDir.parent().path());
+                            
+                            Path outputDir = parentDir
+                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDir.path().getFileName()));
+                            Files.createDirectories(outputDir);
+                            outputDirsPair.get(side).put(targetDir.path(), outputDir);
+                            return outputDir;
+                        } else {
+                            return null;
+                        }
+                    });
+                    
+                } catch (IOException e) {
+                    dirResults.putIfAbsent(data.dirPair().map(DirInfo::path), Optional.empty());
+                    str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
+                    updateMessage(str.toString());
+                    e.printStackTrace();
+                    continue;
+                }
+                
+                if (data.dirPair().isPaired()) {
+                    DirResult dirResult = compareDirs(
+                            String.valueOf(i + 1),
+                            "      ",
+                            data,
+                            outputDirs,
+                            progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
+                            progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
+                    dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
+                    num++;
+                    
+                } else {
+                    dirResults.put(data.dirPair().map(DirInfo::path), Optional.empty());
+                    str.append(BR);
+                    updateMessage(str.toString());
+                }
             }
             
-            if (data.dirPair().isPaired()) {
-                DirResult dirResult = compareDirs(
-                        String.valueOf(i + 1),
-                        "      ",
-                        data,
-                        outputDirs,
-                        progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
-                        progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
-                dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
-                num++;
-                
-            } else {
-                dirResults.put(data.dirPair().map(DirInfo::path), Optional.empty());
-                str.append(BR);
-                updateMessage(str.toString());
-            }
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+            return new TreeResult(
+                    topDirPair,
+                    pairDataList,
+                    dirResults);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
         }
-        
-        updateProgress(progressAfter, PROGRESS_MAX);
-        
-        return new TreeResult(
-                topDirPair,
-                pairDataList,
-                dirResults);
     }
 }
