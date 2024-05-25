@@ -211,6 +211,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         "");
             }
             
+        } catch (ApplicationException e) {
+            throw e;
+            
         } catch (Exception e) {
             str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
             updateMessage(str.toString());
