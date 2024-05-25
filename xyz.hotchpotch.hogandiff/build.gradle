@@ -51,6 +51,6 @@ jar {
 }
 
 run {
-    // for performance tuning
+    // for performance monitoring
     //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
 }

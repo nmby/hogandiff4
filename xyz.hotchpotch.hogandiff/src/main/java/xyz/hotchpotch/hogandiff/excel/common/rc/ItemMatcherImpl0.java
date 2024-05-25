@@ -24,12 +24,22 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     private final Function<CellData, Integer> vertical;
     
+    /**
+     * コンストラクタ
+     * 
+     * @param vertical 縦インデックス抽出関数
+     */
     /* package */ ItemMatcherImpl0(Function<CellData, Integer> vertical) {
         assert vertical != null;
         
         this.vertical = vertical;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code cellsSets} が {@code null} の場合
+     */
     @Override
     public List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSets,
