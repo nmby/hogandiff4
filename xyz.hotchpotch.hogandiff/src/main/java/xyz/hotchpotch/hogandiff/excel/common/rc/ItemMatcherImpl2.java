@@ -55,26 +55,25 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         
         Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Pair<Set<Integer>> horizontalRedundants = Side.map(
-                side -> horizontalPairs == null
-                        ? Set.of()
-                        : horizontalPairs.stream()
-                                .filter(pair -> pair.isOnly(side))
-                                .map(pair -> pair.get(side))
-                                .collect(Collectors.toSet()));
+        Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
+                ? new Pair<>(Set.of(), Set.of())
+                : Side.map(side -> horizontalPairs.stream()
+                        .filter(pair -> pair.isOnly(side))
+                        .map(pair -> pair.get(side))
+                        .collect(Collectors.toSet()));
         
-        Pair<List<List<CellData>>> lists = Side.unsafeMap(
-                side -> convert(cellsSets.get(side), horizontalRedundants.get(side)));
+        List<List<CellData>> listA = convert(cellsSets.a(), horizontalRedundants.a());
+        List<List<CellData>> listB = convert(cellsSets.b(), horizontalRedundants.b());
         
-        Pair<double[]> weights = Side.map(
-                side -> weights(cellsSets.get(side), horizontalRedundants.get(side)));
+        double[] weightsA = weights(cellsSets.a(), horizontalRedundants.a());
+        double[] weightsB = weights(cellsSets.b(), horizontalRedundants.b());
         
         Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
-                gapEvaluator(weights.a()),
-                gapEvaluator(weights.b()),
-                diffEvaluator(horizontalComparator, weights));
+                gapEvaluator(weightsA),
+                gapEvaluator(weightsB),
+                diffEvaluator(weightsA, weightsB));
         
-        return matcher.makeIdxPairs(lists.a(), lists.b());
+        return matcher.makeIdxPairs(listA, listB);
     }
     
     private List<List<CellData>> convert(
@@ -131,8 +130,8 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     }
     
     private ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
-            Comparator<CellData> horizontalComparator,
-            Pair<double[]> weights) {
+            double[] weightsA,
+            double[] weightsB) {
         
         return (list1, list2) -> {
             int comp = 0;
@@ -155,23 +154,23 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += weights.a()[horizontal.applyAsInt(cell1)];
+                    cost += weightsA[horizontal.applyAsInt(cell1)];
                 } else if (0 < comp) {
-                    cost += weights.b()[horizontal.applyAsInt(cell2)];
+                    cost += weightsB[horizontal.applyAsInt(cell2)];
                 } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += weights.a()[horizontal.applyAsInt(cell1)] + weights.b()[horizontal.applyAsInt(cell2)];
+                    cost += weightsA[horizontal.applyAsInt(cell1)] + weightsB[horizontal.applyAsInt(cell2)];
                 }
             }
             
             if (idx1 < list1.size()) {
                 cost += list1.subList(idx1, list1.size()).stream()
-                        .mapToDouble(c1 -> weights.a()[horizontal.applyAsInt(c1)])
+                        .mapToDouble(c1 -> weightsA[horizontal.applyAsInt(c1)])
                         .sum();
             }
             if (idx2 < list2.size()) {
                 cost += list2.subList(idx2, list2.size()).stream()
-                        .mapToDouble(c2 -> weights.b()[horizontal.applyAsInt(c2)])
+                        .mapToDouble(c2 -> weightsB[horizontal.applyAsInt(c2)])
                         .sum();
             }
             return (int) cost;

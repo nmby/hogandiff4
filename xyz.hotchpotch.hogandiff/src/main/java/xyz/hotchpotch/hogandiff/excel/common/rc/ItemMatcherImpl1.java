@@ -103,17 +103,17 @@ public class ItemMatcherImpl1 implements ItemMatcher {
         
         Objects.requireNonNull(cellsSets, "cellsSets");
         
-        Pair<List<List<CellData>>> lists = Side.map(side -> {
-            Set<Integer> horizontalRedundants = horizontalPairs == null
-                    ? Set.of()
-                    : horizontalPairs.stream()
-                            .filter(pair -> pair.isOnly(side))
-                            .map(pair -> pair.get(side))
-                            .collect(Collectors.toSet());
-            return convert(cellsSets.get(side), horizontalRedundants);
-        });
+        Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
+                ? new Pair<>(Set.of(), Set.of())
+                : Side.map(side -> horizontalPairs.stream()
+                        .filter(pair -> pair.isOnly(side))
+                        .map(pair -> pair.get(side))
+                        .collect(Collectors.toSet()));
         
-        return matcher.makeIdxPairs(lists.a(), lists.b());
+        List<List<CellData>> listA = convert(cellsSets.a(), horizontalRedundants.a());
+        List<List<CellData>> listB = convert(cellsSets.b(), horizontalRedundants.b());
+        
+        return matcher.makeIdxPairs(listA, listB);
     }
     
     private List<List<CellData>> convert(
