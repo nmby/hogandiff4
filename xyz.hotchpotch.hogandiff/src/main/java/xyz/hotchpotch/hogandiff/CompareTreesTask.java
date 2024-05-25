@@ -31,7 +31,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareTreesTask extends AppTaskBase {
+/*package*/ final class CompareTreesTask extends AppTaskBase {
     
     // [static members] ********************************************************
     

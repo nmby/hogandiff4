@@ -44,7 +44,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract class AppTaskBase extends Task<Report> {
+/*package*/ abstract sealed class AppTaskBase extends Task<Report>
+        permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
     
     // [static members] ********************************************************
     

@@ -29,7 +29,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareDirsTask extends AppTaskBase {
+/*package*/ final class CompareDirsTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
