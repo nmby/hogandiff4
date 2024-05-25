@@ -4,11 +4,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
+/**
+ * 行方向または列方向の対応付けを行うマッチャーを表します。<br>
+ * 既に決定済みの横方向の対応付けを加味することにより、縦方向の対応付けを精度高く行うことを目指したマッチャーです。<br>
+ * 
+ * @author nmby
+ */
 @FunctionalInterface
 /* package */ interface ItemMatcher {
     
@@ -16,7 +23,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     private static ItemMatcher matcherOf(
             Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> horizontal,
             boolean considerVGaps,
             boolean considerHGaps,
             boolean prioritizeSpeed) {
@@ -28,7 +35,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         Comparator<CellData> horizontalComparator = considerHGaps
                 // TODO: セルコメント加味の要否について再検討する。
                 ? Comparator.comparing(CellData::content)
-                : Comparator.comparing(horizontal);
+                : Comparator.comparingInt(horizontal);
         
         return prioritizeSpeed
                 ? new ItemMatcherImpl1(
@@ -69,6 +76,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     // [instance members] ******************************************************
     
+    /**
+     * 行方向または列方向の対応付けを行い結果を返します。<br>
+     * 
+     * @param cellsSets 比較対象シートのセルセット
+     * @param horizontalPairs 既に決定済みの横方向の対応付け
+     * @return 縦方向の対応付け
+     */
     List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSets,
             List<IntPair> horizontalPairs);
