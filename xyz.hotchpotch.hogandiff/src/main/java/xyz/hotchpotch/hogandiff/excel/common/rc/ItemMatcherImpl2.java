@@ -212,15 +212,13 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 }
             }
             
-            if (idx1 < list1.size()) {
-                cost += list1.subList(idx1, list1.size()).stream()
-                        .mapToDouble(c1 -> weightsA[horizontal.applyAsInt(c1)])
-                        .sum();
+            while (idx1 < list1.size()) {
+                cost += weightsA[horizontal.applyAsInt(list1.get(idx1))];
+                idx1++;
             }
-            if (idx2 < list2.size()) {
-                cost += list2.subList(idx2, list2.size()).stream()
-                        .mapToDouble(c2 -> weightsB[horizontal.applyAsInt(c2)])
-                        .sum();
+            while (idx2 < list2.size()) {
+                cost += weightsB[horizontal.applyAsInt(list2.get(idx2))];
+                idx2++;
             }
             return (int) cost;
         };
