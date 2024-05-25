@@ -93,25 +93,42 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     @Override
     protected Report call() throws ApplicationException {
+        Report report = null;
+        
         try {
             Instant time1 = Instant.now();
             Result result = call2();
             Instant time2 = Instant.now();
             
-            Report report = new Report(
+            report = new Report(
                     settings,
                     result,
                     Duration.between(time1, time2));
-            
-            report(report);
-            
-            return report;
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+        }
+        
+        writeReport(report);
+        
+        return report;
+    }
+    
+    /**
+     * 統計情報を report.json ファイルに出力します。<br>
+     * 
+     * @param report 統計情報
+     */
+    private void writeReport(Report report) {
+        Path reportPath = workDir.resolve("report.json");
+        try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
+            writer.write(report.toJsonString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // nop
         }
     }
     
@@ -122,16 +139,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws ApplicationException 処理が失敗した場合
      */
     protected abstract Result call2() throws ApplicationException;
-    
-    private void report(Report report) {
-        Path reportPath = workDir.resolve("report.json");
-        try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
-            writer.write(report.toJsonString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            // nop
-        }
-    }
     
     //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
