@@ -174,7 +174,7 @@ public abstract sealed class Report
         
         // [instance members] --------------------------------------------------
         
-        private final Exception thrown;
+        private final Throwable thrown;
         
         /**
          * コンストラクタ
@@ -186,7 +186,7 @@ public abstract sealed class Report
         public Failed(
                 Settings settings,
                 Duration elapsedTime,
-                Exception thrown) {
+                Throwable thrown) {
             
             super(
                     Objects.requireNonNull(settings, "settings"),

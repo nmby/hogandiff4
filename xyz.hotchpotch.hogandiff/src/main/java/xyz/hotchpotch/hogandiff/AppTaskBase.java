@@ -93,28 +93,47 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     @Override
     protected Report call() throws ApplicationException {
+        Instant time1 = Instant.now();
         Report report = null;
         
         try {
-            Instant time1 = Instant.now();
             Result result = call2();
-            Instant time2 = Instant.now();
             
             report = new Report.Succeeded(
                     settings,
-                    Duration.between(time1, time2),
+                    Duration.between(time1, Instant.now()),
                     result);
+            
+            return report;
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
+            
+            report = new Report.Failed(
+                    settings,
+                    Duration.between(time1, Instant.now()),
+                    e);
+            
             throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+            
+        } catch (Exception e) {
+            str.append(BR).append(BR).append(rb.getString("AppTaskBase.180")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            
+            report = new Report.Failed(
+                    settings,
+                    Duration.between(time1, Instant.now()),
+                    e);
+            
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            
+        } finally {
+            writeReport(report);
         }
         
-        writeReport(report);
-        
-        return report;
     }
     
     /**
