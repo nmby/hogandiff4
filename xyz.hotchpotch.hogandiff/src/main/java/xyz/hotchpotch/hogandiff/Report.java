@@ -202,7 +202,7 @@ public abstract sealed class Report
                     .map(Class::getName)
                     .collect(Collectors.joining(", "));
             
-            return "throws: [ %s ]".formatted(chain);
+            return "thrown: [ %s ]".formatted(chain);
         }
         
         private List<Throwable> getChain() {
