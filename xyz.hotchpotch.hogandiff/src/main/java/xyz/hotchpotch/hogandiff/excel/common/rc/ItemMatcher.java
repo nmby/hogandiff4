@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.excel.common.rc;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -33,7 +32,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      * @return 縦方向の対応付けを行うマッチャー
      */
     private static ItemMatcher matcherOf(
-            Function<CellData, Integer> vertical,
+            ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             boolean considerVGaps,
             boolean considerHGaps,

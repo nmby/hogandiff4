@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.excel.common.rc;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -22,14 +22,14 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     
     // [instance members] ******************************************************
     
-    private final Function<CellData, Integer> vertical;
+    private final ToIntFunction<CellData> vertical;
     
     /**
      * コンストラクタ
      * 
      * @param vertical 縦インデックス抽出関数
      */
-    /* package */ ItemMatcherImpl0(Function<CellData, Integer> vertical) {
+    /* package */ ItemMatcherImpl0(ToIntFunction<CellData> vertical) {
         assert vertical != null;
         
         this.vertical = vertical;
@@ -47,10 +47,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         
         Objects.requireNonNull(cellsSets, "cellsSets");
         
-        int min1 = cellsSets.a().parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
-        int max1 = cellsSets.a().parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
-        int min2 = cellsSets.b().parallelStream().mapToInt(cell -> vertical.apply(cell)).min().orElse(0);
-        int max2 = cellsSets.b().parallelStream().mapToInt(cell -> vertical.apply(cell)).max().orElse(0);
+        int min1 = cellsSets.a().parallelStream().mapToInt(vertical).min().orElse(0);
+        int max1 = cellsSets.a().parallelStream().mapToInt(vertical).max().orElse(0);
+        int min2 = cellsSets.b().parallelStream().mapToInt(vertical).min().orElse(0);
+        int max2 = cellsSets.b().parallelStream().mapToInt(vertical).max().orElse(0);
         
         return IntStream.rangeClosed(Math.min(min1, min2), Math.max(max1, max2))
                 .mapToObj(n -> IntPair.of(n, n))

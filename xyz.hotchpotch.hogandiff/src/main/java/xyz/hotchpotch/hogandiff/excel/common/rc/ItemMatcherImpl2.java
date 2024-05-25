@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -30,7 +29,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     // [instance members] ******************************************************
     
-    private final Function<CellData, Integer> vertical;
+    private final ToIntFunction<CellData> vertical;
     private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     
@@ -42,7 +41,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
      * @param horizontalComparator 横方向比較関数
      */
     /* package */ ItemMatcherImpl2(
-            Function<CellData, Integer> vertical,
+            ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
@@ -104,7 +103,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         
         Map<Integer, List<CellData>> map = cells.parallelStream()
                 .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
-                .collect(Collectors.groupingBy(vertical));
+                .collect(Collectors.groupingBy(vertical::applyAsInt));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
         
