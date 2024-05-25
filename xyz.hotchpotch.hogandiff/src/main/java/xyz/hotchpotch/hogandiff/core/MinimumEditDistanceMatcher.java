@@ -176,27 +176,32 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 int a = nf < listA.size() ? nf - k : listA.size() - k;
                 int b = nf - a - 1;
                 
-                // 左上からの遷移（つまりリストA, リストBの要素が対応する場合）が最適であると仮置きする。
+                //// それぞれの方向から遷移した場合のコストを計算する。
+                int dk1 = (nf <= listA.size()) ? -1 : 0;
                 int dk2 = (nf <= listA.size()) ? -1 : (nf == listA.size() + 1) ? 0 : 1;
-                long minCost = accCosts2f[k + dk2] + diffEvaluator.applyAsInt(listA.get(a), listB.get(b));
-                comeFrom0f[k] = new ComeFrom(comeFrom2f[k + dk2], Direction.FROM_UPPER_LEFT);
+                
+                // 左上からの遷移（つまりリストA, リストBの要素が対応する場合）が最適であると仮置きする。
+                long tmpCostAB = accCosts2f[k + dk2] + diffEvaluator.applyAsInt(listA.get(a), listB.get(b));
                 
                 // 左から遷移した場合（つまりリストBの要素が余剰である場合）のコストを求めて比較する。
-                int dk1 = (nf <= listA.size()) ? -1 : 0;
                 long tmpCostB = accCosts1f[k + dk1] + gapCostsB[b];
-                if (tmpCostB < minCost) {
-                    minCost = tmpCostB;
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1], Direction.FROM_LEFT);
-                }
                 
                 // 上から遷移した場合（つまりリストAの要素が余剰である場合）のコストを求めて比較する。
                 long tmpCostA = accCosts1f[k + dk1 + 1] + gapCostsA[a];
-                if (tmpCostA < minCost) {
-                    minCost = tmpCostA;
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1 + 1], Direction.FROM_UPPER);
-                }
                 
-                accCosts0f[k] = minCost;
+                //// 最も小さいコストの遷移元を採用する。
+                if (tmpCostA < tmpCostB && tmpCostA < tmpCostAB) {
+                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1 + 1], Direction.FROM_UPPER);
+                    accCosts0f[k] = tmpCostA;
+                    
+                } else if (tmpCostB <= tmpCostA && tmpCostB < tmpCostAB) {
+                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1], Direction.FROM_LEFT);
+                    accCosts0f[k] = tmpCostB;
+                    
+                } else {
+                    comeFrom0f[k] = new ComeFrom(comeFrom2f[k + dk2], Direction.FROM_UPPER_LEFT);
+                    accCosts0f[k] = tmpCostAB;
+                }
             });
             
             accCosts2 = accCosts1;
