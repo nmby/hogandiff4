@@ -100,10 +100,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Result result = call2();
             Instant time2 = Instant.now();
             
-            report = new Report(
+            report = new Report.Succeeded(
                     settings,
-                    result,
-                    Duration.between(time1, time2));
+                    Duration.between(time1, time2),
+                    result);
             
         } catch (OutOfMemoryError e) {
             str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
