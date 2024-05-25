@@ -97,6 +97,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluator 余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ GreedyMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
@@ -107,6 +113,13 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert diffEvaluator != null;
     }
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluatorA 比較対象Aに適用する余剰評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ GreedyMatcher(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
@@ -122,6 +135,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
+        
+        // 親クラスでバリデーションチェック済み
         
         // まず、全ての組み合わせのコストを計算する。
         Stream<Cost> gapCostsA = IntStream.range(0, listA.size()).parallel()

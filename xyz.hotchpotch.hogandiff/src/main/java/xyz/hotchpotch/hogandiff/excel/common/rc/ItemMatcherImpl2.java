@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -30,12 +29,19 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     // [instance members] ******************************************************
     
-    private final Function<CellData, Integer> vertical;
+    private final ToIntFunction<CellData> vertical;
     private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     
+    /**
+     * コンストラクタ
+     * 
+     * @param vertical 縦インデックス抽出関数
+     * @param horizontal 横インデックス抽出関数
+     * @param horizontalComparator 横方向比較関数
+     */
     /* package */ ItemMatcherImpl2(
-            Function<CellData, Integer> vertical,
+            ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
@@ -48,6 +54,11 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         this.horizontalComparator = horizontalComparator;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code cellsSets} が {@code null} の場合
+     */
     @Override
     public List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSets,
@@ -76,13 +87,23 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         return matcher.makeIdxPairs(listA, listB);
     }
     
+    /**
+     * セルセットを横方向リストを要素に持つ縦方向リストに変換します。<br>
+     * 
+     * @param cells セルセット
+     * @param horizontalRedundants 横方向の余剰インデックス
+     * @return 横方向リストを要素に持つ縦方向リスト
+     */
     private List<List<CellData>> convert(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
         
+        assert cells != null;
+        assert horizontalRedundants != null;
+        
         Map<Integer, List<CellData>> map = cells.parallelStream()
                 .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
-                .collect(Collectors.groupingBy(vertical));
+                .collect(Collectors.groupingBy(vertical::applyAsInt));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
         
@@ -99,9 +120,19 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 .toList();
     }
     
+    /**
+     * 横方向インデックスごとの重みづけを計算して返します。<br>
+     * 
+     * @param cells セルセット
+     * @param horizontalRedundants 横方向の余剰インデックス
+     * @return 横方向インデックスごとの重みづけ
+     */
     private double[] weights(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
+        
+        assert cells != null;
+        assert horizontalRedundants != null;
         
         Map<Integer, Set<String>> map = cells.parallelStream()
                 .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
@@ -122,16 +153,34 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         return weights;
     }
     
+    /**
+     * 余剰評価関数を返します。<br>
+     * 
+     * @param weights 横方向インデックスごとの重みづけ
+     * @return 余剰評価関数
+     */
     private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
+        assert weights != null;
+        
         return (list) -> (int) list.parallelStream()
                 .mapToInt(horizontal)
                 .mapToDouble(i -> weights[i])
                 .sum();
     }
     
+    /**
+     * 差分評価関数を返します。<br>
+     * 
+     * @param weightsA 比較対象Aの横方向インデックスごとの重みづけ
+     * @param weightsB 比較対象Bの横方向インデックスごとの重みづけ
+     * @return 差分評価関数
+     */
     private ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
             double[] weightsA,
             double[] weightsB) {
+        
+        assert weightsA != null;
+        assert weightsB != null;
         
         return (list1, list2) -> {
             int comp = 0;

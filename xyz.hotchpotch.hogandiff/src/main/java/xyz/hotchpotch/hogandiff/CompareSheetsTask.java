@@ -32,6 +32,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     * @param factory ファクトリ
+     */
     /*package*/ CompareSheetsTask(
             Settings settings,
             Factory factory) {

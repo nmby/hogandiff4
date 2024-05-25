@@ -28,6 +28,12 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluator 余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ MinimumCostFlowMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
@@ -38,6 +44,13 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
         assert diffEvaluator != null;
     }
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluatorA 比較対象Aに適用する余剰評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ MinimumCostFlowMatcher(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
@@ -53,6 +66,8 @@ public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
+        
+        // 親クラスでバリデーションチェック実施済み
         
         return new Graph(listA, listB).execute();
     }

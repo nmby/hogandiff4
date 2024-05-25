@@ -18,6 +18,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
+    /** コンストラクタ */
     /*package*/ SimpleMatcher() {
     }
     

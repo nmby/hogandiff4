@@ -48,7 +48,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // [static members] ********************************************************
     
+    /** 改行文字 */
     protected static final String BR = System.lineSeparator();
+    
+    /** 進捗度の最大値 */
     protected static final int PROGRESS_MAX = 100;
     
     // [instance members] ******************************************************
@@ -68,6 +71,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** このアプリケーションのリソースバンドル */
     protected final ResourceBundle rb = AppMain.appResource.get();
     
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     * @param factory ファクトリ
+     */
     /*package*/ AppTaskBase(
             Settings settings,
             Factory factory) {
@@ -105,6 +114,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
+    /**
+     * タスク本体。タスクを実行し結果を返します。<br>
+     * 
+     * @return タスクの結果
+     * @throws Exception 処理が失敗した場合
+     */
     protected abstract Result call2() throws Exception;
     
     private void report(Report report) {
@@ -181,6 +196,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         return dirPaths.unsafeMap(dirLoader::loadDir);
     }
     
+    /**
+     * Excelブック同士の比較を行います。<br>
+     * 
+     * @param bookOpenInfos 比較対象ブックの情報
+     * @param progressBefore 処理開始時の進捗度
+     * @param progressAfter 処理終了時の進捗度
+     * @return 比較結果
+     * @throws ExcelHandlingException Excel関連処理に失敗した場合
+     */
     protected BookResult compareBooks(
             Pair<BookOpenInfo> bookOpenInfos,
             int progressBefore,
@@ -221,6 +245,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 results);
     }
     
+    /**
+     * フォルダ同士の比較を行います。<br>
+     * 
+     * @param dirId フォルダ識別子
+     * @param indent インデント
+     * @param data 比較対象フォルダの情報
+     * @param outputDirs 出力先フォルダ
+     * @param progressBefore 処理開始時の進捗度
+     * @param progressAfter 処理終了時の進捗度
+     * @return 比較結果
+     */
     protected DirResult compareDirs(
             String dirId,
             String indent,
@@ -554,6 +589,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
+    /**
+     * フォルダツリー同士の比較結果Excelブックを作成し、保存し、表示します。<br>
+     * 
+     * @param workDir 作業用フォルダ
+     * @param tResult フォルダツリー比較結果
+     * @param progressBefore 進捗率（開始時）
+     * @param progressAfter 進捗率（終了時）
+     * @throws ApplicationException 処理に失敗した場合
+     */
     protected void createSaveAndShowResultBook(
             Path workDir,
             TreeResult tResult,
