@@ -1,6 +1,9 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -16,62 +19,51 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
-/**
- * 比較実行結果の統計情報を表すレコードです。<br>
- * 
- * @author nmby
- * 
- * @param settings 比較実行時の設定セット
- * @param result 比較結果
- * @param elapsedTime 比較にかかった時間
- */
-public record Report(
-        Settings settings,
-        Result result,
-        Duration elapsedTime) {
+public abstract sealed class Report
+        permits Report.Succeeded, Report.Failed {
     
     // [static members] ********************************************************
     
     private static final String COMMA = ", ";
-    private static final BinaryOperator<IntPair> sumIntPairs = (p1, p2) -> IntPair.of(p1.a() + p2.a(), p1.b() + p2.b());
-    
-    // [instance members] ******************************************************
     
     /**
-     * このレコードの内容をJSON形式の文字列として返します。<br>
-     * 
-     * @return このレコードの内容を表すJSON形式の文字列
+     * 比較処理が成功したことを表す {@link Report} の拡張です。<br>
      */
-    public String toJsonString() {
-        // 大したことする訳じゃないので、Gsonなどは使わず頑張る！
-        // 配布物のサイズを小さくすることの方が重要！
-        // と思ったけど流石に酷過ぎるので
-        // TODO: 実装改善する
+    public static final class Succeeded extends Report {
         
-        StringBuilder str = new StringBuilder();
+        // [static members] ----------------------------------------------------
         
-        str.append("{ ");
-        {
-            str.append(stringProperty("uuid", SettingKeys.CLIENT_UUID)).append(COMMA);
+        private static final BinaryOperator<IntPair> sumIntPairs = (p1, p2) -> IntPair
+                .of(p1.a() + p2.a(), p1.b() + p2.b());
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Result result;
+        
+        /**
+         * コンストラクタ
+         * 
+         * @param settings 設定セット
+         * @param elapsedTime 経過時間
+         * @param result 比較結果
+         */
+        public Succeeded(
+                Settings settings,
+                Duration elapsedTime,
+                Result result) {
             
-            str.append("\"settings\": { ");
-            {
-                str.append(stringProperty("appVersion", SettingKeys.APP_VERSION)).append(COMMA);
-                str.append(stringProperty("appLocale", SettingKeys.APP_LOCALE)).append(COMMA);
-                str.append(booleanProperty("considerRowGaps", SettingKeys.CONSIDER_ROW_GAPS)).append(COMMA);
-                str.append(booleanProperty("considerColumnGaps", SettingKeys.CONSIDER_COLUMN_GAPS)).append(COMMA);
-                str.append(booleanProperty("compareOnFormula", SettingKeys.COMPARE_ON_FORMULA_STRING)).append(COMMA);
-                str.append(booleanProperty("showPaintedSheets", SettingKeys.SHOW_PAINTED_SHEETS)).append(COMMA);
-                str.append(booleanProperty("showResultText", SettingKeys.SHOW_RESULT_TEXT)).append(COMMA);
-                str.append(booleanProperty("exitWhenFinished", SettingKeys.EXIT_WHEN_FINISHED)).append(COMMA);
-                str.append(booleanProperty("prioritizeSpeed", SettingKeys.PRIORITIZE_SPEED));
-            }
-            str.append(" }").append(COMMA);
+            super(
+                    Objects.requireNonNull(settings, "settings"),
+                    Objects.requireNonNull(elapsedTime, "elapsedTime"));
             
-            str.append(stringProperty("menu", SettingKeys.CURR_MENU)).append(COMMA);
-            str.append("\"elapsedMillis\": ").append(elapsedTime.toMillis()).append(COMMA);
+            this.result = Objects.requireNonNull(result, "result");
+        }
+        
+        @Override
+        protected String toJsonString2() {
+            StringBuilder str = new StringBuilder();
             
-            switch (settings.getOrDefault(SettingKeys.CURR_MENU)) {
+            switch (super.settings.getOrDefault(SettingKeys.CURR_MENU)) {
                 case COMPARE_TREES:
                     IntPair dPairs = dirPairs(result);
                     str.append("\"dirPairs\": [ %d, %d ]".formatted(dPairs.a(), dPairs.b())).append(COMMA);
@@ -99,6 +91,187 @@ public record Report(
                                 .collect(Collectors.joining(", ")));
             }
             str.append(" ]");
+            
+            return str.toString();
+        }
+        
+        private String statsToJson(Stats stats) {
+            StringBuilder str = new StringBuilder();
+            
+            str.append("{ ");
+            {
+                str.append("\"rows\": [ %d, %d ]".formatted(stats.rows().a(), stats.rows().b())).append(COMMA);
+                str.append("\"columns\": [ %d, %d ]".formatted(stats.columns().a(), stats.columns().b())).append(COMMA);
+                str.append("\"cells\": [ %d, %d ]".formatted(stats.cells().a(), stats.cells().b())).append(COMMA);
+                str.append("\"redundantRows\": [ %d, %d ]"
+                        .formatted(stats.redundantRows().a(), stats.redundantRows().b()))
+                        .append(COMMA);
+                str.append("\"redundantColumns\": [ %d, %d ]"
+                        .formatted(stats.redundantColumns().a(), stats.redundantColumns().b()))
+                        .append(COMMA);
+                str.append("\"diffCells\": %d".formatted(stats.diffCells()));
+            }
+            str.append(" }");
+            
+            return str.toString();
+        }
+        
+        private IntPair sheetPairs(Result result) {
+            return switch (result) {
+                case SheetResult sResult -> throw new AssertionError();
+                case BookResult bResult -> {
+                    int paired = (int) bResult.sheetPairs().stream().filter(Pair::isPaired).count();
+                    yield IntPair.of(paired, bResult.sheetPairs().size() - paired);
+                }
+                case DirResult dResult -> dResult.bookResults().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(this::sheetPairs)
+                        .reduce(IntPair.of(0, 0), sumIntPairs);
+                case TreeResult tResult -> tResult.dirResults().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(this::sheetPairs)
+                        .reduce(IntPair.of(0, 0), sumIntPairs);
+            };
+        }
+        
+        private IntPair bookPairs(Result result) {
+            return switch (result) {
+                case SheetResult sResult -> throw new AssertionError();
+                case BookResult bResult -> throw new AssertionError();
+                case DirResult dResult -> {
+                    int paired = (int) dResult.bookNamePairs().stream().filter(Pair::isPaired).count();
+                    yield IntPair.of(paired, dResult.bookNamePairs().size() - paired);
+                }
+                case TreeResult tResult -> tResult.dirResults().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(this::bookPairs)
+                        .reduce(IntPair.of(0, 0), sumIntPairs);
+            };
+        }
+        
+        private IntPair dirPairs(Result result) {
+            return switch (result) {
+                case SheetResult sResult -> throw new AssertionError();
+                case BookResult bResult -> throw new AssertionError();
+                case DirResult dResult -> throw new AssertionError();
+                case TreeResult tResult -> {
+                    int paired = (int) tResult.dirResults().values().stream().filter(Optional::isPresent).count();
+                    yield IntPair.of(paired, tResult.dirResults().size() - paired);
+                }
+            };
+        }
+    }
+    
+    /**
+     * 比較処理が失敗したことを表す {@link Report} の拡張です。<br>
+     */
+    public static final class Failed extends Report {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Throwable thrown;
+        
+        /**
+         * コンストラクタ
+         * 
+         * @param settings 設定セット
+         * @param elapsedTime 経過時間
+         * @param thrown スローされた例外
+         */
+        public Failed(
+                Settings settings,
+                Duration elapsedTime,
+                Throwable thrown) {
+            
+            super(
+                    Objects.requireNonNull(settings, "settings"),
+                    Objects.requireNonNull(elapsedTime, "elapsedTime"));
+            
+            this.thrown = Objects.requireNonNull(thrown, "thrown");
+        }
+        
+        @Override
+        protected String toJsonString2() {
+            String chain = getChain().stream()
+                    .map(Throwable::getClass)
+                    .map(Class::getName)
+                    .collect(Collectors.joining(", "));
+            
+            return "thrown: [ %s ]".formatted(chain);
+        }
+        
+        private List<Throwable> getChain() {
+            List<Throwable> exceptions = new ArrayList<>();
+            Throwable e = thrown;
+            
+            do {
+                exceptions.add(e);
+                e = e.getCause();
+            } while (e != null);
+            
+            return exceptions;
+        }
+    }
+    
+    // [instance members] ******************************************************
+    
+    private final Settings settings;
+    private final Duration elapsedTime;
+    
+    private Report(
+            Settings settings,
+            Duration elapsedTime) {
+        
+        assert settings != null;
+        assert elapsedTime != null;
+        
+        this.settings = settings;
+        this.elapsedTime = elapsedTime;
+    }
+    
+    /**
+     * この統計情報のJSON形式の文字列表現を返します。<br>
+     * 
+     * @return この統計情報のJSON形式の文字列表現
+     */
+    public String toJsonString() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append("{ ");
+        {
+            str.append(stringProperty("uuid", SettingKeys.CLIENT_UUID)).append(COMMA);
+            
+            str.append("\"settings\": ").append(settingsToJson()).append(COMMA);
+            
+            str.append(stringProperty("menu", SettingKeys.CURR_MENU)).append(COMMA);
+            str.append("\"elapsedMillis\": ").append(elapsedTime.toMillis()).append(COMMA);
+            
+            str.append(toJsonString2());
+        }
+        str.append(" }");
+        
+        return str.toString();
+    }
+    
+    private String settingsToJson() {
+        StringBuilder str = new StringBuilder();
+        
+        str.append("{ ");
+        {
+            str.append(stringProperty("appVersion", SettingKeys.APP_VERSION)).append(COMMA);
+            str.append(stringProperty("appLocale", SettingKeys.APP_LOCALE)).append(COMMA);
+            str.append(booleanProperty("considerRowGaps", SettingKeys.CONSIDER_ROW_GAPS)).append(COMMA);
+            str.append(booleanProperty("considerColumnGaps", SettingKeys.CONSIDER_COLUMN_GAPS)).append(COMMA);
+            str.append(booleanProperty("compareOnFormula", SettingKeys.COMPARE_ON_FORMULA_STRING)).append(COMMA);
+            str.append(booleanProperty("showPaintedSheets", SettingKeys.SHOW_PAINTED_SHEETS)).append(COMMA);
+            str.append(booleanProperty("showResultText", SettingKeys.SHOW_RESULT_TEXT)).append(COMMA);
+            str.append(booleanProperty("exitWhenFinished", SettingKeys.EXIT_WHEN_FINISHED)).append(COMMA);
+            str.append(booleanProperty("prioritizeSpeed", SettingKeys.PRIORITIZE_SPEED));
         }
         str.append(" }");
         
@@ -113,72 +286,10 @@ public record Report(
         return "\"%s\": %b".formatted(jsonKey, settings.getOrDefault(settingKey));
     }
     
-    private String statsToJson(Stats stats) {
-        StringBuilder str = new StringBuilder();
-        
-        str.append("{ ");
-        {
-            str.append("\"rows\": [ %d, %d ]".formatted(stats.rows().a(), stats.rows().b())).append(COMMA);
-            str.append("\"columns\": [ %d, %d ]".formatted(stats.columns().a(), stats.columns().b())).append(COMMA);
-            str.append("\"cells\": [ %d, %d ]".formatted(stats.cells().a(), stats.cells().b())).append(COMMA);
-            str.append("\"redundantRows\": [ %d, %d ]"
-                    .formatted(stats.redundantRows().a(), stats.redundantRows().b()))
-                    .append(COMMA);
-            str.append("\"redundantColumns\": [ %d, %d ]"
-                    .formatted(stats.redundantColumns().a(), stats.redundantColumns().b()))
-                    .append(COMMA);
-            str.append("\"diffCells\": %d".formatted(stats.diffCells()));
-        }
-        str.append(" }");
-        
-        return str.toString();
-    }
-    
-    private IntPair sheetPairs(Result result) {
-        return switch (result) {
-            case SheetResult sResult -> throw new AssertionError();
-            case BookResult bResult -> {
-                int paired = (int) bResult.sheetPairs().stream().filter(Pair::isPaired).count();
-                yield IntPair.of(paired, bResult.sheetPairs().size() - paired);
-            }
-            case DirResult dResult -> dResult.bookResults().values().stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(this::sheetPairs)
-                    .reduce(IntPair.of(0, 0), sumIntPairs);
-            case TreeResult tResult -> tResult.dirResults().values().stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(this::sheetPairs)
-                    .reduce(IntPair.of(0, 0), sumIntPairs);
-        };
-    }
-    
-    private IntPair bookPairs(Result result) {
-        return switch (result) {
-            case SheetResult sResult -> throw new AssertionError();
-            case BookResult bResult -> throw new AssertionError();
-            case DirResult dResult -> {
-                int paired = (int) dResult.bookNamePairs().stream().filter(Pair::isPaired).count();
-                yield IntPair.of(paired, dResult.bookNamePairs().size() - paired);
-            }
-            case TreeResult tResult -> tResult.dirResults().values().stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(this::bookPairs)
-                    .reduce(IntPair.of(0, 0), sumIntPairs);
-        };
-    }
-    
-    private IntPair dirPairs(Result result) {
-        return switch (result) {
-            case SheetResult sResult -> throw new AssertionError();
-            case BookResult bResult -> throw new AssertionError();
-            case DirResult dResult -> throw new AssertionError();
-            case TreeResult tResult -> {
-                int paired = (int) tResult.dirResults().values().stream().filter(Optional::isPresent).count();
-                yield IntPair.of(paired, tResult.dirResults().size() - paired);
-            }
-        };
-    }
+    /**
+     * サブクラス独自内容のJSON形式の文字列表現を返します。<br>
+     * 
+     * @return サブクラス独自内容のJSON形式の文字列表現
+     */
+    protected abstract String toJsonString2();
 }

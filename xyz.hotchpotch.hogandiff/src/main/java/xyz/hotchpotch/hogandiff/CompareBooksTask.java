@@ -27,7 +27,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareBooksTask extends AppTaskBase {
+/*package*/ final class CompareBooksTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
@@ -47,43 +47,64 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 2. 比較するシートの組み合わせの決定
-        List<Pair<String>> sheetNamePairs = pairingSheets(0, 3);
-        
-        // 3. シート同士の比較
-        BookResult bResult = compareSheets(sheetNamePairs, 3, 75);
-        
-        // 4. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, bResult.toString(), 75, 80);
-        
-        // 5. 比較結果の表示（Excelブック）
-        paintSaveAndShowBook(workDir, bResult, 80, 98);
-        
-        // 6. 処理終了のアナウンス
-        announceEnd();
-        
-        return bResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 0);
+            
+            // 2. 比較するシートの組み合わせの決定
+            List<Pair<String>> sheetNamePairs = pairingSheets(0, 3);
+            
+            // 3. シート同士の比較
+            BookResult bResult = compareSheets(sheetNamePairs, 3, 75);
+            
+            // 4. 比較結果の表示（テキスト）
+            saveAndShowResultText(workDir, bResult.toString(), 75, 80);
+            
+            // 5. 比較結果の表示（Excelブック）
+            paintSaveAndShowBook(workDir, bResult, 80, 98);
+            
+            // 6. 処理終了のアナウンス
+            announceEnd();
+            
+            return bResult;
+            
+        } catch (ApplicationException e) {
+            throw e;
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
+    
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     // 0. 処理開始のアナウンス
     private void announceStart(
             int progressBefore,
-            int progressAfter) {
+            int progressAfter)
+            throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n"
-                .formatted(rb.getString("CompareBooksTask.010"), bookOpenInfos.a(), bookOpenInfos.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
+            
+            str.append("%s%n[A] %s%n[B] %s%n%n"
+                    .formatted(rb.getString("CompareBooksTask.010"), bookOpenInfos.a(), bookOpenInfos.b()));
+            
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+        }
     }
     
     // 2. 比較するシートの組み合わせの決定
