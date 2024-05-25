@@ -52,20 +52,56 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     /**
-     * 内部処理用の不変クラス（レコード）です。<br>
      * エディットグラフ上の各点における遷移経路を表します。<br>
      * 
      * @author nmby
-     * @param prev 遷移元ノード
-     * @param direction 遷移方向
      */
-    private static record ComeFrom(
-            ComeFrom prev,
-            Direction direction) {
+    private static sealed interface ComeFrom
+            permits ComeFrom.Upper, ComeFrom.Left, ComeFrom.UpperLeft {
         
         // [static members] ----------------------------------------------------
         
+        /**
+         * エディットグラフの上から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record Upper(ComeFrom prev) implements ComeFrom {
+            @Override
+            public Direction direction() {
+                return Direction.FROM_UPPER;
+            }
+        }
+        
+        /**
+         * エディットグラフの左から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record Left(ComeFrom prev) implements ComeFrom {
+            @Override
+            public Direction direction() {
+                return Direction.FROM_LEFT;
+            }
+        }
+        
+        /**
+         * エディットグラフの左上から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record UpperLeft(ComeFrom prev) implements ComeFrom {
+            @Override
+            public Direction direction() {
+                return Direction.FROM_UPPER_LEFT;
+            }
+        }
+        
         // [instance members] --------------------------------------------------
+        
+        Direction direction();
+        
+        ComeFrom prev();
     }
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -157,11 +193,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             
             if (n < listA.size()) {
                 accCosts0[0] = accCosts1[0] + gapCostsA[n];
-                comeFrom0[0] = new ComeFrom(comeFrom1[0], Direction.FROM_UPPER);
+                comeFrom0[0] = new ComeFrom.Upper(comeFrom1[0]);
             }
             if (n < listB.size()) {
                 accCosts0[accCosts0.length - 1] = accCosts1[accCosts1.length - 1] + gapCostsB[n];
-                comeFrom0[comeFrom0.length - 1] = new ComeFrom(comeFrom1[comeFrom1.length - 1], Direction.FROM_LEFT);
+                comeFrom0[comeFrom0.length - 1] = new ComeFrom.Left(comeFrom1[comeFrom1.length - 1]);
             }
             
             final int nf = n;
@@ -191,15 +227,15 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 
                 //// 最も小さいコストの遷移元を採用する。
                 if (tmpCostA < tmpCostB && tmpCostA < tmpCostAB) {
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1 + 1], Direction.FROM_UPPER);
+                    comeFrom0f[k] = new ComeFrom.Upper(comeFrom1f[k + dk1 + 1]);
                     accCosts0f[k] = tmpCostA;
                     
                 } else if (tmpCostB <= tmpCostA && tmpCostB < tmpCostAB) {
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1], Direction.FROM_LEFT);
+                    comeFrom0f[k] = new ComeFrom.Left(comeFrom1f[k + dk1]);
                     accCosts0f[k] = tmpCostB;
                     
                 } else {
-                    comeFrom0f[k] = new ComeFrom(comeFrom2f[k + dk2], Direction.FROM_UPPER_LEFT);
+                    comeFrom0f[k] = new ComeFrom.UpperLeft(comeFrom2f[k + dk2]);
                     accCosts0f[k] = tmpCostAB;
                 }
             });
@@ -227,7 +263,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         int b = listB.size();
         
         while (comeFrom != null) {
-            switch (comeFrom.direction) {
+            switch (comeFrom.direction()) {
                 case FROM_UPPER_LEFT:
                     a--;
                     b--;
@@ -242,9 +278,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     bestRoute.addFirst(IntPair.onlyB(b));
                     break;
                 default:
-                    throw new AssertionError(comeFrom.direction);
+                    throw new AssertionError(comeFrom.direction());
             }
-            comeFrom = comeFrom.prev;
+            comeFrom = comeFrom.prev();
         }
         
         return bestRoute;
