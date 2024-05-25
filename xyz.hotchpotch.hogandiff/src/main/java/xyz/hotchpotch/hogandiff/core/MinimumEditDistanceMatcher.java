@@ -56,6 +56,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
      * エディットグラフ上の各点における遷移経路を表します。<br>
      * 
      * @author nmby
+     * @param prev 遷移元ノード
+     * @param direction 遷移方向
      */
     private static record ComeFrom(
             ComeFrom prev,
