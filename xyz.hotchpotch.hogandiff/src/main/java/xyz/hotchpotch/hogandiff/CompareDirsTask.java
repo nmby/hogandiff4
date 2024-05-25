@@ -92,6 +92,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
     // 0. 処理開始のアナウンス
     private void announceStart(
             int progressBefore,
@@ -210,9 +212,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                 name -> Optional.empty())),
                         "");
             }
-            
-        } catch (ApplicationException e) {
-            throw e;
             
         } catch (Exception e) {
             str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);

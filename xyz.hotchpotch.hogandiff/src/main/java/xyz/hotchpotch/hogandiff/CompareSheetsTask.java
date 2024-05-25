@@ -58,11 +58,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             saveAndShowResultText(workDir, bResult.toString(), 75, 80);
             
             // 4. 比較結果の表示（Excelブック）
-            if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, bResult, 80, 98);
-            } else {
-                paintSaveAndShowBook2(workDir, bResult, 80, 98);
-            }
+            paintSaveAndShowBook(workDir, bResult, 80, 98);
             
             // 5. 処理終了のアナウンス
             announceEnd();
@@ -79,6 +75,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
         }
     }
+    
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     // 0. 処理開始のアナウンス
     private void announceStart(
