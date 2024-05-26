@@ -65,14 +65,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             return bResult;
             
-        } catch (ApplicationException e) {
-            throw e;
-            
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::call2");
         }
     }
     
@@ -101,10 +95,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::announceStart");
         }
     }
     
@@ -142,10 +133,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     Map.of(pair, Optional.of(result)));
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareSheetsTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareSheetsTask.030"), e);
+            throw getApplicationException(e, "CompareSheetsTask.030", "");
         }
     }
 }

@@ -76,14 +76,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             return tResult;
             
-        } catch (ApplicationException e) {
-            throw e;
-            
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::call2");
         }
     }
     
@@ -109,10 +103,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::announceStart");
         }
     }
     
@@ -161,10 +152,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return pairDataList;
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareTreesTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareTreesTask.030"), e);
+            throw getApplicationException(e, "CompareTreesTask.030", "");
         }
     }
     
@@ -253,10 +241,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     dirResults);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "CompareTreesTask.110", "");
         }
     }
 }

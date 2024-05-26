@@ -81,14 +81,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             return tResult;
             
-        } catch (ApplicationException e) {
-            throw e;
-            
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::call2");
         }
     }
     
@@ -114,10 +108,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::announceStart");
         }
     }
     
@@ -135,12 +126,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return outputDirs.unsafeMap(Files::createDirectory);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareDirsTask.020")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s%n%s".formatted(rb.getString("CompareDirsTask.020"), outputDirs.a(), outputDirs.b()),
-                    e);
+            throw getApplicationException(e, "CompareDirsTask.020", "");
         }
     }
     
@@ -174,10 +160,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return bookNamePairs;
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareDirsTask.040")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareDirsTask.040"), e);
+            throw getApplicationException(e, "CompareDirsTask.040", "");
         }
     }
     
@@ -214,10 +197,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "CompareDirsTask.080", "");
         }
     }
 }
