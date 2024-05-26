@@ -200,9 +200,10 @@ public abstract sealed class Report
             String chain = getChain().stream()
                     .map(Throwable::getClass)
                     .map(Class::getName)
+                    .map("\"%s\""::formatted)
                     .collect(Collectors.joining(", "));
             
-            return "thrown: [ %s ]".formatted(chain);
+            return "\"thrown\": [ %s ]".formatted(chain);
         }
         
         private List<Throwable> getChain() {
