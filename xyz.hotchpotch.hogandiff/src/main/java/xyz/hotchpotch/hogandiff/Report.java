@@ -203,7 +203,8 @@ public abstract sealed class Report
                     .map("\"%s\""::formatted)
                     .collect(Collectors.joining(", "));
             
-            return "\"thrown\": [ %s ]".formatted(chain);
+            return "\"thrown\": [ %s ], \"errorMessage\": \"%s\""
+                    .formatted(chain, thrown.getMessage());
         }
         
         private List<Throwable> getChain() {
