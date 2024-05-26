@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -44,17 +45,20 @@ public abstract sealed class Report
          * コンストラクタ
          * 
          * @param settings 設定セット
-         * @param elapsedTime 経過時間
+         * @param start 実行開始日時
+         * @param end 実行完了日時
          * @param result 比較結果
          */
         public Succeeded(
                 Settings settings,
-                Duration elapsedTime,
+                Instant start,
+                Instant end,
                 Result result) {
             
             super(
                     Objects.requireNonNull(settings, "settings"),
-                    Objects.requireNonNull(elapsedTime, "elapsedTime"));
+                    Objects.requireNonNull(start, "start"),
+                    Objects.requireNonNull(end, "end"));
             
             this.result = Objects.requireNonNull(result, "result");
         }
@@ -180,17 +184,20 @@ public abstract sealed class Report
          * コンストラクタ
          * 
          * @param settings 設定セット
-         * @param elapsedTime 経過時間
+         * @param start 実行開始日時
+         * @param end 実行修了日時
          * @param thrown スローされた例外
          */
         public Failed(
                 Settings settings,
-                Duration elapsedTime,
+                Instant start,
+                Instant end,
                 Throwable thrown) {
             
             super(
                     Objects.requireNonNull(settings, "settings"),
-                    Objects.requireNonNull(elapsedTime, "elapsedTime"));
+                    Objects.requireNonNull(start, "start"),
+                    Objects.requireNonNull(end, "end"));
             
             this.thrown = Objects.requireNonNull(thrown, "thrown");
         }
@@ -223,17 +230,21 @@ public abstract sealed class Report
     // [instance members] ******************************************************
     
     private final Settings settings;
-    private final Duration elapsedTime;
+    private final Instant start;
+    private final Instant end;
     
     private Report(
             Settings settings,
-            Duration elapsedTime) {
+            Instant start,
+            Instant end) {
         
         assert settings != null;
-        assert elapsedTime != null;
+        assert start != null;
+        assert end != null;
         
         this.settings = settings;
-        this.elapsedTime = elapsedTime;
+        this.start = start;
+        this.end = end;
     }
     
     /**
@@ -251,7 +262,8 @@ public abstract sealed class Report
             str.append("\"settings\": ").append(settingsToJson()).append(COMMA);
             
             str.append(stringProperty("menu", SettingKeys.CURR_MENU)).append(COMMA);
-            str.append("\"elapsedMillis\": ").append(elapsedTime.toMillis()).append(COMMA);
+            str.append("\"executedAt\": ").append("\"%s\"".formatted(start.toString())).append(COMMA);
+            str.append("\"elapsedMillis\": ").append(Duration.between(start, end).toMillis()).append(COMMA);
             
             str.append(toJsonString2());
         }
