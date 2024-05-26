@@ -23,6 +23,7 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -178,6 +179,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
+            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
                             || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
@@ -202,6 +204,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
+            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
                             || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
@@ -213,14 +216,25 @@ public class MainController extends VBox {
                                 .showAndWait();
             }
             
-            new Alert(
-                    AlertType.WARNING,
-                    "%s%n%s%n%s".formatted(
-                            rb.getString("gui.MainController.030"),
-                            e.getClass().getName(),
-                            e.getMessage()),
-                    ButtonType.OK)
-                            .showAndWait();
+            // エラーが発生したことを通知する
+            if (e instanceof ApplicationException) {
+                new Alert(
+                        AlertType.WARNING,
+                        "%s%n%s".formatted(
+                                e.getClass().getName(),
+                                e.getMessage()),
+                        ButtonType.OK)
+                                .showAndWait();
+            } else {
+                new Alert(
+                        AlertType.WARNING,
+                        "%s%n%s%n%s".formatted(
+                                rb.getString("gui.MainController.030"),
+                                e.getClass().getName(),
+                                e.getMessage()),
+                        ButtonType.OK)
+                                .showAndWait();
+            }
             
             isRunning.set(false);
         });

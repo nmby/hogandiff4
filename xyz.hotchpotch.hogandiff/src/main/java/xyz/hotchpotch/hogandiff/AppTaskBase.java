@@ -91,6 +91,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
+    protected ApplicationException getApplicationException(Throwable e, String msgId, String appendMsg) {
+        if (e instanceof ApplicationException ee) {
+            return ee;
+            
+        } else {
+            str.append(BR).append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
+            updateMessage(str.toString());
+            return new ApplicationException(rb.getString(msgId) + appendMsg, e);
+        }
+    }
+    
     @Override
     protected Report call() throws ApplicationException {
         Instant time1 = Instant.now();
@@ -107,33 +118,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return report;
             
         } catch (OutOfMemoryError e) {
-            str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            
-            report = new Report.Failed(
-                    settings,
-                    Duration.between(time1, Instant.now()),
-                    e);
-            
-            throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+            report = new Report.Failed(settings, Duration.between(time1, Instant.now()), e);
+            throw getApplicationException(e, "AppTaskBase.170", "");
             
         } catch (Exception e) {
-            str.append(BR).append(BR).append(rb.getString("AppTaskBase.180")).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            
-            report = new Report.Failed(
-                    settings,
-                    Duration.between(time1, Instant.now()),
-                    e);
-            
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            report = new Report.Failed(settings, Duration.between(time1, Instant.now()), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
             
         } finally {
             writeReport(report);
         }
-        
     }
     
     /**
@@ -142,9 +136,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param report 統計情報
      */
     private void writeReport(Report report) {
-        Path reportPath = workDir.resolve("report.json");
-        try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
-            writer.write(report.toJsonString());
+        try {
+            Path reportPath = workDir.resolve("report.json");
+            try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
+                writer.write(report.toJsonString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             // nop
@@ -169,18 +165,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws ApplicationException 処理に失敗した場合
      */
     protected Pair<DirInfo> extractDirs() throws ApplicationException {
-        Pair<Path> dirPaths = null;
         try {
-            dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
             DirLoader dirLoader = factory.dirLoader(settings);
             return dirPaths.unsafeMap(dirLoader::loadDir);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.190")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s%n%s".formatted(rb.getString("AppTaskBase.190"), dirPaths.a(), dirPaths.b()), e);
+            throw getApplicationException(e, "AppTaskBase.190", "");
         }
     }
     
@@ -207,9 +198,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         assert progressBefore <= progressAfter;
         assert progressAfter <= PROGRESS_MAX;
         
-        Path textPath = null;
         try {
-            textPath = workDir.resolve("result.txt");
+            Path textPath = workDir.resolve("result.txt");
             
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.030"), textPath));
@@ -227,12 +217,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.050")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("AppTaskBase.050"), textPath),
-                    e);
+            throw getApplicationException(e, "AppTaskBase.050", "");
         }
     }
     
@@ -260,14 +245,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 paintSaveAndShowBook2(workDir, bResult, 80, 98);
             }
             
-        } catch (ApplicationException e) {
-            throw e;
-            
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::paintSaveAndShowBook");
         }
     }
     
@@ -299,12 +278,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             creator.createResultBook(resultBookPath, tResult);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.080"), resultBookPath),
-                    e);
+            throw getApplicationException(e, "CompareTreesTask.080", "");
         }
         
         try {
@@ -316,12 +290,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
-                    e);
+            throw getApplicationException(e, "CompareTreesTask.100", "");
         }
     }
     
@@ -337,10 +306,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(PROGRESS_MAX, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::announceEnd");
         }
     }
     
@@ -615,10 +581,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.070")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.070"), e);
+            throw getApplicationException(e, "AppTaskBase.070", "");
         }
         
         try {
@@ -631,10 +594,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.090")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.090"), e);
+            throw getApplicationException(e, "AppTaskBase.090", "");
         }
     }
     
@@ -678,10 +638,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.100")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.100"), e);
+            throw getApplicationException(e, "AppTaskBase.100", "");
         }
         
         try {
@@ -699,10 +656,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.110")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.110"), e);
+            throw getApplicationException(e, "AppTaskBase.110", "");
         }
         
         try {
@@ -716,10 +670,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.090")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.090"), e);
+            throw getApplicationException(e, "AppTaskBase.090", "");
         }
     }
 }

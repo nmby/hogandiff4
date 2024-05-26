@@ -69,14 +69,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             return bResult;
             
-        } catch (ApplicationException e) {
-            throw e;
-            
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::call2");
         }
     }
     
@@ -100,10 +94,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.180")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.180"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::announceStart");
         }
     }
     
@@ -134,10 +125,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return pairs;
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareBooksTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareBooksTask.030"), e);
+            throw getApplicationException(e, "CompareBooksTask.030", "");
         }
     }
     
@@ -194,10 +182,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     results);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareBooksTask.050")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareBooksTask.050"), e);
+            throw getApplicationException(e, "CompareBooksTask.050", "");
         }
     }
 }
