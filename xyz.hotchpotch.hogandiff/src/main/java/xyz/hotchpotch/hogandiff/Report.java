@@ -45,8 +45,8 @@ public abstract sealed class Report
          * コンストラクタ
          * 
          * @param settings 設定セット
-         * @param start 実行開始日時
-         * @param end 実行完了日時
+         * @param start 実行開始時刻
+         * @param end 実行終了時刻
          * @param result 比較結果
          */
         public Succeeded(
@@ -184,8 +184,8 @@ public abstract sealed class Report
          * コンストラクタ
          * 
          * @param settings 設定セット
-         * @param start 実行開始日時
-         * @param end 実行修了日時
+         * @param start 実行開始時刻
+         * @param end 実行終了時刻
          * @param thrown スローされた例外
          */
         public Failed(
