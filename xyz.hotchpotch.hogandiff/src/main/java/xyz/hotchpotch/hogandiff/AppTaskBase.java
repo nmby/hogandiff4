@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -104,25 +103,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     @Override
     protected Report call() throws ApplicationException {
-        Instant time1 = Instant.now();
+        Instant start = Instant.now();
         Report report = null;
         
         try {
             Result result = call2();
             
-            report = new Report.Succeeded(
-                    settings,
-                    Duration.between(time1, Instant.now()),
-                    result);
+            report = new Report.Succeeded(settings, start, Instant.now(), result);
             
             return report;
             
         } catch (OutOfMemoryError e) {
-            report = new Report.Failed(settings, Duration.between(time1, Instant.now()), e);
+            report = new Report.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.170", "");
             
         } catch (Exception e) {
-            report = new Report.Failed(settings, Duration.between(time1, Instant.now()), e);
+            report = new Report.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
             
         } finally {
