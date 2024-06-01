@@ -48,29 +48,23 @@ public interface CellsLoader {
                             null);
         };
         
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return useCachedValue
-                        ? CombinedCellsLoader.of(List.of(
-                                () -> HSSFCellsLoaderWithPoiEventApi.of(useCachedValue),
-                                () -> CellsLoaderWithPoiUserApi.of(converter)))
-                        : CellsLoaderWithPoiUserApi.of(converter);
-            
-            case XLSX:
-            case XLSM:
-                return useCachedValue
-                        ? CombinedCellsLoader.of(List.of(
-                                () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookOpenInfo),
-                                () -> CellsLoaderWithPoiUserApi.of(converter)))
-                        : CellsLoaderWithPoiUserApi.of(converter);
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return switch (bookOpenInfo.bookType()) {
+            case XLS -> useCachedValue
+                    ? CombinedCellsLoader.of(List.of(
+                            () -> HSSFCellsLoaderWithPoiEventApi.of(useCachedValue),
+                            () -> CellsLoaderWithPoiUserApi.of(converter)))
+                    : CellsLoaderWithPoiUserApi.of(converter);
+        
+            case XLSX, XLSM -> useCachedValue
+                    ? CombinedCellsLoader.of(List.of(
+                            () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookOpenInfo),
+                            () -> CellsLoaderWithPoiUserApi.of(converter)))
+                    : CellsLoaderWithPoiUserApi.of(converter);
+        
+            // FIXME: [No.2 .xlsbのサポート]
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+        };
     }
     
     // [instance members] ******************************************************

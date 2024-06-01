@@ -340,16 +340,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected boolean isSameBook() {
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
-        switch (menu) {
-            case COMPARE_BOOKS:
-            case COMPARE_SHEETS:
-                return BookOpenInfo.isSameBook(
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
-            
-            default:
-                throw new IllegalStateException("not suitable for " + menu);
-        }
+        return switch (menu) {
+            case COMPARE_BOOKS, COMPARE_SHEETS -> BookOpenInfo.isSameBook(
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
+                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+        
+            default -> throw new IllegalStateException("not suitable for " + menu);
+        };
     }
     
     /**

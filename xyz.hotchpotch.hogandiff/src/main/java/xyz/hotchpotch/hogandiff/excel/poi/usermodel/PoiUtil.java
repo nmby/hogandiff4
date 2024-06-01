@@ -98,17 +98,12 @@ public class PoiUtil {
                 ? cell.getCachedFormulaResultType()
                 : cell.getCellType();
         
-        switch (type) {
-            case STRING:
-                return cell.getStringCellValue();
-            
-            case FORMULA:
-                return cell.getCellFormula();
-            
-            case BOOLEAN:
-                return Boolean.toString(cell.getBooleanCellValue());
-            
-            case NUMERIC:
+        return switch (type) {
+            case STRING -> cell.getStringCellValue();
+            case FORMULA -> cell.getCellFormula();
+            case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
+        
+            case NUMERIC -> {
                 // 日付セルや独自書式セルの値の扱いは甚だ不完全なものの、
                 // diffツールとしては内容の比較を行えればよいのだと割り切り、
                 // これ以上に凝ったコーディングは行わないこととする。
@@ -116,25 +111,21 @@ public class PoiUtil {
                     Date date = cell.getDateCellValue();
                     LocalDateTime localDateTime = LocalDateTime
                             .ofInstant(date.toInstant(), ZoneId.systemDefault());
-                    return dateTimeFormatter.format(localDateTime);
+                    yield dateTimeFormatter.format(localDateTime);
                     
                 } else {
                     String val = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
                     if (val.endsWith(".0")) {
                         val = val.substring(0, val.length() - 2);
                     }
-                    return val;
+                    yield val;
                 }
-                
-            case ERROR:
-                return ErrorEval.getText(cell.getErrorCellValue());
+            }
             
-            case BLANK:
-                return "";
-            
-            default:
-                throw new AssertionError("unknown cell type: " + type);
-        }
+            case ERROR -> ErrorEval.getText(cell.getErrorCellValue());
+            case BLANK -> "";
+            default -> throw new AssertionError("unknown cell type: " + type);
+        };
     }
     
     /**
@@ -149,35 +140,30 @@ public class PoiUtil {
     public static Set<SheetType> possibleTypes(Sheet sheet) {
         Objects.requireNonNull(sheet, "sheet");
         
-        switch (sheet) {
-            case XSSFChartSheet xcs:
-                return EnumSet.of(SheetType.CHART_SHEET);
-            
-            case XSSFDialogsheet xds:
-                return EnumSet.of(SheetType.DIALOG_SHEET);
-            
-            case XSSFSheet xs:
-                return EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
-            
-            case HSSFSheet hSheet:
+        return switch (sheet) {
+            case XSSFChartSheet xcs -> EnumSet.of(SheetType.CHART_SHEET);
+            case XSSFDialogsheet xds -> EnumSet.of(SheetType.DIALOG_SHEET);
+            case XSSFSheet xs -> EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
+        
+            case HSSFSheet hSheet -> {
                 try {
                     if (hSheet.getDialog()) {
                         // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
-                        return EnumSet.of(SheetType.DIALOG_SHEET);
+                        yield EnumSet.of(SheetType.DIALOG_SHEET);
                     }
                 } catch (NullPointerException e) {
                     // HSSFSheet#getDialog() はたまにヌルポを吐くので受け止める。
                 }
                 // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートの場合もここに到達してしまうので、やむを得ず含めることにする。
-                return EnumSet.of(
+                yield EnumSet.of(
                         SheetType.WORKSHEET,
                         SheetType.CHART_SHEET,
                         SheetType.MACRO_SHEET,
                         SheetType.DIALOG_SHEET);
+            }
             
-            default:
-                throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
-        }
+            default -> throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
+        };
     }
     
     /**
@@ -504,16 +490,19 @@ public class PoiUtil {
             Comment c = comments.get(addr);
             
             switch (c) {
-                case XSSFComment comment -> {
+                case XSSFComment comment:
                     // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
                     comment.setVisible(true);
                     // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
-                }
-                case HSSFComment comment -> {
+                    break;
+                
+                case HSSFComment comment:
                     comment.setVisible(true);
                     comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
-                }
-                default -> throw new AssertionError("unknown comment type: " + c.getClass().getName());
+                    break;
+                
+                default:
+                    throw new AssertionError("unknown comment type: " + c.getClass().getName());
             }
         });
     }
@@ -534,17 +523,18 @@ public class PoiUtil {
         Objects.requireNonNull(color, "color");
         
         switch (sheet) {
-            case XSSFSheet xSheet -> {
+            case XSSFSheet xSheet:
                 xSheet.setTabColor(new XSSFColor(
                         new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
                         new DefaultIndexedColorMap()));
-            }
-            case HSSFSheet hSheet -> {
+                break;
+            
+            case HSSFSheet hSheet:
                 // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
-            }
-            default -> {
+                break;
+            
+            default:
                 // nop
-            }
         }
     }
     

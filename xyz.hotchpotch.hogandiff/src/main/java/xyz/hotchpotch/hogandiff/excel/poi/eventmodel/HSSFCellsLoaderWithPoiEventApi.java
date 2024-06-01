@@ -263,6 +263,8 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
          * @param record レコード
          */
         private void readingCellContentsAndComments(Record record) {
+            assert record != null;
+            
             if (record instanceof CellRecord && prevFormulaRec != null) {
                 throw new AssertionError("no following string record");
             }
@@ -353,9 +355,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     step = ProcessingStep.COMPLETED;
                     break;
                 
-                case null:
                 default:
-                    // nullケースはないはずだが念のため入れておく。
                     // nop
             }
             
@@ -390,36 +390,26 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 
                 CellType type = fRec.getCachedResultTypeEnum();
                 
-                switch (type) {
-                    case NUMERIC:
-                        return NumberToTextConverter.toText(fRec.getValue());
-                    
-                    case BOOLEAN:
-                        return Boolean.toString(fRec.getCachedBooleanValue());
-                    
-                    case ERROR:
-                        return ErrorEval.getText(fRec.getCachedErrorValue());
-                    
-                    case BLANK:
-                        // nop: 空のセルは抽出しない。
-                        return null;
-                    
-                    case _NONE:
-                        throw new AssertionError("_NONE");
-                    
-                    case FORMULA:
-                        // キャッシュされた値のタイプが FORMULA というのは無いはず
-                        throw new AssertionError("FORMULA");
-                    
-                    case STRING:
-                        // 利用者からのレポートによると、このパスに入る場合があるらしい。
-                        // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
-                        // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
-                        return null;
-                    
-                    default:
-                        throw new AssertionError("unknown cell type: " + type);
-                }
+                return switch (type) {
+                    case NUMERIC -> NumberToTextConverter.toText(fRec.getValue());
+                    case BOOLEAN -> Boolean.toString(fRec.getCachedBooleanValue());
+                    case ERROR -> ErrorEval.getText(fRec.getCachedErrorValue());
+                
+                    // nop: 空のセルは抽出しない。
+                    case BLANK -> null;
+                
+                    // 利用者からのレポートによると、このパスに入る場合があるらしい。
+                    // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
+                    // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
+                    case STRING -> null;
+                
+                    case _NONE -> throw new AssertionError("_NONE");
+                
+                    // キャッシュされた値のタイプが FORMULA というのは無いはず
+                    case FORMULA -> throw new AssertionError("FORMULA");
+                
+                    default -> throw new AssertionError("unknown cell type: " + type);
+                };
                 
             } else {
                 // FIXME: [No.4 数式サポート改善] 数式文字列もサポートできるようにする

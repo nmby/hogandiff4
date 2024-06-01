@@ -69,15 +69,12 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
         public void processRecord(Record record) {
             assert record != null;
             
-            switch (record.getSid()) {
-                case BoundSheetRecord.sid:
-                    BoundSheetRecord bsRec = (BoundSheetRecord) record;
+            switch (record) {
+                case BoundSheetRecord bsRec:
                     sheets.add(new SheetInfo(bsRec.getSheetname()));
                     break;
                 
-                case BOFRecord.sid:
-                    BOFRecord bof = (BOFRecord) record;
-                    
+                case BOFRecord bof:
                     switch (bof.getType()) {
                         case BOFRecord.TYPE_WORKBOOK:
                         case BOFRecord.TYPE_WORKSPACE_FILE:
@@ -109,8 +106,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
                     }
                     break;
                 
-                case WSBoolRecord.sid:
-                    WSBoolRecord wsbRec = (WSBoolRecord) record;
+                case WSBoolRecord wsbRec:
                     if (wsbRec.getDialog()) {
                         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
                         sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
@@ -118,6 +114,9 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
                         sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
                     }
                     break;
+                
+                default:
+                    // nop
             }
         }
         
