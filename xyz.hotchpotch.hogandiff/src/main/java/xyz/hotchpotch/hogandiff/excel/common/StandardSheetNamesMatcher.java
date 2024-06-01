@@ -27,9 +27,9 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
     public static StandardSheetNamesMatcher of(boolean matchNamesStrictly) {
         return new StandardSheetNamesMatcher(matchNamesStrictly
                 ? Matcher.identityMatcherOf()
-                : Matcher.greedyMatcherOf(
+                : Matcher.minimumCostFlowMatcherOf(
                         String::length,
-                        StringDiffUtil::levenshteinDistance));
+                        (str1, str2) -> StringDiffUtil.levenshteinDistance(str1, str2) + 1));
     }
     
     // [instance members] ******************************************************

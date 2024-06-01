@@ -27,6 +27,9 @@ class StandardSheetNamesMatcherTest {
             .of("Friday", "Monday", "Saturday", "Thursday", "Tuesday", "Wednesday");
     private static final List<String> sheetNames15 = List
             .of("Sunday", "Mon", "Tues", "Wednesday", "Thurs", "Fri", "DUMMY");
+    private static final List<String> sheetNames16 = List
+            .of("【ADD】Sunday", "【ADD】Monday", "【VERYVERYLONGADDITIONAL】Tuesday", "Wednesday【ADD】", "Thursday【ADD】",
+                    "Friday【VERYVERYLONGADDITIONAL】", "Saturday");
     
     private static final BookOpenInfo dummyOpenInfo = new BookOpenInfo(Path.of("dummy"), null);
     
@@ -86,6 +89,17 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Saturday", null),
                         new Pair<>(null, "DUMMY")),
                 Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15))));
+        
+        assertEquals(
+                Set.of(
+                        new Pair<>("Sunday", "【ADD】Sunday"),
+                        new Pair<>("Monday", "【ADD】Monday"),
+                        new Pair<>("Tuesday", "【VERYVERYLONGADDITIONAL】Tuesday"),
+                        new Pair<>("Wednesday", "Wednesday【ADD】"),
+                        new Pair<>("Thursday", "Thursday【ADD】"),
+                        new Pair<>("Friday", "Friday【VERYVERYLONGADDITIONAL】"),
+                        new Pair<>("Saturday", "Saturday")),
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16))));
     }
     
     @Test
@@ -147,5 +161,22 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>(null, "Fri"),
                         new Pair<>(null, "DUMMY")),
                 Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15))));
+        
+        assertEquals(
+                Set.of(
+                        new Pair<>("Sunday", null),
+                        new Pair<>("Monday", null),
+                        new Pair<>("Tuesday", null),
+                        new Pair<>("Wednesday", null),
+                        new Pair<>("Thursday", null),
+                        new Pair<>("Friday", null),
+                        new Pair<>("Saturday", "Saturday"),
+                        new Pair<>(null, "【ADD】Sunday"),
+                        new Pair<>(null, "【ADD】Monday"),
+                        new Pair<>(null, "【VERYVERYLONGADDITIONAL】Tuesday"),
+                        new Pair<>(null, "Wednesday【ADD】"),
+                        new Pair<>(null, "Thursday【ADD】"),
+                        new Pair<>(null, "Friday【VERYVERYLONGADDITIONAL】")),
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16))));
     }
 }
