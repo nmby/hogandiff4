@@ -149,37 +149,35 @@ public class PoiUtil {
     public static Set<SheetType> possibleTypes(Sheet sheet) {
         Objects.requireNonNull(sheet, "sheet");
         
-        if (sheet instanceof XSSFSheet) {
-            
-            if (sheet instanceof XSSFChartSheet) {
+        switch (sheet) {
+            case XSSFChartSheet xcs:
                 return EnumSet.of(SheetType.CHART_SHEET);
-                
-            } else if (sheet instanceof XSSFDialogsheet) {
+            
+            case XSSFDialogsheet xds:
                 return EnumSet.of(SheetType.DIALOG_SHEET);
-                
-            } else {
+            
+            case XSSFSheet xs:
                 return EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
-            }
             
-        } else if (sheet instanceof HSSFSheet hSheet) {
-            
-            try {
-                if (hSheet.getDialog()) {
-                    // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
-                    return EnumSet.of(SheetType.DIALOG_SHEET);
+            case HSSFSheet hSheet:
+                try {
+                    if (hSheet.getDialog()) {
+                        // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
+                        return EnumSet.of(SheetType.DIALOG_SHEET);
+                    }
+                } catch (NullPointerException e) {
+                    // HSSFSheet#getDialog() はたまにヌルポを吐くので受け止める。
                 }
-            } catch (NullPointerException e) {
-                // HSSFSheet#getDialog() はたまにヌルポを吐くので受け止める。
-            }
-            // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートの場合もここに到達してしまうので、やむを得ず含めることにする。
-            return EnumSet.of(
-                    SheetType.WORKSHEET,
-                    SheetType.CHART_SHEET,
-                    SheetType.MACRO_SHEET,
-                    SheetType.DIALOG_SHEET);
+                // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートの場合もここに到達してしまうので、やむを得ず含めることにする。
+                return EnumSet.of(
+                        SheetType.WORKSHEET,
+                        SheetType.CHART_SHEET,
+                        SheetType.MACRO_SHEET,
+                        SheetType.DIALOG_SHEET);
+            
+            default:
+                throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
         }
-        
-        throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
     }
     
     /**
@@ -192,12 +190,10 @@ public class PoiUtil {
     public static void clearAllColors(Workbook book) {
         Objects.requireNonNull(book, "book");
         
-        if (book instanceof XSSFWorkbook xBook) {
-            clearAllColors(xBook);
-        } else if (book instanceof HSSFWorkbook hBook) {
-            clearAllColors(hBook);
-        } else {
-            throw new AssertionError("unknown book type: " + book.getClass().getName());
+        switch (book) {
+            case XSSFWorkbook xBook -> clearAllColors(xBook);
+            case HSSFWorkbook hBook -> clearAllColors(hBook);
+            default -> throw new AssertionError("unknown book type: " + book.getClass().getName());
         }
     }
     
@@ -247,8 +243,7 @@ public class PoiUtil {
         // シート見出し
         // FIXME: [No.3 着色関連] この実装で正しいのかさっぱり分からない
         // が事実としてシート見出し色が消えるのできっと良いのだろう・・
-        book.forEach(sheet -> ((XSSFSheet) sheet).setTabColor(
-                new XSSFColor(new DefaultIndexedColorMap())));
+        book.forEach(sheet -> ((XSSFSheet) sheet).setTabColor(new XSSFColor(new DefaultIndexedColorMap())));
         
         // セルコメントに対する処理
         book.forEach(sheet -> ((XSSFSheet) sheet).getCellComments().values().forEach(comment -> {
@@ -508,17 +503,17 @@ public class PoiUtil {
         addresses.forEach(addr -> {
             Comment c = comments.get(addr);
             
-            if (c instanceof XSSFComment comment) {
-                // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
-                comment.setVisible(true);
-                // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
-                
-            } else if (c instanceof HSSFComment comment) {
-                comment.setVisible(true);
-                comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
-                
-            } else {
-                throw new AssertionError("unknown comment type: " + c.getClass().getName());
+            switch (c) {
+                case XSSFComment comment -> {
+                    // FIXME: [No.7 POI関連] XSSFComment#setVisible(boolean)が機能しない
+                    comment.setVisible(true);
+                    // FIXME: [No.3 着色関連] セルコメントのスタイル変更方法が分からない
+                }
+                case HSSFComment comment -> {
+                    comment.setVisible(true);
+                    comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
+                }
+                default -> throw new AssertionError("unknown comment type: " + c.getClass().getName());
             }
         });
     }
@@ -538,13 +533,18 @@ public class PoiUtil {
         Objects.requireNonNull(sheet, "sheet");
         Objects.requireNonNull(color, "color");
         
-        if (sheet instanceof XSSFSheet xSheet) {
-            xSheet.setTabColor(new XSSFColor(
-                    new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
-                    new DefaultIndexedColorMap()));
-            
-        } else if (sheet instanceof HSSFSheet) {
-            // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
+        switch (sheet) {
+            case XSSFSheet xSheet -> {
+                xSheet.setTabColor(new XSSFColor(
+                        new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
+                        new DefaultIndexedColorMap()));
+            }
+            case HSSFSheet hSheet -> {
+                // FIXME: [No.3 着色関連] シート見出しの色の設定方法が分からない
+            }
+            default -> {
+                // nop
+            }
         }
     }
     

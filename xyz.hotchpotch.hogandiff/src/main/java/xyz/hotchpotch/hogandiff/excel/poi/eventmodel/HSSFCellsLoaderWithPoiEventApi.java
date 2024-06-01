@@ -272,24 +272,20 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             
             String value = null;
             
-            switch (record.getSid()) {
-                case LabelSSTRecord.sid: // セル内容抽出用
-                    LabelSSTRecord lRec = (LabelSSTRecord) record;
+            switch (record) {
+                case LabelSSTRecord lRec: // セル内容抽出用
                     value = sst.get(lRec.getSSTIndex());
                     break;
                 
-                case NumberRecord.sid: // セル内容抽出用
-                    NumberRecord nRec = (NumberRecord) record;
+                case NumberRecord nRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(nRec.getValue());
                     break;
                 
-                case RKRecord.sid: // セル内容抽出用
-                    RKRecord rkRec = (RKRecord) record;
+                case RKRecord rkRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(rkRec.getRKNumber());
                     break;
                 
-                case BoolErrRecord.sid: // セル内容抽出用
-                    BoolErrRecord beRec = (BoolErrRecord) record;
+                case BoolErrRecord beRec: // セル内容抽出用
                     if (beRec.isBoolean()) {
                         value = Boolean.toString(beRec.getBooleanValue());
                     } else {
@@ -297,12 +293,11 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     }
                     break;
                 
-                case FormulaRecord.sid: // セル内容抽出用
-                    value = getValueFromFormulaRecord((FormulaRecord) record);
+                case FormulaRecord fRec: // セル内容抽出用
+                    value = getValueFromFormulaRecord(fRec);
                     break;
                 
-                case StringRecord.sid: // 数式計算値抽出用
-                    StringRecord sRec = (StringRecord) record;
+                case StringRecord sRec: // 数式計算値抽出用
                     String calculated = sRec.getString();
                     if (calculated != null && !"".equals(calculated)) {
                         cells.put(
@@ -318,8 +313,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     prevFormulaRec = null;
                     break;
                 
-                case ObjRecord.sid: // セルコメント抽出用
-                    ObjRecord objRec = (ObjRecord) record;
+                case ObjRecord objRec: // セルコメント抽出用
                     Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
                             .filter(sub -> sub instanceof CommonObjectDataSubRecord)
                             .map(sub -> (CommonObjectDataSubRecord) sub)
@@ -333,19 +327,17 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     });
                     break;
                 
-                case TextObjectRecord.sid: // セルコメント抽出用
+                case TextObjectRecord txoRec: // セルコメント抽出用
                     if (prevFtCmoRec == null) {
                         // throw new AssertionError("no preceding ftCmo record");
                         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
                         break;
                     }
-                    TextObjectRecord txoRec = (TextObjectRecord) record;
                     comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
                     prevFtCmoRec = null;
                     break;
                 
-                case NoteRecord.sid: // セルコメント抽出用
-                    NoteRecord noteRec = (NoteRecord) record;
+                case NoteRecord noteRec: // セルコメント抽出用
                     String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
                     String comment = comments.remove(noteRec.getShapeId());
                     
@@ -357,9 +349,14 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     }
                     break;
                 
-                case EOFRecord.sid: // 次ステップに移行
+                case EOFRecord eofRec: // 次ステップに移行
                     step = ProcessingStep.COMPLETED;
                     break;
+                
+                case null:
+                default:
+                    // nullケースはないはずだが念のため入れておく。
+                    // nop
             }
             
             if (value != null && !"".equals(value)) {
