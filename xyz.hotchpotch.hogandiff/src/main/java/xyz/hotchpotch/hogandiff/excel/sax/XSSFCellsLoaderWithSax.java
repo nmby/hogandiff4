@@ -25,7 +25,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -297,11 +296,11 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         this.extractCachedValue = extractCachedValue;
         this.bookPath = bookPath;
         this.readPassword = readPassword;
-        this.nameToInfo = SaxUtil.loadSheetInfo(new BookOpenInfo(bookPath, readPassword)).stream()
+        this.nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(new BookOpenInfo(bookPath, readPassword));
+        this.sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
     }
     
     /**

@@ -2,14 +2,15 @@ package xyz.hotchpotch.hogandiff.excel.common;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
+import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
@@ -80,32 +81,35 @@ public class CombinedBookPainter implements BookPainter {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public void paintAndSave(
-            BookOpenInfo srcBookOpenInfo,
-            BookOpenInfo dstBookOpenInfo,
+            Path srcBookPath,
+            Path dstBookPath,
+            String srcReadPassword,
+            String dstReadPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookOpenInfo, "srcBookOpenInfo");
-        Objects.requireNonNull(dstBookOpenInfo, "dstBookOpenInfo");
+        Objects.requireNonNull(srcBookPath, "srcBookPath");
+        Objects.requireNonNull(dstBookPath, "dstBookPath");
+        // readPassword may be null.
         Objects.requireNonNull(diffs, "diffs");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), srcBookOpenInfo.bookType());
-        if (Objects.equals(srcBookOpenInfo.bookPath(), dstBookOpenInfo.bookPath())) {
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
+        if (Objects.equals(srcBookPath, dstBookPath)) {
             throw new IllegalArgumentException(
-                    "different book paths are required : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
+                    "different book paths are required : %s -> %s".formatted(srcBookPath, dstBookPath));
         }
-        if (srcBookOpenInfo.bookType() != dstBookOpenInfo.bookType()) {
+        if (BookType.of(srcBookPath) != BookType.of(dstBookPath)) {
             throw new IllegalArgumentException(
-                    "extentions must be the same : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
+                    "extentions must be the same : %s -> %s".formatted(srcBookPath, dstBookPath));
         }
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s -> %s".formatted(srcBookOpenInfo, dstBookOpenInfo));
+                "processiong failed : %s -> %s".formatted(srcBookPath, dstBookPath));
         
         Iterator<UnsafeSupplier<BookPainter, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 BookPainter painter = itr.next().get();
-                painter.paintAndSave(srcBookOpenInfo, dstBookOpenInfo, diffs);
+                painter.paintAndSave(srcBookPath, dstBookPath, srcReadPassword, dstReadPassword, diffs);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -116,7 +120,7 @@ public class CombinedBookPainter implements BookPainter {
             // 保存先ファイルを削除しておく。
             if (itr.hasNext()) {
                 try {
-                    Files.deleteIfExists(dstBookOpenInfo.bookPath());
+                    Files.deleteIfExists(dstBookPath);
                 } catch (IOException e) {
                     failed.addSuppressed(e);
                 }

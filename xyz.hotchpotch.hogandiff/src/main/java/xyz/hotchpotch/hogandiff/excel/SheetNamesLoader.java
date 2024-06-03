@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
 
 /**
  * Excelブックからシート名の一覧を抽出するローダーを表します。<br>
- * これは、{@link #loadSheetNames(BookOpenInfo)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadSheetNames(Path, String)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */

@@ -81,7 +81,7 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(new BookOpenInfo(bookPath, readPassword));
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookPath, readPassword);
             
             List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))

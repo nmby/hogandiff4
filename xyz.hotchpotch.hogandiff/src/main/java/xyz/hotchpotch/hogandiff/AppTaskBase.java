@@ -284,7 +284,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             BookPainter painter = factory.painter(settings, dst.bookPath(), dst.readPassword());
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
-            painter.paintAndSave(src, dst, result);
+            painter.paintAndSave(src.bookPath(), dst.bookPath(), src.readPassword(), dst.readPassword(), result);
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -341,7 +341,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookPainter painter1 = factory.painter(settings, dst1.bookPath(), dst1.readPassword());
-            painter1.paintAndSave(src1, dst1, bResult.getPiece(Side.A));
+            painter1.paintAndSave(
+                    src1.bookPath(), dst1.bookPath(),
+                    src1.readPassword(), dst1.readPassword(),
+                    bResult.getPiece(Side.A));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
             
@@ -359,7 +362,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookPainter painter2 = factory.painter(settings, dst2.bookPath(), dst2.readPassword());
-            painter2.paintAndSave(src2, dst2, bResult.getPiece(Side.B));
+            painter2.paintAndSave(
+                    src2.bookPath(), dst2.bookPath(),
+                    src2.readPassword(), dst2.readPassword(),
+                    bResult.getPiece(Side.B));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -622,11 +628,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             info -> factory.painter(settings, info.bookPath(), info.readPassword()));
                     BookResult bookResult2 = bookResult;
                     
-                    Side.unsafeForEach(
-                            side -> painters.get(side).paintAndSave(
-                                    srcInfos.get(side),
-                                    dstInfos.get(side),
-                                    bookResult2.getPiece(side)));
+                    Side.unsafeForEach(side -> {
+                        BookOpenInfo srcInfo = srcInfos.get(side);
+                        BookOpenInfo dstInfo = dstInfos.get(side);
+                        
+                        painters.get(side).paintAndSave(
+                                srcInfo.bookPath(), dstInfo.bookPath(),
+                                srcInfo.readPassword(), dstInfo.readPassword(),
+                                bookResult2.getPiece(side));
+                    });
                     
                     str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
                     updateMessage(str.toString());
