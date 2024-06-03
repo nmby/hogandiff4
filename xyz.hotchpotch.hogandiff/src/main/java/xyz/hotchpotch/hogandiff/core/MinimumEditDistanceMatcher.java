@@ -67,10 +67,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
          * @param prev 遷移元ノード
          */
         static record Upper(ComeFrom prev) implements ComeFrom {
-            @Override
-            public Direction direction() {
-                return Direction.FROM_UPPER;
-            }
         }
         
         /**
@@ -79,10 +75,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
          * @param prev 遷移元ノード
          */
         static record Left(ComeFrom prev) implements ComeFrom {
-            @Override
-            public Direction direction() {
-                return Direction.FROM_LEFT;
-            }
         }
         
         /**
@@ -91,15 +83,17 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
          * @param prev 遷移元ノード
          */
         static record UpperLeft(ComeFrom prev) implements ComeFrom {
-            @Override
-            public Direction direction() {
-                return Direction.FROM_UPPER_LEFT;
-            }
         }
         
         // [instance members] --------------------------------------------------
         
-        Direction direction();
+        default Direction direction() {
+            return switch (this) {
+                case Upper from -> Direction.FROM_UPPER;
+                case Left from -> Direction.FROM_LEFT;
+                case UpperLeft from -> Direction.FROM_UPPER_LEFT;
+            };
+        }
         
         ComeFrom prev();
     }

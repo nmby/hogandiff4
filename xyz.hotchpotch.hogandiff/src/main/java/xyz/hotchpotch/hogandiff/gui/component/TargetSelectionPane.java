@@ -172,11 +172,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         isReady.bind(Bindings.createBooleanBinding(
                 () -> switch (parent.menu().getValue()) {
-                case COMPARE_BOOKS -> bookOpenInfo.getValue() != null;
-                case COMPARE_SHEETS -> bookOpenInfo.getValue() != null && sheetName.getValue() != null;
-                case COMPARE_DIRS -> dirPath.getValue() != null;
-                case COMPARE_TREES -> dirPath.getValue() != null;
-                default -> throw new AssertionError("unknown menu");
+                    case COMPARE_BOOKS -> bookOpenInfo.getValue() != null;
+                    case COMPARE_SHEETS -> bookOpenInfo.getValue() != null && sheetName.getValue() != null;
+                    case COMPARE_DIRS -> dirPath.getValue() != null;
+                    case COMPARE_TREES -> dirPath.getValue() != null;
+                    default -> throw new AssertionError("unknown menu");
                 },
                 parent.menu(), bookOpenInfo, sheetName, dirPath));
         

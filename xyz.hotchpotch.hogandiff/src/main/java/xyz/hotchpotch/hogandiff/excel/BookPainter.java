@@ -58,46 +58,40 @@ public interface BookPainter {
         
         Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return CombinedBookPainter.of(List.of(
-                        // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                        () -> BookPainterWithPoiUserApi.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentColor,
-                                diffCommentColor,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor)));
-            
-            case XLSX:
-            case XLSM:
-                return CombinedBookPainter.of(List.of(
-                        () -> XSSFBookPainterWithStax.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentHex,
-                                diffCommentHex,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor),
-                        () -> BookPainterWithPoiUserApi.of(
-                                redundantColor,
-                                diffColor,
-                                redundantCommentColor,
-                                diffCommentColor,
-                                redundantSheetColor,
-                                diffSheetColor,
-                                sameSheetColor)));
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return switch (bookOpenInfo.bookType()) {
+            case XLS -> CombinedBookPainter.of(List.of(
+                    // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
+        
+            case XLSX, XLSM -> CombinedBookPainter.of(List.of(
+                    () -> XSSFBookPainterWithStax.of(
+                            redundantColor,
+                            diffColor,
+                            redundantCommentHex,
+                            diffCommentHex,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor),
+                    () -> BookPainterWithPoiUserApi.of(
+                            redundantColor,
+                            diffColor,
+                            redundantCommentColor,
+                            diffCommentColor,
+                            redundantSheetColor,
+                            diffSheetColor,
+                            sameSheetColor)));
+        
+            // FIXME: [No.2 .xlsbのサポート]
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+        };
     }
     
     // [instance members] ******************************************************

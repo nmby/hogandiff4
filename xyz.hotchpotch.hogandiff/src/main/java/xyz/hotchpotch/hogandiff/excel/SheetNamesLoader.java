@@ -38,26 +38,19 @@ public interface SheetNamesLoader {
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
-        switch (bookOpenInfo.bookType()) {
-            case XLS:
-                return CombinedSheetNamesLoader.of(List.of(
-                        () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
-                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-            
-            case XLSX:
-            case XLSM:
-                return CombinedSheetNamesLoader.of(List.of(
-                        () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
-                        () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
-            
-            case XLSB:
-                // FIXME: [No.2 .xlsbのサポート]
-                //throw new UnsupportedOperationException(rb.getString("excel.Factory.010"));
-                throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            
-            default:
-                throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
-        }
+        return switch (bookOpenInfo.bookType()) {
+            case XLS -> CombinedSheetNamesLoader.of(List.of(
+                    () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+        
+            case XLSX, XLSM -> CombinedSheetNamesLoader.of(List.of(
+                    () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+        
+            // FIXME: [No.2 .xlsbのサポート]
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
+            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+        };
     }
     
     // [instance members] ******************************************************
