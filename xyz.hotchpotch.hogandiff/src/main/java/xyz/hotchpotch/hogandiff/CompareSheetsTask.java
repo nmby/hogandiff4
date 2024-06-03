@@ -111,7 +111,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
+            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(
+                    info -> factory.cellsLoader(settings, info.bookPath(), info.readPassword()));
             Pair<String> pair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(BookResult.formatSheetNamesPair("1", pair));

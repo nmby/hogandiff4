@@ -250,7 +250,8 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return 新しいローダー
      * @throws NullPointerException
      *              {@code bookOpenInfo} が {@code null} の場合
@@ -262,39 +263,45 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      */
     public static CellsLoader of(
             boolean extractCachedValue,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(
                 XSSFCellsLoaderWithSax.class,
-                bookOpenInfo.bookType());
+                BookType.of(bookPath));
         
-        return new XSSFCellsLoaderWithSax(extractCachedValue, bookOpenInfo);
+        return new XSSFCellsLoaderWithSax(extractCachedValue, bookPath, readPassword);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
-    private final BookOpenInfo bookOpenInfo;
+    private final Path bookPath;
+    private final String readPassword;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        assert bookOpenInfo != null;
-        assert CommonUtil.isSupportedBookType(getClass(), bookOpenInfo.bookType());
+        assert bookPath != null;
+        // readPassword may be null.
+        assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
         
         this.extractCachedValue = extractCachedValue;
-        this.bookOpenInfo = bookOpenInfo;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookOpenInfo).stream()
+        this.bookPath = bookPath;
+        this.readPassword = readPassword;
+        this.nameToInfo = SaxUtil.loadSheetInfo(new BookOpenInfo(bookPath, readPassword)).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookOpenInfo);
+        this.sst = SaxUtil.loadSharedStrings(new BookOpenInfo(bookPath, readPassword));
     }
     
     /**
@@ -324,10 +331,10 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         Objects.requireNonNull(bookPath, "bookPath");
         // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        if (!Objects.equals(this.bookOpenInfo.bookPath(), bookPath)) {
+        if (!Objects.equals(this.bookPath, bookPath)) {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."
-                            .formatted(this.bookOpenInfo, bookOpenInfo));
+                            .formatted(this.bookPath, bookPath));
         }
         
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
@@ -363,7 +370,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookPath, sheetName), e);
         }
     }
 }

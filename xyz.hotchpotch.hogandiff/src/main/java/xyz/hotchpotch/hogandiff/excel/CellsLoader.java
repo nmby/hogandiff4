@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
 
 /**
  * Excelシートからセルデータを抽出するローダーを表します。<br>
- * これは、{@link #loadCells(BookOpenInfo, String)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #loadCells(Path, String, String)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -28,15 +28,17 @@ public interface CellsLoader {
     /**
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックオープン情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @param useCachedValue 数式ではなく値で比較する場合は {@code true}
      * @return Excelシートからセルデータを抽出するローダー
      * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
      * @throws UnsupportedOperationException
      *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
-    public static CellsLoader of(BookOpenInfo bookOpenInfo, boolean useCachedValue) {
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+    public static CellsLoader of(Path bookPath, String readPassword, boolean useCachedValue) {
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may by null.
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
@@ -49,7 +51,7 @@ public interface CellsLoader {
                             null);
         };
         
-        return switch (bookOpenInfo.bookType()) {
+        return switch (BookType.of(bookPath)) {
             case XLS -> useCachedValue
                     ? CombinedCellsLoader.of(List.of(
                             () -> HSSFCellsLoaderWithPoiEventApi.of(useCachedValue),
@@ -58,13 +60,13 @@ public interface CellsLoader {
         
             case XLSX, XLSM -> useCachedValue
                     ? CombinedCellsLoader.of(List.of(
-                            () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookOpenInfo),
+                            () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookPath, readPassword),
                             () -> CellsLoaderWithPoiUserApi.of(converter)))
                     : CellsLoaderWithPoiUserApi.of(converter);
         
             // FIXME: [No.2 .xlsbのサポート]
-            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
+            default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };
     }
     

@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -53,7 +54,8 @@ public class Factory {
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
@@ -63,11 +65,13 @@ public class Factory {
      */
     public CellsLoader cellsLoader(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -75,7 +79,7 @@ public class Factory {
         
         boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        return CellsLoader.of(bookOpenInfo, useCachedValue);
+        return CellsLoader.of(bookPath, readPassword, useCachedValue);
     }
     
     /**

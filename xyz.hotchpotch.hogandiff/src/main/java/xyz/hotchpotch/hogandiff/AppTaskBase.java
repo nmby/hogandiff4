@@ -468,7 +468,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfos);
         
-        Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
+        Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(
+                info -> factory.cellsLoader(settings, info.bookPath(), info.readPassword()));
         
         SheetComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
