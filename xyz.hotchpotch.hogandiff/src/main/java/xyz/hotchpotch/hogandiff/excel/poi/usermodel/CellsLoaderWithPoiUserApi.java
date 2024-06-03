@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -15,7 +16,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -81,17 +81,19 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try (Workbook wb = WorkbookFactory.create(
-                bookOpenInfo.bookPath().toFile(),
-                bookOpenInfo.readPassword(),
+                bookPath.toFile(),
+                readPassword,
                 true)) {
             
             Sheet sheet = wb.getSheet(sheetName);
@@ -100,7 +102,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
                 // 後続の catch でさらに ExcelHandlingException にラップする。
                 // ちょっと気持ち悪い気もするけど。
                 throw new NoSuchElementException(
-                        "no such sheet : %s - %s".formatted(bookOpenInfo, sheetName));
+                        "no such sheet : %s - %s".formatted(bookPath, sheetName));
             }
             
             Set<SheetType> possibleTypes = PoiUtil.possibleTypes(sheet);
@@ -136,7 +138,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName),
+                    "processing failed : %s - %s".formatted(bookPath, sheetName),
                     e);
         }
     }

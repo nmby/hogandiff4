@@ -1,11 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -72,22 +73,24 @@ public class CombinedCellsLoader implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s - %s".formatted(bookOpenInfo, sheetName));
+                "processiong failed : %s - %s".formatted(bookPath, sheetName));
         
         Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 CellsLoader loader = itr.next().get();
-                return loader.loadCells(bookOpenInfo, sheetName);
+                return loader.loadCells(bookPath, readPassword, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();
                 failed.addSuppressed(e);

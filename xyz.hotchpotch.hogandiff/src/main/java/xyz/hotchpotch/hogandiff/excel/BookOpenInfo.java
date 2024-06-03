@@ -11,6 +11,7 @@ import java.util.Objects;
  * @param bookPath Excelブックのパス
  * @param readPassword Excelブックの読み取りパスワード
  */
+@Deprecated
 public record BookOpenInfo(
         Path bookPath,
         String readPassword) {

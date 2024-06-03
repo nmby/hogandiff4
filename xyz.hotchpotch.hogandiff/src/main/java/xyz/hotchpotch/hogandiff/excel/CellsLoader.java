@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -72,11 +73,16 @@ public interface CellsLoader {
     /**
      * 指定されたExcelシートに含まれるセルのセットを返します。<br>
      * 
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @param bookOpenInfo Excelブックの情報
      * @param sheetName シート名
      * @return 指定されたExcelシートに含まれるセルのセット
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    Set<CellData> loadCells(BookOpenInfo bookOpenInfo, String sheetName)
+    Set<CellData> loadCells(
+            Path bookPath,
+            String readPassword,
+            String sheetName)
             throws ExcelHandlingException;
 }

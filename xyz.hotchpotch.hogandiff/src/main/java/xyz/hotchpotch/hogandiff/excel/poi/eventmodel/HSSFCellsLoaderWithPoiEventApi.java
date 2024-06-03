@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -456,16 +456,18 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
-        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
+        Biff8EncryptionKey.setCurrentUserPassword(readPassword);
+        try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -477,7 +479,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookPath, sheetName), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

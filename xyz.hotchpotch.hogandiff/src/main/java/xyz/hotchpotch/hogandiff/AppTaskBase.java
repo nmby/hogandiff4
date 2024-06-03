@@ -477,8 +477,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> sheetNamePair = sheetNamePairs.get(i);
             
             if (sheetNamePair.isPaired()) {
-                Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                        side -> loaders.get(side).loadCells(bookOpenInfos.get(side), sheetNamePair.get(side)));
+                Pair<Set<CellData>> cellsSets = Side.unsafeMap(side -> loaders.get(side).loadCells(
+                        bookOpenInfos.get(side).bookPath(),
+                        bookOpenInfos.get(side).readPassword(),
+                        sheetNamePair.get(side)));
                 
                 SheetResult result = comparator.compare(cellsSets);
                 results.put(sheetNamePair, Optional.of(result));

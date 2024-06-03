@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -315,19 +316,21 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        if (!Objects.equals(this.bookOpenInfo.bookPath(), bookOpenInfo.bookPath())) {
+        if (!Objects.equals(this.bookOpenInfo.bookPath(), bookPath)) {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."
                             .formatted(this.bookOpenInfo, bookOpenInfo));
         }
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookOpenInfo.bookPath())) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
             
             if (!nameToInfo.containsKey(sheetName)) {
                 // 例外カスケードポリシーに従い、

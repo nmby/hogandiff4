@@ -117,8 +117,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(BookResult.formatSheetNamesPair("1", pair));
             updateMessage(str.toString());
             
-            Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                    side -> loaders.get(side).loadCells(bookOpenInfos.get(side), pair.get(side)));
+            Pair<Set<CellData>> cellsSets = Side.unsafeMap(side -> loaders.get(side).loadCells(
+                    bookOpenInfos.get(side).bookPath(),
+                    bookOpenInfos.get(side).readPassword(),
+                    pair.get(side)));
             
             SheetComparator comparator = factory.comparator(settings);
             SheetResult result = comparator.compare(cellsSets);

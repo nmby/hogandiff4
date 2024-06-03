@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -20,9 +19,9 @@ class CombinedCellsLoaderTest {
     
     private static final CellData cell1 = new CellData(1, 2, "success", null);
     
-    private static final CellsLoader successLoader = (bookPath, sheetName) -> Set.of(cell1);
+    private static final CellsLoader successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
     
-    private static final CellsLoader failLoader = (bookPath, sheetName) -> {
+    private static final CellsLoader failLoader = (bookPath, readPassword, sheetName) -> {
         throw new RuntimeException("fail");
     };
     
@@ -56,16 +55,12 @@ class CombinedCellsLoaderTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(null, "dummy"));
-        assertThrows(
-                NullPointerException.class,
-                () -> testee.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), null));
-        assertThrows(
-                NullPointerException.class,
-                () -> testee.loadCells(null, null));
-        
+                () -> testee.loadCells(null, "readPassword", "sheetName"));
         assertDoesNotThrow(
-                () -> testee.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testee.loadCells(Path.of("dummy.xlsx"), null, "dummy"));
+        assertThrows(
+                NullPointerException.class,
+                () -> testee.loadCells(Path.of("dummy.xlsx"), "readPassword", null));
     }
     
     @Test
@@ -80,12 +75,12 @@ class CombinedCellsLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testeeF.loadCells(Path.of("dummy.xlsx"), null, "dummy"));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), "dummy"));
+                () -> testeeFFF.loadCells(Path.of("dummy.xlsx"), null, "dummy"));
     }
     
     @Test
@@ -101,11 +96,11 @@ class CombinedCellsLoaderTest {
         // 成功１つ
         assertEquals(
                 Set.of(cell1),
-                testeeS.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), "dummy"));
+                testeeS.loadCells(Path.of("dummy.xlsx"), null, "dummy"));
         
         // いくつかの失敗ののちに成功
         assertEquals(
                 Set.of(cell1),
-                testeeFFSF.loadCells(new BookOpenInfo(Path.of("dummy.xlsx"), null), "dummy"));
+                testeeFFSF.loadCells(Path.of("dummy.xlsx"), null, "dummy"));
     }
 }
