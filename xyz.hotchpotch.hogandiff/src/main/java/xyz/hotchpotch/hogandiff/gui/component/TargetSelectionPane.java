@@ -361,7 +361,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 SheetNamesLoader loader = factory.sheetNamesLoader(newBookOpenInfo);
                 
                 try {
-                    bookInfo = loader.loadSheetNames(newBookOpenInfo);
+                    bookInfo = loader.loadSheetNames(
+                            newBookOpenInfo.bookPath(),
+                            newBookOpenInfo.readPassword());
                     break;
                     
                 } catch (PasswordHandlingException e) {

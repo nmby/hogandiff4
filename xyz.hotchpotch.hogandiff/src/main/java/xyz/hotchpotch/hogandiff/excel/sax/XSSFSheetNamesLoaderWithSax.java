@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.sax;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -71,24 +72,26 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public BookInfo loadSheetNames(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookOpenInfo);
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(new BookOpenInfo(bookPath, readPassword));
             
             List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
                     .map(SheetInfo::name)
                     .toList();
             
-            return new BookInfo(bookOpenInfo, sheetNames);
+            return new BookInfo(new BookOpenInfo(bookPath, readPassword), sheetNames);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
         }
     }
 }

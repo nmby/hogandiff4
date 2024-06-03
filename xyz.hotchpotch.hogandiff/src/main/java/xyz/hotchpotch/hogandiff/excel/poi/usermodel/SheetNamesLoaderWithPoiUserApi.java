@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -84,15 +85,17 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public BookInfo loadSheetNames(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try (Workbook wb = WorkbookFactory.create(
-                bookOpenInfo.bookPath().toFile(),
-                bookOpenInfo.readPassword(),
+                bookPath.toFile(),
+                readPassword,
                 true)) {
             
             List<String> sheetNames = StreamSupport.stream(wb.spliterator(), false)
@@ -100,7 +103,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
                     .map(Sheet::getSheetName)
                     .toList();
             
-            return new BookInfo(bookOpenInfo, sheetNames);
+            return new BookInfo(new BookOpenInfo(bookPath, readPassword), sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
@@ -115,22 +118,22 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
             // 本当は読み取り専用で読み込めてほしいが
             // サポート対象外であるとユーザーに案内することにする。
             throw new PasswordHandlingException(
-                    (bookOpenInfo.readPassword() == null
+                    (readPassword == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookOpenInfo),
+                                    .formatted(bookPath),
                     e);
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookOpenInfo.readPassword() == null
+                    (readPassword == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookOpenInfo),
+                                    .formatted(bookPath),
                     e);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
         }
     }
 }

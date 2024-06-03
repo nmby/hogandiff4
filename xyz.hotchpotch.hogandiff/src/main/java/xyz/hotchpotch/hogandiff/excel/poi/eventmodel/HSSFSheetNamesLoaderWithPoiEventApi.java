@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -180,14 +181,16 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public BookInfo loadSheetNames(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
-        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
+        Biff8EncryptionKey.setCurrentUserPassword(readPassword);
+        try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -197,18 +200,18 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             factory.abortableProcessWorkbookEvents(req, poifs);
             
             return new BookInfo(
-                    bookOpenInfo,
+                    new BookOpenInfo(bookPath, readPassword),
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookOpenInfo.readPassword() == null
+                    (readPassword == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookOpenInfo),
+                                    .formatted(bookPath),
                     e);
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

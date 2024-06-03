@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,8 @@ public interface SheetNamesLoader {
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws NullPointerException
      *              {@code bookOpenInfo} が {@code null} の場合
@@ -32,13 +34,15 @@ public interface SheetNamesLoader {
      *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
     public static SheetNamesLoader of(
-            BookOpenInfo bookOpenInfo) {
+            Path bookPath,
+            String readPassword) {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
-        return switch (bookOpenInfo.bookType()) {
+        return switch (BookType.of(bookPath)) {
             case XLS -> CombinedSheetNamesLoader.of(List.of(
                     () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
                     () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
@@ -48,8 +52,8 @@ public interface SheetNamesLoader {
                     () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
         
             // FIXME: [No.2 .xlsbのサポート]
-            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
+            default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };
     }
     
@@ -58,9 +62,13 @@ public interface SheetNamesLoader {
     /**
      * 指定されたExcelブックに含まれるシート名の一覧を返します。<br>
      * 
-     * @param bookOpenInfo Excelブックオープン情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブック情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    BookInfo loadSheetNames(BookOpenInfo bookOpenInfo) throws ExcelHandlingException;
+    BookInfo loadSheetNames(
+            Path bookPath,
+            String readPassword)
+            throws ExcelHandlingException;
 }

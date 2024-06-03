@@ -16,10 +16,10 @@ class CombinedSheetNamesLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final SheetNamesLoader successLoader = bookOpenInfo -> new BookInfo(
-            bookOpenInfo, List.of("success"));
+    private static final SheetNamesLoader successLoader = (bookPath, readPassword) -> new BookInfo(
+            new BookOpenInfo(bookPath, readPassword), List.of("success"));
     
-    private static final SheetNamesLoader failLoader = bookPath -> {
+    private static final SheetNamesLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
     };
     
@@ -52,7 +52,7 @@ class CombinedSheetNamesLoaderTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadSheetNames(null));
+                () -> testee.loadSheetNames(null, null));
     }
     
     @Test
@@ -64,12 +64,12 @@ class CombinedSheetNamesLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                () -> testeeF.loadSheetNames(Path.of("dummy.xlsx"), null));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                () -> testeeFFF.loadSheetNames(Path.of("dummy.xlsx"), null));
     }
     
     @Test
@@ -87,7 +87,7 @@ class CombinedSheetNamesLoaderTest {
                 new BookInfo(
                         info1,
                         List.of("success")),
-                testeeS.loadSheetNames(info1));
+                testeeS.loadSheetNames(info1.bookPath(), info1.readPassword()));
         
         // いくつかの失敗ののちに成功
         BookOpenInfo info2 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
@@ -95,6 +95,6 @@ class CombinedSheetNamesLoaderTest {
                 new BookInfo(
                         info2,
                         List.of("success")),
-                testeeFFSF.loadSheetNames(info2));
+                testeeFFSF.loadSheetNames(info2.bookPath(), info2.readPassword()));
     }
 }

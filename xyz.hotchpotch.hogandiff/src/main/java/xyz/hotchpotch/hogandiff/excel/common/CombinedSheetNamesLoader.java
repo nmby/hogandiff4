@@ -1,12 +1,13 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -72,11 +73,13 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public BookInfo loadSheetNames(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<SheetNamesLoader, ExcelHandlingException>> itr = suppliers.iterator();
@@ -85,7 +88,7 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
         while (itr.hasNext()) {
             try {
                 SheetNamesLoader loader = itr.next().get();
-                return loader.loadSheetNames(bookOpenInfo);
+                return loader.loadSheetNames(bookPath, readPassword);
                 
             } catch (PasswordHandlingException e) {
                 passwordIssue = true;
@@ -99,8 +102,8 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
         }
         
         ExcelHandlingException failed = passwordIssue
-                ? new PasswordHandlingException("processing failed : %s".formatted(bookOpenInfo))
-                : new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo));
+                ? new PasswordHandlingException("processing failed : %s".formatted(bookPath))
+                : new ExcelHandlingException("processing failed : %s".formatted(bookPath));
         suppressed.forEach(failed::addSuppressed);
         throw failed;
     }

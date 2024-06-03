@@ -47,7 +47,9 @@ public class Factory {
         
         Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
         
-        return SheetNamesLoader.of(bookOpenInfo);
+        return SheetNamesLoader.of(
+                bookOpenInfo.bookPath(),
+                bookOpenInfo.readPassword());
     }
     
     /**
@@ -160,7 +162,8 @@ public class Factory {
      * ペインターを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
@@ -170,11 +173,13 @@ public class Factory {
      */
     public BookPainter painter(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
         short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
@@ -188,7 +193,8 @@ public class Factory {
         Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
         
         return BookPainter.of(
-                bookOpenInfo,
+                bookPath,
+                readPassword,
                 redundantColor,
                 diffColor,
                 redundantCommentColor,

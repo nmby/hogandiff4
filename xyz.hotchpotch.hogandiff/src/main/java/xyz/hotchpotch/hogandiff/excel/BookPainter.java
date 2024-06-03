@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +30,8 @@ public interface BookPainter {
      * Excelブックの差分個所に色を付けて新しいファイルとして保存する
      * ペインターを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックオープン情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @param redundantColor 余剰行、余剰列に着ける色の色番号
      * @param diffColor 差分セルに着ける色の色番号
      * @param redundantCommentColor 余剰コメントに着ける色
@@ -45,7 +47,8 @@ public interface BookPainter {
      *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
     public static BookPainter of(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             short redundantColor,
             short diffColor,
             Color redundantCommentColor,
@@ -56,9 +59,9 @@ public interface BookPainter {
             Color diffSheetColor,
             Color sameSheetColor) {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
         
-        return switch (bookOpenInfo.bookType()) {
+        return switch (BookType.of(bookPath)) {
             case XLS -> CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
                     () -> BookPainterWithPoiUserApi.of(
@@ -89,8 +92,8 @@ public interface BookPainter {
                             sameSheetColor)));
         
             // FIXME: [No.2 .xlsbのサポート]
-            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + bookOpenInfo.bookType());
-            default -> throw new AssertionError("unknown book type: " + bookOpenInfo.bookType());
+            case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
+            default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };
     }
     

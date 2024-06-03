@@ -281,7 +281,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dst));
             updateMessage(str.toString());
             
-            BookPainter painter = factory.painter(settings, dst);
+            BookPainter painter = factory.painter(settings, dst.bookPath(), dst.readPassword());
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
             painter.paintAndSave(src, dst, result);
@@ -340,7 +340,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n".formatted(dst1));
             updateMessage(str.toString());
             
-            BookPainter painter1 = factory.painter(settings, dst1);
+            BookPainter painter1 = factory.painter(settings, dst1.bookPath(), dst1.readPassword());
             painter1.paintAndSave(src1, dst1, bResult.getPiece(Side.A));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
@@ -358,7 +358,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dst2));
             updateMessage(str.toString());
             
-            BookPainter painter2 = factory.painter(settings, dst2);
+            BookPainter painter2 = factory.painter(settings, dst2.bookPath(), dst2.readPassword());
             painter2.paintAndSave(src2, dst2, bResult.getPiece(Side.B));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
@@ -538,7 +538,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos.unsafeMap(factory::sheetNamesLoader);
         Pair<BookInfo> bookInfos = Side.unsafeMap(
-                side -> sheetNamesLoaders.get(side).loadSheetNames(bookOpenInfos.get(side)));
+                side -> sheetNamesLoaders.get(side).loadSheetNames(
+                        bookOpenInfos.get(side).bookPath(),
+                        bookOpenInfos.get(side).readPassword()));
         
         SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
         return matcher.pairingSheetNames(bookInfos);
@@ -616,7 +618,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
                 try {
-                    Pair<BookPainter> painters = srcInfos.unsafeMap(info -> factory.painter(settings, info));
+                    Pair<BookPainter> painters = srcInfos.unsafeMap(
+                            info -> factory.painter(settings, info.bookPath(), info.readPassword()));
                     BookResult bookResult2 = bookResult;
                     
                     Side.unsafeForEach(
