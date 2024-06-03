@@ -20,7 +20,6 @@ import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -200,7 +199,8 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             factory.abortableProcessWorkbookEvents(req, poifs);
             
             return new BookInfo(
-                    new BookOpenInfo(bookPath, readPassword),
+                    bookPath,
+                    readPassword,
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {

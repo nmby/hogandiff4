@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -105,7 +104,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xls, null),
+                        test1_xls,
+                        null,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xls, null));
@@ -119,7 +119,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         // どうしようもないのかしら？？
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xls, null),
+                        test1_xls,
+                        null,
                         List.of("A1_ワークシート", "A3_ダイアログ",
                                 "B1_ワークシート", "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xls, null));
@@ -131,7 +132,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xls, null),
+                        test1_xls,
+                        null,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
                 testee.loadSheetNames(test1_xls, null));
@@ -145,7 +147,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         // どうしようもないのかしら？？
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xls, null),
+                        test1_xls,
+                        null,
                         List.of()),
                 testee.loadSheetNames(test1_xls, null));
     }
@@ -156,7 +159,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xls, null),
+                        test1_xls,
+                        null,
                         List.of("A4_マクロ",
                                 "B4_マクロ")),
                 testee.loadSheetNames(test1_xls, null));
@@ -168,7 +172,8 @@ class HSSFSheetNamesLoaderWithPoiEventApiTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test4_xls, null),
+                        test4_xls,
+                        null,
                         List.of("A1_ワークシート",
                                 "A2_ワークシート")),
                 testee.loadSheetNames(test4_xls, null));

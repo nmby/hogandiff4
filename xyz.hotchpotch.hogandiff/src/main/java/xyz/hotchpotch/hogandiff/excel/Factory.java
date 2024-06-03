@@ -33,7 +33,8 @@ public class Factory {
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excelブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
@@ -42,14 +43,14 @@ public class Factory {
      *              {@code bookOpenInfo} がサポート対象外の形式の場合
      */
     public SheetNamesLoader sheetNamesLoader(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
-        return SheetNamesLoader.of(
-                bookOpenInfo.bookPath(),
-                bookOpenInfo.readPassword());
+        return SheetNamesLoader.of(bookPath, readPassword);
     }
     
     /**

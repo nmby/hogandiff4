@@ -358,7 +358,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
             while (true) {
                 // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-                SheetNamesLoader loader = factory.sheetNamesLoader(newBookOpenInfo);
+                SheetNamesLoader loader = factory.sheetNamesLoader(
+                        newBookOpenInfo.bookPath(),
+                        newBookOpenInfo.readPassword());
                 
                 try {
                     bookInfo = loader.loadSheetNames(

@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 
@@ -17,7 +16,7 @@ class CombinedSheetNamesLoaderTest {
     // [static members] ********************************************************
     
     private static final SheetNamesLoader successLoader = (bookPath, readPassword) -> new BookInfo(
-            new BookOpenInfo(bookPath, readPassword), List.of("success"));
+            bookPath, readPassword, List.of("success"));
     
     private static final SheetNamesLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
@@ -82,19 +81,21 @@ class CombinedSheetNamesLoaderTest {
                 () -> failLoader));
         
         // 成功１つ
-        BookOpenInfo info1 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
+        Path path1 = Path.of("dummy.xlsx");
         assertEquals(
                 new BookInfo(
-                        info1,
+                        path1,
+                        null,
                         List.of("success")),
-                testeeS.loadSheetNames(info1.bookPath(), info1.readPassword()));
+                testeeS.loadSheetNames(path1, null));
         
         // いくつかの失敗ののちに成功
-        BookOpenInfo info2 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
+        Path path2 = Path.of("dummy.xlsx");
         assertEquals(
                 new BookInfo(
-                        info2,
+                        path2,
+                        null,
                         List.of("success")),
-                testeeFFSF.loadSheetNames(info2.bookPath(), info2.readPassword()));
+                testeeFFSF.loadSheetNames(path2, null));
     }
 }

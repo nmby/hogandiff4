@@ -9,7 +9,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -31,12 +30,10 @@ class StandardSheetNamesMatcherTest {
             .of("【ADD】Sunday", "【ADD】Monday", "【VERYVERYLONGADDITIONAL】Tuesday", "Wednesday【ADD】", "Thursday【ADD】",
                     "Friday【VERYVERYLONGADDITIONAL】", "Saturday");
     
-    private static final BookOpenInfo dummyOpenInfo = new BookOpenInfo(Path.of("dummy"), null);
-    
     private static Pair<BookInfo> pairOf(List<String> sheetNames1, List<String> sheetNames2) {
         return new Pair<>(
-                new BookInfo(dummyOpenInfo, sheetNames1),
-                new BookInfo(dummyOpenInfo, sheetNames2));
+                new BookInfo(Path.of("dummy"), null, sheetNames1),
+                new BookInfo(Path.of("dummy"), null, sheetNames2));
     }
     
     // [instance members] ******************************************************

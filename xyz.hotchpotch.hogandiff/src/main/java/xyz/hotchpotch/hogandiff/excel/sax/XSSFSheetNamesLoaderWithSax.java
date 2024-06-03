@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -88,7 +87,7 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
                     .map(SheetInfo::name)
                     .toList();
             
-            return new BookInfo(new BookOpenInfo(bookPath, readPassword), sheetNames);
+            return new BookInfo(bookPath, readPassword, sheetNames);
             
         } catch (Exception e) {
             throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);

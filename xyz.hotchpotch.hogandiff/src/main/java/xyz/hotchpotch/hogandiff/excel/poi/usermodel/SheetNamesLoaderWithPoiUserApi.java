@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -103,7 +102,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
                     .map(Sheet::getSheetName)
                     .toList();
             
-            return new BookInfo(new BookOpenInfo(bookPath, readPassword), sheetNames);
+            return new BookInfo(bookPath, readPassword, sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない

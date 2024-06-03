@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -98,13 +97,15 @@ class XSSFSheetNamesLoaderWithSaxTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsx, null),
+                        test1_xlsx,
+                        null,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsm, null),
+                        test1_xlsm,
+                        null,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -118,13 +119,15 @@ class XSSFSheetNamesLoaderWithSaxTest {
         // 「x4_マクロ」も取得されている。
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsx, null),
+                        test1_xlsx,
+                        null,
                         List.of("A1_ワークシート", "A4_マクロ",
                                 "B1_ワークシート", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsm, null),
+                        test1_xlsm,
+                        null,
                         List.of("A1_ワークシート",
                                 "B1_ワークシート")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -136,13 +139,15 @@ class XSSFSheetNamesLoaderWithSaxTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsx, null),
+                        test1_xlsx,
+                        null,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsm, null),
+                        test1_xlsm,
+                        null,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -154,13 +159,15 @@ class XSSFSheetNamesLoaderWithSaxTest {
         
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsx, null),
+                        test1_xlsx,
+                        null,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsm, null),
+                        test1_xlsm,
+                        null,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -174,12 +181,14 @@ class XSSFSheetNamesLoaderWithSaxTest {
         // 「x4_マクロ」が取得されない。
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsx, null),
+                        test1_xlsx,
+                        null,
                         List.of()),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
-                        new BookOpenInfo(test1_xlsm, null),
+                        test1_xlsm,
+                        null,
                         List.of("A4_マクロ",
                                 "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsm, null));

@@ -542,7 +542,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         assert bookOpenInfos != null;
         assert !Objects.equals(bookOpenInfos.a().bookPath(), bookOpenInfos.b().bookPath());
         
-        Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos.unsafeMap(factory::sheetNamesLoader);
+        Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos
+                .unsafeMap(info -> factory.sheetNamesLoader(info.bookPath(), info.readPassword()));
         Pair<BookInfo> bookInfos = Side.unsafeMap(
                 side -> sheetNamesLoaders.get(side).loadSheetNames(
                         bookOpenInfos.get(side).bookPath(),
