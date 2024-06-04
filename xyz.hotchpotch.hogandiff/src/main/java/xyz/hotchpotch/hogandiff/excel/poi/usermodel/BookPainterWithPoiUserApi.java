@@ -135,8 +135,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            String srcReadPassword,
-            String dstReadPassword,
+            String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
@@ -168,7 +167,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
         
         // 2. コピーしたファイルをExcelブックとしてロードする。
         try (InputStream is = Files.newInputStream(dstBookPath);
-                Workbook book = WorkbookFactory.create(is, dstReadPassword)) {
+                Workbook book = WorkbookFactory.create(is, readPassword)) {
             
             // 例外が発生した場合もその部分だけをスキップして処理継続した方が
             // ユーザーにとっては有益であると考え、小刻みに try-catch で囲うことにする。

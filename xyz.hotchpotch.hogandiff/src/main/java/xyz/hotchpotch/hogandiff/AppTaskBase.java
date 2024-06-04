@@ -282,7 +282,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             BookPainter painter = factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
-            painter.paintAndSave(srcBookPath, dstBookPath, readPassword, readPassword, result);
+            painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -339,7 +339,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookPainter painter1 = factory.painter(settings, dstBookPath1, readPassword1);
-            painter1.paintAndSave(srcBookPath1, dstBookPath1, readPassword1, readPassword1, bResult.getPiece(Side.A));
+            painter1.paintAndSave(srcBookPath1, dstBookPath1, readPassword1, bResult.getPiece(Side.A));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
             
@@ -356,7 +356,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookPainter painter2 = factory.painter(settings, dstBookPath2, readPassword2);
-            painter2.paintAndSave(srcBookPath2, dstBookPath2, readPassword2, readPassword2, bResult.getPiece(Side.B));
+            painter2.paintAndSave(srcBookPath2, dstBookPath2, readPassword2, bResult.getPiece(Side.B));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -633,7 +633,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                 srcPath,
                                 dstPath,
                                 readPasswords.get(srcPath),
-                                readPasswords.get(dstPath),
                                 bookResult2.getPiece(side));
                     });
                     

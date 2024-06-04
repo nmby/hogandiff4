@@ -83,8 +83,7 @@ public class CombinedBookPainter implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            String srcReadPassword,
-            String dstReadPassword,
+            String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
@@ -109,7 +108,7 @@ public class CombinedBookPainter implements BookPainter {
         while (itr.hasNext()) {
             try {
                 BookPainter painter = itr.next().get();
-                painter.paintAndSave(srcBookPath, dstBookPath, srcReadPassword, dstReadPassword, diffs);
+                painter.paintAndSave(srcBookPath, dstBookPath, readPassword, diffs);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();

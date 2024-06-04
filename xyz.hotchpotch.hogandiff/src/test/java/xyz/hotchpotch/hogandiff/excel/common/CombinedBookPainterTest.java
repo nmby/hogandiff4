@@ -22,8 +22,7 @@ class CombinedBookPainterTest {
         public void paintAndSave(
                 Path srcBookPath,
                 Path dstBookPath,
-                String srcReadPassword,
-                String dstReadPassword,
+                String readPassword,
                 Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
@@ -36,8 +35,7 @@ class CombinedBookPainterTest {
         public void paintAndSave(
                 Path srcBookPath,
                 Path dstBookPath,
-                String srcReadPassword,
-                String dstReadPassword,
+                String readPassword,
                 Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
@@ -80,31 +78,31 @@ class CombinedBookPainterTest {
                 NullPointerException.class,
                 () -> testee.paintAndSave(
                         null, Path.of("dummy2.xlsx"),
-                        null, null,
+                        null,
                         Map.of()));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(
                         dummy1_xlsx, null,
-                        null, null,
+                        null,
                         Map.of()));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(
                         dummy1_xlsx, Path.of("dummy2.xlsx"),
-                        null, null,
+                        null,
                         null));
         assertThrows(
                 NullPointerException.class,
                 () -> testee.paintAndSave(
                         null, null,
-                        null, null,
+                        null,
                         null));
         
         assertDoesNotThrow(
                 () -> testee.paintAndSave(
                         dummy1_xlsx, dummy2_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
         
         // 同一パス
@@ -112,7 +110,7 @@ class CombinedBookPainterTest {
                 IllegalArgumentException.class,
                 () -> testee.paintAndSave(
                         dummy1_xlsx, dummy1_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
         
         // 異なる拡張子
@@ -120,7 +118,7 @@ class CombinedBookPainterTest {
                 IllegalArgumentException.class,
                 () -> testee.paintAndSave(
                         dummy1_xlsx, dummy1_xls,
-                        null, null,
+                        null,
                         Map.of()));
     }
     
@@ -135,7 +133,7 @@ class CombinedBookPainterTest {
                 ExcelHandlingException.class,
                 () -> testeeF.paintAndSave(
                         dummy1_xlsx, dummy2_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
         
         // 全て失敗
@@ -143,7 +141,7 @@ class CombinedBookPainterTest {
                 ExcelHandlingException.class,
                 () -> testeeFFF.paintAndSave(
                         dummy1_xlsx, dummy2_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
     }
     
@@ -157,14 +155,14 @@ class CombinedBookPainterTest {
         assertDoesNotThrow(
                 () -> testeeS.paintAndSave(
                         dummy1_xlsx, dummy2_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
         
         // いくつかの失敗ののちに成功
         assertDoesNotThrow(
                 () -> testeeFFSF.paintAndSave(
                         dummy1_xlsx, dummy2_xlsx,
-                        null, null,
+                        null,
                         Map.of()));
     }
 }

@@ -14,7 +14,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>
- * これは、{@link #paintAndSave(Path, Path, String, String, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * これは、{@link #paintAndSave(Path, Path, String, Map)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -104,17 +104,14 @@ public interface BookPainter {
      * 
      * @param srcBookPath 元のExcelブックのパス
      * @param dstBookPath 保存先Excelブックのパス
-     * @param srcReadPassword 元のExcelブックの読み取りパスワード
-     * @param dstReadPassword 元のExcelブックの読み取りパスワード
+     * @param readPassword 双方のExcelブックの読み取りパスワード
      * @param diffs シート名とその差分個所のマップ
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            // TODO: パスワードまわりを整理する
-            String srcReadPassword,
-            String dstReadPassword,
+            String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException;
 }

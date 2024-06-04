@@ -266,8 +266,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
     public void paintAndSave(
             Path srcBookPath,
             Path dstBookPath,
-            String srcReadPassword,
-            String dstReadPassword,
+            String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
@@ -304,7 +303,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
             //          - xl/worksheets/sheet?.xml
             //          - xl/drawings/vmlDrawing?.vml
             //          - xl/comments?.xml
-            processWorksheetEntries(inFs, outFs, dstBookPath, dstReadPassword, diffs);
+            processWorksheetEntries(inFs, outFs, dstBookPath, readPassword, diffs);
             
         } catch (ExcelHandlingException e) {
             throw e;
