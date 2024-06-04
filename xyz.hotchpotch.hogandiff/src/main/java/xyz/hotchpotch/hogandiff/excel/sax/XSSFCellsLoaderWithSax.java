@@ -42,6 +42,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
  *
  * @author nmby
  */
+// FIXME: このローダーが読み取りパスワード付きExcelファイルに対応できるようにする
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class XSSFCellsLoaderWithSax implements CellsLoader {
@@ -279,7 +280,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
     
     private final boolean extractCachedValue;
     private final Path bookPath;
-    private final String readPassword;
+    //private final String readPassword;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
@@ -295,7 +296,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         
         this.extractCachedValue = extractCachedValue;
         this.bookPath = bookPath;
-        this.readPassword = readPassword;
+        //this.readPassword = readPassword;
         this.nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,

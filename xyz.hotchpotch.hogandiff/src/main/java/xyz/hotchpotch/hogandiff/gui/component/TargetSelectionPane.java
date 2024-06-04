@@ -354,32 +354,29 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         try {
             BookInfo bookInfo = null;
-            BookOpenInfo newBookOpenInfo = new BookOpenInfo(newBookPath, null);
+            String readPassword = null;
+            //BookOpenInfo newBookOpenInfo = new BookOpenInfo(newBookPath, null);
             
             while (true) {
                 // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-                SheetNamesLoader loader = factory.sheetNamesLoader(
-                        newBookOpenInfo.bookPath(),
-                        newBookOpenInfo.readPassword());
+                SheetNamesLoader loader = factory.sheetNamesLoader(newBookPath, readPassword);
                 
                 try {
-                    bookInfo = loader.loadSheetNames(
-                            newBookOpenInfo.bookPath(),
-                            newBookOpenInfo.readPassword());
+                    bookInfo = loader.loadSheetNames(newBookPath, readPassword);
                     break;
                     
                 } catch (PasswordHandlingException e) {
-                    PasswordDialog dialog = new PasswordDialog(newBookOpenInfo);
+                    PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
                     Optional<String> newPassword = dialog.showAndWait();
                     if (newPassword.isPresent()) {
-                        newBookOpenInfo = newBookOpenInfo.withReadPassword(newPassword.get());
+                        readPassword = newPassword.get();
                     } else {
                         throw e;
                     }
                 }
             }
             
-            bookOpenInfo.setValue(newBookOpenInfo);
+            bookOpenInfo.setValue(new BookOpenInfo(newBookPath, readPassword));
             sheetNameChoiceBox.setItems(FXCollections.observableList(bookInfo.sheetNames()));
             prevSelectedBookPath = newBookPath;
             
