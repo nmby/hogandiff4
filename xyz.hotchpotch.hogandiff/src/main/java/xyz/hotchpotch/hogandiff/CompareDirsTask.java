@@ -63,7 +63,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
             
             // 5. フォルダ同士の比較
-            DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 93);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, readPasswords, 5, 93);
             
             // 6. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
@@ -169,6 +170,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair,
             Pair<Path> outputDirs,
             List<Pair<String>> bookNamePairs,
+            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -182,6 +184,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         "",
                         "",
                         new DirPairData("", dirPair, bookNamePairs),
+                        readPasswords,
                         outputDirs,
                         progressBefore,
                         progressAfter);

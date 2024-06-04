@@ -63,7 +63,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
             
             // 4. フォルダツリー同士の比較
-            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, readPasswords, 5, 93);
             
             // 5. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, tResult.toString(), 93, 95);
@@ -161,6 +162,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Path workDir,
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
+            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -220,6 +222,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             String.valueOf(i + 1),
                             "      ",
                             data,
+                            readPasswords,
                             outputDirs,
                             progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
