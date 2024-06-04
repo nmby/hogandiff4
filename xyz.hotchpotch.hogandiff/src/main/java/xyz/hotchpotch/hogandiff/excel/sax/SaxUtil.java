@@ -317,8 +317,8 @@ public class SaxUtil {
      * @param bookPath Excelブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return シート情報の一覧
-     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     // FIXME: 読み取りパスワード付きExcelファイルに対応できるようにする
@@ -368,8 +368,8 @@ public class SaxUtil {
      * @param bookPath Excelブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Shared Strings
-     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     // FIXME: 読み取りパスワード付きExcelファイルに対応できるようにする

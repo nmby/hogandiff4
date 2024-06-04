@@ -165,9 +165,9 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
      * ごめんなさい m(_ _)m <br>
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */

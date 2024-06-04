@@ -60,9 +60,9 @@ public class CombinedSheetNamesLoader implements SheetNamesLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */

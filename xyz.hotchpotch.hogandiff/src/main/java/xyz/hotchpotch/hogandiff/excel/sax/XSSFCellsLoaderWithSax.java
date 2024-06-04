@@ -254,9 +254,9 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      * @param readPassword Excelブックの読み取りパスワード
      * @return 新しいローダー
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
@@ -308,11 +308,11 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} が構成時に指定されたExcelブックと異なる場合
+     *              {@code bookPath} が構成時に指定されたExcelブックと異なる場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */

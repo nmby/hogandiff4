@@ -32,9 +32,8 @@ public interface CellsLoader {
      * @param readPassword Excelブックの読み取りパスワード
      * @param useCachedValue 数式ではなく値で比較する場合は {@code true}
      * @return Excelシートからセルデータを抽出するローダー
-     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static CellsLoader of(Path bookPath, String readPassword, boolean useCachedValue) {
         Objects.requireNonNull(bookPath, "bookPath");
@@ -77,7 +76,6 @@ public interface CellsLoader {
      * 
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
-     * @param bookOpenInfo Excelブックの情報
      * @param sheetName シート名
      * @return 指定されたExcelシートに含まれるセルのセット
      * @throws ExcelHandlingException 処理に失敗した場合

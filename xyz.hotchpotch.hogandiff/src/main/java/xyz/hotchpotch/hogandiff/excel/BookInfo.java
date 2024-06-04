@@ -28,7 +28,7 @@ public record BookInfo(
      * @param bookPath Excelブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @param sheetNames Excelブックに含まれるシート名
-     * @throws NullPointerException {@code bookOpenInfo}, {@code sheetNames} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code bookPath}, {@code sheetNames} のいずれかが {@code null} の場合
      */
     public BookInfo(
             Path bookPath,

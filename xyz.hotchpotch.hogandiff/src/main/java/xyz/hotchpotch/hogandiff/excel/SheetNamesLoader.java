@@ -28,10 +28,8 @@ public interface SheetNamesLoader {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックからシート名の一覧を抽出するローダー
-     * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static SheetNamesLoader of(
             Path bookPath,

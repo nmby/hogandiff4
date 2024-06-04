@@ -42,9 +42,8 @@ public interface BookPainter {
      * @param diffSheetColor 差分シートのタブに着ける色
      * @param sameSheetColor 差分なしシートのタブに着ける色
      * @return Excelブックの差分個所に色を付けて保存するペインター
-     * @throws NullPointerException {@code bookOpenInfo} が {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookPainter of(
             Path bookPath,

@@ -117,14 +117,14 @@ public class BookPainterWithPoiUserApi implements BookPainter {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code srcBookOpenInfo}, {@code dstBookOpenInfo}, {@code diffs}
+     *              {@code srcBookPath}, {@code dstBookPath}, {@code diffs}
      *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookOpenInfo} がサポート対象外の形式の場合
+     *              {@code srcBookPath} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookOpenInfo} と {@code dstBookOpenInfo} が同じパスの場合
+     *              {@code srcBookPath} と {@code dstBookPath} が同じパスの場合
      * @throws IllegalArgumentException
-     *              {@code srcBookOpenInfo} と {@code dstBookOpenInfo} の形式が異なる場合
+     *              {@code srcBookPath} と {@code dstBookPath} の形式が異なる場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。

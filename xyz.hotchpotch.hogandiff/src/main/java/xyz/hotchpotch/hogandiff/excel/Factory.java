@@ -38,9 +38,9 @@ public class Factory {
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      */
     public SheetNamesLoader sheetNamesLoader(
             Path bookPath,
@@ -62,9 +62,8 @@ public class Factory {
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public CellsLoader cellsLoader(
             Settings settings,
@@ -168,9 +167,8 @@ public class Factory {
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public BookPainter painter(
             Settings settings,

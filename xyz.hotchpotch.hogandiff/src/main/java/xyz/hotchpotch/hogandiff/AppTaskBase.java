@@ -448,7 +448,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * Excelブック同士の比較を行います。<br>
      * 
-     * @param bookOpenInfos 比較対象ブックの情報
+     * @param bookPaths 比較対象ブックのパス
+     * @param readPasswords 比較対象ブックの読み取りパスワード
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
      * @return 比較結果
