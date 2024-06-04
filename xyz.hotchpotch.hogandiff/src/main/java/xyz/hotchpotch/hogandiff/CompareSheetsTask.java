@@ -1,11 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -81,15 +81,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
+            Pair<Path> bookPaths = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
             Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
                     ? "%s%n[A] %s%n[B] %s%n%n".formatted(
-                            bookOpenInfos.a(), sheetNames.a(), sheetNames.b())
+                            bookPaths.a(), sheetNames.a(), sheetNames.b())
                     : "[A] %s - %s%n[B] %s - %s%n%n".formatted(
-                            bookOpenInfos.a(), sheetNames.a(), bookOpenInfos.b(), sheetNames.b()));
+                            bookPaths.a(), sheetNames.a(), bookPaths.b(), sheetNames.b()));
             
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -110,18 +110,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(
-                    info -> factory.cellsLoader(settings, info.bookPath(), info.readPassword()));
-            Pair<String> pair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            Pair<Path> bookPaths = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            Pair<CellsLoader> loaders = bookPaths.unsafeMap(
+                    bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+            Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
-            str.append(BookResult.formatSheetNamesPair("1", pair));
+            str.append(BookResult.formatSheetNamesPair("1", sheetNames));
             updateMessage(str.toString());
             
             Pair<Set<CellData>> cellsSets = Side.unsafeMap(side -> loaders.get(side).loadCells(
-                    bookOpenInfos.get(side).bookPath(),
-                    bookOpenInfos.get(side).readPassword(),
-                    pair.get(side)));
+                    bookPaths.get(side),
+                    readPasswords.get(bookPaths.get(side)),
+                    sheetNames.get(side)));
             
             SheetComparator comparator = factory.comparator(settings);
             SheetResult result = comparator.compare(cellsSets);
@@ -131,9 +132,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookOpenInfos.map(BookOpenInfo::bookPath),
-                    List.of(pair),
-                    Map.of(pair, Optional.of(result)));
+                    bookPaths,
+                    List.of(sheetNames),
+                    Map.of(sheetNames, Optional.of(result)));
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareSheetsTask.030", "");

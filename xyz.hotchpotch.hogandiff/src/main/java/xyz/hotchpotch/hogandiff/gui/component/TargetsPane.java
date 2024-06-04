@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -12,7 +13,6 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -36,10 +36,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_OPEN_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
+        A("A", SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_OPEN_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
+        B("B", SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
         
         // [instance members] --------------------------------------------------
         
@@ -47,7 +47,7 @@ public class TargetsPane extends VBox implements ChildController {
         public final String title;
         
         /** ブックパス設定項目 */
-        public final Key<BookOpenInfo> bookOpenInfoKey;
+        public final Key<Path> bookPathKey;
         
         /** シート名設定項目 */
         public final Key<String> sheetNameKey;
@@ -57,12 +57,12 @@ public class TargetsPane extends VBox implements ChildController {
         
         Side(
                 String title,
-                Key<BookOpenInfo> bookOpenInfoKey,
+                Key<Path> bookPathKey,
                 Key<String> sheetNameKey,
                 Key<Path> dirPathKey) {
             
             this.title = title;
-            this.bookOpenInfoKey = bookOpenInfoKey;
+            this.bookPathKey = bookPathKey;
             this.sheetNameKey = sheetNameKey;
             this.dirPathKey = dirPathKey;
         }
@@ -94,6 +94,8 @@ public class TargetsPane extends VBox implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
+        
+        ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());

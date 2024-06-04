@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -113,30 +113,38 @@ public class SettingKeys {
             AppMenu::valueOf,
             false);
     
-    /** 今回の実行における比較対象Excelブック1の情報 */
-    public static final Key<BookOpenInfo> CURR_BOOK_OPEN_INFO1 = new Key<BookOpenInfo>(
-            "current.bookOpenInfo1",
+    /** 今回の実行における比較対象Excelブック1のパス */
+    public static final Key<Path> CURR_BOOK_PATH1 = new Key<Path>(
+            "current.bookPath1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            BookOpenInfo::toString,
+            Path::toString,
             null,
             false);
     
-    /** 今回の実行における比較対象Excelブック2の情報 */
-    public static final Key<BookOpenInfo> CURR_BOOK_OPEN_INFO2 = new Key<BookOpenInfo>(
-            "current.bookOpenInfo2",
+    /** 今回の実行における比較対象Excelブック2のパス */
+    public static final Key<Path> CURR_BOOK_PATH2 = new Key<Path>(
+            "current.bookPath2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            BookOpenInfo::toString,
+            Path::toString,
             null,
             false);
     
-    /** {@link #CURR_BOOK_OPEN_INFO1} と {@link #CURR_BOOK_OPEN_INFO2} のペア */
-    public static final Pair<Key<BookOpenInfo>> CURR_BOOK_OPEN_INFOS = new Pair<>(
-            CURR_BOOK_OPEN_INFO1,
-            CURR_BOOK_OPEN_INFO2);
+    /** {@link #CURR_BOOK_PATH1} と {@link #CURR_BOOK_PATH2} のペア */
+    public static final Pair<Key<Path>> CURR_BOOK_PATHS = new Pair<>(CURR_BOOK_PATH1, CURR_BOOK_PATH2);
+    
+    /** 比較対象Excelブックたちの読み取りパスワード */
+    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<Map<Path, String>>(
+            "current.readPasswords",
+            () -> {
+                throw new UnsupportedOperationException("the key has no default value.");
+            },
+            Map::toString,
+            null,
+            false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
     public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(

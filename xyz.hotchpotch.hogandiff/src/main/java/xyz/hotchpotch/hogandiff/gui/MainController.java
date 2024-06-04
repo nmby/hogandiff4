@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -180,9 +181,10 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH1)) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH2)) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -205,9 +207,10 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH1)) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH2)) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,

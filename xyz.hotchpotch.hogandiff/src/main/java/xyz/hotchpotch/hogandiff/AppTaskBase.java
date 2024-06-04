@@ -265,7 +265,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookOpenInfo dst = null;
+        Path dstBookPath = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -273,18 +273,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst = new BookOpenInfo(
-                    workDir.resolve(src.bookPath().getFileName()),
-                    src.readPassword());
+            Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            dstBookPath = workDir.resolve(srcBookPath.getFileName());
+            String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
-            str.append("    - %s%n%n".formatted(dst));
+            str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
             
-            BookPainter painter = factory.painter(settings, dst.bookPath(), dst.readPassword());
+            BookPainter painter = factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
-            painter.paintAndSave(src.bookPath(), dst.bookPath(), src.readPassword(), dst.readPassword(), result);
+            painter.paintAndSave(srcBookPath, dstBookPath, readPassword, readPassword, result);
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -296,7 +295,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPath.toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -324,27 +323,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookOpenInfo dst1 = null;
-        BookOpenInfo dst2 = null;
+        Path dstBookPath1 = null;
+        Path dstBookPath2 = null;
+        Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst1 = new BookOpenInfo(
-                    workDir.resolve("【A】" + src1.bookPath().getFileName()),
-                    src1.readPassword());
+            Path srcBookPath1 = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            dstBookPath1 = workDir.resolve("【A】" + srcBookPath1.getFileName());
+            String readPassword1 = readPasswords.get(srcBookPath1);
             
-            str.append("    - %s%n".formatted(dst1));
+            str.append("    - %s%n".formatted(dstBookPath1));
             updateMessage(str.toString());
             
-            BookPainter painter1 = factory.painter(settings, dst1.bookPath(), dst1.readPassword());
-            painter1.paintAndSave(
-                    src1.bookPath(), dst1.bookPath(),
-                    src1.readPassword(), dst1.readPassword(),
-                    bResult.getPiece(Side.A));
+            BookPainter painter1 = factory.painter(settings, dstBookPath1, readPassword1);
+            painter1.paintAndSave(srcBookPath1, dstBookPath1, readPassword1, readPassword1, bResult.getPiece(Side.A));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
             
@@ -353,19 +349,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            BookOpenInfo src2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            dst2 = new BookOpenInfo(
-                    workDir.resolve("【B】" + src2.bookPath().getFileName()),
-                    src2.readPassword());
+            Path srcBookPath2 = settings.get(SettingKeys.CURR_BOOK_PATH2);
+            dstBookPath2 = workDir.resolve("【B】" + srcBookPath2.getFileName());
+            String readPassword2 = readPasswords.get(srcBookPath2);
             
-            str.append("    - %s%n%n".formatted(dst2));
+            str.append("    - %s%n%n".formatted(dstBookPath2));
             updateMessage(str.toString());
             
-            BookPainter painter2 = factory.painter(settings, dst2.bookPath(), dst2.readPassword());
-            painter2.paintAndSave(
-                    src2.bookPath(), dst2.bookPath(),
-                    src2.readPassword(), dst2.readPassword(),
-                    bResult.getPiece(Side.B));
+            BookPainter painter2 = factory.painter(settings, dstBookPath2, readPassword2);
+            painter2.paintAndSave(srcBookPath2, dstBookPath2, readPassword2, readPassword2, bResult.getPiece(Side.B));
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -377,8 +369,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst1.bookPath().toFile());
-                Desktop.getDesktop().open(dst2.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPath1.toFile());
+                Desktop.getDesktop().open(dstBookPath2.toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -518,9 +510,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
         return switch (menu) {
-            case COMPARE_BOOKS, COMPARE_SHEETS -> BookOpenInfo.isSameBook(
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+            case COMPARE_BOOKS, COMPARE_SHEETS -> Objects.equals(
+                    settings.get(SettingKeys.CURR_BOOK_PATH1),
+                    settings.get(SettingKeys.CURR_BOOK_PATH2));
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };
