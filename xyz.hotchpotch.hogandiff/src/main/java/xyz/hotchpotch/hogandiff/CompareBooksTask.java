@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -113,11 +112,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             Pair<Path> bookPaths = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            List<Pair<String>> pairs = getSheetNamePairs(
-                    bookPaths.map(bookPath -> new BookOpenInfo(bookPath, readPasswords.get(bookPath))));
+            List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookPaths, readPasswords);
             
-            for (int i = 0; i < pairs.size(); i++) {
-                Pair<String> pair = pairs.get(i);
+            for (int i = 0; i < sheetNamePairs.size(); i++) {
+                Pair<String> pair = sheetNamePairs.get(i);
                 str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
             }
             str.append(BR);
@@ -125,7 +123,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return pairs;
+            return sheetNamePairs;
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.030", "");
