@@ -81,15 +81,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> bookPaths = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
-            Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
                     ? "%s%n[A] %s%n[B] %s%n%n".formatted(
-                            bookPaths.a(), sheetNames.a(), sheetNames.b())
+                            bookPathPair.a(), sheetNamePair.a(), sheetNamePair.b())
                     : "[A] %s - %s%n[B] %s - %s%n%n".formatted(
-                            bookPaths.a(), sheetNames.a(), bookPaths.b(), sheetNames.b()));
+                            bookPathPair.a(), sheetNamePair.a(), bookPathPair.b(), sheetNamePair.b()));
             
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -110,31 +110,32 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPaths = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            Pair<CellsLoader> loaders = bookPaths.unsafeMap(
+            Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
                     bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
-            Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
-            str.append(BookResult.formatSheetNamesPair("1", sheetNames));
+            str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
             
-            Pair<Set<CellData>> cellsSets = Side.unsafeMap(side -> loaders.get(side).loadCells(
-                    bookPaths.get(side),
-                    readPasswords.get(bookPaths.get(side)),
-                    sheetNames.get(side)));
+            Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
+                    side -> loaderPair.get(side).loadCells(
+                            bookPathPair.get(side),
+                            readPasswords.get(bookPathPair.get(side)),
+                            sheetNamePair.get(side)));
             
             SheetComparator comparator = factory.comparator(settings);
-            SheetResult result = comparator.compare(cellsSets);
+            SheetResult result = comparator.compare(cellsSetPair);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookPaths,
-                    List.of(sheetNames),
-                    Map.of(sheetNames, Optional.of(result)));
+                    bookPathPair,
+                    List.of(sheetNamePair),
+                    Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareSheetsTask.030", "");

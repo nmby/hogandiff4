@@ -57,14 +57,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair = extractDirs();
             
             // 3. 出力用ディレクトリの作成
-            Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
+            Pair<Path> outputDirPair = createOutputDirs(workDir, dirPair);
             
             // 4. 比較するExcelブックの組み合わせの決定
             List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
             
             // 5. フォルダ同士の比較
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, readPasswords, 5, 93);
+            DirResult dResult = compareDirs(dirPair, outputDirPair, bookNamePairs, readPasswords, 5, 93);
             
             // 6. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
@@ -73,7 +73,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             TreeResult tResult = new TreeResult(
                     dirPair,
                     List.of(new DirPairData("", dirPair, bookNamePairs)),
-                    Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
+                    Map.of(dirPair.map(DirInfo::path), Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
             
@@ -98,12 +98,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_PATHS.map(settings::get);
             
             str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                     rb.getString("CompareDirsTask.010"),
-                    dirPaths.a(),
-                    dirPaths.b()));
+                    dirPathPair.a(),
+                    dirPathPair.b()));
             
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -119,12 +119,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> dirPair)
             throws ApplicationException {
         
-        Pair<Path> outputDirs = null;
+        Pair<Path> outputDirPair = null;
         try {
-            outputDirs = Side.map(
+            outputDirPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
             
-            return outputDirs.unsafeMap(Files::createDirectory);
+            return outputDirPair.unsafeMap(Files::createDirectory);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareDirsTask.020", "");
