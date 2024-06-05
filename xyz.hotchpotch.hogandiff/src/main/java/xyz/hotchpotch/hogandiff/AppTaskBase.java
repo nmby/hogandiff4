@@ -29,7 +29,6 @@ import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
@@ -449,7 +448,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
-            Pair<Path> bookPathPair,
+            Pair<BookInfo> bookInfoPair,
             Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
@@ -457,8 +456,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookPathPair, readPasswords);
-        Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
+        List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings).pairingSheetNames(bookInfoPair);
+        Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                 bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator comparator = factory.comparator(settings);
@@ -469,10 +468,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             if (sheetNamePair.isPaired()) {
                 Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
-                        side -> loaderPair.get(side).loadCells(
-                                bookPathPair.get(side),
-                                readPasswords.get(bookPathPair.get(side)),
-                                sheetNamePair.get(side)));
+                        side -> {
+                            Path bookPath = bookInfoPair.get(side).bookPath();
+                            return loaderPair.get(side).loadCells(
+                                    bookPath,
+                                    readPasswords.get(bookPath),
+                                    sheetNamePair.get(side));
+                        });
                 
                 SheetResult result = comparator.compare(cellsSetPair);
                 results.put(sheetNamePair, Optional.of(result));
@@ -487,7 +489,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         return new BookResult(
-                bookPathPair,
+                bookInfoPair.map(BookInfo::bookPath),
                 sheetNamePairs,
                 results);
     }
@@ -509,35 +511,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };
-    }
-    
-    /**
-     * 指定された2つのExcelブックに含まれるシート名をロードし、
-     * 設定内容に基づいてシート名をペアリングして返します。<br>
-     * 
-     * @param bookPathPair Excelブックのパス
-     * @param readPasswords Excelブックの読み取りパスワード
-     * @return シート名のペアのリスト
-     * @throws ExcelHandlingException 処理に失敗した場合
-     */
-    // AppTaskBase#compareBooks, CompareBooksTask
-    protected List<Pair<String>> getSheetNamePairs(
-            Pair<Path> bookPathPair,
-            Map<Path, String> readPasswords)
-            throws ExcelHandlingException {
-        
-        assert bookPathPair != null;
-        assert readPasswords != null;
-        assert !Objects.equals(bookPathPair.a(), bookPathPair.b());
-        
-        Pair<BookInfo> bookInfoPair = bookPathPair.unsafeMap(bookPath -> {
-            String readPassword = readPasswords.get(bookPath);
-            SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
-            return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
-        });
-        
-        SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
-        return matcher.pairingSheetNames(bookInfoPair);
     }
     
     /**
@@ -582,16 +555,22 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             if (bookNamePair.isPaired()) {
                 
-                Pair<Path> srcPathPair = Side
-                        .map(side -> data.dirPair().get(side).path().resolve(bookNamePair.get(side)));
-                Pair<Path> dstPathPair = Side
-                        .map(side -> outputDirs.get(side)
+                Pair<Path> srcPathPair = Side.map(
+                        side -> data.dirPair().get(side).path().resolve(bookNamePair.get(side)));
+                Pair<Path> dstPathPair = Side.map(
+                        side -> outputDirs.get(side)
                                 .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
                 BookResult bookResult = null;
                 
                 try {
+                    Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
+                        String readPassword = readPasswords.get(bookPath);
+                        SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
+                        return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+                    });
+                    
                     bookResult = compareBooks(
-                            srcPathPair,
+                            bookInfoPair,
                             readPasswords,
                             progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
