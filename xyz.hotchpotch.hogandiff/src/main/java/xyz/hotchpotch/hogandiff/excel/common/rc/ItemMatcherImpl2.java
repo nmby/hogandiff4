@@ -57,14 +57,14 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     /**
      * {@inheritDoc}
      * 
-     * @throws NullPointerException {@code cellsSets} が {@code null} の場合
+     * @throws NullPointerException {@code cellsSetPair} が {@code null} の場合
      */
     @Override
     public List<IntPair> makePairs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSets, "cellsSets");
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         
         Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
                 ? new Pair<>(Set.of(), Set.of())
@@ -73,11 +73,11 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                         .map(pair -> pair.get(side))
                         .collect(Collectors.toSet()));
         
-        List<List<CellData>> listA = convert(cellsSets.a(), horizontalRedundants.a());
-        List<List<CellData>> listB = convert(cellsSets.b(), horizontalRedundants.b());
+        List<List<CellData>> listA = convert(cellsSetPair.a(), horizontalRedundants.a());
+        List<List<CellData>> listB = convert(cellsSetPair.b(), horizontalRedundants.b());
         
-        double[] weightsA = weights(cellsSets.a(), horizontalRedundants.a());
-        double[] weightsB = weights(cellsSets.b(), horizontalRedundants.b());
+        double[] weightsA = weights(cellsSetPair.a(), horizontalRedundants.a());
+        double[] weightsB = weights(cellsSetPair.b(), horizontalRedundants.b());
         
         Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
                 gapEvaluator(weightsA),
