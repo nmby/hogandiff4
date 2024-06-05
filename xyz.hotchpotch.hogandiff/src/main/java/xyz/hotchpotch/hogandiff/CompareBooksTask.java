@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -85,7 +86,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             
             str.append("%s%n[A] %s%n[B] %s%n%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
@@ -110,7 +111,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookPathPair, readPasswords);
             
@@ -142,7 +143,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
                     bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));

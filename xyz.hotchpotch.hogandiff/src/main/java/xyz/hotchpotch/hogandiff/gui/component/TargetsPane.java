@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -36,10 +37,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_PATH1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
+        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_PATH2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
+        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
         
         // [instance members] --------------------------------------------------
         
@@ -47,7 +48,7 @@ public class TargetsPane extends VBox implements ChildController {
         public final String title;
         
         /** ブックパス設定項目 */
-        public final Key<Path> bookPathKey;
+        public final Key<BookInfo> bookInfoKey;
         
         /** シート名設定項目 */
         public final Key<String> sheetNameKey;
@@ -57,12 +58,12 @@ public class TargetsPane extends VBox implements ChildController {
         
         Side(
                 String title,
-                Key<Path> bookPathKey,
+                Key<BookInfo> bookInfoKey,
                 Key<String> sheetNameKey,
                 Key<Path> dirPathKey) {
             
             this.title = title;
-            this.bookPathKey = bookPathKey;
+            this.bookInfoKey = bookInfoKey;
             this.sheetNameKey = sheetNameKey;
             this.dirPathKey = dirPathKey;
         }

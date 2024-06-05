@@ -25,8 +25,8 @@ public enum AppMenu {
     COMPARE_BOOKS(
             CompareBooksTask::new,
             settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_PATH1),
-                    settings.get(SettingKeys.CURR_BOOK_PATH2))),
+                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath())),
     
     /**
      * 特定のExcelシート同士を比較します。
@@ -34,8 +34,8 @@ public enum AppMenu {
     COMPARE_SHEETS(
             CompareSheetsTask::new,
             settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_PATH1),
-                    settings.get(SettingKeys.CURR_BOOK_PATH2))
+                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath())
                     || !Objects.equals(
                             settings.get(SettingKeys.CURR_SHEET_NAME1),
                             settings.get(SettingKeys.CURR_SHEET_NAME2))),

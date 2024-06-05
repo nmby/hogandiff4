@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -113,28 +114,28 @@ public class SettingKeys {
             AppMenu::valueOf,
             false);
     
-    /** 今回の実行における比較対象Excelブック1のパス */
-    public static final Key<Path> CURR_BOOK_PATH1 = new Key<Path>(
-            "current.bookPath1",
+    /** 今回の実行における比較対象Excelブック1の情報 */
+    public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<BookInfo>(
+            "current.bookInfo1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            Path::toString,
+            BookInfo::toString,
             null,
             false);
     
-    /** 今回の実行における比較対象Excelブック2のパス */
-    public static final Key<Path> CURR_BOOK_PATH2 = new Key<Path>(
-            "current.bookPath2",
+    /** 今回の実行における比較対象Excelブック2の情報 */
+    public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<BookInfo>(
+            "current.bookInfo2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            Path::toString,
+            BookInfo::toString,
             null,
             false);
     
-    /** {@link #CURR_BOOK_PATH1} と {@link #CURR_BOOK_PATH2} のペア */
-    public static final Pair<Key<Path>> CURR_BOOK_PATHS = new Pair<>(CURR_BOOK_PATH1, CURR_BOOK_PATH2);
+    /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
+    public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
     
     /** 比較対象Excelブックたちの読み取りパスワード */
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<Map<Path, String>>(

@@ -272,7 +272,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_PATH1);
+            Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
             dstBookPath = workDir.resolve(srcBookPath.getFileName());
             String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
@@ -327,7 +327,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_PATHS.map(settings::get);
+            Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             Pair<Path> dstBookPathPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
@@ -504,8 +504,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         return switch (menu) {
             case COMPARE_BOOKS, COMPARE_SHEETS -> Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_PATH1),
-                    settings.get(SettingKeys.CURR_BOOK_PATH2));
+                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };

@@ -183,8 +183,8 @@ public class MainController extends VBox {
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH1)) != null
-                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH2)) != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -209,8 +209,8 @@ public class MainController extends VBox {
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH1)) != null
-                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_PATH2)) != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
