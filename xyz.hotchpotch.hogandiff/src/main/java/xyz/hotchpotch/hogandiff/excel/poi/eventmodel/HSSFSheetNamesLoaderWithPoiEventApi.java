@@ -200,7 +200,6 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             
             return new BookInfo(
                     bookPath,
-                    readPassword,
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {

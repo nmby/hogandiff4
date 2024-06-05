@@ -102,7 +102,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
                     .map(Sheet::getSheetName)
                     .toList();
             
-            return new BookInfo(bookPath, readPassword, sheetNames);
+            return new BookInfo(bookPath, sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない

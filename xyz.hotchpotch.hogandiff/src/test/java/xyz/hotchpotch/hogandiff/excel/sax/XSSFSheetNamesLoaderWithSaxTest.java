@@ -98,14 +98,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
-                        null,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
-                        null,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -120,14 +118,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
-                        null,
                         List.of("A1_ワークシート", "A4_マクロ",
                                 "B1_ワークシート", "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
-                        null,
                         List.of("A1_ワークシート",
                                 "B1_ワークシート")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -140,14 +136,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
-                        null,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
-                        null,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -160,14 +154,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
-                        null,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
-                        null,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
                 testee.loadSheetNames(test1_xlsm, null));
@@ -182,13 +174,11 @@ class XSSFSheetNamesLoaderWithSaxTest {
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
-                        null,
                         List.of()),
                 testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
-                        null,
                         List.of("A4_マクロ",
                                 "B4_マクロ")),
                 testee.loadSheetNames(test1_xlsm, null));

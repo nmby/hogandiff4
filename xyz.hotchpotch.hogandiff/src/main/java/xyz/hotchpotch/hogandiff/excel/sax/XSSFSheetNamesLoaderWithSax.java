@@ -87,7 +87,7 @@ public class XSSFSheetNamesLoaderWithSax implements SheetNamesLoader {
                     .map(SheetInfo::name)
                     .toList();
             
-            return new BookInfo(bookPath, readPassword, sheetNames);
+            return new BookInfo(bookPath, sheetNames);
             
         } catch (Exception e) {
             throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);

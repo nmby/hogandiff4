@@ -16,7 +16,7 @@ class CombinedSheetNamesLoaderTest {
     // [static members] ********************************************************
     
     private static final SheetNamesLoader successLoader = (bookPath, readPassword) -> new BookInfo(
-            bookPath, readPassword, List.of("success"));
+            bookPath, List.of("success"));
     
     private static final SheetNamesLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
@@ -85,7 +85,6 @@ class CombinedSheetNamesLoaderTest {
         assertEquals(
                 new BookInfo(
                         path1,
-                        null,
                         List.of("success")),
                 testeeS.loadSheetNames(path1, null));
         
@@ -94,7 +93,6 @@ class CombinedSheetNamesLoaderTest {
         assertEquals(
                 new BookInfo(
                         path2,
-                        null,
                         List.of("success")),
                 testeeFFSF.loadSheetNames(path2, null));
     }

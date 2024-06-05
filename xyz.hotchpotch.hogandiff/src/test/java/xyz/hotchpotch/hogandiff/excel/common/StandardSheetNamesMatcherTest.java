@@ -32,8 +32,8 @@ class StandardSheetNamesMatcherTest {
     
     private static Pair<BookInfo> pairOf(List<String> sheetNames1, List<String> sheetNames2) {
         return new Pair<>(
-                new BookInfo(Path.of("dummy"), null, sheetNames1),
-                new BookInfo(Path.of("dummy"), null, sheetNames2));
+                new BookInfo(Path.of("dummy"), sheetNames1),
+                new BookInfo(Path.of("dummy"), sheetNames2));
     }
     
     // [instance members] ******************************************************
