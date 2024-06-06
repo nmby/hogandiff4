@@ -84,7 +84,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         this.settings = settings;
         this.factory = factory;
-        this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
+        this.workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
