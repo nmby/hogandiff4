@@ -36,7 +36,7 @@ public class Settings {
     // java16で正式導入されたRecordを使ってみる。
     // 外形的にはこのクラスがRecordであることは全く問題がないが、
     // 思想的?にはRecordじゃない気もするけど、まぁ試しに使ってみる。
-    public static record Key<T> (
+    public static record Key<T>(
             String name,
             Supplier<? extends T> defaultValueSupplier,
             Function<? super T, String> encoder,
@@ -82,9 +82,9 @@ public class Settings {
         
         // [instance members] --------------------------------------------------
         
-        private final Map<Key<?>, Object> map;
+        private final Map<Key<?>, Optional<?>> map;
         
-        private Builder(Map<Key<?>, ?> original) {
+        private Builder(Map<Key<?>, Optional<?>> original) {
             this.map = new HashMap<>(original);
         }
         
@@ -104,7 +104,7 @@ public class Settings {
             Objects.requireNonNull(key, "key");
             Objects.requireNonNull(value, "value");
             
-            map.put(key, value);
+            map.put(key, Optional.ofNullable(value));
             return this;
         }
         
@@ -164,15 +164,15 @@ public class Settings {
         Objects.requireNonNull(keys, "keys");
         ifDuplicatedThenThrow(keys, IllegalArgumentException::new);
         
-        Map<Key<?>, Object> map = keys.stream()
+        Map<Key<?>, Optional<?>> map = keys.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         key -> {
                             if (properties.containsKey(key.name())) {
                                 String value = properties.getProperty(key.name());
-                                return key.decoder().apply(value);
+                                return Optional.ofNullable(key.decoder().apply(value));
                             } else {
-                                return key.defaultValueSupplier().get();
+                                return Optional.ofNullable(key.defaultValueSupplier().get());
                             }
                         }));
         
@@ -211,7 +211,7 @@ public class Settings {
     
     // [instance members] ******************************************************
     
-    private final Map<Key<?>, ?> map;
+    private final Map<Key<?>, Optional<?>> map;
     
     private Settings(Builder builder) {
         assert builder != null;
@@ -235,7 +235,7 @@ public class Settings {
         Objects.requireNonNull(key, "key");
         
         if (map.containsKey(key)) {
-            return (T) map.get(key);
+            return (T) map.get(key).orElse(null);
         } else {
             throw new NoSuchElementException("no such key : " + key.name());
         }
@@ -255,7 +255,7 @@ public class Settings {
         Objects.requireNonNull(key, "key");
         
         return map.containsKey(key)
-                ? (T) map.get(key)
+                ? (T) map.get(key).orElse(null)
                 : key.defaultValueSupplier.get();
     }
     
