@@ -227,8 +227,8 @@ public class Settings {
      * @param <T> 設定値の型
      * @param key 設定項目
      * @return 設定値
-     * @throws NullPointerException {@code item} が {@code null} の場合
-     * @throws NoSuchElementException {@code item} が設定されていない場合
+     * @throws NullPointerException {@code key} が {@code null} の場合
+     * @throws NoSuchElementException {@code key} が設定されていない場合
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
@@ -248,7 +248,7 @@ public class Settings {
      * @param <T> 設定値の型
      * @param key 設定項目
      * @return 設定値
-     * @throws NullPointerException {@code item} が {@code null} の場合
+     * @throws NullPointerException {@code key} が {@code null} の場合
      */
     @SuppressWarnings("unchecked")
     public <T> T getOrDefault(Key<T> key) {
