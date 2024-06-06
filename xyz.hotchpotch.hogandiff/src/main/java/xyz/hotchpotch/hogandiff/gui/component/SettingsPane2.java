@@ -49,9 +49,8 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         // [static members] ----------------------------------------------------
         
-        JA("日本語", Locale.JAPANESE, "jp.png"),
-        EN("English", Locale.ENGLISH, "us.png"),
-        ZH("簡体中文", Locale.SIMPLIFIED_CHINESE, "cn.png");
+        JA("日本語", Locale.JAPANESE, "jp.png"), EN("English", Locale.ENGLISH, "us.png"), ZH("簡体中文",
+                Locale.SIMPLIFIED_CHINESE, "cn.png");
         
         public static LocaleItem of(Locale locale) {
             Objects.requireNonNull(locale, "locale");
@@ -121,7 +120,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         deleteWorkDirButton.setOnAction(deleteDir);
         
         // 3.初期値の設定
-        Locale locale = ar.settings().getOrDefault(SettingKeys.APP_LOCALE);
+        Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
         localeComboBox.setValue(LocaleItem.of(locale));
         
         // 4.値変更時のイベントハンドラの設定
@@ -140,7 +139,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {
-        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
+        Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         try {
             if (!Files.isDirectory(workDirBase)) {
@@ -161,7 +160,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     };
     
     private final EventHandler<ActionEvent> changeDir = event -> {
-        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
+        Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         File newDir = null;
         try {
@@ -205,7 +204,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     };
     
     private final EventHandler<ActionEvent> deleteDir = event -> {
-        Path workDirBase = ar.settings().getOrDefault(SettingKeys.WORK_DIR_BASE);
+        Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         Optional<ButtonType> result = new Alert(
                 AlertType.CONFIRMATION,

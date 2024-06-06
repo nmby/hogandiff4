@@ -58,7 +58,7 @@ public class TogglePane extends AnchorPane implements ChildController {
                 toggleButton.selectedProperty()));
         
         // 3.初期値の設定
-        toggleButton.setSelected(ar.settings().getOrDefault(SettingKeys.SHOW_SETTINGS));
+        toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
         
         // 4.値変更時のイベントハンドラの設定
         toggleButton.setOnAction(event -> ar

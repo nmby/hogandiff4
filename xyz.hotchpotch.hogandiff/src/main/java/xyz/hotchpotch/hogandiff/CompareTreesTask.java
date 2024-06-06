@@ -63,7 +63,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
             
             // 4. フォルダツリー同士の比較
-            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             TreeResult tResult = compareTrees(workDir, topDirPair, pairs, readPasswords, 5, 93);
             
             // 5. 比較結果テキストの作成と表示

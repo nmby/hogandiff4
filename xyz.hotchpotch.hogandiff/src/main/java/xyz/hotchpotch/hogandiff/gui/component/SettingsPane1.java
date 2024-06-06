@@ -89,8 +89,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         // nop
         
         // 3.初期値の設定
-        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter
-                .accept(ar.settings().getOrDefault(key));
+        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter.accept(ar.settings().get(key));
         
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);

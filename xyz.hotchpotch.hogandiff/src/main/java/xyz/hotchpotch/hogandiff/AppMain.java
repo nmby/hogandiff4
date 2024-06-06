@@ -89,7 +89,7 @@ public class AppMain extends Application {
                         + VERSION);
         
         primaryStage.setMinHeight(
-                settings.getOrDefault(SettingKeys.SHOW_SETTINGS)
+                settings.get(SettingKeys.SHOW_SETTINGS)
                         ? STAGE_HEIGHT_OPEN
                         : STAGE_HEIGHT_CLOSE);
         primaryStage.setMinWidth(STAGE_WIDTH);
@@ -136,6 +136,7 @@ public class AppMain extends Application {
         
         // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
         String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
+        System.out.println(prevVersion);
         if (!VERSION.equals(prevVersion)) {
             
             assert VERSION.equals("v0.19.1");

@@ -147,7 +147,7 @@ public class MainController extends VBox {
             throw new IllegalStateException();
         }
         
-        AppMenu menu = ar.settings().getOrDefault(SettingKeys.CURR_MENU);
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(
@@ -182,7 +182,7 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
                             || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
@@ -194,7 +194,7 @@ public class MainController extends VBox {
                                 .showAndWait();
             }
             
-            if (ar.settings().getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
+            if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);
@@ -208,7 +208,7 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
                             || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
@@ -247,8 +247,8 @@ public class MainController extends VBox {
     }
     
     private Path createWorkDir(Settings settings) {
-        final String timestamp = SettingKeys.CURR_TIMESTAMP.defaultValueSupplier().get();
-        Path workDirBase = settings.getOrDefault(SettingKeys.WORK_DIR_BASE);
+        final String timestamp = SettingKeys.CURR_TIMESTAMP.ifNotSetSupplier().get();
+        Path workDirBase = settings.get(SettingKeys.WORK_DIR_BASE);
         
         while (true) {
             try {
