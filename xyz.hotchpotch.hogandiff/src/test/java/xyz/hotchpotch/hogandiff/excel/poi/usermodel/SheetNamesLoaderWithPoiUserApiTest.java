@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -22,12 +21,12 @@ class SheetNamesLoaderWithPoiUserApiTest {
     
     // [static members] ********************************************************
     
-    private static BookOpenInfo test1_xls;
-    private static BookOpenInfo test1_xlsb;
-    private static BookOpenInfo test1_xlsm;
-    private static BookOpenInfo test1_xlsx;
-    private static BookOpenInfo test2_xls;
-    private static BookOpenInfo test2_xlsx;
+    private static Path test1_xls;
+    private static Path test1_xlsb;
+    private static Path test1_xlsm;
+    private static Path test1_xlsx;
+    private static Path test2_xls;
+    private static Path test2_xlsx;
     
     private static Path bookPwTest1_xls;
     private static Path bookPwTest1_xlsx;
@@ -42,12 +41,12 @@ class SheetNamesLoaderWithPoiUserApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = new BookOpenInfo(Path.of(me.getResource("Test1.xls").toURI()), null);
-        test1_xlsb = new BookOpenInfo(Path.of(me.getResource("Test1.xlsb").toURI()), null);
-        test1_xlsm = new BookOpenInfo(Path.of(me.getResource("Test1.xlsm").toURI()), null);
-        test1_xlsx = new BookOpenInfo(Path.of(me.getResource("Test1.xlsx").toURI()), null);
-        test2_xls = new BookOpenInfo(Path.of(me.getResource("Test2_passwordAAA.xls").toURI()), null);
-        test2_xlsx = new BookOpenInfo(Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI()), null);
+        test1_xls = Path.of(me.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(me.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(me.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(me.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(me.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(me.getResource("Test2_passwordAAA.xlsx").toURI());
         
         bookPwTest1_xls = Path.of(me.getResource("BookPwTest1.xls").toURI());
         bookPwTest1_xlsx = Path.of(me.getResource("BookPwTest1.xlsx").toURI());
@@ -84,12 +83,12 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadSheetNames(null));
+                () -> testee.loadSheetNames(null, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadSheetNames(test1_xlsb));
+                () -> testee.loadSheetNames(test1_xlsb, null));
     }
     
     @Test
@@ -99,15 +98,15 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xlsx"), null)));
+                () -> testee.loadSheetNames(Path.of("X:\\dummy\\dummy.xlsx"), null));
         
         // 暗号化ファイル - 読み取りPW指定なし
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(test2_xls));
+                () -> testee.loadSheetNames(test2_xls, null));
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(test2_xlsx));
+                () -> testee.loadSheetNames(test2_xlsx, null));
     }
     
     @Test
@@ -119,7 +118,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xls));
+                testee.loadSheetNames(test1_xls, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」と「x4_マクロ」を取得できない。
         // どうしようもないのかしら？？
@@ -128,7 +127,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xlsm,
                         List.of("A1_ワークシート", "A2_グラフ",
                                 "B1_ワークシート", "B2_グラフ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」を取得できない。
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
@@ -139,7 +138,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xlsx,
                         List.of("A1_ワークシート", "A2_グラフ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
     }
     
     @Test
@@ -153,14 +152,14 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xls));
+                testee.loadSheetNames(test1_xls, null));
         
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A1_ワークシート",
                                 "B1_ワークシート")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
         
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
         // 「x4_マクロ」も取得されている。
@@ -169,7 +168,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xlsx,
                         List.of("A1_ワークシート", "A4_マクロ",
                                 "B1_ワークシート", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
     }
     
     @Test
@@ -183,21 +182,21 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xls));
+                testee.loadSheetNames(test1_xls, null));
         
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
         
         assertEquals(
                 new BookInfo(
                         test1_xlsx,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
     }
     
     @Test
@@ -211,7 +210,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xls));
+                testee.loadSheetNames(test1_xls, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
@@ -219,7 +218,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                 new BookInfo(
                         test1_xlsm,
                         List.of()),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
@@ -227,7 +226,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                 new BookInfo(
                         test1_xlsx,
                         List.of()),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
     }
     
     @Test
@@ -241,7 +240,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xls));
+                testee.loadSheetNames(test1_xls, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つのバグが重なっているっぽい。
         //   ・.xlsm 形式のExcelブックからは「4_マクロ」を取得できない
@@ -252,7 +251,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xlsm,
                         List.of("A1_ワークシート",
                                 "B1_ワークシート")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
         
         // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つの事情によりこうなるっぽい。
         //   ・マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存された
@@ -263,7 +262,7 @@ class SheetNamesLoaderWithPoiUserApiTest {
                         test1_xlsx,
                         List.of("A1_ワークシート", "A4_マクロ",
                                 "B1_ワークシート", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
     }
     
     @Test
@@ -272,32 +271,32 @@ class SheetNamesLoaderWithPoiUserApiTest {
         
         // 開ける
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, null)));
+                () -> testee.loadSheetNames(bookPwTest1_xls, null));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, null)));
+                () -> testee.loadSheetNames(bookPwTest1_xlsx, null));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, null)));
+                () -> testee.loadSheetNames(bookPwTest3_xlsx, null));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw無しのxlsファイルは開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, null)));
+                () -> testee.loadSheetNames(bookPwTest3_xls, null));
         
         // 開けずにPasswordHandlingExceptionをスロー
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, null)));
+                () -> testee.loadSheetNames(bookPwTest2_xls, null));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, null)));
+                () -> testee.loadSheetNames(bookPwTest2_xlsx, null));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, null)));
+                () -> testee.loadSheetNames(bookPwTest4_xls, null));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, null)));
+                () -> testee.loadSheetNames(bookPwTest4_xlsx, null));
     }
     
     @Test
@@ -305,13 +304,13 @@ class SheetNamesLoaderWithPoiUserApiTest {
         SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, "123")));
+                () -> testee.loadSheetNames(bookPwTest1_xls, "123"));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, "123")));
+                () -> testee.loadSheetNames(bookPwTest1_xlsx, "123"));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, "123")));
+                () -> testee.loadSheetNames(bookPwTest2_xls, "123"));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, "123")));
+                () -> testee.loadSheetNames(bookPwTest2_xlsx, "123"));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
@@ -319,10 +318,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, "123")));
+                () -> testee.loadSheetNames(bookPwTest3_xls, "123"));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, "123")));
+                () -> testee.loadSheetNames(bookPwTest3_xlsx, "123"));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
@@ -330,10 +329,10 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, "123")));
+                () -> testee.loadSheetNames(bookPwTest4_xls, "123"));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, "123")));
+                () -> testee.loadSheetNames(bookPwTest4_xlsx, "123"));
     }
     
     @Test
@@ -341,16 +340,16 @@ class SheetNamesLoaderWithPoiUserApiTest {
         SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xls, "456")));
+                () -> testee.loadSheetNames(bookPwTest1_xls, "456"));
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest1_xlsx, "456")));
+                () -> testee.loadSheetNames(bookPwTest1_xlsx, "456"));
         
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xls, "456")));
+                () -> testee.loadSheetNames(bookPwTest2_xls, "456"));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest2_xlsx, "456")));
+                () -> testee.loadSheetNames(bookPwTest2_xlsx, "456"));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
@@ -358,16 +357,16 @@ class SheetNamesLoaderWithPoiUserApiTest {
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xls, "456")));
+                () -> testee.loadSheetNames(bookPwTest3_xls, "456"));
         
         assertDoesNotThrow(
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest3_xlsx, "456")));
+                () -> testee.loadSheetNames(bookPwTest3_xlsx, "456"));
         
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xls, "456")));
+                () -> testee.loadSheetNames(bookPwTest4_xls, "456"));
         assertThrows(
                 PasswordHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(bookPwTest4_xlsx, "456")));
+                () -> testee.loadSheetNames(bookPwTest4_xlsx, "456"));
     }
 }

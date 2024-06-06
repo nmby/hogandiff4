@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
@@ -21,8 +20,9 @@ class CombinedBookPainterTest {
     private static final BookPainter successPainter = new BookPainter() {
         @Override
         public void paintAndSave(
-                BookOpenInfo srcBookOpenInfo,
-                BookOpenInfo dstBookOpenInfo,
+                Path srcBookPath,
+                Path dstBookPath,
+                String readPassword,
                 Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
@@ -33,8 +33,9 @@ class CombinedBookPainterTest {
     private static final BookPainter failPainter = new BookPainter() {
         @Override
         public void paintAndSave(
-                BookOpenInfo srcBookOpenInfo,
-                BookOpenInfo dstBookOpenInfo,
+                Path srcBookPath,
+                Path dstBookPath,
+                String readPassword,
                 Map<String, Optional<Piece>> diffs)
                 throws ExcelHandlingException {
             
@@ -42,9 +43,9 @@ class CombinedBookPainterTest {
         }
     };
     
-    private static final BookOpenInfo dummy1_xlsx = new BookOpenInfo(Path.of("dummy1.xlsx"), null);
-    private static final BookOpenInfo dummy1_xls = new BookOpenInfo(Path.of("dummy1.xls"), null);
-    private static final BookOpenInfo dummy2_xlsx = new BookOpenInfo(Path.of("dummy2.xlsx"), null);
+    private static final Path dummy1_xlsx = Path.of("dummy1.xlsx");
+    private static final Path dummy1_xls = Path.of("dummy1.xls");
+    private static final Path dummy2_xlsx = Path.of("dummy2.xlsx");
     
     // [instance members] ******************************************************
     
@@ -75,29 +76,50 @@ class CombinedBookPainterTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(null, new BookOpenInfo(Path.of("dummy2.xlsx"), null), Map.of()));
+                () -> testee.paintAndSave(
+                        null, Path.of("dummy2.xlsx"),
+                        null,
+                        Map.of()));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, null, Map.of()));
+                () -> testee.paintAndSave(
+                        dummy1_xlsx, null,
+                        null,
+                        Map.of()));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, new BookOpenInfo(Path.of("dummy2.xlsx"), null), null));
+                () -> testee.paintAndSave(
+                        dummy1_xlsx, Path.of("dummy2.xlsx"),
+                        null,
+                        null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.paintAndSave(null, null, null));
+                () -> testee.paintAndSave(
+                        null, null,
+                        null,
+                        null));
         
         assertDoesNotThrow(
-                () -> testee.paintAndSave(dummy1_xlsx, dummy2_xlsx, Map.of()));
+                () -> testee.paintAndSave(
+                        dummy1_xlsx, dummy2_xlsx,
+                        null,
+                        Map.of()));
         
         // 同一パス
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, dummy1_xlsx, Map.of()));
+                () -> testee.paintAndSave(
+                        dummy1_xlsx, dummy1_xlsx,
+                        null,
+                        Map.of()));
         
         // 異なる拡張子
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.paintAndSave(dummy1_xlsx, dummy1_xls, Map.of()));
+                () -> testee.paintAndSave(
+                        dummy1_xlsx, dummy1_xls,
+                        null,
+                        Map.of()));
     }
     
     @Test
@@ -109,12 +131,18 @@ class CombinedBookPainterTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.paintAndSave(dummy1_xlsx, dummy2_xlsx, Map.of()));
+                () -> testeeF.paintAndSave(
+                        dummy1_xlsx, dummy2_xlsx,
+                        null,
+                        Map.of()));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.paintAndSave(dummy1_xlsx, dummy2_xlsx, Map.of()));
+                () -> testeeFFF.paintAndSave(
+                        dummy1_xlsx, dummy2_xlsx,
+                        null,
+                        Map.of()));
     }
     
     @Test
@@ -125,10 +153,16 @@ class CombinedBookPainterTest {
         
         // 成功１つ
         assertDoesNotThrow(
-                () -> testeeS.paintAndSave(dummy1_xlsx, dummy2_xlsx, Map.of()));
+                () -> testeeS.paintAndSave(
+                        dummy1_xlsx, dummy2_xlsx,
+                        null,
+                        Map.of()));
         
         // いくつかの失敗ののちに成功
         assertDoesNotThrow(
-                () -> testeeFFSF.paintAndSave(dummy1_xlsx, dummy2_xlsx, Map.of()));
+                () -> testeeFFSF.paintAndSave(
+                        dummy1_xlsx, dummy2_xlsx,
+                        null,
+                        Map.of()));
     }
 }

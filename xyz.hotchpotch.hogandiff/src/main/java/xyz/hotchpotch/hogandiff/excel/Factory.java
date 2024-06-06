@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -32,42 +33,47 @@ public class Factory {
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excelブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      */
     public SheetNamesLoader sheetNamesLoader(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
-        return SheetNamesLoader.of(bookOpenInfo);
+        return SheetNamesLoader.of(bookPath, readPassword);
     }
     
     /**
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public CellsLoader cellsLoader(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -75,7 +81,7 @@ public class Factory {
         
         boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        return CellsLoader.of(bookOpenInfo, useCachedValue);
+        return CellsLoader.of(bookPath, readPassword, useCachedValue);
     }
     
     /**
@@ -156,21 +162,23 @@ public class Factory {
      * ペインターを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public BookPainter painter(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         
         short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
@@ -184,7 +192,8 @@ public class Factory {
         Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
         
         return BookPainter.of(
-                bookOpenInfo,
+                bookPath,
+                readPassword,
                 redundantColor,
                 diffColor,
                 redundantCommentColor,

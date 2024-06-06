@@ -105,11 +105,11 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     /**
      * 行方向または列方向の対応付けを行い結果を返します。<br>
      * 
-     * @param cellsSets 比較対象シートのセルセット
+     * @param cellsSetPair 比較対象シートのセルセット
      * @param horizontalPairs 既に決定済みの横方向の対応付け
      * @return 縦方向の対応付け
      */
     List<IntPair> makePairs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs);
 }

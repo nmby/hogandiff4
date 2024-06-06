@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 
 /**
@@ -75,20 +74,6 @@ public record Pair<T>(T a, T b) {
          * @throws NullPointerException {@code operation} が {@code null} の場合
          */
         public static void forEach(Consumer<Side> operation) {
-            Objects.requireNonNull(operation, "operation");
-            
-            operation.accept(A);
-            operation.accept(B);
-        }
-        
-        /**
-         * 各側に指定されたオペレーションを適用します。<br>
-         * 
-         * @param <E> {@code operation} がスローしうるチェック例外の型
-         * @param operation 各側に適用するオペレーション
-         * @throws NullPointerException {@code operation} が {@code null} の場合
-         */
-        public static <E extends Exception> void unsafeForEach(UnsafeConsumer<Side, E> operation) throws E {
             Objects.requireNonNull(operation, "operation");
             
             operation.accept(A);

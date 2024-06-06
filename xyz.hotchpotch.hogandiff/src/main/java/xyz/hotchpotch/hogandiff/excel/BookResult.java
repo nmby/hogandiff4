@@ -20,12 +20,12 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  * 
- * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
+ * @param bookPathPair 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
  * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
  * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
 public record BookResult(
-        Pair<Path> bookPaths,
+        Pair<Path> bookPathPair,
         List<Pair<String>> sheetPairs,
         Map<Pair<String>, Optional<SheetResult>> sheetResults)
         implements Result {
@@ -63,22 +63,22 @@ public record BookResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param bookPaths 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
+     * @param bookPathPair 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
      * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
      * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
      * @throws NullPointerException
-     *          {@code bookPaths}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
+     *          {@code bookPathPair}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
      */
     public BookResult(
-            Pair<Path> bookPaths,
+            Pair<Path> bookPathPair,
             List<Pair<String>> sheetPairs,
             Map<Pair<String>, Optional<SheetResult>> sheetResults) {
         
-        Objects.requireNonNull(bookPaths, "bookPaths");
+        Objects.requireNonNull(bookPathPair, "bookPaths");
         Objects.requireNonNull(sheetPairs, "sheetPairs");
         Objects.requireNonNull(sheetResults, "sheetResults");
         
-        this.bookPaths = bookPaths;
+        this.bookPathPair = bookPathPair;
         this.sheetPairs = List.copyOf(sheetPairs);
         this.sheetResults = Map.copyOf(sheetResults);
     }
@@ -181,11 +181,11 @@ public record BookResult(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        if (bookPaths.isIdentical()) {
-            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPaths.a()).append(BR);
+        if (bookPathPair.isIdentical()) {
+            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPathPair.a()).append(BR);
         } else {
-            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPaths.a()).append(BR);
-            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPaths.b()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPathPair.a()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPathPair.b()).append(BR);
         }
         
         for (int i = 0; i < sheetPairs.size(); i++) {

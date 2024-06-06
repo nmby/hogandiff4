@@ -69,18 +69,18 @@ public abstract sealed class Report
             
             switch (super.settings.getOrDefault(SettingKeys.CURR_MENU)) {
                 case COMPARE_TREES:
-                    IntPair dPairs = dirPairs(result);
-                    str.append("\"dirPairs\": [ %d, %d ]".formatted(dPairs.a(), dPairs.b())).append(COMMA);
+                    IntPair dPair = dirPairs(result);
+                    str.append("\"dirPairs\": [ %d, %d ]".formatted(dPair.a(), dPair.b())).append(COMMA);
                     // fallthrough
                     
                 case COMPARE_DIRS:
-                    IntPair bPairs = bookPairs(result);
-                    str.append("\"bookPairs\": [ %d, %d ]".formatted(bPairs.a(), bPairs.b())).append(COMMA);
+                    IntPair bPair = bookPairs(result);
+                    str.append("\"bookPairs\": [ %d, %d ]".formatted(bPair.a(), bPair.b())).append(COMMA);
                     // fallthrough
                     
                 case COMPARE_BOOKS:
-                    IntPair sPairs = sheetPairs(result);
-                    str.append("\"sheetPairs\": [ %d, %d ]".formatted(sPairs.a(), sPairs.b())).append(COMMA);
+                    IntPair sPair = sheetPairs(result);
+                    str.append("\"sheetPairs\": [ %d, %d ]".formatted(sPair.a(), sPair.b())).append(COMMA);
                     // fallthrough
                     
                 case COMPARE_SHEETS:

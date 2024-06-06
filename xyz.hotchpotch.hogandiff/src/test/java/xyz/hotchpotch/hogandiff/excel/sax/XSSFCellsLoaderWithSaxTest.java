@@ -11,7 +11,6 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -20,37 +19,23 @@ class XSSFCellsLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
-    private static BookOpenInfo test1_xls;
-    private static BookOpenInfo test1_xlsb;
-    private static BookOpenInfo test1_xlsm;
-    private static BookOpenInfo test1_xlsx;
-    private static BookOpenInfo test2_xlsm;
-    private static BookOpenInfo test3_xlsx;
-    private static BookOpenInfo test4_xlsx;
+    private static Path test1_xls;
+    private static Path test1_xlsb;
+    private static Path test1_xlsm;
+    private static Path test1_xlsx;
+    private static Path test2_xlsm;
+    private static Path test3_xlsx;
+    private static Path test4_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
-                null);
-        test1_xlsb = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
-                null);
-        test1_xlsm = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
-                null);
-        test1_xlsx = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
-                null);
-        test2_xlsm = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI()),
-                null);
-        test3_xlsx = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI()),
-                null);
-        test4_xlsx = new BookOpenInfo(
-                Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI()),
-                null);
+        test1_xls = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
+        test2_xlsm = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
+        test3_xlsx = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI());
+        test4_xlsx = Path.of(XSSFCellsLoaderWithSaxTest.class.getResource("Test4.xlsx").toURI());
     }
     
     // [instance members] ******************************************************
@@ -61,83 +46,83 @@ class XSSFCellsLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, null));
+                () -> XSSFCellsLoaderWithSax.of(true, null, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test1_xls));
+                () -> XSSFCellsLoaderWithSax.of(true, test1_xls, null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test1_xlsb));
+                () -> XSSFCellsLoaderWithSax.of(true, test1_xlsb, null));
         
         // ■チェック例外
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, new BookOpenInfo(Path.of("dummy\\dummy.xlsx"), null)));
+                () -> XSSFCellsLoaderWithSax.of(true, Path.of("dummy\\dummy.xlsx"), null));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test2_xlsm));
+                () -> XSSFCellsLoaderWithSax.of(true, test2_xlsm, null));
         
         // ■正常系
         assertTrue(
-                XSSFCellsLoaderWithSax.of(true, test1_xlsx) instanceof XSSFCellsLoaderWithSax);
+                XSSFCellsLoaderWithSax.of(true, test1_xlsx, null) instanceof XSSFCellsLoaderWithSax);
         assertTrue(
-                XSSFCellsLoaderWithSax.of(false, test1_xlsm) instanceof XSSFCellsLoaderWithSax);
+                XSSFCellsLoaderWithSax.of(false, test1_xlsm, null) instanceof XSSFCellsLoaderWithSax);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm, null);
         
         // 対照
         assertDoesNotThrow(
-                () -> testee.loadCells(test1_xlsm, "A1_ワークシート"));
+                () -> testee.loadCells(test1_xlsm, null, "A1_ワークシート"));
         
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(null, "A1_ワークシート"));
+                () -> testee.loadCells(null, null, "A1_ワークシート"));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(test1_xlsm, null));
+                () -> testee.loadCells(test1_xlsm, null, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(null, null));
+                () -> testee.loadCells(null, null, null));
         
         // 構成時と異なるブック
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadCells(test3_xlsx, "A1_ワークシート"));
+                () -> testee.loadCells(test3_xlsx, null, "A1_ワークシート"));
     }
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm, null);
         
         // 存在しないシート
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xlsm, "X9_ダミー"));
+                () -> testee.loadCells(test1_xlsm, null, "X9_ダミー"));
         
         // サポート対象外のシート形式
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xlsm, "A2_グラフ"));
+                () -> testee.loadCells(test1_xlsm, null, "A2_グラフ"));
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xlsm, "A3_ダイアログ"));
+                () -> testee.loadCells(test1_xlsm, null, "A3_ダイアログ"));
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xlsm, "A4_マクロ"));
+                () -> testee.loadCells(test1_xlsm, null, "A4_マクロ"));
     }
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsx, null);
         
         assertEquals(
                 Set.of(
@@ -148,15 +133,15 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(2, 2, "90", null),
                         new CellData(3, 2, "20", null),
                         new CellData(4, 2, "60", null)),
-                testee.loadCells(test1_xlsx, "A1_ワークシート"));
+                testee.loadCells(test1_xlsx, null, "A1_ワークシート"));
     }
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test3_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test3_xlsx, null);
         
         List<CellData> actual = new ArrayList<>(
-                testee.loadCells(test3_xlsx, "A_バリエーション"));
+                testee.loadCells(test3_xlsx, null, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
                 return c1.row() < c2.row() ? -1 : 1;
@@ -263,10 +248,10 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test3_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test3_xlsx, null);
         
         List<CellData> actual = new ArrayList<>(
-                testee.loadCells(test3_xlsx, "A_バリエーション"));
+                testee.loadCells(test3_xlsx, null, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
                 return c1.row() < c2.row() ? -1 : 1;
@@ -368,7 +353,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test4_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test4_xlsx, null);
         
         assertEquals(
                 Set.of(
@@ -379,12 +364,12 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(13, 1, "セル値あり", "コメント"),
                         new CellData(16, 1, "空コメント", ""),
                         new CellData(19, 1, "セル値のみ", null)),
-                testee.loadCells(test4_xlsx, "コメント"));
+                testee.loadCells(test4_xlsx, null, "コメント"));
     }
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test4_xlsx);
+        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test4_xlsx, null);
         
         assertEquals(
                 Set.of(
@@ -395,6 +380,6 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(13, 1, "セル値あり", "コメント"),
                         new CellData(16, 1, "空コメント", ""),
                         new CellData(19, 1, " \"セル値\" & \"のみ\"", null)),
-                testee.loadCells(test4_xlsx, "コメント"));
+                testee.loadCells(test4_xlsx, null, "コメント"));
     }
 }

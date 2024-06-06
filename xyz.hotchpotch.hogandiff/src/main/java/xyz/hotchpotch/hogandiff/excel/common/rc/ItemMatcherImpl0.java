@@ -38,19 +38,19 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     /**
      * {@inheritDoc}
      * 
-     * @throws NullPointerException {@code cellsSets} が {@code null} の場合
+     * @throws NullPointerException {@code cellsSetPair} が {@code null} の場合
      */
     @Override
     public List<IntPair> makePairs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSets, "cellsSets");
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         
-        int min1 = cellsSets.a().parallelStream().mapToInt(vertical).min().orElse(0);
-        int max1 = cellsSets.a().parallelStream().mapToInt(vertical).max().orElse(0);
-        int min2 = cellsSets.b().parallelStream().mapToInt(vertical).min().orElse(0);
-        int max2 = cellsSets.b().parallelStream().mapToInt(vertical).max().orElse(0);
+        int min1 = cellsSetPair.a().parallelStream().mapToInt(vertical).min().orElse(0);
+        int max1 = cellsSetPair.a().parallelStream().mapToInt(vertical).max().orElse(0);
+        int min2 = cellsSetPair.b().parallelStream().mapToInt(vertical).min().orElse(0);
+        int max2 = cellsSetPair.b().parallelStream().mapToInt(vertical).max().orElse(0);
         
         return IntStream.rangeClosed(Math.min(min1, min2), Math.max(max1, max2))
                 .mapToObj(n -> IntPair.of(n, n))

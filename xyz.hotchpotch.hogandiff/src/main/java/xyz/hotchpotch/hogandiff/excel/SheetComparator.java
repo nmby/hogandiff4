@@ -40,8 +40,8 @@ public interface SheetComparator {
     /**
      * 2つのシートから抽出したセルセット同士を比較して結果を返します。<br>
      * 
-     * @param cellsSets セルセット
+     * @param cellsSetPair セルセット
      * @return 比較結果
      */
-    SheetResult compare(Pair<Set<CellData>> cellsSets);
+    SheetResult compare(Pair<Set<CellData>> cellsSetPair);
 }

@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,11 +9,11 @@ import java.util.Objects;
  * 
  * @author nmby
  * 
- * @param bookOpenInfo Excelブックオープン情報
+ * @param bookPath Excelブックのパス
  * @param sheetNames Excelブックに含まれるシート名
  */
 public record BookInfo(
-        BookOpenInfo bookOpenInfo,
+        Path bookPath,
         List<String> sheetNames) {
     
     // [static members] ********************************************************
@@ -22,18 +23,18 @@ public record BookInfo(
     /**
      * コンストラクタ<br>
      * 
-     * @param bookOpenInfo Excelブックオープン情報
+     * @param bookPath Excelブックのパス
      * @param sheetNames Excelブックに含まれるシート名
-     * @throws NullPointerException {@code bookOpenInfo}, {@code sheetNames} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code bookPath}, {@code sheetNames} のいずれかが {@code null} の場合
      */
     public BookInfo(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
             List<String> sheetNames) {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
         Objects.requireNonNull(sheetNames, "sheetNames");
         
-        this.bookOpenInfo = bookOpenInfo;
+        this.bookPath = bookPath;
         this.sheetNames = List.copyOf(sheetNames);
     }
 }

@@ -5,7 +5,9 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -14,7 +16,7 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -28,7 +30,7 @@ public class SettingKeys {
     // [static members] ********************************************************
     
     /** クライアント上で生成されたUUID */
-    public static final Key<UUID> CLIENT_UUID = new Key<UUID>(
+    public static final Key<UUID> CLIENT_UUID = new Key<>(
             "client.uuid",
             () -> null,
             UUID::toString,
@@ -52,7 +54,7 @@ public class SettingKeys {
             true);
     
     /** 作業用フォルダの作成場所のパス */
-    public static final Key<Path> WORK_DIR_BASE = new Key<Path>(
+    public static final Key<Path> WORK_DIR_BASE = new Key<>(
             "application.workDirBase",
             () -> Path.of(
                     System.getProperty("user.home"),
@@ -62,7 +64,7 @@ public class SettingKeys {
             true);
     
     /** 設定エリアを表示するか */
-    public static final Key<Boolean> SHOW_SETTINGS = new Key<Boolean>(
+    public static final Key<Boolean> SHOW_SETTINGS = new Key<>(
             "application.showSettings",
             () -> false,
             String::valueOf,
@@ -70,7 +72,7 @@ public class SettingKeys {
             true);
     
     /** メインステージの縦幅 */
-    public static final Key<Double> STAGE_HEIGHT = new Key<Double>(
+    public static final Key<Double> STAGE_HEIGHT = new Key<>(
             "application.height",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -80,7 +82,7 @@ public class SettingKeys {
             true);
     
     /** メインステージの横幅 */
-    public static final Key<Double> STAGE_WIDTH = new Key<Double>(
+    public static final Key<Double> STAGE_WIDTH = new Key<>(
             "application.width",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -90,7 +92,7 @@ public class SettingKeys {
             true);
     
     /** ウィンドウ最大表示化 */
-    public static final Key<Boolean> STAGE_MAXIMIZED = new Key<Boolean>(
+    public static final Key<Boolean> STAGE_MAXIMIZED = new Key<>(
             "application.maximized",
             () -> false,
             String::valueOf,
@@ -98,7 +100,7 @@ public class SettingKeys {
             true);
     
     /** 今回の実行を識別するためのタイムスタンプタグ */
-    public static final Key<String> CURR_TIMESTAMP = new Key<String>(
+    public static final Key<String> CURR_TIMESTAMP = new Key<>(
             "current.timestamp",
             () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
             Function.identity(),
@@ -106,7 +108,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較メニュー */
-    public static final Key<AppMenu> CURR_MENU = new Key<AppMenu>(
+    public static final Key<AppMenu> CURR_MENU = new Key<>(
             "current.menu",
             () -> AppMenu.COMPARE_BOOKS,
             AppMenu::toString,
@@ -114,32 +116,44 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelブック1の情報 */
-    public static final Key<BookOpenInfo> CURR_BOOK_OPEN_INFO1 = new Key<BookOpenInfo>(
-            "current.bookOpenInfo1",
+    public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
+            "current.bookInfo1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            BookOpenInfo::toString,
-            null,
+            BookInfo::toString,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
             false);
     
     /** 今回の実行における比較対象Excelブック2の情報 */
-    public static final Key<BookOpenInfo> CURR_BOOK_OPEN_INFO2 = new Key<BookOpenInfo>(
-            "current.bookOpenInfo2",
+    public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<>(
+            "current.bookInfo2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
-            BookOpenInfo::toString,
-            null,
+            BookInfo::toString,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
             false);
     
-    /** {@link #CURR_BOOK_OPEN_INFO1} と {@link #CURR_BOOK_OPEN_INFO2} のペア */
-    public static final Pair<Key<BookOpenInfo>> CURR_BOOK_OPEN_INFOS = new Pair<>(
-            CURR_BOOK_OPEN_INFO1,
-            CURR_BOOK_OPEN_INFO2);
+    /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
+    public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
+    
+    /** 比較対象Excelブックたちの読み取りパスワード */
+    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
+            "current.readPasswords",
+            () -> new HashMap<>(),
+            Map::toString,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
+            false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
-    public static final Key<String> CURR_SHEET_NAME1 = new Key<String>(
+    public static final Key<String> CURR_SHEET_NAME1 = new Key<>(
             "current.sheetName1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -149,7 +163,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象Excelシート2の名前 */
-    public static final Key<String> CURR_SHEET_NAME2 = new Key<String>(
+    public static final Key<String> CURR_SHEET_NAME2 = new Key<>(
             "current.sheetName2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -164,7 +178,7 @@ public class SettingKeys {
             CURR_SHEET_NAME2);
     
     /** 今回の実行における比較対象フォルダ1のパス */
-    public static final Key<Path> CURR_DIR_PATH1 = new Key<Path>(
+    public static final Key<Path> CURR_DIR_PATH1 = new Key<>(
             "current.dirPath1",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -174,7 +188,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較対象フォルダ2のパス */
-    public static final Key<Path> CURR_DIR_PATH2 = new Key<Path>(
+    public static final Key<Path> CURR_DIR_PATH2 = new Key<>(
             "current.dirPath2",
             () -> {
                 throw new UnsupportedOperationException("the key has no default value.");
@@ -189,7 +203,7 @@ public class SettingKeys {
             CURR_DIR_PATH2);
     
     /** 行の挿入／削除を考慮するか */
-    public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<Boolean>(
+    public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(
             "compare.considerRowGaps",
             () -> true,
             String::valueOf,
@@ -197,7 +211,7 @@ public class SettingKeys {
             true);
     
     /** 列の挿入／削除を考慮するか */
-    public static final Key<Boolean> CONSIDER_COLUMN_GAPS = new Key<Boolean>(
+    public static final Key<Boolean> CONSIDER_COLUMN_GAPS = new Key<>(
             "compare.considerColumnGaps",
             () -> false,
             String::valueOf,
@@ -208,7 +222,7 @@ public class SettingKeys {
      * セルの内容が数式の場合に数式文字列を比較する（{@code true}）か、
      * Excelファイルにキャッシュされている計算結果の値を比較する（{@code false}）か
      */
-    public static final Key<Boolean> COMPARE_ON_FORMULA_STRING = new Key<Boolean>(
+    public static final Key<Boolean> COMPARE_ON_FORMULA_STRING = new Key<>(
             "compare.compareOnFormulaString",
             () -> false,
             String::valueOf,
@@ -219,7 +233,7 @@ public class SettingKeys {
      * シート名同士の対応付けにおいて完全一致でマッチングする（{@code true}）か、
      * ある程度の揺らぎを許容する（{@code flase}）か
      */
-    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<Boolean>(
+    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<>(
             "compare.matchNamesStrictly",
             () -> false,
             String::valueOf,
@@ -227,7 +241,7 @@ public class SettingKeys {
             false);
     
     /** 子フォルダも再帰的に比較するか */
-    public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<Boolean>(
+    public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<>(
             "compare.compareDirsRecursively",
             () -> false,
             String::valueOf,
@@ -235,7 +249,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、余剰行・余剰列に着ける色のインデックス値 */
-    public static final Key<Short> REDUNDANT_COLOR = new Key<Short>(
+    public static final Key<Short> REDUNDANT_COLOR = new Key<>(
             "report.redundantColor",
             () -> IndexedColors.CORAL.getIndex(),
             String::valueOf,
@@ -243,7 +257,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、差分セルに着ける色のインデックス値 */
-    public static final Key<Short> DIFF_COLOR = new Key<Short>(
+    public static final Key<Short> DIFF_COLOR = new Key<>(
             "report.diffColor",
             () -> IndexedColors.YELLOW.getIndex(),
             String::valueOf,
@@ -251,7 +265,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、余剰セルコメントに着ける色 */
-    public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<Color>(
+    public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<>(
             "report.redundantCommentColor",
             () -> new Color(255, 128, 128),
             color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
@@ -259,7 +273,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、差分セルコメントに着ける色 */
-    public static final Key<Color> DIFF_COMMENT_COLOR = new Key<Color>(
+    public static final Key<Color> DIFF_COMMENT_COLOR = new Key<>(
             "report.diffCommentColor",
             () -> Color.YELLOW,
             color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
@@ -267,7 +281,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、余剰シートの見出しに着ける色 */
-    public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<Color>(
+    public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<>(
             "report.redundantSheetColor",
             () -> Color.RED,
             color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
@@ -275,7 +289,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、差分シートの見出しに着ける色 */
-    public static final Key<Color> DIFF_SHEET_COLOR = new Key<Color>(
+    public static final Key<Color> DIFF_SHEET_COLOR = new Key<>(
             "report.diffSheetColor",
             () -> Color.YELLOW,
             color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
@@ -283,7 +297,7 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、差分無しシートの見出しに着ける色 */
-    public static final Key<Color> SAME_SHEET_COLOR = new Key<Color>(
+    public static final Key<Color> SAME_SHEET_COLOR = new Key<>(
             "report.sameSheetColor",
             () -> Color.CYAN,
             color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
@@ -291,7 +305,7 @@ public class SettingKeys {
             false);
     
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
-    public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<Boolean>(
+    public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<>(
             "report.showPaintedSheets",
             () -> true,
             String::valueOf,
@@ -299,7 +313,7 @@ public class SettingKeys {
             true);
     
     /** レポートオプション：比較結果が記載されたテキストを表示するか */
-    public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<Boolean>(
+    public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<>(
             "report.showResultText",
             () -> true,
             String::valueOf,
@@ -307,7 +321,7 @@ public class SettingKeys {
             true);
     
     /** 実行オプション：比較完了時にこのアプリを終了するか */
-    public static final Key<Boolean> EXIT_WHEN_FINISHED = new Key<Boolean>(
+    public static final Key<Boolean> EXIT_WHEN_FINISHED = new Key<>(
             "execution.exitWhenFinished",
             () -> false,
             String::valueOf,
@@ -316,7 +330,7 @@ public class SettingKeys {
     
     /** 実行オプション：早さ優先か精度優先か */
     // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
-    public static final Key<Boolean> PRIORITIZE_SPEED = new Key<Boolean>(
+    public static final Key<Boolean> PRIORITIZE_SPEED = new Key<>(
             "execution.prioritizeSpeed",
             () -> false,
             String::valueOf,

@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -159,6 +160,7 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
+        // FIXME: createWorkDirもTaskの中に入れるべき
         Path workDir = createWorkDir(ar.settings());
         if (workDir == null) {
             new Alert(
@@ -180,9 +182,10 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -205,9 +208,10 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
+                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
+                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
                 
                 new Alert(
                         AlertType.WARNING,
@@ -243,13 +247,14 @@ public class MainController extends VBox {
     }
     
     private Path createWorkDir(Settings settings) {
-        String timestamp = SettingKeys.CURR_TIMESTAMP.defaultValueSupplier().get();
-        Path workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE).resolve(timestamp);
+        final String timestamp = SettingKeys.CURR_TIMESTAMP.defaultValueSupplier().get();
+        Path workDirBase = settings.getOrDefault(SettingKeys.WORK_DIR_BASE);
         
         while (true) {
             try {
+                Path workDir = workDirBase.resolve(timestamp);
                 Files.createDirectories(workDir);
-                ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDir.getParent());
+                ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase);
                 ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
                 return workDir;
                 
@@ -260,7 +265,7 @@ public class MainController extends VBox {
                         AlertType.WARNING,
                         "%s%n%s%n%n%s".formatted(
                                 rb.getString("gui.MainController.040"),
-                                workDir.getParent(),
+                                workDirBase,
                                 rb.getString("gui.MainController.050")),
                         ButtonType.OK)
                                 .showAndWait();
@@ -274,7 +279,7 @@ public class MainController extends VBox {
                     if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
                         newPath = newPath.resolve(AppMain.APP_DOMAIN);
                     }
-                    workDir = newPath.resolve(timestamp);
+                    workDirBase = newPath;
                     
                 } else {
                     return null;

@@ -11,7 +11,6 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -20,41 +19,25 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     // [static members] ********************************************************
     
-    private static BookOpenInfo test1_xls;
-    private static BookOpenInfo test1_xlsb;
-    private static BookOpenInfo test1_xlsm;
-    private static BookOpenInfo test1_xlsx;
-    private static BookOpenInfo test2_xls;
-    private static BookOpenInfo test2_xlsx;
-    private static BookOpenInfo test3_xls;
-    private static BookOpenInfo test5_xls;
+    private static Path test1_xls;
+    private static Path test1_xlsb;
+    private static Path test1_xlsm;
+    private static Path test1_xlsx;
+    private static Path test2_xls;
+    private static Path test2_xlsx;
+    private static Path test3_xls;
+    private static Path test5_xls;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI()),
-                null);
-        test1_xlsb = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI()),
-                null);
-        test1_xlsm = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI()),
-                null);
-        test1_xlsx = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI()),
-                null);
-        test2_xls = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI()),
-                null);
-        test2_xlsx = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
-                null);
-        test3_xls = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI()),
-                null);
-        test5_xls = new BookOpenInfo(
-                Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI()),
-                null);
+        test1_xls = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
+        test3_xls = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
+        test5_xls = Path.of(HSSFCellsLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
     }
     
     // [instance members] ******************************************************
@@ -73,34 +56,34 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         
         // 対照群
         assertDoesNotThrow(
-                () -> testee.loadCells(test1_xls, "A1_ワークシート"));
+                () -> testee.loadCells(test1_xls, null, "A1_ワークシート"));
         assertDoesNotThrow(
-                () -> testee.loadCells(test3_xls, "A_バリエーション"));
+                () -> testee.loadCells(test3_xls, null, "A_バリエーション"));
         
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(null, "A1_ワークシート"));
+                () -> testee.loadCells(null, null, "A1_ワークシート"));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(test1_xls, null));
+                () -> testee.loadCells(test1_xls, null, null));
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadCells(null, null));
+                () -> testee.loadCells(null, null, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadCells(test1_xlsx, "A1_ワークシート"));
+                () -> testee.loadCells(test1_xlsx, null, "A1_ワークシート"));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadCells(test1_xlsm, "A1_ワークシート"));
+                () -> testee.loadCells(test1_xlsm, null, "A1_ワークシート"));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadCells(test1_xlsb, "A1_ワークシート"));
+                () -> testee.loadCells(test1_xlsb, null, "A1_ワークシート"));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadCells(test2_xlsx, "A1_ワークシート"));
+                () -> testee.loadCells(test2_xlsx, null, "A1_ワークシート"));
     }
     
     @Test
@@ -110,31 +93,31 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xls"), null), "A1_ワークシート"));
+                () -> testee.loadCells(Path.of("X:\\dummy\\dummy.xls"), null, "A1_ワークシート"));
         
         // 存在しないシート
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xls, "X9_ダミー"));
+                () -> testee.loadCells(test1_xls, null, "X9_ダミー"));
         
         // サポート対象外のシート種類
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xls, "A2_グラフ"));
+                () -> testee.loadCells(test1_xls, null, "A2_グラフ"));
         // FIXME: [No.1 シート識別不正 - usermodel] どういう訳かダイアログシートとワークシートを見分けられない。
         //assertThrows(
         //        ExcelHandlingException.class,
         //        () -> testee.loadCells(test1_xls, "A3_ダイアログ"));
         assertDoesNotThrow(
-                () -> testee.loadCells(test1_xls, "A3_ダイアログ"));
+                () -> testee.loadCells(test1_xls, null, "A3_ダイアログ"));
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test1_xls, "A4_マクロ"));
+                () -> testee.loadCells(test1_xls, null, "A4_マクロ"));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test2_xls, "A1_ワークシート"));
+                () -> testee.loadCells(test2_xls, null, "A1_ワークシート"));
     }
     
     @Test
@@ -144,11 +127,11 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test3_xls, "A_バリエーション"));
+                () -> testee.loadCells(test3_xls, null, "A_バリエーション"));
         
         // of(false) で生成されても、目的のシートに数式が含まれない場合は例外をスローしない。
         assertDoesNotThrow(
-                () -> testee.loadCells(test3_xls, "B_数式なし"));
+                () -> testee.loadCells(test3_xls, null, "B_数式なし"));
     }
     
     @Test
@@ -164,7 +147,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
                         new CellData(2, 2, "90", null),
                         new CellData(3, 2, "20", null),
                         new CellData(4, 2, "60", null)),
-                testee.loadCells(test1_xls, "A1_ワークシート"));
+                testee.loadCells(test1_xls, null, "A1_ワークシート"));
     }
     
     @Test
@@ -172,7 +155,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
         
         List<CellData> actual = new ArrayList<>(
-                testee.loadCells(test3_xls, "A_バリエーション"));
+                testee.loadCells(test3_xls, null, "A_バリエーション"));
         actual.sort((c1, c2) -> {
             if (c1.row() != c2.row()) {
                 return c1.row() < c2.row() ? -1 : 1;
@@ -279,7 +262,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadCells(test3_xls, "A_バリエーション"));
+                () -> testee.loadCells(test3_xls, null, "A_バリエーション"));
     }
     
     @Test
@@ -295,6 +278,6 @@ class HSSFCellsLoaderWithPoiEventApiTest {
                         new CellData(13, 1, "セル値あり", "コメント"),
                         new CellData(16, 1, "空コメント", ""),
                         new CellData(19, 1, "セル値のみ", null)),
-                testee.loadCells(test5_xls, "コメント"));
+                testee.loadCells(test5_xls, null, "コメント"));
     }
 }

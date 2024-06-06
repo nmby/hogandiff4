@@ -37,17 +37,17 @@ public interface RCMatcher {
                 .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
         
         if (considerRowGaps && considerColumnGaps) {
-            return cellsSets -> {
-                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSets, null);
-                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSets, columnPairs);
+            return cellsSetPair -> {
+                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSetPair, null);
+                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSetPair, columnPairs);
                 
                 return new Pair<>(rowPairs, columnPairs);
             };
             
         } else {
-            return cellsSets -> {
-                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSets, null);
-                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSets, null);
+            return cellsSetPair -> {
+                List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSetPair, null);
+                List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSetPair, null);
                 
                 return new Pair<>(rowPairs, columnPairs);
             };
@@ -59,8 +59,8 @@ public interface RCMatcher {
     /**
      * 2つのシートに含まれるセルセット同士を比較し、行同士、列同士の対応関係を返します。<br>
      * 
-     * @param cellsSets 比較対象シートに含まれるセルセット
+     * @param cellsSetPair 比較対象シートに含まれるセルセット
      * @return 行同士、列同士の対応関係
      */
-    Pair<List<IntPair>> make2Pairs(Pair<Set<CellData>> cellsSets);
+    Pair<List<IntPair>> make2Pairs(Pair<Set<CellData>> cellsSetPair);
 }

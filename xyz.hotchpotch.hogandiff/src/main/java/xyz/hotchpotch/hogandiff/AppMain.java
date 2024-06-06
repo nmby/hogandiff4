@@ -129,13 +129,13 @@ public class AppMain extends Application {
     
     private void announceNewFeature() {
         // UUIDが未採番の場合は採番する。
-        UUID uuid = appResource.settings().getOrDefault(SettingKeys.CLIENT_UUID);
+        UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);
         if (uuid == null) {
             appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
         }
         
         // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
-        String prevVersion = appResource.settings().getOrDefault(SettingKeys.APP_VERSION);
+        String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
             
             assert VERSION.equals("v0.19.1");

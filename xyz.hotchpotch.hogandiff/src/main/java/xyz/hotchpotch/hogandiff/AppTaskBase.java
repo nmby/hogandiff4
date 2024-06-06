@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -30,7 +29,6 @@ import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
@@ -86,7 +84,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         this.settings = settings;
         this.factory = factory;
-        this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
+        this.workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
@@ -265,7 +263,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookOpenInfo dst = null;
+        Path dstBookPath = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -273,18 +271,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst = new BookOpenInfo(
-                    workDir.resolve(src.bookPath().getFileName()),
-                    src.readPassword());
+            Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
+            dstBookPath = workDir.resolve(srcBookPath.getFileName());
+            String readPassword = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
-            str.append("    - %s%n%n".formatted(dst));
+            str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
             
-            BookPainter painter = factory.painter(settings, dst);
+            BookPainter painter = factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
-            painter.paintAndSave(src, dst, result);
+            painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
@@ -296,7 +293,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPath.toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -324,55 +321,46 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        BookOpenInfo dst1 = null;
-        BookOpenInfo dst2 = null;
-        
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst1 = new BookOpenInfo(
-                    workDir.resolve("【A】" + src1.bookPath().getFileName()),
-                    src1.readPassword());
+            Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            Pair<Path> dstBookPathPair = Side.map(
+                    side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
+            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             
-            str.append("    - %s%n".formatted(dst1));
-            updateMessage(str.toString());
+            for (Side side : Side.values()) {
+                try {
+                    str.append("    - %s%n".formatted(dstBookPathPair.get(side)));
+                    updateMessage(str.toString());
+                    
+                    Path srcBookPath = srcBookPathPair.get(side);
+                    Path dstBookPath = dstBookPathPair.get(side);
+                    
+                    BookPainter painter = factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
+                    painter.paintAndSave(
+                            srcBookPath,
+                            dstBookPath,
+                            readPasswords.get(srcBookPath),
+                            bResult.getPiece(side));
+                    updateProgress(
+                            progressBefore + (progressAfter - progressBefore) * (side == Side.A ? 2 : 4) / 5,
+                            PROGRESS_MAX);
+                    
+                } catch (Exception e) {
+                    throw getApplicationException(e, side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                }
+            }
             
-            BookPainter painter1 = factory.painter(settings, dst1);
-            painter1.paintAndSave(src1, dst1, bResult.getPiece(Side.A));
-            
-            updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.100", "");
-        }
-        
-        try {
-            BookOpenInfo src2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            dst2 = new BookOpenInfo(
-                    workDir.resolve("【B】" + src2.bookPath().getFileName()),
-                    src2.readPassword());
-            
-            str.append("    - %s%n%n".formatted(dst2));
-            updateMessage(str.toString());
-            
-            BookPainter painter2 = factory.painter(settings, dst2);
-            painter2.paintAndSave(src2, dst2, bResult.getPiece(Side.B));
-            
-            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.110", "");
-        }
-        
-        try {
             if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
+                str.append(BR).append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst1.bookPath().toFile());
-                Desktop.getDesktop().open(dst2.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPathPair.a().toFile());
+                Desktop.getDesktop().open(dstBookPathPair.b().toFile());
+            } else {
+                str.append(BR);
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -392,9 +380,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareDirsTask, CompareTreesTask
     protected Pair<DirInfo> extractDirs() throws ApplicationException {
         try {
-            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_PATHS.map(settings::get);
             DirLoader dirLoader = factory.dirLoader(settings);
-            return dirPaths.unsafeMap(dirLoader::loadDir);
+            return dirPathPair.unsafeMap(dirLoader::loadDir);
             
         } catch (Exception e) {
             throw getApplicationException(e, "AppTaskBase.190", "");
@@ -451,7 +439,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * Excelブック同士の比較を行います。<br>
      * 
-     * @param bookOpenInfos 比較対象ブックの情報
+     * @param bookPathPair 比較対象ブックのパス
+     * @param readPasswords 比較対象ブックの読み取りパスワード
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
      * @return 比較結果
@@ -459,16 +448,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
-            Pair<BookOpenInfo> bookOpenInfos,
+            Pair<BookInfo> bookInfoPair,
+            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfos);
-        
-        Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
+        List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings).pairingSheetNames(bookInfoPair);
+        Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
+                bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
@@ -477,10 +467,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> sheetNamePair = sheetNamePairs.get(i);
             
             if (sheetNamePair.isPaired()) {
-                Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                        side -> loaders.get(side).loadCells(bookOpenInfos.get(side), sheetNamePair.get(side)));
+                Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
+                        side -> {
+                            Path bookPath = bookInfoPair.get(side).bookPath();
+                            return loaderPair.get(side).loadCells(
+                                    bookPath,
+                                    readPasswords.get(bookPath),
+                                    sheetNamePair.get(side));
+                        });
                 
-                SheetResult result = comparator.compare(cellsSets);
+                SheetResult result = comparator.compare(cellsSetPair);
                 results.put(sheetNamePair, Optional.of(result));
                 
             } else {
@@ -493,7 +489,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         return new BookResult(
-                bookOpenInfos.map(BookOpenInfo::bookPath),
+                bookInfoPair.map(BookInfo::bookPath),
                 sheetNamePairs,
                 results);
     }
@@ -509,36 +505,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
         
         return switch (menu) {
-            case COMPARE_BOOKS, COMPARE_SHEETS -> BookOpenInfo.isSameBook(
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
+            case COMPARE_BOOKS, COMPARE_SHEETS -> Objects.equals(
+                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
+                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };
-    }
-    
-    /**
-     * 指定された2つのExcelブックに含まれるシート名をロードし、
-     * 設定内容に基づいてシート名をペアリングして返します。<br>
-     * 
-     * @param bookOpenInfos Excelブック情報
-     * @return シート名のペアのリスト
-     * @throws ExcelHandlingException 処理に失敗した場合
-     */
-    // AppTaskBase#compareBooks, CompareBooksTask
-    protected List<Pair<String>> getSheetNamePairs(
-            Pair<BookOpenInfo> bookOpenInfos)
-            throws ExcelHandlingException {
-        
-        assert bookOpenInfos != null;
-        assert !Objects.equals(bookOpenInfos.a().bookPath(), bookOpenInfos.b().bookPath());
-        
-        Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos.unsafeMap(factory::sheetNamesLoader);
-        Pair<BookInfo> bookInfos = Side.unsafeMap(
-                side -> sheetNamesLoaders.get(side).loadSheetNames(bookOpenInfos.get(side)));
-        
-        SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
-        return matcher.pairingSheetNames(bookInfos);
     }
     
     /**
@@ -547,6 +519,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param dirId フォルダ識別子
      * @param indent インデント
      * @param data 比較対象フォルダの情報
+     * @param readPasswords 比較対象ファイルの読み取りパスワード
      * @param outputDirs 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
@@ -557,6 +530,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             String dirId,
             String indent,
             DirPairData data,
+            Map<Path, String> readPasswords,
             Pair<Path> outputDirs,
             int progressBefore,
             int progressAfter) {
@@ -581,17 +555,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             if (bookNamePair.isPaired()) {
                 
-                Pair<BookOpenInfo> srcInfos = Side.map(side -> new BookOpenInfo(
-                        data.dirPair().get(side).path().resolve(bookNamePair.get(side)), null));
-                Pair<BookOpenInfo> dstInfos = Side.map(side -> new BookOpenInfo(
-                        outputDirs.get(side).resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))),
-                        null));
+                Pair<Path> srcPathPair = Side.map(
+                        side -> data.dirPair().get(side).path().resolve(bookNamePair.get(side)));
+                Pair<Path> dstPathPair = Side.map(
+                        side -> outputDirs.get(side)
+                                .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
                 BookResult bookResult = null;
                 
                 try {
+                    Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
+                        String readPassword = readPasswords.get(bookPath);
+                        SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
+                        return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+                    });
                     
                     bookResult = compareBooks(
-                            srcInfos,
+                            bookInfoPair,
+                            readPasswords,
                             progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
                     bookResults.put(bookNamePair, Optional.of(bookResult));
@@ -604,7 +584,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                     Side.forEach(side -> {
                         try {
-                            Files.copy(srcInfos.get(side).bookPath(), dstInfos.get(side).bookPath());
+                            Files.copy(srcPathPair.get(side), dstPathPair.get(side));
                         } catch (IOException e1) {
                             // nop
                         }
@@ -613,14 +593,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
                 try {
-                    Pair<BookPainter> painters = srcInfos.unsafeMap(info -> factory.painter(settings, info));
+                    Pair<BookPainter> painterPair = srcPathPair.unsafeMap(
+                            bookPath -> factory.painter(settings, bookPath, readPasswords.get(bookPath)));
                     BookResult bookResult2 = bookResult;
                     
-                    Side.unsafeForEach(
-                            side -> painters.get(side).paintAndSave(
-                                    srcInfos.get(side),
-                                    dstInfos.get(side),
-                                    bookResult2.getPiece(side)));
+                    for (Side side : Side.values()) {
+                        Path srcPath = srcPathPair.get(side);
+                        Path dstPath = dstPathPair.get(side);
+                        
+                        painterPair.get(side).paintAndSave(
+                                srcPath,
+                                dstPath,
+                                readPasswords.get(srcPath),
+                                bookResult2.getPiece(side));
+                    }
                     
                     str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
                     updateMessage(str.toString());

@@ -63,7 +63,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
             
             // 4. フォルダツリー同士の比較
-            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
+            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, readPasswords, 5, 93);
             
             // 5. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, tResult.toString(), 93, 95);
@@ -92,12 +93,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_PATHS.map(settings::get);
             
             str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                     rb.getString("CompareTreesTask.010"),
-                    dirPaths.a(),
-                    dirPaths.b()));
+                    dirPathPair.a(),
+                    dirPathPair.b()));
             
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -161,6 +162,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Path workDir,
             Pair<DirInfo> topDirPair,
             List<DirPairData> pairDataList,
+            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -186,10 +188,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
                 updateMessage(str.toString());
                 
-                Pair<Path> outputDirs = null;
+                Pair<Path> outputDirPair = null;
                 
                 try {
-                    outputDirs = Side.unsafeMap(side -> {
+                    outputDirPair = Side.unsafeMap(side -> {
                         // 出力先ディレクトリの作成
                         if (data.dirPair().has(side)) {
                             DirInfo targetDir = data.dirPair().get(side);
@@ -220,7 +222,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             String.valueOf(i + 1),
                             "      ",
                             data,
-                            outputDirs,
+                            readPasswords,
+                            outputDirPair,
                             progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
                     dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
