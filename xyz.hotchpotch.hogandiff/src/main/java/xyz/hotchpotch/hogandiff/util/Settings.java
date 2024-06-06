@@ -83,7 +83,6 @@ public class Settings {
         
         /**
          * このビルダーに設定を追加します。<br>
-         * {@code null} 値は許容されません。値が無い可能性のある設定値を管理したい場合は
          * {@link Optional} を利用してください。<br>
          * 
          * @param <T> 設定値の型
@@ -224,7 +223,8 @@ public class Settings {
     public <T> T get(Key<T> key) {
         Objects.requireNonNull(key, "key");
         
-        return (T) map.get(key).orElse(null);
+        Optional<T> value = (Optional<T>) map.get(key);
+        return value == null ? null : value.orElse(null);
     }
     
     /**
