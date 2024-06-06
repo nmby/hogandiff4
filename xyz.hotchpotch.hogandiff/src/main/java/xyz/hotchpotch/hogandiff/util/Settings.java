@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -18,6 +17,7 @@ import java.util.stream.Collectors;
  *
  * @author nmby
  */
+// FIXME: defaultValueまわりのポリシーが一貫していないので整理する
 public class Settings {
     
     // [static members] ********************************************************
@@ -217,19 +217,14 @@ public class Settings {
      * 
      * @param <T> 設定値の型
      * @param key 設定項目
-     * @return 設定値
+     * @return 設定値。{@code key} が設定されていない場合は {@code null}
      * @throws NullPointerException {@code key} が {@code null} の場合
-     * @throws NoSuchElementException {@code key} が設定されていない場合
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
         Objects.requireNonNull(key, "key");
         
-        if (map.containsKey(key)) {
-            return (T) map.get(key).orElse(null);
-        } else {
-            throw new NoSuchElementException("no such key : " + key.name());
-        }
+        return (T) map.get(key).orElse(null);
     }
     
     /**
