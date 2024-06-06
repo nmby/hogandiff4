@@ -273,7 +273,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
             dstBookPath = workDir.resolve(srcBookPath.getFileName());
-            String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
+            String readPassword = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
             str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
@@ -329,7 +329,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             Pair<Path> dstBookPathPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             
             for (Side side : Side.values()) {
                 try {

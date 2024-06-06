@@ -124,7 +124,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         this.parent = parent;
         Side side = (Side) params[0];
         opposite = (TargetSelectionPane) params[1];
-        readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+        readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
         
         // 1.disableプロパティとvisibleプロパティのバインディング
         disableProperty().bind(parent.isRunning().or(isBusy));

@@ -112,7 +112,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
                     bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);

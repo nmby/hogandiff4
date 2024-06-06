@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -121,7 +122,9 @@ public class SettingKeys {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
             BookInfo::toString,
-            null,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
             false);
     
     /** 今回の実行における比較対象Excelブック2の情報 */
@@ -131,7 +134,9 @@ public class SettingKeys {
                 throw new UnsupportedOperationException("the key has no default value.");
             },
             BookInfo::toString,
-            null,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
             false);
     
     /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
@@ -140,11 +145,11 @@ public class SettingKeys {
     /** 比較対象Excelブックたちの読み取りパスワード */
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> new HashMap<>(),
             Map::toString,
-            null,
+            str -> {
+                throw new UnsupportedOperationException("cannot decode.");
+            },
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */

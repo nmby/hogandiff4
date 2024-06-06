@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -95,8 +94,6 @@ public class TargetsPane extends VBox implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
-        
-        ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());

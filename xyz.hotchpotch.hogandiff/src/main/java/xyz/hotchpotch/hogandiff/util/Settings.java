@@ -53,18 +53,14 @@ public class Settings {
          * @param decoder 文字列を設定値に変換するエンコーダー
          * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
          * @throws NullPointerException
-         *          {@code name}, {@code defaultValueSupplier}, {@code encoder}
+         *          {@code name}, {@code defaultValueSupplier}, {@code encoder}, {@code decoder}
          *          のいずれかが {@code null} の場合
-         * @throws NullPointerException
-         *          {@code storable} が {@code true} でありながら {@code decoder} が {@code null} の場合
          */
         public Key {
             Objects.requireNonNull(name, "name");
             Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
             Objects.requireNonNull(encoder, "encoder");
-            if (storable) {
-                Objects.requireNonNull(decoder, "decoder");
-            }
+            Objects.requireNonNull(decoder, "decoder");
         }
     }
     

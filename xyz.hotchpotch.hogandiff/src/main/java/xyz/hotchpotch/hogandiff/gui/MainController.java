@@ -181,7 +181,7 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
                             || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
@@ -207,7 +207,7 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = ar.settings().getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
             if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
                     && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
                             || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
