@@ -28,6 +28,12 @@ public class SettingKeys {
     
     // [static members] ********************************************************
     
+    private static <T> Function<String, T> notSupported(String msg) {
+        return str -> {
+            throw new UnsupportedOperationException(msg);
+        };
+    }
+    
     /** クライアント上で生成されたUUID */
     public static final Key<UUID> CLIENT_UUID = new Key<>(
             "client.uuid",
@@ -114,9 +120,7 @@ public class SettingKeys {
             "current.bookInfo1",
             () -> null,
             BookInfo::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelブック2の情報 */
@@ -124,9 +128,7 @@ public class SettingKeys {
             "current.bookInfo2",
             () -> null,
             BookInfo::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
@@ -137,9 +139,7 @@ public class SettingKeys {
             "current.readPasswords",
             () -> Map.of(),
             Map::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
