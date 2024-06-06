@@ -33,9 +33,6 @@ public class Settings {
      * @param storable 設定値をプロパティファイルに保存する場合は {@code true}
      * @author nmby
      */
-    // java16で正式導入されたRecordを使ってみる。
-    // 外形的にはこのクラスがRecordであることは全く問題がないが、
-    // 思想的?にはRecordじゃない気もするけど、まぁ試しに使ってみる。
     public static record Key<T>(
             String name,
             Supplier<? extends T> defaultValueSupplier,
@@ -95,14 +92,12 @@ public class Settings {
          * 
          * @param <T> 設定値の型
          * @param key 設定項目
-         * @param value 設定値
+         * @param value 設定値（{@code null} 許容）
          * @return このビルダー
-         * @throws NullPointerException
-         *              {@code key}, {@code value} のいずれかが {@code null} の場合
+         * @throws NullPointerException {@code key} が {@code null} の場合
          */
         public <T> Builder set(Key<T> key, T value) {
             Objects.requireNonNull(key, "key");
-            Objects.requireNonNull(value, "value");
             
             map.put(key, Optional.ofNullable(value));
             return this;
