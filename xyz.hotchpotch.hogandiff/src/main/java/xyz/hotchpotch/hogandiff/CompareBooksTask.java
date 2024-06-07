@@ -111,8 +111,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<BookInfo> bookInfoPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get);
-            List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings).pairingSheetNames(bookInfoPair);
+            List<Pair<String>> sheetNamePairs = settings.get(SettingKeys.CURR_SHEETS_PAIRING);
             
             for (int i = 0; i < sheetNamePairs.size(); i++) {
                 Pair<String> pair = sheetNamePairs.get(i);

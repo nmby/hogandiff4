@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -112,6 +113,14 @@ public class SettingKeys {
             AppMenu::valueOf,
             false);
     
+    /** 比較対象Excelブックたちの読み取りパスワード */
+    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
+            "current.readPasswords",
+            () -> Map.of(),
+            Map::toString,
+            notSupported("cannot decode."),
+            false);
+    
     /** 今回の実行における比較対象Excelブック1の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
             "current.bookInfo1",
@@ -131,12 +140,12 @@ public class SettingKeys {
     /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
     public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
     
-    /** 比較対象Excelブックたちの読み取りパスワード */
-    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
-            "current.readPasswords",
-            () -> Map.of(),
-            Map::toString,
-            notSupported("cannot decode."),
+    /** 今回の実行におけるシート名の組み合わせ情報 */
+    public static final Key<List<Pair<String>>> CURR_SHEETS_PAIRING = new Key<>(
+            "current.sheetsPairing",
+            () -> null,
+            List::toString,
+            notSupported("cannnot decode."),
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */

@@ -39,6 +39,7 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
@@ -46,6 +47,7 @@ import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.PasswordDialog;
 import xyz.hotchpotch.hogandiff.gui.component.TargetsPane.Side;
+import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
  * 比較対象ファイル／シート選択部分の画面部品です。<br>
@@ -191,6 +193,16 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             sheetNameChoiceBox.setItems((newValue == null || newValue.sheetNames().isEmpty())
                     ? FXCollections.emptyObservableList()
                     : FXCollections.observableList(newValue.sheetNames()));
+            
+            if (newValue != null && opposite.bookInfo.getValue() != null) {
+                List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(ar.settings())
+                        .pairingSheetNames(side == Side.A
+                                ? new Pair<>(newValue, opposite.bookInfo.getValue())
+                                : new Pair<>(opposite.bookInfo.getValue(), newValue));
+                ar.changeSetting(SettingKeys.CURR_SHEETS_PAIRING, sheetNamePairs);
+            } else {
+                ar.changeSetting(SettingKeys.CURR_SHEETS_PAIRING, null);
+            }
         });
         sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
         
@@ -360,30 +372,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            BookInfo tmpBookInfo = null;
-            String readPassword = readPasswords.get(newBookPath);
-            
-            while (true) {
-                // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-                SheetNamesLoader loader = factory.sheetNamesLoader(newBookPath, readPassword);
-                
-                try {
-                    tmpBookInfo = loader.loadSheetNames(newBookPath, readPassword);
-                    break;
-                    
-                } catch (PasswordHandlingException e) {
-                    PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
-                    Optional<String> newPassword = dialog.showAndWait();
-                    if (newPassword.isPresent()) {
-                        readPassword = newPassword.get();
-                    } else {
-                        throw e;
-                    }
-                }
-            }
-            
-            bookInfo.setValue(tmpBookInfo);
-            readPasswords.put(newBookPath, readPassword);
+            BookInfo newBookInfo = readBookInfo(newBookPath);
+            bookInfo.setValue(newBookInfo);
             prevSelectedBookPath = newBookPath;
             
         } catch (Exception e) {
@@ -418,5 +408,31 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             return false;
         }
         return true;
+    }
+    
+    private BookInfo readBookInfo(Path newBookPath) throws ExcelHandlingException, IOException {
+        assert newBookPath != null;
+        
+        String readPassword = readPasswords.get(newBookPath);
+        
+        while (true) {
+            // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
+            SheetNamesLoader loader = factory.sheetNamesLoader(newBookPath, readPassword);
+            
+            try {
+                BookInfo bookInfo = loader.loadSheetNames(newBookPath, readPassword);
+                readPasswords.put(newBookPath, readPassword);
+                return bookInfo;
+                
+            } catch (PasswordHandlingException e) {
+                PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
+                Optional<String> newPassword = dialog.showAndWait();
+                if (newPassword.isPresent()) {
+                    readPassword = newPassword.get();
+                } else {
+                    throw e;
+                }
+            }
+        }
     }
 }
