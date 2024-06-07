@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +14,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -141,10 +141,10 @@ public class SettingKeys {
     public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
     
     /** 今回の実行におけるシート名の組み合わせ情報 */
-    public static final Key<List<Pair<String>>> CURR_SHEETS_PAIRING = new Key<>(
+    public static final Key<SheetNamesPairingInfo> CURR_SHEETS_PAIRING = new Key<>(
             "current.sheetsPairing",
             () -> null,
-            List::toString,
+            SheetNamesPairingInfo::toString,
             notSupported("cannnot decode."),
             false);
     

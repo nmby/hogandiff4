@@ -1,12 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
-import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
+import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -43,13 +43,14 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
     }
     
     @Override
-    public List<Pair<String>> pairingSheetNames(
+    public SheetNamesPairingInfo pairingSheetNames(
             Pair<BookInfo> bookInfos) {
         
         Objects.requireNonNull(bookInfos, "bookInfos");
         
-        return coreMatcher.makeItemPairs(
-                bookInfos.a().sheetNames(),
-                bookInfos.b().sheetNames());
+        return new SheetNamesPairingInfo(
+                coreMatcher.makeItemPairs(
+                        bookInfos.a().sheetNames(),
+                        bookInfos.b().sheetNames()));
     }
 }

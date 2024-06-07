@@ -51,7 +51,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Thursday", "thursday"),
                         new Pair<>("Friday", "friday"),
                         new Pair<>("Saturday", "saturday")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames12))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames12)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -62,7 +62,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Thursday", "Thursday"),
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames13))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames13)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -73,7 +73,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday"),
                         new Pair<>("Sunday", null)),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames14))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames14)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -85,7 +85,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Friday", "Fri"),
                         new Pair<>("Saturday", null),
                         new Pair<>(null, "DUMMY")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -96,7 +96,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Thursday", "Thursday【ADD】"),
                         new Pair<>("Friday", "Friday【VERYVERYLONGADDITIONAL】"),
                         new Pair<>("Saturday", "Saturday")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16)).sheetNamePairs()));
     }
     
     @Test
@@ -119,7 +119,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>(null, "thursday"),
                         new Pair<>(null, "friday"),
                         new Pair<>(null, "saturday")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames12))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames12)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -130,7 +130,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Thursday", "Thursday"),
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames13))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames13)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -141,7 +141,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>("Friday", "Friday"),
                         new Pair<>("Saturday", "Saturday"),
                         new Pair<>("Sunday", null)),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames14))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames14)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -157,7 +157,7 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>(null, "Thurs"),
                         new Pair<>(null, "Fri"),
                         new Pair<>(null, "DUMMY")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames15)).sheetNamePairs()));
         
         assertEquals(
                 Set.of(
@@ -174,6 +174,6 @@ class StandardSheetNamesMatcherTest {
                         new Pair<>(null, "Wednesday【ADD】"),
                         new Pair<>(null, "Thursday【ADD】"),
                         new Pair<>(null, "Friday【VERYVERYLONGADDITIONAL】")),
-                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16))));
+                Set.copyOf(testee.pairingSheetNames(pairOf(sheetNames11, sheetNames16)).sheetNamePairs()));
     }
 }

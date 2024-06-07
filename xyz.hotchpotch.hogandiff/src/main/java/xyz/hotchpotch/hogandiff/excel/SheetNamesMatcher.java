@@ -1,7 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.List;
-
 import xyz.hotchpotch.hogandiff.excel.common.StandardSheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -34,5 +32,5 @@ public interface SheetNamesMatcher {
      * @param bookInfos 比較対象Excelブック情報
      * @return シート同士の組み合わせを表すリスト
      */
-    public List<Pair<String>> pairingSheetNames(Pair<BookInfo> bookInfos);
+    public SheetNamesPairingInfo pairingSheetNames(Pair<BookInfo> bookInfos);
 }

@@ -456,7 +456,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings).pairingSheetNames(bookInfoPair);
+        List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings)
+                .pairingSheetNames(bookInfoPair)
+                .sheetNamePairs();
         Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                 bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
