@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
+import xyz.hotchpotch.hogandiff.excel.BookNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -45,11 +46,14 @@ public class StandardBooksMatcher implements BooksMatcher {
     }
     
     @Override
-    public List<Pair<String>> pairingBooks(Pair<DirInfo> dirInfos) {
+    public BookNamesPairingInfo pairingBooks(Pair<DirInfo> dirInfos) {
         Objects.requireNonNull(dirInfos, "dirInfos");
         
-        return coreMatcher.makeItemPairs(
-                dirInfos.a().bookNames(),
-                dirInfos.b().bookNames());
+        return new BookNamesPairingInfo(
+                coreMatcher.makeItemPairs(
+                        dirInfos.a().bookNames(),
+                        dirInfos.b().bookNames()),
+                // TODO: シート名のペアリングもここで実施するようにする
+                null);
     }
 }

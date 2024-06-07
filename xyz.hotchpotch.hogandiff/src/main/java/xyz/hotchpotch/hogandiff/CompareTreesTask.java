@@ -141,7 +141,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         Integer.toString(i + 1),
                         dirPair,
                         dirPair.isPaired()
-                                ? bookNamesMatcher.pairingBooks(dirPair)
+                                ? bookNamesMatcher.pairingBooks(dirPair).bookNamePairs()
                                 : dirPair.isOnlyA()
                                         ? bookNamePairs.apply(Side.A, dirPair)
                                         : bookNamePairs.apply(Side.B, dirPair));

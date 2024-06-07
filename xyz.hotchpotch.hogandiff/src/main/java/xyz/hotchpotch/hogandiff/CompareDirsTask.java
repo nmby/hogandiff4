@@ -144,7 +144,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BooksMatcher matcher = factory.bookNamesMatcher(settings);
-            List<Pair<String>> bookNamePairs = matcher.pairingBooks(dirPair);
+            List<Pair<String>> bookNamePairs = matcher.pairingBooks(dirPair).bookNamePairs();
             
             if (bookNamePairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);

@@ -1,7 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.util.List;
-
 import xyz.hotchpotch.hogandiff.excel.common.StandardBooksMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -34,5 +32,5 @@ public interface BooksMatcher {
      * @param dirInfos フォルダ情報
      * @return Excelブック名のペアのリスト
      */
-    public List<Pair<String>> pairingBooks(Pair<DirInfo> dirInfos);
+    public BookNamesPairingInfo pairingBooks(Pair<DirInfo> dirInfos);
 }
