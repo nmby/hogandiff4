@@ -3,8 +3,6 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -101,8 +99,7 @@ public class SettingKeys {
     /** 今回の実行を識別するためのタイムスタンプタグ */
     public static final Key<String> CURR_TIMESTAMP = new Key<>(
             "current.timestamp",
-            // TODO: 外に出す？？
-            () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
+            () -> null,
             Function.identity(),
             Function.identity(),
             false);

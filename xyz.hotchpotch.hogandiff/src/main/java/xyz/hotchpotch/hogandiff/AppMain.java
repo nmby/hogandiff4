@@ -147,7 +147,6 @@ public class AppMain extends Application {
                 e.printStackTrace();
                 // nop
             }
-            
             appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }

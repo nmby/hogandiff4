@@ -3,6 +3,8 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -247,7 +249,9 @@ public class MainController extends VBox {
     }
     
     private Path createWorkDir(Settings settings) {
-        final String timestamp = SettingKeys.CURR_TIMESTAMP.ifNotSetSupplier().get();
+        final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+        ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
+        
         Path workDirBase = settings.get(SettingKeys.WORK_DIR_BASE);
         
         while (true) {
@@ -255,7 +259,6 @@ public class MainController extends VBox {
                 Path workDir = workDirBase.resolve(timestamp);
                 Files.createDirectories(workDir);
                 ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase);
-                ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
                 return workDir;
                 
             } catch (Exception e) {
