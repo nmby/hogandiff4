@@ -87,8 +87,6 @@ public class AppResource {
             settings = Settings.builder().build();
         }
         
-        System.out.println(settings.get(SettingKeys.APP_VERSION));
-        
         return new AppResource(properties, settings);
     }
     
