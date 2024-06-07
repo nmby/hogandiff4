@@ -3,9 +3,6 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +25,12 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
 public class SettingKeys {
     
     // [static members] ********************************************************
+    
+    private static <T> Function<String, T> notSupported(String msg) {
+        return str -> {
+            throw new UnsupportedOperationException(msg);
+        };
+    }
     
     /** クライアント上で生成されたUUID */
     public static final Key<UUID> CLIENT_UUID = new Key<>(
@@ -56,9 +59,7 @@ public class SettingKeys {
     /** 作業用フォルダの作成場所のパス */
     public static final Key<Path> WORK_DIR_BASE = new Key<>(
             "application.workDirBase",
-            () -> Path.of(
-                    System.getProperty("user.home"),
-                    AppMain.APP_DOMAIN),
+            () -> Path.of(System.getProperty("user.home"), AppMain.APP_DOMAIN),
             Path::toString,
             Path::of,
             true);
@@ -74,9 +75,7 @@ public class SettingKeys {
     /** メインステージの縦幅 */
     public static final Key<Double> STAGE_HEIGHT = new Key<>(
             "application.height",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             String::valueOf,
             Double::valueOf,
             true);
@@ -84,9 +83,7 @@ public class SettingKeys {
     /** メインステージの横幅 */
     public static final Key<Double> STAGE_WIDTH = new Key<>(
             "application.width",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             String::valueOf,
             Double::valueOf,
             true);
@@ -102,7 +99,7 @@ public class SettingKeys {
     /** 今回の実行を識別するためのタイムスタンプタグ */
     public static final Key<String> CURR_TIMESTAMP = new Key<>(
             "current.timestamp",
-            () -> LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS")),
+            () -> null,
             Function.identity(),
             Function.identity(),
             false);
@@ -118,25 +115,17 @@ public class SettingKeys {
     /** 今回の実行における比較対象Excelブック1の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
             "current.bookInfo1",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             BookInfo::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelブック2の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<>(
             "current.bookInfo2",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             BookInfo::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
@@ -145,19 +134,15 @@ public class SettingKeys {
     /** 比較対象Excelブックたちの読み取りパスワード */
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
-            () -> new HashMap<>(),
+            () -> Map.of(),
             Map::toString,
-            str -> {
-                throw new UnsupportedOperationException("cannot decode.");
-            },
+            notSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelシート1の名前 */
     public static final Key<String> CURR_SHEET_NAME1 = new Key<>(
             "current.sheetName1",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             Function.identity(),
             Function.identity(),
             false);
@@ -165,9 +150,7 @@ public class SettingKeys {
     /** 今回の実行における比較対象Excelシート2の名前 */
     public static final Key<String> CURR_SHEET_NAME2 = new Key<>(
             "current.sheetName2",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             Function.identity(),
             Function.identity(),
             false);
@@ -180,9 +163,7 @@ public class SettingKeys {
     /** 今回の実行における比較対象フォルダ1のパス */
     public static final Key<Path> CURR_DIR_PATH1 = new Key<>(
             "current.dirPath1",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             Path::toString,
             Path::of,
             false);
@@ -190,9 +171,7 @@ public class SettingKeys {
     /** 今回の実行における比較対象フォルダ2のパス */
     public static final Key<Path> CURR_DIR_PATH2 = new Key<>(
             "current.dirPath2",
-            () -> {
-                throw new UnsupportedOperationException("the key has no default value.");
-            },
+            () -> null,
             Path::toString,
             Path::of,
             false);

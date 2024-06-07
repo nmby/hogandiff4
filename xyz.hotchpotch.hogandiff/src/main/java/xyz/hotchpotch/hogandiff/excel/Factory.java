@@ -79,7 +79,7 @@ public class Factory {
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
-        boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
         return CellsLoader.of(bookPath, readPassword, useCachedValue);
     }
@@ -94,7 +94,7 @@ public class Factory {
     public DirLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean recursively = settings.getOrDefault(SettingKeys.COMPARE_DIRS_RECURSIVELY);
+        boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
         return DirLoader.of(recursively);
     }
     
@@ -108,7 +108,7 @@ public class Factory {
     public SheetNamesMatcher sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return SheetNamesMatcher.of(matchNamesStrictly);
     }
     
@@ -122,7 +122,7 @@ public class Factory {
     public BooksMatcher bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return BooksMatcher.of(matchNamesStrictly);
     }
     
@@ -136,7 +136,7 @@ public class Factory {
     public DirsMatcher dirsMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return DirsMatcher.of(matchNamesStrictly);
     }
     
@@ -150,9 +150,9 @@ public class Factory {
     public SheetComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
-        boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
-        boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean prioritizeSpeed = settings.getOrDefault(SettingKeys.PRIORITIZE_SPEED);
+        boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
+        boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean prioritizeSpeed = settings.get(SettingKeys.PRIORITIZE_SPEED);
         
         return SheetComparator.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
     }
@@ -180,16 +180,16 @@ public class Factory {
         Objects.requireNonNull(bookPath, "bookPath");
         // readPassword may be null.
         
-        short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
-        short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
-        Color redundantCommentColor = settings.getOrDefault(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        Color diffCommentColor = settings.getOrDefault(SettingKeys.DIFF_COMMENT_COLOR);
+        short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
+        short diffColor = settings.get(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
         // もうなんか滅茶苦茶や・・・
         String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
         String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
-        Color redundantSheetColor = settings.getOrDefault(SettingKeys.REDUNDANT_SHEET_COLOR);
-        Color diffSheetColor = settings.getOrDefault(SettingKeys.DIFF_SHEET_COLOR);
-        Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
+        Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
+        Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
+        Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
         
         return BookPainter.of(
                 bookPath,

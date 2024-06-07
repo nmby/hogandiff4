@@ -89,7 +89,7 @@ public class AppMain extends Application {
                         + VERSION);
         
         primaryStage.setMinHeight(
-                settings.getOrDefault(SettingKeys.SHOW_SETTINGS)
+                settings.get(SettingKeys.SHOW_SETTINGS)
                         ? STAGE_HEIGHT_OPEN
                         : STAGE_HEIGHT_CLOSE);
         primaryStage.setMinWidth(STAGE_WIDTH);
@@ -147,7 +147,6 @@ public class AppMain extends Application {
                 e.printStackTrace();
                 // nop
             }
-            
             appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }

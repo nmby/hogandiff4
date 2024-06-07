@@ -30,19 +30,19 @@ public class AppArgsParser {
             + BR
             + "<OPTIONS>" + BR
             + "    --consider-row-gaps=[true|false]     : default value is "
-            + SettingKeys.CONSIDER_ROW_GAPS.defaultValueSupplier().get() + BR
+            + SettingKeys.CONSIDER_ROW_GAPS.ifNotSetSupplier().get() + BR
             + "    --consider-column-gaps=[true|false]  : default value is "
-            + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
+            + SettingKeys.CONSIDER_COLUMN_GAPS.ifNotSetSupplier().get() + BR
             + "    --compare-on-formulas=[true|false]   : default value is "
-            + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
+            + SettingKeys.COMPARE_ON_FORMULA_STRING.ifNotSetSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
-            + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR
+            + SettingKeys.SHOW_PAINTED_SHEETS.ifNotSetSupplier().get() + BR
             + "    --show-result-text=[true|false]      : default value is "
-            + SettingKeys.SHOW_RESULT_TEXT.defaultValueSupplier().get() + BR
+            + SettingKeys.SHOW_RESULT_TEXT.ifNotSetSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
-            + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
+            + SettingKeys.EXIT_WHEN_FINISHED.ifNotSetSupplier().get() + BR
             + "    --prioritize-speed=[true|false]      : default value is "
-            + SettingKeys.PRIORITIZE_SPEED.defaultValueSupplier().get() + BR
+            + SettingKeys.PRIORITIZE_SPEED.ifNotSetSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(

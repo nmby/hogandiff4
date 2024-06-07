@@ -63,7 +63,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
             
             // 5. フォルダ同士の比較
-            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             DirResult dResult = compareDirs(dirPair, outputDirPair, bookNamePairs, readPasswords, 5, 93);
             
             // 6. 比較結果テキストの作成と表示

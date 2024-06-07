@@ -106,7 +106,7 @@ public class AppResource {
         this.properties = properties;
         this.settings = settings;
         
-        Locale appLocale = settings.getOrDefault(SettingKeys.APP_LOCALE);
+        Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     

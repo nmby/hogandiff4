@@ -84,7 +84,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         this.settings = settings;
         this.factory = factory;
-        this.workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE)
+        this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
@@ -185,7 +185,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(resultText);
             }
-            if (settings.getOrDefault(SettingKeys.SHOW_RESULT_TEXT)) {
+            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
                 str.append(rb.getString("AppTaskBase.040")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(textPath.toFile());
@@ -273,7 +273,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
             dstBookPath = workDir.resolve(srcBookPath.getFileName());
-            String readPassword = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
+            String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
             str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
@@ -290,7 +290,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPath.toFile());
@@ -329,7 +329,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
             Pair<Path> dstBookPathPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
-            Map<Path, String> readPasswords = settings.getOrDefault(SettingKeys.CURR_READ_PASSWORDS);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             
             for (Side side : Side.values()) {
                 try {
@@ -354,7 +354,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
             }
             
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(BR).append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPathPair.a().toFile());
@@ -422,7 +422,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
@@ -502,7 +502,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
     protected boolean isSameBook() {
-        AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
+        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         return switch (menu) {
             case COMPARE_BOOKS, COMPARE_SHEETS -> Objects.equals(

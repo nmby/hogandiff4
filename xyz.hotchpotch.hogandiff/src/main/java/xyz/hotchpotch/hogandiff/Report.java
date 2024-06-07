@@ -67,7 +67,7 @@ public abstract sealed class Report
         protected String toJsonString2() {
             StringBuilder str = new StringBuilder();
             
-            switch (super.settings.getOrDefault(SettingKeys.CURR_MENU)) {
+            switch (super.settings.get(SettingKeys.CURR_MENU)) {
                 case COMPARE_TREES:
                     IntPair dPair = dirPairs(result);
                     str.append("\"dirPairs\": [ %d, %d ]".formatted(dPair.a(), dPair.b())).append(COMMA);
@@ -293,11 +293,11 @@ public abstract sealed class Report
     }
     
     private String stringProperty(String jsonKey, Key<?> settingKey) {
-        return "\"%s\": \"%s\"".formatted(jsonKey, settings.getOrDefault(settingKey));
+        return "\"%s\": \"%s\"".formatted(jsonKey, settings.get(settingKey));
     }
     
     private String booleanProperty(String jsonKey, Key<Boolean> settingKey) {
-        return "\"%s\": %b".formatted(jsonKey, settings.getOrDefault(settingKey));
+        return "\"%s\": %b".formatted(jsonKey, settings.get(settingKey));
     }
     
     /**
