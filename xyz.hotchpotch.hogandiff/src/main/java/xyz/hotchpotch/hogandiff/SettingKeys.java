@@ -97,6 +97,14 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
+    /** 今回の実行を識別するためのタイムスタンプタグ */
+    public static final Key<String> CURR_TIMESTAMP = new Key<>(
+            "current.timestamp",
+            () -> null,
+            Function.identity(),
+            Function.identity(),
+            false);
+    
     /** 今回の実行における比較メニュー */
     public static final Key<AppMenu> CURR_MENU = new Key<>(
             "current.menu",

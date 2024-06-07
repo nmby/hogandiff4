@@ -250,6 +250,7 @@ public class MainController extends VBox {
     
     private Path createWorkDir(Settings settings) {
         final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+        ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
         
         Path workDirBase = settings.get(SettingKeys.WORK_DIR_BASE);
         
