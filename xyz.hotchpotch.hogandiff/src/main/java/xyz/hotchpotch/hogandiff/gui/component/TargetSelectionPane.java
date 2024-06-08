@@ -40,6 +40,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -361,10 +362,34 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     }
     
     private void setDirPath(Path newDirPath) {
-        dirInfo.setValue(new DirInfo(newDirPath));
-        if (newDirPath != null) {
-            prevSelectedBookPath = newDirPath;
+        if (newDirPath == null) {
+            dirInfo.setValue(null);
+            return;
         }
+        
+        try {
+            // 現状の処理構成では細かな制御が難しいため、
+            // 「子フォルダも含める」のチェック有無に関わらず再帰的にフォルダ情報をロードしてしまう。
+            // FIXME: 「子フォルダも含める」を加味するようにする
+            DirLoader dirLoader = factory.dirLoader(ar.settings()
+                    .getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, true));
+            DirInfo newDirInfo = dirLoader.loadDir(newDirPath);
+            dirInfo.setValue(newDirInfo);
+            prevSelectedBookPath = newDirPath;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            dirInfo.setValue(null);
+            new Alert(
+                    AlertType.ERROR,
+                    "%s%n%s".formatted(
+                            rb.getString("gui.component.TargetSelectionPane.060"),
+                            newDirPath),
+                    ButtonType.OK)
+                            .showAndWait();
+            return;
+        }
+        
     }
     
     private boolean validateAndSetTarget(Path newBookPath, String sheetName) {

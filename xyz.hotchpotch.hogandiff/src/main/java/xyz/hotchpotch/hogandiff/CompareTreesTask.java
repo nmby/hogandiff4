@@ -57,7 +57,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             announceStart(0, 0);
             
             // 1. ディレクトリ情報の抽出
-            Pair<DirInfo> topDirPair = extractDirs();
+            Pair<DirInfo> topDirPair = SettingKeys.CURR_DIR_INFOS.map(settings::get);
             
             // 3. 比較するフォルダとExcelブック名の組み合わせの決定
             List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);

@@ -54,7 +54,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             announceStart(0, 0);
             
             // 1. ディレクトリ情報の抽出
-            Pair<DirInfo> dirPair = extractDirs();
+            Pair<DirInfo> dirPair = SettingKeys.CURR_DIR_INFOS.map(settings::get);
             
             // 3. 出力用ディレクトリの作成
             Pair<Path> outputDirPair = createOutputDirs(workDir, dirPair);

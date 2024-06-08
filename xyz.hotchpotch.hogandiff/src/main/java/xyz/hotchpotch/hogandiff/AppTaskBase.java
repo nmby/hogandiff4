@@ -21,7 +21,6 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
@@ -378,15 +377,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws ApplicationException 処理に失敗した場合
      */
     // CompareDirsTask, CompareTreesTask
-    protected Pair<DirInfo> extractDirs() throws ApplicationException {
-        try {
-            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::dirPath);
-            DirLoader dirLoader = factory.dirLoader(settings);
-            return dirPathPair.unsafeMap(dirLoader::loadDir);
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.190", "");
-        }
+    // TODO: インライン化する
+    protected Pair<DirInfo> extractDirs1() throws ApplicationException {
+        return SettingKeys.CURR_DIR_INFOS.map(settings::get);
     }
     
     /**
