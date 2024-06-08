@@ -192,7 +192,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         // ※このコントローラだけ特殊なので3と4を入れ替える
         parent.menu().addListener((target, oldValue, newValue) -> {
             if (dirInfo.getValue() != null
-                    && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)) {
+                    && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)
+                    && (oldValue == AppMenu.COMPARE_DIRS || oldValue == AppMenu.COMPARE_TREES)) {
                 setDirPath(dirInfo.getValue().dirPath(), newValue == AppMenu.COMPARE_TREES);
             }
         });
