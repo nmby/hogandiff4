@@ -190,6 +190,12 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
+        parent.menu().addListener((target, oldValue, newValue) -> {
+            if (dirInfo.getValue() != null
+                    && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)) {
+                setDirPath(dirInfo.getValue().dirPath(), newValue == AppMenu.COMPARE_TREES);
+            }
+        });
         dirInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirInfoKey, newValue));
         bookInfo.addListener((target, oldValue, newValue) -> {
             ar.changeSetting(side.bookInfoKey, newValue);
@@ -211,7 +217,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         // 3.初期値の設定
         if (ar.settings().containsKey(side.dirInfoKey)) {
-            setDirPath(ar.settings().get(side.dirInfoKey).dirPath());
+            setDirPath(
+                    ar.settings().get(side.dirInfoKey).dirPath(),
+                    ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
         }
         if (ar.settings().containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
@@ -272,11 +280,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
             
             if (isDirOperation(menu)) {
-                setDirPath(files.get(0).toPath());
+                setDirPath(files.get(0).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 event.setDropCompleted(true);
                 
                 if (1 < files.size() && isAcceptableType.test(files.get(1))) {
-                    opposite.setDirPath(files.get(1).toPath());
+                    opposite.setDirPath(files.get(1).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 }
                 
             } else {
@@ -314,7 +322,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             File selected = chooser.showDialog(getScene().getWindow());
             
             if (selected != null) {
-                setDirPath(selected.toPath());
+                setDirPath(selected.toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             }
             
         } catch (RuntimeException e) {
@@ -361,18 +369,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
     }
     
-    private void setDirPath(Path newDirPath) {
+    private void setDirPath(Path newDirPath, boolean recursively) {
         if (newDirPath == null) {
             dirInfo.setValue(null);
             return;
         }
         
         try {
-            // 現状の処理構成では細かな制御が難しいため、
-            // 「子フォルダも含める」のチェック有無に関わらず再帰的にフォルダ情報をロードしてしまう。
-            // FIXME: 「子フォルダも含める」を加味するようにする
             DirLoader dirLoader = factory.dirLoader(ar.settings()
-                    .getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, true));
+                    .getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDir(newDirPath);
             dirInfo.setValue(newDirInfo);
             prevSelectedBookPath = newDirPath;
