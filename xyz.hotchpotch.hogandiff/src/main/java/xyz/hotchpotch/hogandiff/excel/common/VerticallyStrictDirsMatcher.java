@@ -18,6 +18,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
+// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirsMatcher} も実装する
 public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     // [static members] ********************************************************

@@ -124,7 +124,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             List<Pair<DirInfo>> dirPairs = dirMatcher.pairingDirs(topDirPair);
             
             BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
-            BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> bookNamePairs = (side, dirPair) -> dirPair
+            BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> onesideBookNamePairs = (side, dirPair) -> dirPair
                     .get(side).bookNames().stream()
                     .map(bookName -> side == Side.A ? new Pair<>(bookName, null) : new Pair<>(null, bookName))
                     .toList();
@@ -143,8 +143,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         dirPair.isPaired()
                                 ? bookNamesMatcher.pairingBooks(dirPair).bookNamePairs()
                                 : dirPair.isOnlyA()
-                                        ? bookNamePairs.apply(Side.A, dirPair)
-                                        : bookNamePairs.apply(Side.B, dirPair));
+                                        ? onesideBookNamePairs.apply(Side.A, dirPair)
+                                        : onesideBookNamePairs.apply(Side.B, dirPair));
                 pairDataList.add(data);
             }
             
