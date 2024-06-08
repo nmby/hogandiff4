@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
@@ -54,6 +55,6 @@ public class StandardBooksMatcher implements BooksMatcher {
                         dirInfos.a().bookNames(),
                         dirInfos.b().bookNames()),
                 // TODO: シート名のペアリングもここで実施するようにする
-                null);
+                Map.of());
     }
 }

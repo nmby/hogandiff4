@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -20,4 +21,16 @@ public record BookNamesPairingInfo(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ
+     * 
+     * @param bookNamePairs Excelブック名の組み合わせ
+     * @param sheetNamesPairingInfos シート名の組み合わせ情報
+     * @throws NullPointerException
+     *      {@code bookNamePairs}, {@code sheetNamesPairingInfos} のいずれかが {@code null} の場合
+     */
+    public BookNamesPairingInfo {
+        Objects.requireNonNull(bookNamePairs, "bookNamePairs");
+        Objects.requireNonNull(sheetNamesPairingInfos, "sheetNamesPairingInfos");
+    }
 }
