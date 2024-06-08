@@ -45,7 +45,7 @@ import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.PasswordDialog;
@@ -205,7 +205,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     : FXCollections.observableList(newValue.sheetNames()));
             
             if (newValue != null && opposite.bookInfo.getValue() != null) {
-                SheetNamesPairingInfo sheetNamesPairingInfo = factory.sheetNamesMatcher(ar.settings())
+                BookCompareInfo sheetNamesPairingInfo = factory.sheetNamesMatcher(ar.settings())
                         .pairingSheetNames(side == Side.A
                                 ? new Pair<>(newValue, opposite.bookInfo.getValue())
                                 : new Pair<>(opposite.bookInfo.getValue(), newValue));

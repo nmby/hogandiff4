@@ -29,8 +29,8 @@ public interface BooksMatcher {
     /**
      * 2つのフォルダに含まれるExcelブック同士の対応関係を、Excelブック名のペアのリストとして返します。<br>
      * 
-     * @param dirInfos フォルダ情報
+     * @param dirInfoPair フォルダ情報
      * @return Excelブック名のペアのリスト
      */
-    public BookNamesPairingInfo pairingBooks(Pair<DirInfo> dirInfos);
+    public DirCompareInfo pairingBooks(Pair<DirInfo> dirInfoPair);
 }

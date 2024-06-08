@@ -4,9 +4,9 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -42,15 +42,21 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
         this.coreMatcher = coreMatcher;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code bookInfoPair} が {@code null} の場合
+     */
     @Override
-    public SheetNamesPairingInfo pairingSheetNames(
-            Pair<BookInfo> bookInfos) {
+    public BookCompareInfo pairingSheetNames(
+            Pair<BookInfo> bookInfoPair) {
         
-        Objects.requireNonNull(bookInfos, "bookInfos");
+        Objects.requireNonNull(bookInfoPair, "bookInfoPair");
         
-        return new SheetNamesPairingInfo(
+        return new BookCompareInfo(
+                bookInfoPair,
                 coreMatcher.makeItemPairs(
-                        bookInfos.a().sheetNames(),
-                        bookInfos.b().sheetNames()));
+                        bookInfoPair.a().sheetNames(),
+                        bookInfoPair.b().sheetNames()));
     }
 }

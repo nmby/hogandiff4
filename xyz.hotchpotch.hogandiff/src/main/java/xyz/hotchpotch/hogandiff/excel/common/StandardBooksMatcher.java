@@ -6,8 +6,8 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.excel.BookNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -46,14 +46,20 @@ public class StandardBooksMatcher implements BooksMatcher {
         this.coreMatcher = coreMatcher;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code dirInfoPair} が {@code null} の場合
+     */
     @Override
-    public BookNamesPairingInfo pairingBooks(Pair<DirInfo> dirInfos) {
-        Objects.requireNonNull(dirInfos, "dirInfos");
+    public DirCompareInfo pairingBooks(Pair<DirInfo> dirInfoPair) {
+        Objects.requireNonNull(dirInfoPair, "dirInfoPair");
         
-        return new BookNamesPairingInfo(
+        return new DirCompareInfo(
+                dirInfoPair,
                 coreMatcher.makeItemPairs(
-                        dirInfos.a().bookNames(),
-                        dirInfos.b().bookNames()),
+                        dirInfoPair.a().bookNames(),
+                        dirInfoPair.b().bookNames()),
                 // TODO: シート名のペアリングもここで実施するようにする
                 Map.of());
     }

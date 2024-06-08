@@ -29,8 +29,8 @@ public interface SheetNamesMatcher {
     /**
      * 2つのExcelブックに含まれるシート同士の組み合わせを決定して返します。<br>
      * 
-     * @param bookInfos 比較対象Excelブック情報
+     * @param bookInfoPair 比較対象Excelブック情報
      * @return シート同士の組み合わせを表すリスト
      */
-    public SheetNamesPairingInfo pairingSheetNames(Pair<BookInfo> bookInfos);
+    public BookCompareInfo pairingSheetNames(Pair<BookInfo> bookInfoPair);
 }

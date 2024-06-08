@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -142,10 +142,10 @@ public class SettingKeys {
     public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
     
     /** 今回の実行におけるシート名の組み合わせ情報 */
-    public static final Key<SheetNamesPairingInfo> CURR_SHEETS_PAIRING = new Key<>(
+    public static final Key<BookCompareInfo> CURR_SHEETS_PAIRING = new Key<>(
             "current.sheetsPairing",
             () -> null,
-            SheetNamesPairingInfo::toString,
+            BookCompareInfo::toString,
             notSupported("cannnot decode."),
             false);
     
