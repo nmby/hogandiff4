@@ -203,10 +203,10 @@ public record DirResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirPair.a().path())
+                .append(dirPair.a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirPair.b().path())
+                .append(dirPair.b().dirPath())
                 .append(BR);
         
         for (int i = 0; i < bookNamePairs.size(); i++) {

@@ -73,7 +73,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             TreeResult tResult = new TreeResult(
                     dirPair,
                     List.of(new DirPairData("", dirPair, bookNamePairs)),
-                    Map.of(dirPair.map(DirInfo::path), Optional.of(dResult)));
+                    Map.of(dirPair.map(DirInfo::dirPath), Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
             
@@ -98,7 +98,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::path);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::dirPath);
             
             str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                     rb.getString("CompareDirsTask.010"),
@@ -122,7 +122,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Pair<Path> outputDirPair = null;
         try {
             outputDirPair = Side.map(
-                    side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
+                    side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).dirPath().getFileName())));
             
             return outputDirPair.unsafeMap(Files::createDirectory);
             

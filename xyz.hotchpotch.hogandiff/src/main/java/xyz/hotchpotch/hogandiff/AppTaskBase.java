@@ -380,7 +380,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareDirsTask, CompareTreesTask
     protected Pair<DirInfo> extractDirs() throws ApplicationException {
         try {
-            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::path);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::dirPath);
             DirLoader dirLoader = factory.dirLoader(settings);
             return dirPathPair.unsafeMap(dirLoader::loadDir);
             
@@ -558,7 +558,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (bookNamePair.isPaired()) {
                 
                 Pair<Path> srcPathPair = Side.map(
-                        side -> data.dirPair().get(side).path().resolve(bookNamePair.get(side)));
+                        side -> data.dirPair().get(side).dirPath().resolve(bookNamePair.get(side)));
                 Pair<Path> dstPathPair = Side.map(
                         side -> outputDirs.get(side)
                                 .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
@@ -630,8 +630,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 try {
                     Path src = bookNamePair.hasA()
-                            ? data.dirPair().a().path().resolve(bookNamePair.a())
-                            : data.dirPair().b().path().resolve(bookNamePair.b());
+                            ? data.dirPair().a().dirPath().resolve(bookNamePair.a())
+                            : data.dirPair().b().dirPath().resolve(bookNamePair.b());
                     Path dst = bookNamePair.hasA()
                             ? outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()))
                             : outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));

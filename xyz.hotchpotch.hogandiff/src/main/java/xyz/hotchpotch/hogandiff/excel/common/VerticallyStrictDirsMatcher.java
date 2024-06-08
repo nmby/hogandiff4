@@ -22,7 +22,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     // [static members] ********************************************************
     
-    private static final Function<DirInfo, String> dirNameExtractor = d -> d.path().getFileName().toString();
+    private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
     
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     

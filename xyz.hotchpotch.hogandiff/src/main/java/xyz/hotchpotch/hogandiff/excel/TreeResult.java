@@ -49,10 +49,10 @@ public record TreeResult(
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%s】 %s".formatted(id, dirPair.a().path())
+                        ? "【A%s】 %s".formatted(id, dirPair.a().dirPath())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%s】 %s".formatted(id, dirPair.b().path())
+                        ? "【B%s】 %s".formatted(id, dirPair.b().dirPath())
                         : rb.getString("excel.TreeResult.010"));
     }
     
@@ -89,7 +89,7 @@ public record TreeResult(
     public boolean hasDiff() {
         return pairDataList.stream()
                 .map(DirPairData::dirPair)
-                .map(p -> p.map(DirInfo::path))
+                .map(p -> p.map(DirInfo::dirPath))
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -111,7 +111,7 @@ public record TreeResult(
         
         for (int i = 0; i < pairDataList.size(); i++) {
             DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
+            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::dirPath));
             
             str.append(formatDirsPair(pairData.id(), pairData.dirPair()));
             
@@ -130,10 +130,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(topDirPair.a().path())
+                .append(topDirPair.a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(topDirPair.b().path())
+                .append(topDirPair.b().dirPath())
                 .append(BR);
         
         str.append(BR);

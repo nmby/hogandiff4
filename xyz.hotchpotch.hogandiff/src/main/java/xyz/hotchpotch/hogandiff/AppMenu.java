@@ -48,8 +48,8 @@ public enum AppMenu {
     COMPARE_DIRS(
             CompareDirsTask::new,
             settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_INFO1).path(),
-                    settings.get(SettingKeys.CURR_DIR_INFO2).path())),
+                    settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
+                    settings.get(SettingKeys.CURR_DIR_INFO2).dirPath())),
     
     /**
      * 指定されたフォルダ配下のフォルダツリーを比較します。
@@ -59,8 +59,8 @@ public enum AppMenu {
     COMPARE_TREES(
             CompareTreesTask::new,
             settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_INFO1).path(),
-                    settings.get(SettingKeys.CURR_DIR_INFO2).path()));
+                    settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
+                    settings.get(SettingKeys.CURR_DIR_INFO2).dirPath()));
     
     // [instance members] ******************************************************
     

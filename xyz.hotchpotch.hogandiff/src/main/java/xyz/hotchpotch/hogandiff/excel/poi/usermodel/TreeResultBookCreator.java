@@ -110,12 +110,12 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.topDirPair().get(side).path().getParent(),
+                        treeResult.topDirPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.topDirPair().get(side).path().getNameCount() - 1,
+                    treeResult.topDirPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
@@ -127,20 +127,20 @@ public class TreeResultBookCreator {
                 
                 // 4-3. フォルダ名と差分シンボルの出力
                 Pair<DirInfo> dirPair = pairData.dirPair();
-                Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::path));
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::dirPath));
                 
                 Pair<String> dirRelNames = Side.map(
-                        side -> dirPair.has(side) ? relPath.apply(side, dirPair.get(side).path()) : null);
+                        side -> dirPair.has(side) ? relPath.apply(side, dirPair.get(side).dirPath()) : null);
                 
                 Pair<Path> outputDirs = Side.map(side -> dirPair.has(side)
-                        ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent())
+                        ? outputDirsMaps.get(side).get(dirPair.get(side).dirPath().getParent())
                                 .resolve("【%s%s】%s".formatted(side, pairData.id(),
-                                        dirPair.get(side).path().getFileName().toString()))
+                                        dirPair.get(side).dirPath().getFileName().toString()))
                         : null);
                 
                 for (Side side : Side.values()) {
                     if (dirPair.has(side)) {
-                        outputDirsMaps.get(side).put(dirPair.get(side).path(), outputDirs.get(side));
+                        outputDirsMaps.get(side).put(dirPair.get(side).dirPath(), outputDirs.get(side));
                     }
                 }
                 
@@ -208,12 +208,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.topDirPair().a().path();
+        Path topDirA = treeResult.topDirPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.topDirPair().b().path();
+        Path topDirB = treeResult.topDirPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);

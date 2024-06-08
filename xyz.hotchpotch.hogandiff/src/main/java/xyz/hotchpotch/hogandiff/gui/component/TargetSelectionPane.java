@@ -166,7 +166,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         titleLabel.setText(side.title);
         
         dirPathTextField.textProperty().bind(Bindings.createStringBinding(
-                () -> dirInfo.getValue() == null ? null : dirInfo.getValue().path().toString(),
+                () -> dirInfo.getValue() == null ? null : dirInfo.getValue().dirPath().toString(),
                 dirInfo));
         dirPathButton.setOnAction(this::chooseDir);
         
@@ -210,7 +210,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         // 3.初期値の設定
         if (ar.settings().containsKey(side.dirInfoKey)) {
-            setDirPath(ar.settings().get(side.dirInfoKey).path());
+            setDirPath(ar.settings().get(side.dirInfoKey).dirPath());
         }
         if (ar.settings().containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
@@ -304,7 +304,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
             
             if (dirInfo.getValue() != null) {
-                chooser.setInitialDirectory(dirInfo.getValue().path().toFile());
+                chooser.setInitialDirectory(dirInfo.getValue().dirPath().toFile());
                 
             } else if (prevSelectedBookPath != null) {
                 chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
