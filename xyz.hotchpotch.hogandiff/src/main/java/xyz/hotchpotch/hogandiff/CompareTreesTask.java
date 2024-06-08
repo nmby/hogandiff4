@@ -93,7 +93,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::path);
             
             str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
                     rb.getString("CompareTreesTask.010"),

@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesPairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -169,26 +170,26 @@ public class SettingKeys {
             CURR_SHEET_NAME1,
             CURR_SHEET_NAME2);
     
-    /** 今回の実行における比較対象フォルダ1のパス */
-    public static final Key<Path> CURR_DIR_PATH1 = new Key<>(
-            "current.dirPath1",
+    /** 今回の実行における比較対象フォルダ1の情報 */
+    public static final Key<DirInfo> CURR_DIR_INFO1 = new Key<>(
+            "current.dirInfo1",
             () -> null,
-            Path::toString,
-            Path::of,
+            DirInfo::toString,
+            notSupported("cannot decode."),
             false);
     
-    /** 今回の実行における比較対象フォルダ2のパス */
-    public static final Key<Path> CURR_DIR_PATH2 = new Key<>(
-            "current.dirPath2",
+    /** 今回の実行における比較対象フォルダ2の情報 */
+    public static final Key<DirInfo> CURR_DIR_INFO2 = new Key<>(
+            "current.dirInfo2",
             () -> null,
-            Path::toString,
-            Path::of,
+            DirInfo::toString,
+            notSupported("cannot decode."),
             false);
     
-    /** {@link #CURR_DIR_PATH1} と {@link #CURR_DIR_PATH2} のペア */
-    public static final Pair<Key<Path>> CURR_DIR_PATHS = new Pair<>(
-            CURR_DIR_PATH1,
-            CURR_DIR_PATH2);
+    /** {@link #CURR_DIR_INFO1} と {@link #CURR_DIR_INFO2} のペア */
+    public static final Pair<Key<DirInfo>> CURR_DIR_INFOS = new Pair<>(
+            CURR_DIR_INFO1,
+            CURR_DIR_INFO2);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(

@@ -380,7 +380,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareDirsTask, CompareTreesTask
     protected Pair<DirInfo> extractDirs() throws ApplicationException {
         try {
-            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_PATHS.map(settings::get);
+            Pair<Path> dirPathPair = SettingKeys.CURR_DIR_INFOS.map(settings::get).map(DirInfo::path);
             DirLoader dirLoader = factory.dirLoader(settings);
             return dirPathPair.unsafeMap(dirLoader::loadDir);
             

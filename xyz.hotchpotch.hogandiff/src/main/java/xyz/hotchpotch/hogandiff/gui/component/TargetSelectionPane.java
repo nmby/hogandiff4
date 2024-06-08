@@ -39,6 +39,7 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -97,7 +98,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     @FXML
     private ChoiceBox<String> sheetNameChoiceBox;
     
-    private final Property<Path> dirPath = new SimpleObjectProperty<>();
+    private final Property<DirInfo> dirInfo = new SimpleObjectProperty<>();
     private final Property<BookInfo> bookInfo = new SimpleObjectProperty<>();
     private final StringProperty sheetName = new SimpleStringProperty();
     private final BooleanProperty isReady = new SimpleBooleanProperty();
@@ -165,8 +166,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         titleLabel.setText(side.title);
         
         dirPathTextField.textProperty().bind(Bindings.createStringBinding(
-                () -> dirPath.getValue() == null ? null : dirPath.getValue().toString(),
-                dirPath));
+                () -> dirInfo.getValue() == null ? null : dirInfo.getValue().path().toString(),
+                dirInfo));
         dirPathButton.setOnAction(this::chooseDir);
         
         bookPathTextField.textProperty().bind(Bindings.createStringBinding(
@@ -180,15 +181,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 () -> switch (parent.menu().getValue()) {
                     case COMPARE_BOOKS -> bookInfo.getValue() != null;
                     case COMPARE_SHEETS -> bookInfo.getValue() != null && sheetName.getValue() != null;
-                    case COMPARE_DIRS -> dirPath.getValue() != null;
-                    case COMPARE_TREES -> dirPath.getValue() != null;
+                    case COMPARE_DIRS -> dirInfo.getValue() != null;
+                    case COMPARE_TREES -> dirInfo.getValue() != null;
                     default -> throw new AssertionError("unknown menu");
                 },
-                parent.menu(), bookInfo, sheetName, dirPath));
+                parent.menu(), bookInfo, sheetName, dirInfo));
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
-        dirPath.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirPathKey, newValue));
+        dirInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirInfoKey, newValue));
         bookInfo.addListener((target, oldValue, newValue) -> {
             ar.changeSetting(side.bookInfoKey, newValue);
             sheetNameChoiceBox.setItems((newValue == null || newValue.sheetNames().isEmpty())
@@ -208,8 +209,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
         
         // 3.初期値の設定
-        if (ar.settings().containsKey(side.dirPathKey)) {
-            setDirPath(ar.settings().get(side.dirPathKey));
+        if (ar.settings().containsKey(side.dirInfoKey)) {
+            setDirPath(ar.settings().get(side.dirInfoKey).path());
         }
         if (ar.settings().containsKey(side.bookInfoKey)) {
             validateAndSetTarget(
@@ -302,8 +303,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
             
-            if (dirPath.getValue() != null) {
-                chooser.setInitialDirectory(dirPath.getValue().toFile());
+            if (dirInfo.getValue() != null) {
+                chooser.setInitialDirectory(dirInfo.getValue().path().toFile());
                 
             } else if (prevSelectedBookPath != null) {
                 chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
@@ -360,7 +361,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     }
     
     private void setDirPath(Path newDirPath) {
-        dirPath.setValue(newDirPath);
+        dirInfo.setValue(new DirInfo(newDirPath));
         if (newDirPath != null) {
             prevSelectedBookPath = newDirPath;
         }
