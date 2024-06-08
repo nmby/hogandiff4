@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -60,11 +60,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> topDirPair = SettingKeys.CURR_DIR_INFOS.map(settings::get);
             
             // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-            List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
+            List<DirCompareInfo> dirCompareInfos = pairingDirsAndBookNames(topDirPair, 2, 5);
             
             // 4. フォルダツリー同士の比較
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            TreeResult tResult = compareTrees(workDir, topDirPair, pairs, readPasswords, 5, 93);
+            TreeResult tResult = compareTrees(workDir, topDirPair, dirCompareInfos, readPasswords, 5, 93);
             
             // 5. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, tResult.toString(), 93, 95);
@@ -109,8 +109,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-    private List<DirPairData> pairingDirsAndBookNames(
-            Pair<DirInfo> topDirPair,
+    private List<DirCompareInfo> pairingDirsAndBookNames(
+            Pair<DirInfo> topDirInfoPair,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -121,7 +121,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             DirsMatcher dirMatcher = factory.dirsMatcher(settings);
-            List<Pair<DirInfo>> dirPairs = dirMatcher.pairingDirs(topDirPair);
+            List<Pair<DirInfo>> dirInfoPairs = dirMatcher.pairingDirs(topDirInfoPair);
             
             BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
             BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> onesideBookNamePairs = (side, dirPair) -> dirPair
@@ -129,27 +129,28 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     .map(bookName -> side == Side.A ? new Pair<>(bookName, null) : new Pair<>(null, bookName))
                     .toList();
             
-            List<DirPairData> pairDataList = new ArrayList<>();
+            List<DirCompareInfo> dirCompareInfos = new ArrayList<>();
             
-            for (int i = 0; i < dirPairs.size(); i++) {
-                Pair<DirInfo> dirPair = dirPairs.get(i);
+            for (int i = 0; i < dirInfoPairs.size(); i++) {
+                Pair<DirInfo> dirInfoPair = dirInfoPairs.get(i);
                 
-                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirPair)).append(BR);
+                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
                 
-                DirPairData data = new DirPairData(
-                        dirPair,
-                        dirPair.isPaired()
-                                ? bookNamesMatcher.pairingBooks(dirPair).bookNamePairs()
-                                : dirPair.isOnlyA()
-                                        ? onesideBookNamePairs.apply(Side.A, dirPair)
-                                        : onesideBookNamePairs.apply(Side.B, dirPair));
-                pairDataList.add(data);
+                DirCompareInfo dirCompareInfo = new DirCompareInfo(
+                        dirInfoPair,
+                        dirInfoPair.isPaired()
+                                ? bookNamesMatcher.pairingBooks(dirInfoPair).bookNamePairs()
+                                : dirInfoPair.isOnlyA()
+                                        ? onesideBookNamePairs.apply(Side.A, dirInfoPair)
+                                        : onesideBookNamePairs.apply(Side.B, dirInfoPair),
+                        Map.of());
+                dirCompareInfos.add(dirCompareInfo);
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return pairDataList;
+            return dirCompareInfos;
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.030", "");
@@ -159,8 +160,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 4. フォルダツリー同士の比較
     private TreeResult compareTrees(
             Path workDir,
-            Pair<DirInfo> topDirPair,
-            List<DirPairData> pairDataList,
+            Pair<DirInfo> topDirInfoPair,
+            List<DirCompareInfo> dirCompareInfos,
             Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
@@ -174,17 +175,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
-            int dirPairsCount = (int) pairDataList.stream()
-                    .filter(data -> data.dirPair().isPaired())
+            int dirPairsCount = (int) dirCompareInfos.stream()
+                    .filter(data -> data.dirInfoPair().isPaired())
                     .count();
             int num = 0;
             
-            for (int i = 0; i < pairDataList.size(); i++) {
+            for (int i = 0; i < dirCompareInfos.size(); i++) {
                 int ii = i;
                 
-                DirPairData data = pairDataList.get(i);
+                DirCompareInfo dirCompareInfo = dirCompareInfos.get(i);
                 
-                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
+                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
                 updateMessage(str.toString());
                 
                 Pair<Path> outputDirPair = null;
@@ -192,16 +193,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 try {
                     outputDirPair = Side.unsafeMap(side -> {
                         // 出力先ディレクトリの作成
-                        if (data.dirPair().has(side)) {
-                            DirInfo targetDir = data.dirPair().get(side);
-                            Path parentDir = targetDir.equals(topDirPair.get(side))
+                        if (dirCompareInfo.dirInfoPair().has(side)) {
+                            DirInfo targetDirInfo = dirCompareInfo.dirInfoPair().get(side);
+                            Path parentDir = targetDirInfo.equals(topDirInfoPair.get(side))
                                     ? workDir
-                                    : outputDirsPair.get(side).get(targetDir.parent().dirPath());
+                                    : outputDirsPair.get(side).get(targetDirInfo.parent().dirPath());
                             
                             Path outputDir = parentDir
-                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDir.dirPath().getFileName()));
+                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirInfo.dirPath().getFileName()));
                             Files.createDirectories(outputDir);
-                            outputDirsPair.get(side).put(targetDir.dirPath(), outputDir);
+                            outputDirsPair.get(side).put(targetDirInfo.dirPath(), outputDir);
                             return outputDir;
                         } else {
                             return null;
@@ -209,27 +210,27 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     });
                     
                 } catch (IOException e) {
-                    dirResults.putIfAbsent(data.dirPair().map(DirInfo::dirPath), Optional.empty());
+                    dirResults.putIfAbsent(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.empty());
                     str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
                     updateMessage(str.toString());
                     e.printStackTrace();
                     continue;
                 }
                 
-                if (data.dirPair().isPaired()) {
+                if (dirCompareInfo.dirInfoPair().isPaired()) {
                     DirResult dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
-                            data,
+                            dirCompareInfo,
                             readPasswords,
                             outputDirPair,
                             progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
-                    dirResults.put(data.dirPair().map(DirInfo::dirPath), Optional.of(dirResult));
+                    dirResults.put(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.of(dirResult));
                     num++;
                     
                 } else {
-                    dirResults.put(data.dirPair().map(DirInfo::dirPath), Optional.empty());
+                    dirResults.put(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.empty());
                     str.append(BR);
                     updateMessage(str.toString());
                 }
@@ -238,8 +239,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new TreeResult(
-                    topDirPair,
-                    pairDataList,
+                    topDirInfoPair,
+                    dirCompareInfos,
                     dirResults);
             
         } catch (Exception e) {

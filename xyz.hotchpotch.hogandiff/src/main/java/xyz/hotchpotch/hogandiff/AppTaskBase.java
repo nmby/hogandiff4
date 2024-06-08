@@ -20,9 +20,9 @@ import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
@@ -516,7 +516,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param dirId フォルダ識別子
      * @param indent インデント
-     * @param data 比較対象フォルダの情報
+     * @param dirCompareInfo 比較対象フォルダの情報
      * @param readPasswords 比較対象ファイルの読み取りパスワード
      * @param outputDirs 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
@@ -527,25 +527,25 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected DirResult compareDirs(
             String dirId,
             String indent,
-            DirPairData data,
+            DirCompareInfo dirCompareInfo,
             Map<Path, String> readPasswords,
             Pair<Path> outputDirs,
             int progressBefore,
             int progressAfter) {
         
         Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
-        int bookPairsCount = (int) data.bookNamePairs().stream().filter(Pair::isPaired).count();
+        int bookPairsCount = (int) dirCompareInfo.bookNamePairs().stream().filter(Pair::isPaired).count();
         int num = 0;
         
-        if (data.bookNamePairs().size() == 0) {
+        if (dirCompareInfo.bookNamePairs().size() == 0) {
             str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
             updateMessage(str.toString());
         }
         
-        for (int i = 0; i < data.bookNamePairs().size(); i++) {
+        for (int i = 0; i < dirCompareInfo.bookNamePairs().size(); i++) {
             int ii = i;
             
-            Pair<String> bookNamePair = data.bookNamePairs().get(i);
+            Pair<String> bookNamePair = dirCompareInfo.bookNamePairs().get(i);
             
             str.append(indent
                     + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
@@ -554,7 +554,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (bookNamePair.isPaired()) {
                 
                 Pair<Path> srcPathPair = Side.map(
-                        side -> data.dirPair().get(side).dirPath().resolve(bookNamePair.get(side)));
+                        side -> dirCompareInfo.dirInfoPair().get(side).dirPath().resolve(bookNamePair.get(side)));
                 Pair<Path> dstPathPair = Side.map(
                         side -> outputDirs.get(side)
                                 .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
@@ -626,8 +626,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 try {
                     Path src = bookNamePair.hasA()
-                            ? data.dirPair().a().dirPath().resolve(bookNamePair.a())
-                            : data.dirPair().b().dirPath().resolve(bookNamePair.b());
+                            ? dirCompareInfo.dirInfoPair().a().dirPath().resolve(bookNamePair.a())
+                            : dirCompareInfo.dirInfoPair().b().dirPath().resolve(bookNamePair.b());
                     Path dst = bookNamePair.hasA()
                             ? outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()))
                             : outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
@@ -654,8 +654,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateMessage(str.toString());
         
         return new DirResult(
-                data.dirPair(),
-                data.bookNamePairs(),
+                dirCompareInfo.dirInfoPair(),
+                dirCompareInfo.bookNamePairs(),
                 bookResults,
                 dirId);
     }

@@ -9,9 +9,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -72,7 +72,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 7. 比較結果Excelの作成と表示
             TreeResult tResult = new TreeResult(
                     dirPair,
-                    List.of(new DirPairData(dirPair, bookNamePairs)),
+                    List.of(new DirCompareInfo(dirPair, bookNamePairs, Map.of())),
                     Map.of(dirPair.map(DirInfo::dirPath), Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -167,8 +167,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirInfo> dirPair,
-            Pair<Path> outputDirs,
+            Pair<DirInfo> dirInfoPair,
+            Pair<Path> outputDirPair,
             List<Pair<String>> bookNamePairs,
             Map<Path, String> readPasswords,
             int progressBefore,
@@ -183,15 +183,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 return compareDirs(
                         "",
                         "",
-                        new DirPairData(dirPair, bookNamePairs),
+                        new DirCompareInfo(dirInfoPair, bookNamePairs, Map.of()),
                         readPasswords,
-                        outputDirs,
+                        outputDirPair,
                         progressBefore,
                         progressAfter);
                 
             } else {
                 return new DirResult(
-                        dirPair,
+                        dirInfoPair,
                         bookNamePairs,
                         bookNamePairs.stream().collect(Collectors.toMap(
                                 Function.identity(),

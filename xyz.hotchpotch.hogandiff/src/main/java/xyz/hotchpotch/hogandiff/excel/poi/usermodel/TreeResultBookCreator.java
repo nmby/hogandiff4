@@ -22,9 +22,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -124,27 +124,27 @@ public class TreeResultBookCreator {
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (int j = 0; j < treeResult.pairDataList().size(); j++) {
+            for (int j = 0; j < treeResult.dirCompareInfos().size(); j++) {
                 String dirId = recursively ? Integer.toString(j + 1) : "";
-                DirPairData pairData = treeResult.pairDataList().get(j);
+                DirCompareInfo dirCompareInfo = treeResult.dirCompareInfos().get(j);
                 rowNo++;
                 
                 // 4-3. フォルダ名と差分シンボルの出力
-                Pair<DirInfo> dirPair = pairData.dirPair();
-                Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::dirPath));
+                Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair.map(DirInfo::dirPath));
                 
                 Pair<String> dirRelNames = Side.map(
-                        side -> dirPair.has(side) ? relPath.apply(side, dirPair.get(side).dirPath()) : null);
+                        side -> dirInfoPair.has(side) ? relPath.apply(side, dirInfoPair.get(side).dirPath()) : null);
                 
-                Pair<Path> outputDirs = Side.map(side -> dirPair.has(side)
-                        ? outputDirsMaps.get(side).get(dirPair.get(side).dirPath().getParent())
+                Pair<Path> outputDirs = Side.map(side -> dirInfoPair.has(side)
+                        ? outputDirsMaps.get(side).get(dirInfoPair.get(side).dirPath().getParent())
                                 .resolve("【%s%s】%s".formatted(side, dirId,
-                                        dirPair.get(side).dirPath().getFileName().toString()))
+                                        dirInfoPair.get(side).dirPath().getFileName().toString()))
                         : null);
                 
                 for (Side side : Side.values()) {
-                    if (dirPair.has(side)) {
-                        outputDirsMaps.get(side).put(dirPair.get(side).dirPath(), outputDirs.get(side));
+                    if (dirInfoPair.has(side)) {
+                        outputDirsMaps.get(side).put(dirInfoPair.get(side).dirPath(), outputDirs.get(side));
                     }
                 }
                 
@@ -155,19 +155,19 @@ public class TreeResultBookCreator {
                         dirId,
                         outputDirs,
                         dirRelNames,
-                        dirPair,
+                        dirInfoPair,
                         dirResult);
                 
                 // 4-4. セル書式を整える
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブック名ペアごとの処理
-                for (int i = 0; i < pairData.bookNamePairs().size(); i++) {
+                for (int i = 0; i < dirCompareInfo.bookNamePairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<String> bookNames = pairData.bookNamePairs().get(i);
-                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.bookResults().get(bookNames));
+                    Pair<String> bookNamePair = dirCompareInfo.bookNamePairs().get(i);
+                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.bookResults().get(bookNamePair));
                     
                     outputFileLine(
                             ch,
@@ -177,7 +177,7 @@ public class TreeResultBookCreator {
                             i + 1,
                             outputDirs,
                             dirRelNames,
-                            bookNames,
+                            bookNamePair,
                             bookResult);
                     
                     // 4-7. セル書式を整える

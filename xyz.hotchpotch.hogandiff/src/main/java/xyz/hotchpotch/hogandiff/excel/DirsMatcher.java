@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
-import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.excel.common.VerticallyStrictDirsMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -16,33 +15,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 public interface DirsMatcher {
     
     // [static members] ********************************************************
-    
-    /**
-     * フォルダの組み合わせを表すレコードです。<br>
-     * 
-     * @param dirPair 比較対象のフォルダ情報のペア
-     * @param bookNamePairs 比較対象のExcelブック名同士のペアのリスト
-     */
-    public static record DirPairData(
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-        
-        // [static members] ----------------------------------------------------
-        
-        // [instance members] --------------------------------------------------
-        
-        /**
-         * コンストラクタ
-         * 
-         * @param dirPair 比較対象のフォルダ情報のペア
-         * @param bookNamePairs 比較対象のExcelブック名同士のペアのリスト
-         * @throws NullPointerException {@code dirPair}, {@code bookNamePairs} のいずれかが {@code null} の場合
-         */
-        public DirPairData {
-            Objects.requireNonNull(dirPair, "dirPair");
-            Objects.requireNonNull(bookNamePairs, "bookNamePairs");
-        }
-    }
     
     /**
      * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
