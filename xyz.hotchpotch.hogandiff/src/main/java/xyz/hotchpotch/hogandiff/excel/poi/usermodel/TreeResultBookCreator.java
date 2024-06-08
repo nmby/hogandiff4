@@ -67,12 +67,14 @@ public class TreeResultBookCreator {
      * 
      * @param dstBookPath 保存先Excelブックのパス
      * @param treeResult フォルダツリー同士の比較結果
+     * @param recursively 「子フォルダも含める」の場合は {@code true}
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
-            TreeResult treeResult)
+            TreeResult treeResult,
+            boolean recursively)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(dstBookPath, "dstBookPath");
@@ -122,7 +124,9 @@ public class TreeResultBookCreator {
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (DirPairData pairData : treeResult.pairDataList()) {
+            for (int j = 0; j < treeResult.pairDataList().size(); j++) {
+                String dirId = recursively ? Integer.toString(j + 1) : "";
+                DirPairData pairData = treeResult.pairDataList().get(j);
                 rowNo++;
                 
                 // 4-3. フォルダ名と差分シンボルの出力
@@ -134,7 +138,7 @@ public class TreeResultBookCreator {
                 
                 Pair<Path> outputDirs = Side.map(side -> dirPair.has(side)
                         ? outputDirsMaps.get(side).get(dirPair.get(side).dirPath().getParent())
-                                .resolve("【%s%s】%s".formatted(side, pairData.id(),
+                                .resolve("【%s%s】%s".formatted(side, dirId,
                                         dirPair.get(side).dirPath().getFileName().toString()))
                         : null);
                 
@@ -148,7 +152,7 @@ public class TreeResultBookCreator {
                         ch,
                         sheet,
                         rowNo,
-                        pairData.id(),
+                        dirId,
                         outputDirs,
                         dirRelNames,
                         dirPair,
@@ -169,7 +173,7 @@ public class TreeResultBookCreator {
                             ch,
                             sheet,
                             rowNo,
-                            pairData.id(),
+                            dirId,
                             i + 1,
                             outputDirs,
                             dirRelNames,

@@ -72,7 +72,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 7. 比較結果Excelの作成と表示
             TreeResult tResult = new TreeResult(
                     dirPair,
-                    List.of(new DirPairData("", dirPair, bookNamePairs)),
+                    List.of(new DirPairData(dirPair, bookNamePairs)),
                     Map.of(dirPair.map(DirInfo::dirPath), Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -183,7 +183,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 return compareDirs(
                         "",
                         "",
-                        new DirPairData("", dirPair, bookNamePairs),
+                        new DirPairData(dirPair, bookNamePairs),
                         readPasswords,
                         outputDirs,
                         progressBefore,

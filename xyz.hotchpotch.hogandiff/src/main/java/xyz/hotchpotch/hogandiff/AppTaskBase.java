@@ -408,7 +408,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             TreeResultBookCreator creator = new TreeResultBookCreator();
-            creator.createResultBook(resultBookPath, tResult);
+            creator.createResultBook(
+                    resultBookPath,
+                    tResult,
+                    settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_TREES);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.080", "");

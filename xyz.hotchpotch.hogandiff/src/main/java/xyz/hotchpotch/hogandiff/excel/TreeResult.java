@@ -113,7 +113,7 @@ public record TreeResult(
             DirPairData pairData = pairDataList.get(i);
             Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::dirPath));
             
-            str.append(formatDirsPair(pairData.id(), pairData.dirPair()));
+            str.append(formatDirsPair(Integer.toString(i + 1), pairData.dirPair()));
             
             if (pairData.dirPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));

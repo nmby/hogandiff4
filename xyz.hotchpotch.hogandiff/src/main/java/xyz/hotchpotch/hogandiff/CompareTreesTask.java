@@ -138,7 +138,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 updateMessage(str.toString());
                 
                 DirPairData data = new DirPairData(
-                        Integer.toString(i + 1),
                         dirPair,
                         dirPair.isPaired()
                                 ? bookNamesMatcher.pairingBooks(dirPair).bookNamePairs()
