@@ -60,11 +60,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<Path> outputDirPair = createOutputDirs(workDir, dirPair);
             
             // 4. 比較するExcelブックの組み合わせの決定
-            List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
+            DirCompareInfo dirCompareInfo = pairingBookNames(dirPair, 2, 5);
             
             // 5. フォルダ同士の比較
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            DirResult dResult = compareDirs(dirPair, outputDirPair, bookNamePairs, readPasswords, 5, 93);
+            DirResult dResult = compareDirs(
+                    dirPair, outputDirPair, dirCompareInfo.bookNamePairs(), readPasswords, 5, 93);
             
             // 6. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
@@ -72,7 +73,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 7. 比較結果Excelの作成と表示
             TreeResult tResult = new TreeResult(
                     dirPair,
-                    List.of(new DirCompareInfo(dirPair, bookNamePairs, Map.of())),
+                    List.of(dirCompareInfo),
                     Map.of(dirPair.map(DirInfo::dirPath), Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -132,7 +133,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 4. 比較するExcelブック名の組み合わせの決定
-    private List<Pair<String>> pairingBookNames(
+    private DirCompareInfo pairingBookNames(
             Pair<DirInfo> dirPair,
             int progressBefore,
             int progressAfter)
@@ -144,7 +145,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BooksMatcher matcher = factory.bookNamesMatcher(settings);
-            List<Pair<String>> bookNamePairs = matcher.pairingBooks(dirPair).bookNamePairs();
+            DirCompareInfo dirCompareInfo = matcher.pairingBooks(dirPair);
+            List<Pair<String>> bookNamePairs = dirCompareInfo.bookNamePairs();
             
             if (bookNamePairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
@@ -158,7 +160,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return bookNamePairs;
+            return dirCompareInfo;
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareDirsTask.040", "");
