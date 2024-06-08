@@ -558,96 +558,33 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<Path> dstPathPair = Side.map(
                         side -> outputDirs.get(side)
                                 .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
-                BookResult bookResult = null;
                 
-                try {
-                    Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
-                        String readPassword = readPasswords.get(bookPath);
-                        SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
-                        return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
-                    });
-                    
-                    bookResult = compareBooks(
-                            bookInfoPair,
+                BookResult bookResult = compareBooks(
+                        srcPathPair,
+                        dstPathPair,
+                        readPasswords,
+                        progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
+                        progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
+                bookResults.put(bookNamePair, Optional.ofNullable(bookResult));
+                
+                if (bookResult != null) {
+                    paintBook(
+                            srcPathPair,
+                            dstPathPair,
                             readPasswords,
-                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
+                            bookResult,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
-                    bookResults.put(bookNamePair, Optional.of(bookResult));
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    
-                    Side.forEach(side -> {
-                        try {
-                            Files.copy(srcPathPair.get(side), dstPathPair.get(side));
-                        } catch (IOException e1) {
-                            // nop
-                        }
-                    });
-                    continue;
                 }
-                
-                try {
-                    Pair<BookPainter> painterPair = srcPathPair.unsafeMap(
-                            bookPath -> factory.painter(settings, bookPath, readPasswords.get(bookPath)));
-                    BookResult bookResult2 = bookResult;
-                    
-                    for (Side side : Side.values()) {
-                        Path srcPath = srcPathPair.get(side);
-                        Path dstPath = dstPathPair.get(side);
-                        
-                        painterPair.get(side).paintAndSave(
-                                srcPath,
-                                dstPath,
-                                readPasswords.get(srcPath),
-                                bookResult2.getPiece(side));
-                    }
-                    
-                    str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
-                    updateMessage(str.toString());
-                    
-                    num++;
-                    updateProgress(
-                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
-                            PROGRESS_MAX);
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    continue;
-                }
+                num++;
                 
             } else {
+                Side side = bookNamePair.hasA() ? Side.A : Side.B;
+                Path srcBookPath = dirCompareInfo.dirInfoPair().get(side).dirPath().resolve(bookNamePair.get(side));
+                Path dstBookPath = outputDirs.get(side)
+                        .resolve("【%s%s-%d】%s".formatted(side, dirId, i + 1, bookNamePair.get(side)));
                 
-                try {
-                    Path src = bookNamePair.hasA()
-                            ? dirCompareInfo.dirInfoPair().a().dirPath().resolve(bookNamePair.a())
-                            : dirCompareInfo.dirInfoPair().b().dirPath().resolve(bookNamePair.b());
-                    Path dst = bookNamePair.hasA()
-                            ? outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()))
-                            : outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
-                    
-                    Files.copy(src, dst);
-                    dst.toFile().setReadable(true, false);
-                    dst.toFile().setWritable(true, false);
-                    
-                    bookResults.put(bookNamePair, Optional.empty());
-                    
-                    str.append(BR);
-                    updateMessage(str.toString());
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    continue;
-                }
+                skipUnpairedBook(side, srcBookPath, dstBookPath);
+                bookResults.put(bookNamePair, Optional.empty());
             }
         }
         str.append(BR);
@@ -658,5 +595,84 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 dirCompareInfo.bookNamePairs(),
                 bookResults,
                 dirId);
+    }
+    
+    private BookResult compareBooks(
+            Pair<Path> srcPathPair,
+            Pair<Path> dstPathPair,
+            Map<Path, String> readPasswords,
+            int progressBefore,
+            int progressAfter) {
+        
+        try {
+            Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
+                String readPassword = readPasswords.get(bookPath);
+                SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
+                return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+            });
+            
+            return compareBooks(bookInfoPair, readPasswords, progressBefore, progressAfter);
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            
+            Side.forEach(side -> {
+                try {
+                    Files.copy(srcPathPair.get(side), dstPathPair.get(side));
+                } catch (IOException e1) {
+                    // nop
+                }
+            });
+            return null;
+        }
+    }
+    
+    private void paintBook(
+            Pair<Path> srcPathPair,
+            Pair<Path> dstPathPair,
+            Map<Path, String> readPasswords,
+            BookResult bookResult,
+            int progressAfter) {
+        
+        try {
+            for (Side side : Side.values()) {
+                Path srcPath = srcPathPair.get(side);
+                Path dstPath = dstPathPair.get(side);
+                BookPainter painter = factory.painter(settings, srcPath, readPasswords.get(srcPath));
+                
+                painter.paintAndSave(
+                        srcPath,
+                        dstPath,
+                        readPasswords.get(srcPath),
+                        bookResult.getPiece(side));
+            }
+            
+            str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+        }
+    }
+    
+    private void skipUnpairedBook(Side side, Path srcBookPath, Path dstBookPath) {
+        try {
+            Files.copy(srcBookPath, dstBookPath);
+            dstBookPath.toFile().setReadable(true, false);
+            dstBookPath.toFile().setWritable(true, false);
+            
+            str.append(BR);
+            updateMessage(str.toString());
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+        }
     }
 }
