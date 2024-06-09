@@ -454,16 +454,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
             
             if (sheetNamePair.isPaired()) {
-                Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
-                        side -> {
-                            Path bookPath = bookCompareInfo.bookInfoPair().get(side).bookPath();
-                            return cellsLoaderPair.get(side).loadCells(
-                                    bookPath,
-                                    readPasswords.get(bookPath),
-                                    sheetNamePair.get(side));
-                        });
                 
-                SheetResult result = sheetComparator.compare(cellsSetPair);
+                Path bookPathA = bookCompareInfo.bookInfoPair().a().bookPath();
+                Path bookPathB = bookCompareInfo.bookInfoPair().b().bookPath();
+                Set<CellData> cellsSetA = cellsLoaderPair.a().loadCells(
+                        bookPathA, readPasswords.get(bookPathA), sheetNamePair.a());
+                Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
+                        bookPathB, readPasswords.get(bookPathB), sheetNamePair.b());
+                
+                SheetResult result = sheetComparator.compare(Pair.of(cellsSetA, cellsSetB));
                 results.put(sheetNamePair, Optional.of(result));
                 
             } else {

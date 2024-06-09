@@ -167,7 +167,9 @@ public class TreeResultBookCreator {
                     
                     // 4-6. Excelブック名と差分シンボルの出力
                     Pair<String> bookNamePair = dirCompareInfo.bookNamePairs().get(i);
-                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.bookResults().get(bookNamePair));
+                    Optional<BookResult> bookResult = dirResult
+                            .map(DirResult::bookResults)
+                            .flatMap(br -> br.get(bookNamePair));
                     
                     outputFileLine(
                             ch,
