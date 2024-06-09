@@ -37,13 +37,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * コンストラクタ
      * 
      * @param settings 設定セット
-     * @param factory ファクトリ
      */
-    /*package*/ CompareSheetsTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /*package*/ CompareSheetsTask(Settings settings) {
+        super(settings);
     }
     
     @Override
@@ -114,7 +110,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<BookInfo> bookInfoPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
-                    bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+                    bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
@@ -126,7 +122,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             readPasswords.get(bookInfoPair.get(side).bookPath()),
                             sheetNamePair.get(side)));
             
-            SheetComparator comparator = factory.comparator(settings);
+            SheetComparator comparator = Factory.comparator(settings);
             SheetResult result = comparator.compare(cellsSetPair);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);

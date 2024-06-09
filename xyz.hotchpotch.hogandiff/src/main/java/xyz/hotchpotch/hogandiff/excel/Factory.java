@@ -20,20 +20,6 @@ public class Factory {
     // [static members] ********************************************************
     
     /**
-     * 新しいファクトリを返します。<br>
-     * 
-     * @return 新しいファクトリ
-     */
-    public static Factory of() {
-        return new Factory();
-    }
-    
-    // [instance members] ******************************************************
-    
-    private Factory() {
-    }
-    
-    /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excelブックのパス
@@ -45,7 +31,7 @@ public class Factory {
      * @throws UnsupportedOperationException
      *              {@code bookPath} がサポート対象外の形式の場合
      */
-    public SheetNamesLoader sheetNamesLoader(
+    public static SheetNamesLoader sheetNamesLoader(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
@@ -68,7 +54,7 @@ public class Factory {
      *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public CellsLoader cellsLoader(
+    public static CellsLoader cellsLoader(
             Settings settings,
             Path bookPath,
             String readPassword)
@@ -94,7 +80,7 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirLoader dirLoader(Settings settings) {
+    public static DirLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
@@ -108,7 +94,7 @@ public class Factory {
      * @return シート名同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public Matcher<String> sheetNamesMatcher2(Settings settings) {
+    public static Matcher<String> sheetNamesMatcher2(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -128,7 +114,7 @@ public class Factory {
      * @return Excelブック名同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public Matcher<String> bookNamesMatcher2(Settings settings) {
+    public static Matcher<String> bookNamesMatcher2(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -148,7 +134,7 @@ public class Factory {
      * @return フォルダ同士の対応関係を決めるマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirsMatcher dirsMatcher(Settings settings) {
+    public static DirsMatcher dirsMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -162,7 +148,7 @@ public class Factory {
      * @return セルセット同士を比較するコンパレータ
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public SheetComparator comparator(Settings settings) {
+    public static SheetComparator comparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
@@ -185,7 +171,7 @@ public class Factory {
      *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public BookPainter painter(
+    public static BookPainter painter(
             Settings settings,
             Path bookPath,
             String readPassword)
@@ -218,5 +204,10 @@ public class Factory {
                 redundantSheetColor,
                 diffSheetColor,
                 sameSheetColor);
+    }
+    
+    // [instance members] ******************************************************
+    
+    private Factory() {
     }
 }

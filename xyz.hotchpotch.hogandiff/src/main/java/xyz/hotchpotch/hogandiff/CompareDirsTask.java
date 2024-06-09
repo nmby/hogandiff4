@@ -37,13 +37,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * コンストラクタ
      * 
      * @param settings 設定セット
-     * @param factory ファクトリ
      */
-    /*package*/ CompareDirsTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /*package*/ CompareDirsTask(Settings settings) {
+        super(settings);
     }
     
     @Override
@@ -144,8 +140,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = DirCompareInfo.of(
                     dirPair,
-                    factory.bookNamesMatcher2(settings),
-                    factory.sheetNamesMatcher2(settings),
+                    Factory.bookNamesMatcher2(settings),
+                    Factory.sheetNamesMatcher2(settings),
                     settings.get(SettingKeys.CURR_READ_PASSWORDS));
             List<Pair<String>> bookNamePairs = dirCompareInfo.bookNamePairs();
             

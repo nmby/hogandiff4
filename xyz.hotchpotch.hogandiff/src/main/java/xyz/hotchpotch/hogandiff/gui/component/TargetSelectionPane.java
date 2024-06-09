@@ -105,7 +105,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private final BooleanProperty isReady = new SimpleBooleanProperty();
     private final BooleanProperty isBusy = new SimpleBooleanProperty();
     
-    private final Factory factory = Factory.of();
     private TargetSelectionPane opposite;
     private MainController parent;
     private Map<Path, String> readPasswords;
@@ -210,7 +209,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                         : new Pair<>(opposite.bookInfo.getValue(), newValue);
                 BookCompareInfo bookCompareInfo = BookCompareInfo.of(
                         bookInfoPair,
-                        factory.sheetNamesMatcher2(ar.settings()));
+                        Factory.sheetNamesMatcher2(ar.settings()));
                 ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, bookCompareInfo);
             } else {
                 ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, null);
@@ -379,7 +378,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirLoader dirLoader = factory.dirLoader(ar.settings()
+            DirLoader dirLoader = Factory.dirLoader(ar.settings()
                     .getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDir(newDirPath);
             dirInfo.setValue(newDirInfo);
@@ -452,7 +451,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         while (true) {
             // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-            SheetNamesLoader loader = factory.sheetNamesLoader(newBookPath, readPassword);
+            SheetNamesLoader loader = Factory.sheetNamesLoader(newBookPath, readPassword);
             
             try {
                 BookInfo bookInfo = loader.loadSheetNames(newBookPath, readPassword);

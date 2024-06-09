@@ -65,7 +65,7 @@ public class DirCompareInfo {
                     if (bookNamePair.has(side)) {
                         Path bookPath = dirInfoPair.get(side).dirPath().resolve(bookNamePair.get(side));
                         String readPassword = readPasswords.get(bookPath);
-                        SheetNamesLoader sheetNamesLoader = Factory.of().sheetNamesLoader(bookPath, readPassword);
+                        SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
                         return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
                     } else {
                         return null;

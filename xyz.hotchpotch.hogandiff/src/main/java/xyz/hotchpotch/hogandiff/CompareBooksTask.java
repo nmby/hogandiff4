@@ -38,13 +38,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * コンストラクタ
      * 
      * @param settings 設定セット
-     * @param factory ファクトリ
      */
-    /*package*/ CompareBooksTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /*package*/ CompareBooksTask(Settings settings) {
+        super(settings);
     }
     
     @Override
@@ -145,9 +141,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
-                    .unsafeMap(bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+                    .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
-            SheetComparator comparator = factory.comparator(settings);
+            SheetComparator comparator = Factory.comparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
             for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {

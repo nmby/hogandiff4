@@ -29,7 +29,6 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
@@ -188,7 +187,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Report> task = menu.getTask(ar.settings(), Factory.of());
+        Task<Report> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         
