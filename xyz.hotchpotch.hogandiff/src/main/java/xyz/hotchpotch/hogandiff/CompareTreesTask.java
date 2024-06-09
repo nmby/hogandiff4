@@ -126,7 +126,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
             BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> onesideBookNamePairs = (side, dirPair) -> dirPair
                     .get(side).bookNames().stream()
-                    .map(bookName -> side == Side.A ? new Pair<>(bookName, null) : new Pair<>(null, bookName))
+                    .map(bookName -> Pair.ofOnly(side, bookName))
                     .toList();
             
             List<DirCompareInfo> dirCompareInfos = new ArrayList<>();

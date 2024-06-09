@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * Excelブック同士を比較するときのシートの組み合わせ情報を保持する不変クラスです。<br>
@@ -36,9 +37,10 @@ public class BookCompareInfo {
             return new BookCompareInfo(bookInfoPair, sheetNamePairs);
             
         } else {
-            List<Pair<String>> sheetNamePairs = bookInfoPair.hasA()
-                    ? bookInfoPair.a().sheetNames().stream().map(sheetName -> new Pair<>(sheetName, null)).toList()
-                    : bookInfoPair.b().sheetNames().stream().map(sheetName -> new Pair<>(null, sheetName)).toList();
+            Side side = bookInfoPair.hasA() ? Side.A : Side.B;
+            List<Pair<String>> sheetNamePairs = bookInfoPair.get(side).sheetNames().stream()
+                    .map(sheetName -> Pair.ofOnly(side, sheetName))
+                    .toList();
             return new BookCompareInfo(bookInfoPair, sheetNamePairs);
         }
     }

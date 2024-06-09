@@ -107,9 +107,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
             DirInfo dirInfo,
             Side side) {
         
-        pairs.add(side == Side.A
-                ? new Pair<>(dirInfo, null)
-                : new Pair<>(null, dirInfo));
+        pairs.add(Pair.ofOnly(side, dirInfo));
         
         dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
     }
