@@ -45,11 +45,16 @@ public class DirCompareInfo {
             bookNamePairs = bookNamesMatcher.makeItemPairs(
                     dirInfoPair.a().bookNames(),
                     dirInfoPair.b().bookNames());
-        } else {
-            Side side = dirInfoPair.hasA() ? Side.A : Side.B;
-            bookNamePairs = dirInfoPair.get(side).bookNames().stream()
-                    .map(bookName -> Pair.ofOnly(side, bookName))
+        } else if (dirInfoPair.hasA()) {
+            bookNamePairs = dirInfoPair.a().bookNames().stream()
+                    .map(bookName -> Pair.ofOnly(Side.A, bookName))
                     .toList();
+        } else if (dirInfoPair.hasB()) {
+            bookNamePairs = dirInfoPair.b().bookNames().stream()
+                    .map(bookName -> Pair.ofOnly(Side.B, bookName))
+                    .toList();
+        } else {
+            bookNamePairs = List.of();
         }
         
         Map<Pair<String>, BookCompareInfo> bookCompareInfos = new HashMap<>();
@@ -70,7 +75,9 @@ public class DirCompareInfo {
                     return null;
                 }
             });
-            BookCompareInfo bookCompareInfo = BookCompareInfo.of(bookInfoPair, sheetNamesMatcher);
+            BookCompareInfo bookCompareInfo = bookInfoPair != null
+                    ? bookCompareInfo = BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
+                    : null;
             bookCompareInfos.put(bookNamePair, bookCompareInfo);
         }
         

@@ -21,6 +21,7 @@ public class BookCompareInfo {
      * 
      * @param bookInfoPair 比較対象Excelブックの情報
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @return 新たなインスタンス
      */
     public static BookCompareInfo of(
@@ -51,6 +52,24 @@ public class BookCompareInfo {
         } else {
             return new BookCompareInfo(bookInfoPair, List.of());
         }
+    }
+    
+    /**
+     * シートの組み合わせが一組のみの {@link BookCompareInfo} インスタンスを生成します。<br>
+     * 
+     * @param bookInfoPair 比較対象Excelブックの情報
+     * @param sheetNamePair シート名のペア
+     * @throws NullPointerException パラメータが {@code null} の場合
+     * @return 新たなインスタンス
+     */
+    public static BookCompareInfo ofSingle(
+            Pair<BookInfo> bookInfoPair,
+            Pair<String> sheetNamePair) {
+        
+        Objects.requireNonNull(bookInfoPair);
+        Objects.requireNonNull(sheetNamePair);
+        
+        return new BookCompareInfo(bookInfoPair, List.of(sheetNamePair));
     }
     
     // [instance members] ******************************************************

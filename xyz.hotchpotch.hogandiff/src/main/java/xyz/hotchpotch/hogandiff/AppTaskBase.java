@@ -487,10 +487,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     PROGRESS_MAX);
         }
         
-        return new BookResult(
-                bookInfoPair.map(BookInfo::bookPath),
-                bookCompareInfo.sheetNamePairs(),
-                results);
+        return new BookResult(bookCompareInfo, results);
     }
     
     /**

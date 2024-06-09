@@ -1,11 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -111,9 +111,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            Pair<BookInfo> bookInfoPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
+            Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                     bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
@@ -122,8 +122,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                     side -> loaderPair.get(side).loadCells(
-                            bookPathPair.get(side),
-                            readPasswords.get(bookPathPair.get(side)),
+                            bookInfoPair.get(side).bookPath(),
+                            readPasswords.get(bookInfoPair.get(side).bookPath()),
                             sheetNamePair.get(side)));
             
             SheetComparator comparator = factory.comparator(settings);
@@ -134,8 +134,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookPathPair,
-                    List.of(sheetNamePair),
+                    BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair),
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {

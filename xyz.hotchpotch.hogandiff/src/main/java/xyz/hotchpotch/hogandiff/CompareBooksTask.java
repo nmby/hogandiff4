@@ -183,10 +183,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return new BookResult(
-                    bookInfoPair.map(BookInfo::bookPath),
-                    bookCompareInfo.sheetNamePairs(),
-                    results);
+            return new BookResult(bookCompareInfo, results);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.050", "");
