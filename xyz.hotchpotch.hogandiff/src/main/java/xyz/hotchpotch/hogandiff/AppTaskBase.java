@@ -588,11 +588,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
         
-        return new DirResult(
-                dirCompareInfo.dirInfoPair(),
-                dirCompareInfo.bookNamePairs(),
-                bookResults,
-                dirId);
+        return new DirResult(dirCompareInfo, bookResults, dirId);
     }
     
     private BookResult compareBooks(
