@@ -27,7 +27,6 @@ import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
@@ -436,7 +435,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
-            Pair<BookInfo> bookInfoPair,
+            BookCompareInfo bookCompareInfo,
             Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
@@ -444,10 +443,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        BookCompareInfo bookCompareInfo = BookCompareInfo.of(
-                bookInfoPair,
-                Factory.sheetNamesMatcher2(settings));
-        Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
+        Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator comparator = Factory.comparator(settings);
@@ -459,8 +455,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (sheetNamePair.isPaired()) {
                 Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                         side -> {
-                            Path bookPath = bookInfoPair.get(side).bookPath();
-                            return loaderPair.get(side).loadCells(
+                            Path bookPath = bookCompareInfo.bookInfoPair().get(side).bookPath();
+                            return cellsLoaderPair.get(side).loadCells(
                                     bookPath,
                                     readPasswords.get(bookPath),
                                     sheetNamePair.get(side));
@@ -550,9 +546,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                 .resolve("【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookNamePair.get(side))));
                 
                 BookResult bookResult = compareBooks(
+                        dirCompareInfo.bookCompareInfos().get(bookNamePair),
+                        readPasswords,
                         srcPathPair,
                         dstPathPair,
-                        readPasswords,
                         progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
                         progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
                 bookResults.put(bookNamePair, Optional.ofNullable(bookResult));
@@ -584,20 +581,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     private BookResult compareBooks(
+            BookCompareInfo bookCompareInfo,
+            Map<Path, String> readPasswords,
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
-            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter) {
         
         try {
-            Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
-                String readPassword = readPasswords.get(bookPath);
-                SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
-                return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
-            });
-            
-            return compareBooks(bookInfoPair, readPasswords, progressBefore, progressAfter);
+            return compareBooks(
+                    bookCompareInfo,
+                    readPasswords,
+                    progressBefore,
+                    progressAfter);
             
         } catch (Exception e) {
             str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
