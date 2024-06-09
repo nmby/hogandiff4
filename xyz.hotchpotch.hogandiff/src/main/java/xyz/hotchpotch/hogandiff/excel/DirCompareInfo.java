@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * フォルダ同士を比較するときのExcelブックの組み合わせ情報を保持する不変クラスです。<br>
@@ -19,21 +21,33 @@ public class DirCompareInfo {
      * コンストラクタ
      * 
      * @param dirInfoPair 比較対象フォルダの情報
-     * @param bookNamePairs Excelブック名の組み合わせ
+     * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
      * @param bookCompareInfos Excelブック比較情報
      * @return フォルダ比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static DirCompareInfo of(
             Pair<DirInfo> dirInfoPair,
-            List<Pair<String>> bookNamePairs,
+            Matcher<String> bookNamesMatcher,
             Map<Pair<String>, BookCompareInfo> bookCompareInfos) {
         
-        Objects.requireNonNull(dirInfoPair, "dirInfoPair");
-        Objects.requireNonNull(bookNamePairs, "bookNamePairs");
-        Objects.requireNonNull(bookCompareInfos, "bookCompareInfos");
+        Objects.requireNonNull(dirInfoPair);
+        Objects.requireNonNull(bookNamesMatcher);
+        Objects.requireNonNull(bookCompareInfos);
         
-        return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
+        if (dirInfoPair.isPaired()) {
+            List<Pair<String>> bookNamePairs = bookNamesMatcher.makeItemPairs(
+                    dirInfoPair.a().bookNames(),
+                    dirInfoPair.b().bookNames());
+            return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
+            
+        } else {
+            Side side = dirInfoPair.hasA() ? Side.A : Side.B;
+            List<Pair<String>> bookNamePairs = dirInfoPair.get(side).bookNames().stream()
+                    .map(bookName -> Pair.ofOnly(side, bookName))
+                    .toList();
+            return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
+        }
     }
     
     // [instance members] ******************************************************

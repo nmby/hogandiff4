@@ -64,8 +64,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 5. フォルダ同士の比較
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            DirResult dResult = compareDirs(
-                    dirPair, outputDirPair, dirCompareInfo.bookNamePairs(), readPasswords, 5, 93);
+            DirResult dResult = compareDirs(dirCompareInfo, outputDirPair, readPasswords, 5, 93);
             
             // 6. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
@@ -169,9 +168,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirInfo> dirInfoPair,
+            DirCompareInfo dirCompareInfo,
             Pair<Path> outputDirPair,
-            List<Pair<String>> bookNamePairs,
             Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
@@ -179,13 +177,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            if (0 < bookNamePairs.size()) {
+            if (0 < dirCompareInfo.bookNamePairs().size()) {
                 str.append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",
                         "",
-                        DirCompareInfo.of(dirInfoPair, bookNamePairs, Map.of()),
+                        dirCompareInfo,
                         readPasswords,
                         outputDirPair,
                         progressBefore,
@@ -193,9 +191,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
             } else {
                 return new DirResult(
-                        dirInfoPair,
-                        bookNamePairs,
-                        bookNamePairs.stream().collect(Collectors.toMap(
+                        dirCompareInfo.dirInfoPair(),
+                        dirCompareInfo.bookNamePairs(),
+                        dirCompareInfo.bookNamePairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

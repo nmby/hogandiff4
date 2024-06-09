@@ -57,9 +57,7 @@ public class StandardBooksMatcher implements BooksMatcher {
         
         return DirCompareInfo.of(
                 dirInfoPair,
-                coreMatcher.makeItemPairs(
-                        dirInfoPair.a().bookNames(),
-                        dirInfoPair.b().bookNames()),
+                coreMatcher,
                 // TODO: シート名のペアリングもここで実施するようにする
                 Map.of());
     }

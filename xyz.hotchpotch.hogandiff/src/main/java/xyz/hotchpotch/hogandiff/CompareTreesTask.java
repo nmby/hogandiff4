@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
-import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
@@ -123,12 +122,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             DirsMatcher dirMatcher = factory.dirsMatcher(settings);
             List<Pair<DirInfo>> dirInfoPairs = dirMatcher.pairingDirs(topDirInfoPair);
             
-            BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
-            BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> onesideBookNamePairs = (side, dirPair) -> dirPair
-                    .get(side).bookNames().stream()
-                    .map(bookName -> Pair.ofOnly(side, bookName))
-                    .toList();
-            
+            Matcher<String> bookNamesMatcher = factory.bookNamesMatcher2(settings);
             List<DirCompareInfo> dirCompareInfos = new ArrayList<>();
             
             for (int i = 0; i < dirInfoPairs.size(); i++) {
@@ -139,11 +133,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 DirCompareInfo dirCompareInfo = DirCompareInfo.of(
                         dirInfoPair,
-                        dirInfoPair.isPaired()
-                                ? bookNamesMatcher.pairingBooks(dirInfoPair).bookNamePairs()
-                                : dirInfoPair.isOnlyA()
-                                        ? onesideBookNamePairs.apply(Side.A, dirInfoPair)
-                                        : onesideBookNamePairs.apply(Side.B, dirInfoPair),
+                        bookNamesMatcher,
                         Map.of());
                 dirCompareInfos.add(dirCompareInfo);
             }
@@ -230,6 +220,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     num++;
                     
                 } else {
+                    // FIXME: 片フォルダの場合も内部のファイルをコピーする
                     dirResults.put(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.empty());
                     str.append(BR);
                     updateMessage(str.toString());
