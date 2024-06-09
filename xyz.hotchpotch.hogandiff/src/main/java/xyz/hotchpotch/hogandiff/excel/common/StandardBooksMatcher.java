@@ -55,7 +55,7 @@ public class StandardBooksMatcher implements BooksMatcher {
     public DirCompareInfo pairingBooks(Pair<DirInfo> dirInfoPair) {
         Objects.requireNonNull(dirInfoPair, "dirInfoPair");
         
-        return new DirCompareInfo(
+        return DirCompareInfo.of(
                 dirInfoPair,
                 coreMatcher.makeItemPairs(
                         dirInfoPair.a().bookNames(),

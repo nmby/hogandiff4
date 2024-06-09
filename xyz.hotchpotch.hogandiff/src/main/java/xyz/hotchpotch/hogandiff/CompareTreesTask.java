@@ -137,7 +137,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
                 
-                DirCompareInfo dirCompareInfo = new DirCompareInfo(
+                DirCompareInfo dirCompareInfo = DirCompareInfo.of(
                         dirInfoPair,
                         dirInfoPair.isPaired()
                                 ? bookNamesMatcher.pairingBooks(dirInfoPair).bookNamePairs()

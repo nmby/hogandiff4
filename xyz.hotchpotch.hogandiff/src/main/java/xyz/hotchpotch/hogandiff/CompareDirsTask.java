@@ -185,7 +185,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 return compareDirs(
                         "",
                         "",
-                        new DirCompareInfo(dirInfoPair, bookNamePairs, Map.of()),
+                        DirCompareInfo.of(dirInfoPair, bookNamePairs, Map.of()),
                         readPasswords,
                         outputDirPair,
                         progressBefore,
