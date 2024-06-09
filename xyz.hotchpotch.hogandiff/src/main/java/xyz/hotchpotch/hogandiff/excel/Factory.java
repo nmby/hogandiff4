@@ -2,9 +2,12 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -112,6 +115,19 @@ public class Factory {
         return SheetNamesMatcher.of(matchNamesStrictly);
     }
     
+    public Matcher<String> sheetNamesMatcher2(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
+    }
+    
     /**
      * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーを返します。<br>
      * 
@@ -124,6 +140,19 @@ public class Factory {
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return BooksMatcher.of(matchNamesStrictly);
+    }
+    
+    public Matcher<String> bookNamesMatcher2(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
     }
     
     /**
