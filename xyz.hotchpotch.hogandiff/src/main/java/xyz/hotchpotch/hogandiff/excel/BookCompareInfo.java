@@ -16,6 +16,7 @@ public class BookCompareInfo {
     // [static members] ********************************************************
     
     /**
+     * 与えられたマッチャーを使用して新たな {@link BookCompareInfo} インスタンスを生成します。<br>
      * 
      * @param bookInfoPair 比較対象Excelブックの情報
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
@@ -28,17 +29,24 @@ public class BookCompareInfo {
         Objects.requireNonNull(bookInfoPair);
         Objects.requireNonNull(sheetNamesMatcher);
         
-        return new BookCompareInfo(
-                bookInfoPair,
-                sheetNamesMatcher.makeItemPairs(
-                        bookInfoPair.a().sheetNames(),
-                        bookInfoPair.b().sheetNames()));
+        if (bookInfoPair.isPaired()) {
+            List<Pair<String>> sheetNamePairs = sheetNamesMatcher.makeItemPairs(
+                    bookInfoPair.a().sheetNames(),
+                    bookInfoPair.b().sheetNames());
+            return new BookCompareInfo(bookInfoPair, sheetNamePairs);
+            
+        } else {
+            List<Pair<String>> sheetNamePairs = bookInfoPair.hasA()
+                    ? bookInfoPair.a().sheetNames().stream().map(sheetName -> new Pair<>(sheetName, null)).toList()
+                    : bookInfoPair.b().sheetNames().stream().map(sheetName -> new Pair<>(null, sheetName)).toList();
+            return new BookCompareInfo(bookInfoPair, sheetNamePairs);
+        }
     }
     
     // [instance members] ******************************************************
     
-    private Pair<BookInfo> bookInfoPair;
-    private List<Pair<String>> sheetNamePairs;
+    private final Pair<BookInfo> bookInfoPair;
+    private final List<Pair<String>> sheetNamePairs;
     
     private BookCompareInfo(
             Pair<BookInfo> bookInfoPair,
