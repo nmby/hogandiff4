@@ -2,11 +2,11 @@ package xyz.hotchpotch.hogandiff;
 
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -54,10 +54,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             announceStart(0, 0);
             
             // 2. 比較するシートの組み合わせの決定
-            List<Pair<String>> sheetNamePairs = pairingSheets(0, 3);
+            BookCompareInfo bookCompareInfo = pairingSheets(0, 3);
             
             // 3. シート同士の比較
-            BookResult bResult = compareSheets(sheetNamePairs, 3, 75);
+            BookResult bResult = compareSheets(bookCompareInfo, 3, 75);
             
             // 4. 比較結果の表示（テキスト）
             saveAndShowResultText(workDir, bResult.toString(), 75, 80);
@@ -100,7 +100,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 2. 比較するシートの組み合わせの決定
-    private List<Pair<String>> pairingSheets(
+    private BookCompareInfo pairingSheets(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -111,18 +111,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.020")).append(BR);
             updateMessage(str.toString());
             
-            List<Pair<String>> sheetNamePairs = settings.get(SettingKeys.CURR_SHEETS_PAIRING).sheetNamePairs();
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             
-            for (int i = 0; i < sheetNamePairs.size(); i++) {
-                Pair<String> pair = sheetNamePairs.get(i);
-                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
+            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
             str.append(BR);
             
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return sheetNamePairs;
+            return bookCompareInfo;
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.030", "");
@@ -131,7 +131,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     // 3. シート同士の比較
     private BookResult compareSheets(
-            List<Pair<String>> sheetNamePairs,
+            BookCompareInfo bookCompareInfo,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -141,16 +141,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.bookInfoPair();
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
-                    bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+            Pair<CellsLoader> loaderPair = bookInfoPair
+                    .map(BookInfo::bookPath)
+                    .unsafeMap(bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
             SheetComparator comparator = factory.comparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
-            for (int i = 0; i < sheetNamePairs.size(); i++) {
-                Pair<String> sheetNamePair = sheetNamePairs.get(i);
+            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
                 
                 if (sheetNamePair.isPaired()) {
                     str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
@@ -158,8 +159,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                     Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                             side -> loaderPair.get(side).loadCells(
-                                    bookPathPair.get(side),
-                                    readPasswords.get(bookPathPair.get(side)),
+                                    bookInfoPair.get(side).bookPath(),
+                                    readPasswords.get(bookInfoPair.get(side).bookPath()),
                                     sheetNamePair.get(side)));
                     
                     SheetResult result = comparator.compare(cellsSetPair);
@@ -173,7 +174,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
                 updateProgress(
-                        progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
+                        progressBefore
+                                + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.sheetNamePairs().size(),
                         PROGRESS_MAX);
             }
             
@@ -182,8 +184,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookPathPair,
-                    sheetNamePairs,
+                    bookInfoPair.map(BookInfo::bookPath),
+                    bookCompareInfo.sheetNamePairs(),
                     results);
             
         } catch (Exception e) {

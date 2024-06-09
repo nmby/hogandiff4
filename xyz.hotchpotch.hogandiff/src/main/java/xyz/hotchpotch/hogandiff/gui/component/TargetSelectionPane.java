@@ -205,13 +205,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     : FXCollections.observableList(newValue.sheetNames()));
             
             if (newValue != null && opposite.bookInfo.getValue() != null) {
-                BookCompareInfo sheetNamesPairingInfo = factory.sheetNamesMatcher(ar.settings())
+                BookCompareInfo bookCompareInfo = factory.sheetNamesMatcher(ar.settings())
                         .pairingSheetNames(side == Side.A
                                 ? new Pair<>(newValue, opposite.bookInfo.getValue())
                                 : new Pair<>(opposite.bookInfo.getValue(), newValue));
-                ar.changeSetting(SettingKeys.CURR_SHEETS_PAIRING, sheetNamesPairingInfo);
+                ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, bookCompareInfo);
             } else {
-                ar.changeSetting(SettingKeys.CURR_SHEETS_PAIRING, null);
+                ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, null);
             }
         });
         sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
