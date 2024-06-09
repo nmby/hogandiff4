@@ -148,7 +148,7 @@ public class Factory {
      * @return セルセット同士を比較するコンパレータ
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public static SheetComparator comparator(Settings settings) {
+    public static SheetComparator sheetComparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);

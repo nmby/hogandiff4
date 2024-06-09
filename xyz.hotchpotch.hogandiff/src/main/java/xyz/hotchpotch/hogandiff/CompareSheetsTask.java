@@ -122,7 +122,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             readPasswords.get(bookInfoPair.get(side).bookPath()),
                             sheetNamePair.get(side)));
             
-            SheetComparator comparator = Factory.comparator(settings);
+            SheetComparator comparator = Factory.sheetComparator(settings);
             SheetResult result = comparator.compare(cellsSetPair);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);

@@ -143,7 +143,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
-            SheetComparator comparator = Factory.comparator(settings);
+            SheetComparator comparator = Factory.sheetComparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
             for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {

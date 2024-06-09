@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
@@ -446,7 +447,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
-        SheetComparator comparator = Factory.comparator(settings);
+        SheetComparator sheetComparator = Factory.sheetComparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
         for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
@@ -462,7 +463,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                     sheetNamePair.get(side));
                         });
                 
-                SheetResult result = comparator.compare(cellsSetPair);
+                SheetResult result = sheetComparator.compare(cellsSetPair);
                 results.put(sheetNamePair, Optional.of(result));
                 
             } else {
@@ -520,8 +521,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter) {
         
         Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
-        int bookPairsCount = (int) dirCompareInfo.bookNamePairs().stream().filter(Pair::isPaired).count();
-        int num = 0;
+        IntUnaryOperator getProgress = n -> progressBefore
+                + (progressAfter - progressBefore) * n / dirCompareInfo.bookNamePairs().size();
         
         if (dirCompareInfo.bookNamePairs().size() == 0) {
             str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
@@ -550,8 +551,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         readPasswords,
                         srcPathPair,
                         dstPathPair,
-                        progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
-                        progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
+                        getProgress.applyAsInt(i),
+                        getProgress.applyAsInt(i + 1));
                 bookResults.put(bookNamePair, Optional.ofNullable(bookResult));
                 
                 if (bookResult != null) {
@@ -560,9 +561,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             dstPathPair,
                             readPasswords,
                             bookResult,
-                            progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
+                            getProgress.applyAsInt(i + 1));
                 }
-                num++;
                 
             } else {
                 Side side = bookNamePair.hasA() ? Side.A : Side.B;
