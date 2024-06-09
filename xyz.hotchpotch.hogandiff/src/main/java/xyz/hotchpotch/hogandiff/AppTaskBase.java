@@ -56,9 +56,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** 今回の実行における各種設定を保持する設定セット */
     protected final Settings settings;
     
-    /** 各種インスタンスのファクトリ */
-    protected final Factory factory;
-    
     /** 今回の実行における作業用ディレクトリ */
     protected final Path workDir;
     
@@ -74,15 +71,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param settings 設定セット
      * @param factory ファクトリ
      */
-    /*package*/ AppTaskBase(
-            Settings settings,
-            Factory factory) {
-        
+    /*package*/ AppTaskBase(Settings settings) {
         assert settings != null;
-        assert factory != null;
         
         this.settings = settings;
-        this.factory = factory;
         this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
@@ -277,7 +269,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
             
-            BookPainter painter = factory.painter(settings, dstBookPath, readPassword);
+            BookPainter painter = Factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
             painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
@@ -338,7 +330,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     Path srcBookPath = srcBookPathPair.get(side);
                     Path dstBookPath = dstBookPathPair.get(side);
                     
-                    BookPainter painter = factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
+                    BookPainter painter = Factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
                     painter.paintAndSave(
                             srcBookPath,
                             dstBookPath,
@@ -454,11 +446,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         BookCompareInfo bookCompareInfo = BookCompareInfo.of(
                 bookInfoPair,
-                factory.sheetNamesMatcher2(settings));
+                Factory.sheetNamesMatcher2(settings));
         Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
-                bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+                bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
-        SheetComparator comparator = factory.comparator(settings);
+        SheetComparator comparator = Factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
         for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
@@ -601,7 +593,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             Pair<BookInfo> bookInfoPair = srcPathPair.unsafeMap(bookPath -> {
                 String readPassword = readPasswords.get(bookPath);
-                SheetNamesLoader sheetNamesLoader = factory.sheetNamesLoader(bookPath, readPassword);
+                SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
                 return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
             });
             
@@ -634,7 +626,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (Side side : Side.values()) {
                 Path srcPath = srcPathPair.get(side);
                 Path dstPath = dstPathPair.get(side);
-                BookPainter painter = factory.painter(settings, srcPath, readPasswords.get(srcPath));
+                BookPainter painter = Factory.painter(settings, srcPath, readPasswords.get(srcPath));
                 
                 painter.paintAndSave(
                         srcPath,

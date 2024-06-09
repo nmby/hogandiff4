@@ -1,11 +1,10 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -64,11 +63,11 @@ public enum AppMenu {
     
     // [instance members] ******************************************************
     
-    private final BiFunction<Settings, Factory, Task<Report>> taskFactory;
+    private final Function<Settings, Task<Report>> taskFactory;
     private final Predicate<Settings> targetValidator;
     
     private AppMenu(
-            BiFunction<Settings, Factory, Task<Report>> taskFactory,
+            Function<Settings, Task<Report>> taskFactory,
             Predicate<Settings> targetValidator) {
         
         assert taskFactory != null;
@@ -97,14 +96,12 @@ public enum AppMenu {
      * このメニューを実行するためのタスクを生成して返します。<br>
      * 
      * @param settings 設定
-     * @param factory ファクトリ
      * @return 新しいタスク
-     * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public Task<Report> getTask(Settings settings, Factory factory) {
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(factory, "factory");
+    public Task<Report> getTask(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        return taskFactory.apply(settings, factory);
+        return taskFactory.apply(settings);
     }
 }
