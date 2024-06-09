@@ -142,7 +142,8 @@ public class MainController extends VBox {
     // FIXME: タスクの結果に応じて精緻に判定を行うように修正する
     private void alertPasswordUnlocked() {
         Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-        if (!readPasswords.isEmpty()) {
+        boolean passwordUsed = 0 < readPasswords.values().stream().filter(password -> password != null).count();
+        if (passwordUsed) {
             new Alert(
                     AlertType.WARNING,
                     rb.getString("gui.MainController.020"),
