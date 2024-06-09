@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,32 +24,57 @@ public class DirCompareInfo {
      * 
      * @param dirInfoPair 比較対象フォルダの情報
      * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
-     * @param bookCompareInfos Excelブック比較情報
+     * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
+     * @param readPasswords 読み取りパスワード
      * @return フォルダ比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static DirCompareInfo of(
             Pair<DirInfo> dirInfoPair,
             Matcher<String> bookNamesMatcher,
-            Map<Pair<String>, BookCompareInfo> bookCompareInfos) {
+            Matcher<String> sheetNamesMatcher,
+            Map<Path, String> readPasswords) {
         
         Objects.requireNonNull(dirInfoPair);
         Objects.requireNonNull(bookNamesMatcher);
-        Objects.requireNonNull(bookCompareInfos);
+        Objects.requireNonNull(sheetNamesMatcher);
+        Objects.requireNonNull(readPasswords);
         
+        List<Pair<String>> bookNamePairs;
         if (dirInfoPair.isPaired()) {
-            List<Pair<String>> bookNamePairs = bookNamesMatcher.makeItemPairs(
+            bookNamePairs = bookNamesMatcher.makeItemPairs(
                     dirInfoPair.a().bookNames(),
                     dirInfoPair.b().bookNames());
-            return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
-            
         } else {
             Side side = dirInfoPair.hasA() ? Side.A : Side.B;
-            List<Pair<String>> bookNamePairs = dirInfoPair.get(side).bookNames().stream()
+            bookNamePairs = dirInfoPair.get(side).bookNames().stream()
                     .map(bookName -> Pair.ofOnly(side, bookName))
                     .toList();
-            return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
         }
+        
+        Map<Pair<String>, BookCompareInfo> bookCompareInfos = new HashMap<>();
+        
+        for (Pair<String> bookNamePair : bookNamePairs) {
+            Pair<BookInfo> bookInfoPair = Side.map(side -> {
+                try {
+                    if (bookNamePair.has(side)) {
+                        Path bookPath = dirInfoPair.get(side).dirPath().resolve(bookNamePair.get(side));
+                        String readPassword = readPasswords.get(bookPath);
+                        SheetNamesLoader sheetNamesLoader = Factory.of().sheetNamesLoader(bookPath, readPassword);
+                        return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+                    } else {
+                        return null;
+                    }
+                } catch (ExcelHandlingException e) {
+                    // nop
+                    return null;
+                }
+            });
+            BookCompareInfo bookCompareInfo = BookCompareInfo.of(bookInfoPair, sheetNamesMatcher);
+            bookCompareInfos.put(bookNamePair, bookCompareInfo);
+        }
+        
+        return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
     }
     
     // [instance members] ******************************************************

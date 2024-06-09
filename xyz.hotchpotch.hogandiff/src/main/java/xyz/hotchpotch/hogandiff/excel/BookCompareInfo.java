@@ -36,12 +36,20 @@ public class BookCompareInfo {
                     bookInfoPair.b().sheetNames());
             return new BookCompareInfo(bookInfoPair, sheetNamePairs);
             
-        } else {
-            Side side = bookInfoPair.hasA() ? Side.A : Side.B;
-            List<Pair<String>> sheetNamePairs = bookInfoPair.get(side).sheetNames().stream()
-                    .map(sheetName -> Pair.ofOnly(side, sheetName))
+        } else if (bookInfoPair.hasA()) {
+            List<Pair<String>> sheetNamePairs = bookInfoPair.a().sheetNames().stream()
+                    .map(sheetName -> Pair.ofOnly(Side.A, sheetName))
                     .toList();
             return new BookCompareInfo(bookInfoPair, sheetNamePairs);
+            
+        } else if (bookInfoPair.hasB()) {
+            List<Pair<String>> sheetNamePairs = bookInfoPair.b().sheetNames().stream()
+                    .map(sheetName -> Pair.ofOnly(Side.B, sheetName))
+                    .toList();
+            return new BookCompareInfo(bookInfoPair, sheetNamePairs);
+            
+        } else {
+            return new BookCompareInfo(bookInfoPair, List.of());
         }
     }
     

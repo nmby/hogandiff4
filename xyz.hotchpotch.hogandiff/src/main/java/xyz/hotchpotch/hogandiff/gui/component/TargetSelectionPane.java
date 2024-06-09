@@ -38,6 +38,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
@@ -45,7 +46,6 @@ import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.PasswordDialog;
@@ -205,10 +205,12 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     : FXCollections.observableList(newValue.sheetNames()));
             
             if (newValue != null && opposite.bookInfo.getValue() != null) {
-                BookCompareInfo bookCompareInfo = factory.sheetNamesMatcher(ar.settings())
-                        .pairingSheetNames(side == Side.A
-                                ? new Pair<>(newValue, opposite.bookInfo.getValue())
-                                : new Pair<>(opposite.bookInfo.getValue(), newValue));
+                Pair<BookInfo> bookInfoPair = side == Side.A
+                        ? new Pair<>(newValue, opposite.bookInfo.getValue())
+                        : new Pair<>(opposite.bookInfo.getValue(), newValue);
+                BookCompareInfo bookCompareInfo = BookCompareInfo.of(
+                        bookInfoPair,
+                        factory.sheetNamesMatcher2(ar.settings()));
                 ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, bookCompareInfo);
             } else {
                 ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, null);

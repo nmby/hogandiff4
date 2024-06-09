@@ -106,17 +106,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @return シート名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public SheetNamesMatcher sheetNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return SheetNamesMatcher.of(matchNamesStrictly);
-    }
-    
     public Matcher<String> sheetNamesMatcher2(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
@@ -133,17 +126,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @return Excelブック名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BooksMatcher bookNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return BooksMatcher.of(matchNamesStrictly);
-    }
-    
     public Matcher<String> bookNamesMatcher2(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly

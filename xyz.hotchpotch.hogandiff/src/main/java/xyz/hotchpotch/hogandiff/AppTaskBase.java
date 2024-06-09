@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +14,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javafx.concurrent.Task;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
@@ -452,17 +452,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
-        List<Pair<String>> sheetNamePairs = factory.sheetNamesMatcher(settings)
-                .pairingSheetNames(bookInfoPair)
-                .sheetNamePairs();
+        BookCompareInfo bookCompareInfo = BookCompareInfo.of(
+                bookInfoPair,
+                factory.sheetNamesMatcher2(settings));
         Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                 bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator comparator = factory.comparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
-        for (int i = 0; i < sheetNamePairs.size(); i++) {
-            Pair<String> sheetNamePair = sheetNamePairs.get(i);
+        for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
             
             if (sheetNamePair.isPaired()) {
                 Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
@@ -482,13 +482,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             
             updateProgress(
-                    progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
+                    progressBefore
+                            + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.sheetNamePairs().size(),
                     PROGRESS_MAX);
         }
         
         return new BookResult(
                 bookInfoPair.map(BookInfo::bookPath),
-                sheetNamePairs,
+                bookCompareInfo.sheetNamePairs(),
                 results);
     }
     

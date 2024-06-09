@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
@@ -121,8 +120,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirsMatcher dirMatcher = factory.dirsMatcher(settings);
             List<Pair<DirInfo>> dirInfoPairs = dirMatcher.pairingDirs(topDirInfoPair);
-            
-            Matcher<String> bookNamesMatcher = factory.bookNamesMatcher2(settings);
             List<DirCompareInfo> dirCompareInfos = new ArrayList<>();
             
             for (int i = 0; i < dirInfoPairs.size(); i++) {
@@ -133,8 +130,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 DirCompareInfo dirCompareInfo = DirCompareInfo.of(
                         dirInfoPair,
-                        bookNamesMatcher,
-                        Map.of());
+                        factory.bookNamesMatcher2(settings),
+                        factory.sheetNamesMatcher2(settings),
+                        settings.get(SettingKeys.CURR_READ_PASSWORDS));
                 dirCompareInfos.add(dirCompareInfo);
             }
             
