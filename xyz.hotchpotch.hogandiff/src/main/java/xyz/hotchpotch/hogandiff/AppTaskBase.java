@@ -557,7 +557,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         side -> dirCompareInfo.dirInfoPair().get(side).dirPath().resolve(bookNamePair.get(side)));
                 Pair<Path> dstPathPair = Side.map(
                         side -> outputDirs.get(side)
-                                .resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))));
+                                .resolve("【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookNamePair.get(side))));
                 
                 BookResult bookResult = compareBooks(
                         srcPathPair,
