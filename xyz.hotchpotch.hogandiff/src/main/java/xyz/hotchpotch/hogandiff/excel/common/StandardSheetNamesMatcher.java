@@ -48,15 +48,9 @@ public class StandardSheetNamesMatcher implements SheetNamesMatcher {
      * @throws NullPointerException {@code bookInfoPair} が {@code null} の場合
      */
     @Override
-    public BookCompareInfo pairingSheetNames(
-            Pair<BookInfo> bookInfoPair) {
+    public BookCompareInfo pairingSheetNames(Pair<BookInfo> bookInfoPair) {
+        Objects.requireNonNull(bookInfoPair);
         
-        Objects.requireNonNull(bookInfoPair, "bookInfoPair");
-        
-        return new BookCompareInfo(
-                bookInfoPair,
-                coreMatcher.makeItemPairs(
-                        bookInfoPair.a().sheetNames(),
-                        bookInfoPair.b().sheetNames()));
+        return BookCompareInfo.of(bookInfoPair, coreMatcher);
     }
 }
