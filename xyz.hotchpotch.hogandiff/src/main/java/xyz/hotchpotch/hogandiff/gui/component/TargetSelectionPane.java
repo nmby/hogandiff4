@@ -108,6 +108,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private MainController parent;
     private Map<Path, String> readPasswords;
     
+    /** @return フォルダ情報 */
+    public ReadOnlyProperty<DirInfo> dirInfo() {
+        return dirInfo;
+    }
+    
     /** @return Excelブック情報 */
     public ReadOnlyProperty<BookInfo> bookInfo() {
         return bookInfo;

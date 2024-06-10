@@ -569,6 +569,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 if (bookNamePair.isPaired()) {
                     str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
                     updateMessage(str.toString());
+                } else {
+                    str.append(BR);
+                    updateMessage(str.toString());
                 }
                 if (bookNamePair.hasA()) {
                     Path srcBookPath = dirCompareInfo.dirInfoPair().a().dirPath().resolve(bookNamePair.a());

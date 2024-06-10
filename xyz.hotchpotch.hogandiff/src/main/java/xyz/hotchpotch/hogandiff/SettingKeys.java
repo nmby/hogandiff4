@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -138,28 +139,12 @@ public class SettingKeys {
             notSupported("cannot decode."),
             false);
     
-    /** 今回の実行におけるシート名の組み合わせ情報 */
+    /** 今回の実行におけるExcelブック比較情報 */
     public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookCompareInfo",
             () -> null,
             BookCompareInfo::toString,
             notSupported("cannnot decode."),
-            false);
-    
-    /** 今回の実行における比較対象Excelシート1の名前 */
-    public static final Key<String> CURR_SHEET_NAME1 = new Key<>(
-            "current.sheetName1",
-            () -> null,
-            Function.identity(),
-            Function.identity(),
-            false);
-    
-    /** 今回の実行における比較対象Excelシート2の名前 */
-    public static final Key<String> CURR_SHEET_NAME2 = new Key<>(
-            "current.sheetName2",
-            () -> null,
-            Function.identity(),
-            Function.identity(),
             false);
     
     /** 今回の実行における比較対象フォルダ1の情報 */
@@ -182,6 +167,14 @@ public class SettingKeys {
     public static final Pair<Key<DirInfo>> CURR_DIR_INFOS = new Pair<>(
             CURR_DIR_INFO1,
             CURR_DIR_INFO2);
+    
+    /** 今回の実行におけるフォルダ比較情報 */
+    public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
+            "current.dirCompareInfo",
+            () -> null,
+            DirCompareInfo::toString,
+            notSupported("cannnot decode."),
+            false);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(
