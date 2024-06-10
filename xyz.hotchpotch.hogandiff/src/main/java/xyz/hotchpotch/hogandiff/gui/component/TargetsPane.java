@@ -18,6 +18,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -82,6 +83,7 @@ public class TargetsPane extends VBox implements ChildController {
     @FXML
     private TargetSelectionPane targetSelectionPane2;
     
+    private final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
     private final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
     
     /**
@@ -108,6 +110,33 @@ public class TargetsPane extends VBox implements ChildController {
         // 2.項目ごとの各種設定
         targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
+        
+        dirCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
+                    DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
+                        case COMPARE_DIRS -> dirInfoPair.isPaired()
+                                ? DirCompareInfo.of(
+                                        dirInfoPair,
+                                        Factory.bookNamesMatcher2(ar.settings()),
+                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                : null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.dirInfo(),
+                targetSelectionPane2.dirInfo()));
+        
+        dirCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
+        });
         
         bookCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
