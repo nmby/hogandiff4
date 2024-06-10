@@ -565,6 +565,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
             } else {
+                if (bookNamePair.isPaired()) {
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    updateMessage(str.toString());
+                }
                 if (bookNamePair.hasA()) {
                     Path srcBookPath = dirCompareInfo.dirInfoPair().a().dirPath().resolve(bookNamePair.a());
                     Path dstBookPath = outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()));
@@ -651,9 +655,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Files.copy(srcBookPath, dstBookPath);
             dstBookPath.toFile().setReadable(true, false);
             dstBookPath.toFile().setWritable(true, false);
-            
-            str.append(BR);
-            updateMessage(str.toString());
             
         } catch (Exception e) {
             str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);

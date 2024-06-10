@@ -378,8 +378,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirLoader dirLoader = Factory.dirLoader(ar.settings()
-                    .getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
+            DirLoader dirLoader = Factory.dirLoader(
+                    ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDir(newDirPath);
             dirInfo.setValue(newDirInfo);
             prevSelectedBookPath = newDirPath;

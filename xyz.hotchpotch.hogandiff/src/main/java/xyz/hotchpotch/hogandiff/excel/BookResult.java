@@ -172,7 +172,7 @@ public record BookResult(
         }
         
         return str.isEmpty()
-                ? "    " + rb.getString("excel.BResult.020") + BR
+                ? "    " + rb.getString("excel.BResult.020") + BR + BR
                 : str.toString();
     }
     
