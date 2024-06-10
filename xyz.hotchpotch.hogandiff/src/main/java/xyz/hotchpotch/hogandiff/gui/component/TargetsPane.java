@@ -44,10 +44,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_INFO1),
+        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_DIR_INFO1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_INFO2);
+        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_DIR_INFO2);
         
         // [instance members] --------------------------------------------------
         
@@ -57,21 +57,16 @@ public class TargetsPane extends VBox implements ChildController {
         /** ブックパス設定項目 */
         public final Key<BookInfo> bookInfoKey;
         
-        /** シート名設定項目 */
-        public final Key<String> sheetNameKey;
-        
         /** フォルダパス設定項目 */
         public final Key<DirInfo> dirInfoKey;
         
         Side(
                 String title,
                 Key<BookInfo> bookInfoKey,
-                Key<String> sheetNameKey,
                 Key<DirInfo> dirInfoKey) {
             
             this.title = title;
             this.bookInfoKey = bookInfoKey;
-            this.sheetNameKey = sheetNameKey;
             this.dirInfoKey = dirInfoKey;
         }
     }

@@ -165,11 +165,6 @@ public class SettingKeys {
             Function.identity(),
             false);
     
-    /** {@link #CURR_SHEET_NAME1} と {@link #CURR_SHEET_NAME2} のペア */
-    public static final Pair<Key<String>> CURR_SHEET_NAMES = new Pair<>(
-            CURR_SHEET_NAME1,
-            CURR_SHEET_NAME2);
-    
     /** 今回の実行における比較対象フォルダ1の情報 */
     public static final Key<DirInfo> CURR_DIR_INFO1 = new Key<>(
             "current.dirInfo1",

@@ -78,8 +78,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
-            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath);
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(0);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
@@ -107,11 +108,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<BookInfo> bookInfoPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.bookInfoPair();
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(0);
+            
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                     bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
-            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
             
             str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
@@ -130,7 +133,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair),
+                    bookCompareInfo,
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {

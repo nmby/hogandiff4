@@ -212,7 +212,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     ? FXCollections.emptyObservableList()
                     : FXCollections.observableList(newValue.sheetNames()));
         });
-        sheetName.addListener((target, oldValue, newValue) -> ar.changeSetting(side.sheetNameKey, newValue));
         
         // 3.初期値の設定
         if (ar.settings().containsKey(side.dirInfoKey)) {
@@ -221,11 +220,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
         }
         if (ar.settings().containsKey(side.bookInfoKey)) {
-            validateAndSetTarget(
-                    ar.settings().get(side.bookInfoKey).bookPath(),
-                    ar.settings().containsKey(side.sheetNameKey)
-                            ? ar.settings().get(side.sheetNameKey)
-                            : null);
+            validateAndSetTarget(ar.settings().get(side.bookInfoKey).bookPath(), null);
         }
     }
     

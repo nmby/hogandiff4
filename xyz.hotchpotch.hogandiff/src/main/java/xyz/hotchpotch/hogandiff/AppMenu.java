@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -23,21 +24,25 @@ public enum AppMenu {
      */
     COMPARE_BOOKS(
             CompareBooksTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
-                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath())),
+            settings -> {
+                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Objects.requireNonNull(bookCompareInfo);
+                
+                return !bookCompareInfo.bookInfoPair().isIdentical();
+            }),
     
     /**
      * 特定のExcelシート同士を比較します。
      */
     COMPARE_SHEETS(
             CompareSheetsTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
-                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath())
-                    || !Objects.equals(
-                            settings.get(SettingKeys.CURR_SHEET_NAME1),
-                            settings.get(SettingKeys.CURR_SHEET_NAME2))),
+            settings -> {
+                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Objects.requireNonNull(bookCompareInfo);
+                
+                return !bookCompareInfo.bookInfoPair().isIdentical()
+                        || !bookCompareInfo.sheetNamePairs().get(0).isIdentical();
+            }),
     
     /**
      * 指定されたフォルダに含まれる全Excelブックを比較します。
@@ -46,9 +51,11 @@ public enum AppMenu {
      */
     COMPARE_DIRS(
             CompareDirsTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
-                    settings.get(SettingKeys.CURR_DIR_INFO2).dirPath())),
+            settings -> {
+                return !Objects.equals(
+                        settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
+                        settings.get(SettingKeys.CURR_DIR_INFO2).dirPath());
+            }),
     
     /**
      * 指定されたフォルダ配下のフォルダツリーを比較します。
@@ -57,9 +64,11 @@ public enum AppMenu {
      */
     COMPARE_TREES(
             CompareTreesTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
-                    settings.get(SettingKeys.CURR_DIR_INFO2).dirPath()));
+            settings -> {
+                return !Objects.equals(
+                        settings.get(SettingKeys.CURR_DIR_INFO1).dirPath(),
+                        settings.get(SettingKeys.CURR_DIR_INFO2).dirPath());
+            });
     
     // [instance members] ******************************************************
     
