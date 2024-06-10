@@ -537,7 +537,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
             updateMessage(str.toString());
             
-            if (bookNamePair.isPaired()) {
+            if (bookNamePair.isPaired()
+                    && dirCompareInfo.bookCompareInfos().get(bookNamePair).isPresent()) {
                 
                 Pair<Path> srcPathPair = Side.map(
                         side -> dirCompareInfo.dirInfoPair().get(side).dirPath().resolve(bookNamePair.get(side)));
@@ -546,7 +547,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                                 .resolve("【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookNamePair.get(side))));
                 
                 BookResult bookResult = compareBooks(
-                        dirCompareInfo.bookCompareInfos().get(bookNamePair),
+                        dirCompareInfo.bookCompareInfos().get(bookNamePair).get(),
                         readPasswords,
                         srcPathPair,
                         dstPathPair,
@@ -564,12 +565,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
             } else {
-                Side side = bookNamePair.hasA() ? Side.A : Side.B;
-                Path srcBookPath = dirCompareInfo.dirInfoPair().get(side).dirPath().resolve(bookNamePair.get(side));
-                Path dstBookPath = outputDirs.get(side)
-                        .resolve("【%s%s-%d】%s".formatted(side, dirId, i + 1, bookNamePair.get(side)));
-                
-                skipUnpairedBook(side, srcBookPath, dstBookPath);
+                if (bookNamePair.hasA()) {
+                    Path srcBookPath = dirCompareInfo.dirInfoPair().a().dirPath().resolve(bookNamePair.a());
+                    Path dstBookPath = outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()));
+                    skipUnpairedBook(Side.A, srcBookPath, dstBookPath);
+                }
+                if (bookNamePair.hasB()) {
+                    Path srcBookPath = dirCompareInfo.dirInfoPair().b().dirPath().resolve(bookNamePair.b());
+                    Path dstBookPath = outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
+                    skipUnpairedBook(Side.B, srcBookPath, dstBookPath);
+                }
                 bookResults.put(bookNamePair, Optional.empty());
             }
         }

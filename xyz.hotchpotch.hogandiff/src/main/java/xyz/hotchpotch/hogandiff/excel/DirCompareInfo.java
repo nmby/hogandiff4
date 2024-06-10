@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -57,28 +58,38 @@ public class DirCompareInfo {
             bookNamePairs = List.of();
         }
         
-        Map<Pair<String>, BookCompareInfo> bookCompareInfos = new HashMap<>();
+        Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
         
         for (Pair<String> bookNamePair : bookNamePairs) {
-            Pair<BookInfo> bookInfoPair = Side.map(side -> {
-                try {
-                    if (bookNamePair.has(side)) {
-                        Path bookPath = dirInfoPair.get(side).dirPath().resolve(bookNamePair.get(side));
-                        String readPassword = readPasswords.get(bookPath);
-                        SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
-                        return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
-                    } else {
-                        return null;
-                    }
-                } catch (ExcelHandlingException e) {
-                    // nop
-                    return null;
+            Pair<BookInfo> bookInfoPair = null;
+            
+            try {
+                BookInfo bookInfoA = null;
+                if (bookNamePair.hasA()) {
+                    Path bookPathA = dirInfoPair.a().dirPath().resolve(bookNamePair.a());
+                    String readPasswordA = readPasswords.get(bookPathA);
+                    SheetNamesLoader sheetNamesLoaderA = Factory.sheetNamesLoader(bookPathA, readPasswordA);
+                    bookInfoA = sheetNamesLoaderA.loadSheetNames(bookPathA, readPasswordA);
                 }
-            });
+                
+                BookInfo bookInfoB = null;
+                if (bookNamePair.hasB()) {
+                    Path bookPathB = dirInfoPair.b().dirPath().resolve(bookNamePair.b());
+                    String readPasswordB = readPasswords.get(bookPathB);
+                    SheetNamesLoader sheetNamesLoaderB = Factory.sheetNamesLoader(bookPathB, readPasswordB);
+                    bookInfoB = sheetNamesLoaderB.loadSheetNames(bookPathB, readPasswordB);
+                }
+                
+                bookInfoPair = Pair.of(bookInfoA, bookInfoB);
+                
+            } catch (ExcelHandlingException e) {
+                // nop
+            }
+            
             BookCompareInfo bookCompareInfo = bookInfoPair != null
                     ? bookCompareInfo = BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
                     : null;
-            bookCompareInfos.put(bookNamePair, bookCompareInfo);
+            bookCompareInfos.put(bookNamePair, Optional.ofNullable(bookCompareInfo));
         }
         
         return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
@@ -88,12 +99,12 @@ public class DirCompareInfo {
     
     private final Pair<DirInfo> dirInfoPair;
     private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, BookCompareInfo> bookCompareInfos;
+    private final Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos;
     
     private DirCompareInfo(
             Pair<DirInfo> dirInfoPair,
             List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, BookCompareInfo> bookCompareInfos) {
+            Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos) {
         
         Objects.requireNonNull(dirInfoPair, "dirInfoPair");
         Objects.requireNonNull(bookNamePairs, "bookNamePairs");
@@ -127,7 +138,7 @@ public class DirCompareInfo {
      * 
      * @return Excelブック比較情報
      */
-    public Map<Pair<String>, BookCompareInfo> bookCompareInfos() {
+    public Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos() {
         return bookCompareInfos;
     }
 }
