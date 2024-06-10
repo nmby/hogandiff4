@@ -47,21 +47,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected Result call2() throws ApplicationException {
         try {
             // 0. 処理開始のアナウンス
-            announceStart(0, 0);
+            announceStart(0, 3);
             
-            // 2. 比較するシートの組み合わせの決定
-            BookCompareInfo bookCompareInfo = pairingSheets(0, 3);
+            // 1. シート同士の比較
+            BookResult bResult = compareSheets(3, 75);
             
-            // 3. シート同士の比較
-            BookResult bResult = compareSheets(bookCompareInfo, 3, 75);
-            
-            // 4. 比較結果の表示（テキスト）
+            // 2. 比較結果の表示（テキスト）
             saveAndShowResultText(workDir, bResult.toString(), 75, 80);
             
-            // 5. 比較結果の表示（Excelブック）
+            // 3. 比較結果の表示（Excelブック）
             paintSaveAndShowBook(workDir, bResult, 80, 98);
             
-            // 6. 処理終了のアナウンス
+            // 4. 処理終了のアナウンス
             announceEnd();
             
             return bResult;
@@ -82,11 +79,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath);
             
-            str.append("%s%n[A] %s%n[B] %s%n%n"
+            str.append("%s%n[A] %s%n[B] %s%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
             
+            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
+            }
+            
+            str.append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
@@ -95,39 +99,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
     }
     
-    // 2. 比較するシートの組み合わせの決定
-    private BookCompareInfo pairingSheets(
-            int progressBefore,
-            int progressAfter)
-            throws ApplicationException {
-        
-        try {
-            updateProgress(progressBefore, PROGRESS_MAX);
-            
-            str.append(rb.getString("CompareBooksTask.020")).append(BR);
-            updateMessage(str.toString());
-            
-            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            
-            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
-                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
-                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
-            }
-            str.append(BR);
-            
-            updateMessage(str.toString());
-            updateProgress(progressAfter, PROGRESS_MAX);
-            
-            return bookCompareInfo;
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.030", "");
-        }
-    }
-    
-    // 3. シート同士の比較
+    // 1. シート同士の比較
     private BookResult compareSheets(
-            BookCompareInfo bookCompareInfo,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -137,42 +110,44 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = bookCompareInfo.bookInfoPair();
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
-            SheetComparator comparator = Factory.sheetComparator(settings);
+            SheetComparator sheetComparator = Factory.sheetComparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
+            
+            double progressDelta = (progressAfter - progressBefore) / (double) bookCompareInfo.sheetNamePairs().size();
             
             for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+                SheetResult result = null;
                 
-                if (sheetNamePair.isPaired()) {
-                    str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
-                    updateMessage(str.toString());
-                    
-                    Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
-                            side -> loaderPair.get(side).loadCells(
-                                    bookInfoPair.get(side).bookPath(),
-                                    readPasswords.get(bookInfoPair.get(side).bookPath()),
-                                    sheetNamePair.get(side)));
-                    
-                    SheetResult result = comparator.compare(cellsSetPair);
-                    results.put(sheetNamePair, Optional.of(result));
-                    
-                    str.append("  -  ").append(result.getDiffSummary()).append(BR);
-                    updateMessage(str.toString());
-                    
-                } else {
-                    results.put(sheetNamePair, Optional.empty());
+                try {
+                    if (sheetNamePair.isPaired()) {
+                        str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
+                        updateMessage(str.toString());
+                        
+                        Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
+                                side -> loaderPair.get(side).loadCells(
+                                        bookInfoPair.get(side).bookPath(),
+                                        readPasswords.get(bookInfoPair.get(side).bookPath()),
+                                        sheetNamePair.get(side)));
+                        
+                        result = sheetComparator.compare(cellsSetPair);
+                        
+                        str.append("  -  ").append(result.getDiffSummary()).append(BR);
+                        updateMessage(str.toString());
+                    }
+                } catch (Exception e) {
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
                 }
                 
-                updateProgress(
-                        progressBefore
-                                + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.sheetNamePairs().size(),
-                        PROGRESS_MAX);
+                results.put(sheetNamePair, Optional.ofNullable(result));
+                updateProgress(progressBefore + progressDelta * (i + 1), PROGRESS_MAX);
             }
             
             str.append(BR);

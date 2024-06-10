@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -84,7 +83,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return ee;
             
         } else {
-            str.append(BR).append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
+            str.append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
             updateMessage(str.toString());
             return new ApplicationException(rb.getString(msgId) + appendMsg, e);
         }
@@ -225,10 +224,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         try {
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, bResult, 80, 98);
+                paintSaveAndShowBook1(workDir, bookCompareInfo, bResult, 80, 98);
             } else {
-                paintSaveAndShowBook2(workDir, bResult, 80, 98);
+                paintSaveAndShowBook2(workDir, bookCompareInfo, bResult, 80, 98);
             }
             
         } catch (Exception e) {
@@ -249,6 +249,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     private void paintSaveAndShowBook1(
             Path workDir,
+            BookCompareInfo bookCompareInfo,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -262,7 +263,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Path srcBookPath = settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath();
+            Path srcBookPath = bookCompareInfo.bookInfoPair().a().bookPath();
             dstBookPath = workDir.resolve(srcBookPath.getFileName());
             String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
@@ -307,6 +308,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     private void paintSaveAndShowBook2(
             Path workDir,
+            BookCompareInfo bookCompareInfo,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -317,7 +319,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> srcBookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            Pair<Path> srcBookPathPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath);
             Pair<Path> dstBookPathPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
@@ -489,9 +491,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         return switch (menu) {
-            case COMPARE_BOOKS, COMPARE_SHEETS -> Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath(),
-                    settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
+            case COMPARE_BOOKS, COMPARE_SHEETS -> settings
+                    .get(SettingKeys.CURR_BOOK_COMPARE_INFO).bookInfoPair().isIdentical();
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };

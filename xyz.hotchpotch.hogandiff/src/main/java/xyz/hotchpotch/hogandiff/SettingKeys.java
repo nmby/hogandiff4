@@ -138,9 +138,6 @@ public class SettingKeys {
             notSupported("cannot decode."),
             false);
     
-    /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
-    public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
-    
     /** 今回の実行におけるシート名の組み合わせ情報 */
     public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookCompareInfo",

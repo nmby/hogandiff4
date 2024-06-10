@@ -207,7 +207,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         });
         dirInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirInfoKey, newValue));
         bookInfo.addListener((target, oldValue, newValue) -> {
-            ar.changeSetting(side.bookInfoKey, newValue);
             sheetNameChoiceBox.setItems((newValue == null || newValue.sheetNames().isEmpty())
                     ? FXCollections.emptyObservableList()
                     : FXCollections.observableList(newValue.sheetNames()));
