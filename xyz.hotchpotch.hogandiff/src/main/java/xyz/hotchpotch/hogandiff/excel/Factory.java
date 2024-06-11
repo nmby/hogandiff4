@@ -2,9 +2,15 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -15,20 +21,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 public class Factory {
     
     // [static members] ********************************************************
-    
-    /**
-     * 新しいファクトリを返します。<br>
-     * 
-     * @return 新しいファクトリ
-     */
-    public static Factory of() {
-        return new Factory();
-    }
-    
-    // [instance members] ******************************************************
-    
-    private Factory() {
-    }
     
     /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
@@ -42,7 +34,7 @@ public class Factory {
      * @throws UnsupportedOperationException
      *              {@code bookPath} がサポート対象外の形式の場合
      */
-    public SheetNamesLoader sheetNamesLoader(
+    public static SheetNamesLoader sheetNamesLoader(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
@@ -65,7 +57,7 @@ public class Factory {
      *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public CellsLoader cellsLoader(
+    public static CellsLoader cellsLoader(
             Settings settings,
             Path bookPath,
             String readPassword)
@@ -91,7 +83,7 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirLoader dirLoader(Settings settings) {
+    public static DirLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
@@ -103,13 +95,19 @@ public class Factory {
      * 
      * @param settings 設定
      * @return シート名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public SheetNamesMatcher sheetNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<String> sheetNamesMatcher2(Settings settings) {
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return SheetNamesMatcher.of(matchNamesStrictly);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
     }
     
     /**
@@ -117,13 +115,19 @@ public class Factory {
      * 
      * @param settings 設定
      * @return Excelブック名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BooksMatcher bookNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<String> bookNamesMatcher2(Settings settings) {
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return BooksMatcher.of(matchNamesStrictly);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
     }
     
     /**
@@ -133,12 +137,41 @@ public class Factory {
      * @return フォルダ同士の対応関係を決めるマッチャー
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public DirsMatcher dirsMatcher(Settings settings) {
+    public static DirsMatcher dirsMatcher(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return DirsMatcher.of(matchNamesStrictly);
     }
+    
+    public static Matcher<DirInfo> dirsMatcher2(Settings settings) {
+        Objects.requireNonNull(settings, "settings");
+        
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? strictDirNamesMatcher
+                : Matcher.combinedMatcherOf(List.of(
+                        strictDirNamesMatcher,
+                        fuzzyButSimpleDirsMatcher));
+    }
+    
+    private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
+    
+    private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
+    
+    private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
+            d -> d.children().size() + d.bookNames().size(),
+            (d1, d2) -> {
+                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                
+                int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.bookNames(), d2.bookNames())
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                
+                return gapChildren + gapBookNames;
+            });
     
     /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
@@ -147,7 +180,7 @@ public class Factory {
      * @return セルセット同士を比較するコンパレータ
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
-    public SheetComparator comparator(Settings settings) {
+    public static SheetComparator sheetComparator(Settings settings) {
         Objects.requireNonNull(settings, "settings");
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
@@ -170,7 +203,7 @@ public class Factory {
      *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public BookPainter painter(
+    public static BookPainter painter(
             Settings settings,
             Path bookPath,
             String readPassword)
@@ -203,5 +236,10 @@ public class Factory {
                 redundantSheetColor,
                 diffSheetColor,
                 sameSheetColor);
+    }
+    
+    // [instance members] ******************************************************
+    
+    private Factory() {
     }
 }

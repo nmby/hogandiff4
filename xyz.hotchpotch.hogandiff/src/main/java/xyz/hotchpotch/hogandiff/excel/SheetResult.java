@@ -107,6 +107,23 @@ public final class SheetResult implements Result {
         
         // [instance members] --------------------------------------------------
         
+        /**
+         * コンストラクタ
+         * 
+         * @param rows 各比較対象シートの行数
+         * @param columns 各比較対象シートの列数
+         * @param cells 各比較対象シートのセル数
+         * @param redundantRows 各比較対象シートの余剰行数
+         * @param redundantColumns 各比較対象シートの余剰列数
+         * @param diffCells 差分セル数
+         */
+        public Stats {
+            Objects.requireNonNull(rows, "rows");
+            Objects.requireNonNull(columns, "columns");
+            Objects.requireNonNull(cells, "cells");
+            Objects.requireNonNull(redundantRows, "redundantRows");
+            Objects.requireNonNull(redundantColumns, "redundantColumns");
+        }
     }
     
     // [instance members] ******************************************************

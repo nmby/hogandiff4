@@ -29,7 +29,6 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
@@ -139,6 +138,20 @@ public class MainController extends VBox {
         return isRunning;
     }
     
+    // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+    // FIXME: タスクの結果に応じて精緻に判定を行うように修正する
+    private void alertPasswordUnlocked() {
+        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+        boolean passwordUsed = 0 < readPasswords.values().stream().filter(password -> password != null).count();
+        if (passwordUsed) {
+            new Alert(
+                    AlertType.WARNING,
+                    rb.getString("gui.MainController.020"),
+                    ButtonType.OK)
+                            .showAndWait();
+        }
+    }
+    
     /**
      * 比較処理を実行します。<br>
      * 
@@ -175,7 +188,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Report> task = menu.getTask(ar.settings(), Factory.of());
+        Task<Report> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         
@@ -183,18 +196,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
-                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
-                
-                new Alert(
-                        AlertType.WARNING,
-                        rb.getString("gui.MainController.020"),
-                        ButtonType.OK)
-                                .showAndWait();
-            }
+            alertPasswordUnlocked();
             
             if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
@@ -209,18 +211,7 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO1).bookPath()) != null
-                            || readPasswords.get(ar.settings().get(SettingKeys.CURR_BOOK_INFO2).bookPath()) != null)) {
-                
-                new Alert(
-                        AlertType.WARNING,
-                        rb.getString("gui.MainController.020"),
-                        ButtonType.OK)
-                                .showAndWait();
-            }
+            alertPasswordUnlocked();
             
             // エラーが発生したことを通知する
             if (e instanceof ApplicationException) {

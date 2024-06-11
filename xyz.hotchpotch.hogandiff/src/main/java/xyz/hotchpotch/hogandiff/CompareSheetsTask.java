@@ -1,11 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
@@ -37,13 +37,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * コンストラクタ
      * 
      * @param settings 設定セット
-     * @param factory ファクトリ
      */
-    /*package*/ CompareSheetsTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /*package*/ CompareSheetsTask(Settings settings) {
+        super(settings);
     }
     
     @Override
@@ -82,8 +78,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
-            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath);
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(0);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
@@ -111,22 +108,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> bookPathPair = SettingKeys.CURR_BOOK_INFOS.map(settings::get).map(BookInfo::bookPath);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.bookInfoPair();
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(0);
+            
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            Pair<CellsLoader> loaderPair = bookPathPair.unsafeMap(
-                    bookPath -> factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
-            Pair<String> sheetNamePair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
+                    bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
             str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
             
             Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                     side -> loaderPair.get(side).loadCells(
-                            bookPathPair.get(side),
-                            readPasswords.get(bookPathPair.get(side)),
+                            bookInfoPair.get(side).bookPath(),
+                            readPasswords.get(bookInfoPair.get(side).bookPath()),
                             sheetNamePair.get(side)));
             
-            SheetComparator comparator = factory.comparator(settings);
+            SheetComparator comparator = Factory.sheetComparator(settings);
             SheetResult result = comparator.compare(cellsSetPair);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
@@ -134,8 +133,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookPathPair,
-                    List.of(sheetNamePair),
+                    bookCompareInfo,
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {

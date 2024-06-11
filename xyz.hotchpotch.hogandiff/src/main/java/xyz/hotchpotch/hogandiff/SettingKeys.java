@@ -13,7 +13,11 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -112,6 +116,14 @@ public class SettingKeys {
             AppMenu::valueOf,
             false);
     
+    /** 比較対象Excelブックたちの読み取りパスワード */
+    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
+            "current.readPasswords",
+            () -> Map.of(),
+            Map::toString,
+            notSupported("cannot decode."),
+            false);
+    
     /** 今回の実行における比較対象Excelブック1の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
             "current.bookInfo1",
@@ -128,58 +140,50 @@ public class SettingKeys {
             notSupported("cannot decode."),
             false);
     
-    /** {@link #CURR_BOOK_INFO1} と {@link #CURR_BOOK_INFO2} のペア */
-    public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = new Pair<>(CURR_BOOK_INFO1, CURR_BOOK_INFO2);
+    /** 今回の実行におけるExcelブック比較情報 */
+    public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
+            "current.bookCompareInfo",
+            () -> null,
+            BookCompareInfo::toString,
+            notSupported("cannnot decode."),
+            false);
     
-    /** 比較対象Excelブックたちの読み取りパスワード */
-    public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
-            "current.readPasswords",
-            () -> Map.of(),
-            Map::toString,
+    /** 今回の実行における比較対象フォルダ1の情報 */
+    public static final Key<DirInfo> CURR_DIR_INFO1 = new Key<>(
+            "current.dirInfo1",
+            () -> null,
+            DirInfo::toString,
             notSupported("cannot decode."),
             false);
     
-    /** 今回の実行における比較対象Excelシート1の名前 */
-    public static final Key<String> CURR_SHEET_NAME1 = new Key<>(
-            "current.sheetName1",
+    /** 今回の実行における比較対象フォルダ2の情報 */
+    public static final Key<DirInfo> CURR_DIR_INFO2 = new Key<>(
+            "current.dirInfo2",
             () -> null,
-            Function.identity(),
-            Function.identity(),
+            DirInfo::toString,
+            notSupported("cannot decode."),
             false);
     
-    /** 今回の実行における比較対象Excelシート2の名前 */
-    public static final Key<String> CURR_SHEET_NAME2 = new Key<>(
-            "current.sheetName2",
+    /** {@link #CURR_DIR_INFO1} と {@link #CURR_DIR_INFO2} のペア */
+    public static final Pair<Key<DirInfo>> CURR_DIR_INFOS = new Pair<>(
+            CURR_DIR_INFO1,
+            CURR_DIR_INFO2);
+    
+    /** 今回の実行におけるフォルダ比較情報 */
+    public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
+            "current.dirCompareInfo",
             () -> null,
-            Function.identity(),
-            Function.identity(),
+            DirCompareInfo::toString,
+            notSupported("cannnot decode."),
             false);
     
-    /** {@link #CURR_SHEET_NAME1} と {@link #CURR_SHEET_NAME2} のペア */
-    public static final Pair<Key<String>> CURR_SHEET_NAMES = new Pair<>(
-            CURR_SHEET_NAME1,
-            CURR_SHEET_NAME2);
-    
-    /** 今回の実行における比較対象フォルダ1のパス */
-    public static final Key<Path> CURR_DIR_PATH1 = new Key<>(
-            "current.dirPath1",
+    /** 今回の実行におけるフォルダツリー比較情報 */
+    public static final Key<TreeCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
+            "current.treeCompareInfo",
             () -> null,
-            Path::toString,
-            Path::of,
+            TreeCompareInfo::toString,
+            notSupported("cannnot decode."),
             false);
-    
-    /** 今回の実行における比較対象フォルダ2のパス */
-    public static final Key<Path> CURR_DIR_PATH2 = new Key<>(
-            "current.dirPath2",
-            () -> null,
-            Path::toString,
-            Path::of,
-            false);
-    
-    /** {@link #CURR_DIR_PATH1} と {@link #CURR_DIR_PATH2} のペア */
-    public static final Pair<Key<Path>> CURR_DIR_PATHS = new Pair<>(
-            CURR_DIR_PATH1,
-            CURR_DIR_PATH2);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(

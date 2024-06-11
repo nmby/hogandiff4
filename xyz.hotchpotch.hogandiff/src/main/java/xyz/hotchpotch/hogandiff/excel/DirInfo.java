@@ -19,22 +19,22 @@ public class DirInfo implements Comparable<DirInfo> {
     
     // [instance members] ******************************************************
     
-    private final Path path;
+    private final Path dirPath;
     
     private DirInfo parent;
-    private List<String> bookNames;
-    private List<DirInfo> children;
+    private List<String> bookNames = List.of();
+    private List<DirInfo> children = List.of();
     
     /**
      * コンストラクタ<br>
      * 
-     * @param path このフォルダのパス
-     * @throws NullPointerException {@code path} が {@code null} の場合
+     * @param dirPath このフォルダのパス
+     * @throws NullPointerException {@code dirPath} が {@code null} の場合
      */
-    public DirInfo(Path path) {
-        Objects.requireNonNull(path);
+    public DirInfo(Path dirPath) {
+        Objects.requireNonNull(dirPath);
         
-        this.path = path;
+        this.dirPath = dirPath;
     }
     
     /**
@@ -42,8 +42,8 @@ public class DirInfo implements Comparable<DirInfo> {
      * 
      * @return このフォルダのパス
      */
-    public Path path() {
-        return path;
+    public Path dirPath() {
+        return dirPath;
     }
     
     /**
@@ -108,12 +108,12 @@ public class DirInfo implements Comparable<DirInfo> {
     
     /**
      * <strong>注意：</strong>
-     * この実装では {@link #path()} の値のみに基づいて同一性を判定します。<br>
+     * この実装では {@link #dirPath()} の値のみに基づいて同一性を判定します。<br>
      */
     @Override
     public boolean equals(Object o) {
         if (o instanceof DirInfo other) {
-            return Objects.equals(path, other.path);
+            return Objects.equals(dirPath, other.dirPath) && children.size() == other.children.size();
             // 循環によりStackOverflowエラーが発生するため、
             // parentはequals, hashCodeの判定対象に含めないこととする。
             // 加えて、フォルダとしての同一性はそのパスだけで判定できるため、
@@ -122,21 +122,22 @@ public class DirInfo implements Comparable<DirInfo> {
             //                    && Objects.equals(parent, other.parent)
             //                    && Objects.equals(bookNames, other.bookNames)
             //                    && Objects.equals(children, other.children);
-            //
             // -> parent と children で参照ループを構成しているため。
             //    こういうときはどうすれば良いのん？
             // TODO: 要お勉強
+            // 
+            // 但し、recursively によって子フォルダの有無は異なるため、子の数だけ判定に含める。
         }
         return false;
     }
     
     /**
      * <strong>注意：</strong>
-     * この実装では {@link #path()} の値のみに基づいてハッシュコードを計算します。<br>
+     * この実装では {@link #dirPath()} の値のみに基づいてハッシュコードを計算します。<br>
      */
     @Override
     public int hashCode() {
-        return Objects.hash(path);
+        return Objects.hash(dirPath, children.size());
         // ある程度の深さのフォルダツリーにおいてStackOverflowエラーが発生したため、
         // 子要素はequals, hashCodeの対象に含めないこととする。
         //        return Objects.hash(
@@ -144,15 +145,19 @@ public class DirInfo implements Comparable<DirInfo> {
         //                parent,
         //                bookNames,
         //                children);
+        // 
+        // 但し、recursively によって子フォルダの有無は異なるため、子の数だけ判定に含める。
     }
     
     /**
      * <strong>注意：</strong>
-     * この実装では {@link #path()} の値のみに基づいて大小関係を判断します。<br>
+     * この実装では {@link #dirPath()} の値と {@link #children()} の数のみに基づいて大小関係を判断します。<br>
      */
     @Override
     public int compareTo(DirInfo o) {
         Objects.requireNonNull(o, "o");
-        return path.compareTo(o.path);
+        return !Objects.equals(dirPath, o.dirPath)
+                ? dirPath.compareTo(o.dirPath)
+                : Integer.compare(children.size(), o.children.size());
     }
 }

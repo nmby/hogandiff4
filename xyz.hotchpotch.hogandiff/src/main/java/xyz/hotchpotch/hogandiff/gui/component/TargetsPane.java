@@ -1,21 +1,30 @@
 package xyz.hotchpotch.hogandiff.gui.component;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -37,10 +46,10 @@ public class TargetsPane extends VBox implements ChildController {
         // [static members] ----------------------------------------------------
         
         /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_SHEET_NAME1, SettingKeys.CURR_DIR_PATH1),
+        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_DIR_INFO1),
         
         /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_SHEET_NAME2, SettingKeys.CURR_DIR_PATH2);
+        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_DIR_INFO2);
         
         // [instance members] --------------------------------------------------
         
@@ -50,22 +59,17 @@ public class TargetsPane extends VBox implements ChildController {
         /** ブックパス設定項目 */
         public final Key<BookInfo> bookInfoKey;
         
-        /** シート名設定項目 */
-        public final Key<String> sheetNameKey;
-        
         /** フォルダパス設定項目 */
-        public final Key<Path> dirPathKey;
+        public final Key<DirInfo> dirInfoKey;
         
         Side(
                 String title,
                 Key<BookInfo> bookInfoKey,
-                Key<String> sheetNameKey,
-                Key<Path> dirPathKey) {
+                Key<DirInfo> dirInfoKey) {
             
             this.title = title;
             this.bookInfoKey = bookInfoKey;
-            this.sheetNameKey = sheetNameKey;
-            this.dirPathKey = dirPathKey;
+            this.dirInfoKey = dirInfoKey;
         }
     }
     
@@ -79,6 +83,10 @@ public class TargetsPane extends VBox implements ChildController {
     
     @FXML
     private TargetSelectionPane targetSelectionPane2;
+    
+    private final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
+    private final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
+    private final Property<TreeCompareInfo> treeCompareInfo = new SimpleObjectProperty<>();
     
     /**
      * コンストラクタ<br>
@@ -104,6 +112,92 @@ public class TargetsPane extends VBox implements ChildController {
         // 2.項目ごとの各種設定
         targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
+        
+        bookCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    BookInfo bookInfoA = targetSelectionPane1.bookInfo().getValue();
+                    BookInfo bookInfoB = targetSelectionPane2.bookInfo().getValue();
+                    Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
+                    String sheetNameA = targetSelectionPane1.sheetName().getValue();
+                    String sheetNameB = targetSelectionPane2.sheetName().getValue();
+                    Pair<String> sheetNamePair = Pair.of(sheetNameA, sheetNameB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS -> bookInfoPair.isPaired() && sheetNamePair.isPaired()
+                                ? BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair)
+                                : null;
+                        case COMPARE_BOOKS -> bookInfoPair.isPaired()
+                                ? BookCompareInfo.of(bookInfoPair, Factory.sheetNamesMatcher2(ar.settings()))
+                                : null;
+                        case COMPARE_DIRS, COMPARE_TREES -> null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.bookInfo(),
+                targetSelectionPane2.bookInfo(),
+                targetSelectionPane1.sheetName(),
+                targetSelectionPane2.sheetName()));
+        
+        bookCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newValue);
+        });
+        
+        dirCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
+                    DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
+                        case COMPARE_DIRS -> dirInfoPair.isPaired()
+                                ? DirCompareInfo.of(
+                                        dirInfoPair,
+                                        Factory.bookNamesMatcher2(ar.settings()),
+                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                : null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.dirInfo(),
+                targetSelectionPane2.dirInfo()));
+        
+        dirCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
+        });
+        
+        treeCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    DirInfo topDirInfoA = targetSelectionPane1.dirInfo().getValue();
+                    DirInfo topDirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    Pair<DirInfo> topDirInfoPair = Pair.of(topDirInfoA, topDirInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_DIRS -> null;
+                        case COMPARE_TREES -> topDirInfoPair.isPaired()
+                                ? TreeCompareInfo.of(
+                                        topDirInfoPair,
+                                        Factory.dirsMatcher2(ar.settings()),
+                                        Factory.bookNamesMatcher2(ar.settings()),
+                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                : null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.dirInfo(),
+                targetSelectionPane2.dirInfo()));
+        
+        treeCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newValue);
+        });
         
         // 3.初期値の設定
         // nop

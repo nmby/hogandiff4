@@ -124,8 +124,10 @@ public abstract sealed class Report
             return switch (result) {
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> {
-                    int paired = (int) bResult.sheetPairs().stream().filter(Pair::isPaired).count();
-                    yield IntPair.of(paired, bResult.sheetPairs().size() - paired);
+                    int paired = (int) bResult.bookCompareInfo().sheetNamePairs().stream()
+                            .filter(Pair::isPaired)
+                            .count();
+                    yield IntPair.of(paired, bResult.bookCompareInfo().sheetNamePairs().size() - paired);
                 }
                 case DirResult dResult -> dResult.bookResults().values().stream()
                         .filter(Optional::isPresent)
@@ -145,8 +147,10 @@ public abstract sealed class Report
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> throw new AssertionError();
                 case DirResult dResult -> {
-                    int paired = (int) dResult.bookNamePairs().stream().filter(Pair::isPaired).count();
-                    yield IntPair.of(paired, dResult.bookNamePairs().size() - paired);
+                    int paired = (int) dResult.dirCompareInfo().bookNamePairs().stream()
+                            .filter(Pair::isPaired)
+                            .count();
+                    yield IntPair.of(paired, dResult.dirCompareInfo().bookNamePairs().size() - paired);
                 }
                 case TreeResult tResult -> tResult.dirResults().values().stream()
                         .filter(Optional::isPresent)

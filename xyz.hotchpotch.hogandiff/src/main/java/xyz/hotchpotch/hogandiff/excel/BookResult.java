@@ -1,12 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -20,13 +20,11 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  * 
- * @param bookPathPair 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
- * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
+ * @param bookCompareInfo Excelブック比較情報
  * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
 public record BookResult(
-        Pair<Path> bookPathPair,
-        List<Pair<String>> sheetPairs,
+        BookCompareInfo bookCompareInfo,
         Map<Pair<String>, Optional<SheetResult>> sheetResults)
         implements Result {
     
@@ -63,23 +61,18 @@ public record BookResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param bookPathPair 比較対象Excelブックパスのペア（片側だけの欠損ペアもあり得る）
-     * @param sheetPairs 比較したシート名のペア（片側だけの欠損ペアも含む）
+     * @param bookCompareInfo Excelブック比較情報
      * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
-     * @throws NullPointerException
-     *          {@code bookPathPair}, {@code sheetPairs}, {@code results} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public BookResult(
-            Pair<Path> bookPathPair,
-            List<Pair<String>> sheetPairs,
+            BookCompareInfo bookCompareInfo,
             Map<Pair<String>, Optional<SheetResult>> sheetResults) {
         
-        Objects.requireNonNull(bookPathPair, "bookPaths");
-        Objects.requireNonNull(sheetPairs, "sheetPairs");
-        Objects.requireNonNull(sheetResults, "sheetResults");
+        Objects.requireNonNull(bookCompareInfo);
+        Objects.requireNonNull(sheetResults);
         
-        this.bookPathPair = bookPathPair;
-        this.sheetPairs = List.copyOf(sheetPairs);
+        this.bookCompareInfo = bookCompareInfo;
         this.sheetResults = Map.copyOf(sheetResults);
     }
     
@@ -105,7 +98,7 @@ public record BookResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return sheetPairs.stream()
+        return bookCompareInfo.sheetNamePairs().stream()
                 .map(sheetResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -116,9 +109,15 @@ public record BookResult(
      * @return 比較結果を端的に表す差分サマリ
      */
     public String getDiffSimpleSummary() {
-        int diffSheets = (int) sheetPairs.stream()
-                .filter(Pair::isPaired).map(p -> sheetResults.get(p).get()).filter(SheetResult::hasDiff).count();
-        int gapSheets = (int) sheetPairs.stream().filter(p -> !p.isPaired()).count();
+        int diffSheets = (int) bookCompareInfo.sheetNamePairs().stream()
+                .filter(Pair::isPaired)
+                .map(sheetResults::get)
+                .map(Optional::get)
+                .filter(SheetResult::hasDiff)
+                .count();
+        int gapSheets = (int) bookCompareInfo.sheetNamePairs().stream()
+                .filter(Predicate.not(Pair::isPaired))
+                .count();
         
         if (diffSheets == 0 && gapSheets == 0) {
             return rb.getString("excel.BResult.020");
@@ -159,21 +158,21 @@ public record BookResult(
     private String getDiffText(Function<SheetResult, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < sheetPairs.size(); i++) {
-            Pair<String> pair = sheetPairs.get(i);
-            Optional<SheetResult> sResult = sheetResults.get(pair);
+        for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+            Optional<SheetResult> sResult = sheetResults.get(sheetNamePair);
             
-            if (!pair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
+            if (!sheetNamePair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
                 continue;
             }
             
-            str.append(formatSheetNamesPair(Integer.toString(i + 1), pair));
+            str.append(formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
             str.append(diffDescriptor.apply(sResult.get()));
             str.append(BR);
         }
         
         return str.isEmpty()
-                ? "    " + rb.getString("excel.BResult.020") + BR
+                ? "    " + rb.getString("excel.BResult.020") + BR + BR
                 : str.toString();
     }
     
@@ -181,16 +180,19 @@ public record BookResult(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        if (bookPathPair.isIdentical()) {
-            str.append(rb.getString("excel.BResult.050").formatted("")).append(bookPathPair.a()).append(BR);
+        if (bookCompareInfo.bookInfoPair().isIdentical()) {
+            str.append(rb.getString("excel.BResult.050").formatted(""))
+                    .append(bookCompareInfo.bookInfoPair().a().bookPath()).append(BR);
         } else {
-            str.append(rb.getString("excel.BResult.050").formatted("A")).append(bookPathPair.a()).append(BR);
-            str.append(rb.getString("excel.BResult.050").formatted("B")).append(bookPathPair.b()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("A"))
+                    .append(bookCompareInfo.bookInfoPair().a().bookPath()).append(BR);
+            str.append(rb.getString("excel.BResult.050").formatted("B"))
+                    .append(bookCompareInfo.bookInfoPair().b().bookPath()).append(BR);
         }
         
-        for (int i = 0; i < sheetPairs.size(); i++) {
-            Pair<String> pair = sheetPairs.get(i);
-            str.append(formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
+        for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+            str.append(formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
         }
         
         str.append(BR);

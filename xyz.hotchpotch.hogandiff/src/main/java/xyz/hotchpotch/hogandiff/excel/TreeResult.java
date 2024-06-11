@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -19,12 +18,12 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  * 
  * @param topDirPair 比較対象のトップフォルダのペア
- * @param pairDataList 比較するフォルダ同士の組み合わせを表すリスト
+ * @param dirCompareInfos 比較するフォルダ同士の組み合わせを表すリスト
  * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(
         Pair<DirInfo> topDirPair,
-        List<DirPairData> pairDataList,
+        List<DirCompareInfo> dirCompareInfos,
         Map<Pair<Path>, Optional<DirResult>> dirResults)
         implements Result {
     
@@ -49,10 +48,10 @@ public record TreeResult(
         
         return "    - %s%n    - %s%n".formatted(
                 dirPair.hasA()
-                        ? "【A%s】 %s".formatted(id, dirPair.a().path())
+                        ? "【A%s】 %s".formatted(id, dirPair.a().dirPath())
                         : rb.getString("excel.TreeResult.010"),
                 dirPair.hasB()
-                        ? "【B%s】 %s".formatted(id, dirPair.b().path())
+                        ? "【B%s】 %s".formatted(id, dirPair.b().dirPath())
                         : rb.getString("excel.TreeResult.010"));
     }
     
@@ -62,22 +61,22 @@ public record TreeResult(
      * コンストラクタ<br>
      * 
      * @param topDirPair 比較対象のトップフォルダのペア
-     * @param pairDataList 比較するフォルダ同士の組み合わせを表すリスト
+     * @param dirCompareInfos 比較するフォルダ同士の組み合わせを表すリスト
      * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
      * @throws NullPointerException
-     *          {@code topDirPair}, {@code pairDataList}, {@code dirResults} のいずれかが {@code null} の場合
+     *          {@code topDirPair}, {@code dirCompareInfos}, {@code dirResults} のいずれかが {@code null} の場合
      */
     public TreeResult(
             Pair<DirInfo> topDirPair,
-            List<DirPairData> pairDataList,
+            List<DirCompareInfo> dirCompareInfos,
             Map<Pair<Path>, Optional<DirResult>> dirResults) {
         
         Objects.requireNonNull(topDirPair, "topDirPair");
-        Objects.requireNonNull(pairDataList, "pairDataList");
+        Objects.requireNonNull(dirCompareInfos, "dirCompareInfos");
         Objects.requireNonNull(dirResults, "dirResults");
         
         this.topDirPair = topDirPair;
-        this.pairDataList = List.copyOf(pairDataList);
+        this.dirCompareInfos = List.copyOf(dirCompareInfos);
         this.dirResults = Map.copyOf(dirResults);
     }
     
@@ -87,9 +86,9 @@ public record TreeResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return pairDataList.stream()
-                .map(DirPairData::dirPair)
-                .map(p -> p.map(DirInfo::path))
+        return dirCompareInfos.stream()
+                .map(DirCompareInfo::dirInfoPair)
+                .map(p -> p.map(DirInfo::dirPath))
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -109,13 +108,13 @@ public record TreeResult(
     private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < pairDataList.size(); i++) {
-            DirPairData pairData = pairDataList.get(i);
-            Optional<DirResult> dirResult = dirResults.get(pairData.dirPair().map(DirInfo::path));
+        for (int i = 0; i < dirCompareInfos.size(); i++) {
+            DirCompareInfo dirCompareInfo = dirCompareInfos.get(i);
+            Optional<DirResult> dirResult = dirResults.get(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath));
             
-            str.append(formatDirsPair(pairData.id(), pairData.dirPair()));
+            str.append(formatDirsPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
             
-            if (pairData.dirPair().isPaired()) {
+            if (dirCompareInfo.dirInfoPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
             } else {
                 str.append(BR);
@@ -130,10 +129,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(topDirPair.a().path())
+                .append(topDirPair.a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(topDirPair.b().path())
+                .append(topDirPair.b().dirPath())
                 .append(BR);
         
         str.append(BR);

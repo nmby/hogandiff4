@@ -22,9 +22,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -67,12 +67,14 @@ public class TreeResultBookCreator {
      * 
      * @param dstBookPath 保存先Excelブックのパス
      * @param treeResult フォルダツリー同士の比較結果
+     * @param recursively 「子フォルダも含める」の場合は {@code true}
      * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
-            TreeResult treeResult)
+            TreeResult treeResult,
+            boolean recursively)
             throws ExcelHandlingException {
         
         Objects.requireNonNull(dstBookPath, "dstBookPath");
@@ -110,37 +112,39 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.topDirPair().get(side).path().getParent(),
+                        treeResult.topDirPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.topDirPair().get(side).path().getNameCount() - 1,
+                    treeResult.topDirPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (DirPairData pairData : treeResult.pairDataList()) {
+            for (int j = 0; j < treeResult.dirCompareInfos().size(); j++) {
+                String dirId = recursively ? Integer.toString(j + 1) : "";
+                DirCompareInfo dirCompareInfo = treeResult.dirCompareInfos().get(j);
                 rowNo++;
                 
                 // 4-3. フォルダ名と差分シンボルの出力
-                Pair<DirInfo> dirPair = pairData.dirPair();
-                Optional<DirResult> dirResult = treeResult.dirResults().get(dirPair.map(DirInfo::path));
+                Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair.map(DirInfo::dirPath));
                 
                 Pair<String> dirRelNames = Side.map(
-                        side -> dirPair.has(side) ? relPath.apply(side, dirPair.get(side).path()) : null);
+                        side -> dirInfoPair.has(side) ? relPath.apply(side, dirInfoPair.get(side).dirPath()) : null);
                 
-                Pair<Path> outputDirs = Side.map(side -> dirPair.has(side)
-                        ? outputDirsMaps.get(side).get(dirPair.get(side).path().getParent())
-                                .resolve("【%s%s】%s".formatted(side, pairData.id(),
-                                        dirPair.get(side).path().getFileName().toString()))
+                Pair<Path> outputDirs = Side.map(side -> dirInfoPair.has(side)
+                        ? outputDirsMaps.get(side).get(dirInfoPair.get(side).dirPath().getParent())
+                                .resolve("【%s%s】%s".formatted(side, dirId,
+                                        dirInfoPair.get(side).dirPath().getFileName().toString()))
                         : null);
                 
                 for (Side side : Side.values()) {
-                    if (dirPair.has(side)) {
-                        outputDirsMaps.get(side).put(dirPair.get(side).path(), outputDirs.get(side));
+                    if (dirInfoPair.has(side)) {
+                        outputDirsMaps.get(side).put(dirInfoPair.get(side).dirPath(), outputDirs.get(side));
                     }
                 }
                 
@@ -148,32 +152,34 @@ public class TreeResultBookCreator {
                         ch,
                         sheet,
                         rowNo,
-                        pairData.id(),
+                        dirId,
                         outputDirs,
                         dirRelNames,
-                        dirPair,
+                        dirInfoPair,
                         dirResult);
                 
                 // 4-4. セル書式を整える
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブック名ペアごとの処理
-                for (int i = 0; i < pairData.bookNamePairs().size(); i++) {
+                for (int i = 0; i < dirCompareInfo.bookNamePairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<String> bookNames = pairData.bookNamePairs().get(i);
-                    Optional<BookResult> bookResult = dirResult.flatMap(dr -> dr.bookResults().get(bookNames));
+                    Pair<String> bookNamePair = dirCompareInfo.bookNamePairs().get(i);
+                    Optional<BookResult> bookResult = dirResult
+                            .map(DirResult::bookResults)
+                            .flatMap(br -> br.get(bookNamePair));
                     
                     outputFileLine(
                             ch,
                             sheet,
                             rowNo,
-                            pairData.id(),
+                            dirId,
                             i + 1,
                             outputDirs,
                             dirRelNames,
-                            bookNames,
+                            bookNamePair,
                             bookResult);
                     
                     // 4-7. セル書式を整える
@@ -208,12 +214,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.topDirPair().a().path();
+        Path topDirA = treeResult.topDirPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.topDirPair().b().path();
+        Path topDirB = treeResult.topDirPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);

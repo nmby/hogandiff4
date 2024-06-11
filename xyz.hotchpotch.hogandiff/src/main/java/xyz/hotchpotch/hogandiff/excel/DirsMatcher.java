@@ -17,19 +17,6 @@ public interface DirsMatcher {
     // [static members] ********************************************************
     
     /**
-     * フォルダの組み合わせを表すレコードです。<br>
-     * 
-     * @param id フォルダ同士の組み合わせを表す識別子
-     * @param dirPair 比較対象のフォルダ情報のペア
-     * @param bookNamePairs 比較対象のExcelブック名同士のペアのリスト
-     */
-    public static record DirPairData(
-            String id,
-            Pair<DirInfo> dirPair,
-            List<Pair<String>> bookNamePairs) {
-    }
-    
-    /**
      * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
      * 
      * @param matchNamesStrictly フォルダ名と階層のゆらぎを許容する場合は {@code true}
