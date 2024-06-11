@@ -15,8 +15,7 @@ import java.util.Objects;
 public record DirInfo(
         Path dirPath,
         List<String> bookNames,
-        List<DirInfo> children)
-        implements Comparable<DirInfo> {
+        List<DirInfo> children) {
     
     // [static members] ********************************************************
     
@@ -30,31 +29,17 @@ public record DirInfo(
      * @param children このフォルダに含まれる子フォルダ情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirInfo {
+    public DirInfo(
+            Path dirPath,
+            List<String> bookNames,
+            List<DirInfo> children) {
+        
         Objects.requireNonNull(dirPath);
         Objects.requireNonNull(bookNames);
         Objects.requireNonNull(children);
-    }
-    
-    /**
-     * {@inheritDoc}<br>
-     * 
-     * この実装では、{@code dirPath}、{@code children.size()}、{@code bookNames.size()}
-     * に基づいて比較を行います。<br>
-     */
-    @Override
-    public int compareTo(DirInfo o) {
-        Objects.requireNonNull(o, "o");
         
-        if (!Objects.equals(dirPath, o.dirPath)) {
-            return dirPath.compareTo(o.dirPath);
-        }
-        if (children.size() != o.children.size()) {
-            return Integer.compare(children.size(), o.children.size());
-        }
-        if (bookNames.size() != o.bookNames.size()) {
-            return Integer.compare(bookNames.size(), o.bookNames.size());
-        }
-        return 0;
+        this.dirPath = dirPath;
+        this.bookNames = List.copyOf(bookNames);
+        this.children = List.copyOf(children);
     }
 }
