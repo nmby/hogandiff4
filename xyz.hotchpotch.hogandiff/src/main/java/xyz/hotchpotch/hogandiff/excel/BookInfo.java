@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Excelブックの情報を保持する不変クラスです。<br>
+ * Excelブック情報を表す不変クラスです。<br>
  * 
  * @author nmby
  * 

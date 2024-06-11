@@ -61,10 +61,10 @@ public class AppArgsParser {
      * 
      * @param args アプリケーション実行時引数
      * @return アプリケーション設定。解析できない場合は空の {@link Optional}
-     * @throws NullPointerException {@code args} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static Optional<Settings> parseArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
+        Objects.requireNonNull(args);
         
         if (args.length < 2) {
             return Optional.empty();

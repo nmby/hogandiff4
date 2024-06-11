@@ -112,26 +112,26 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.topDirPair().get(side).dirPath().getParent(),
+                        treeResult.treeCompareInfo().topDirInfoPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.topDirPair().get(side).dirPath().getNameCount() - 1,
+                    treeResult.treeCompareInfo().topDirInfoPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (int j = 0; j < treeResult.dirCompareInfos().size(); j++) {
+            for (int j = 0; j < treeResult.treeCompareInfo().dirInfoPairs().size(); j++) {
+                Pair<DirInfo> dirInfoPair = treeResult.treeCompareInfo().dirInfoPairs().get(j);
+                DirCompareInfo dirCompareInfo = treeResult.treeCompareInfo().dirCompareInfos().get(dirInfoPair).get();
                 String dirId = recursively ? Integer.toString(j + 1) : "";
-                DirCompareInfo dirCompareInfo = treeResult.dirCompareInfos().get(j);
                 rowNo++;
                 
                 // 4-3. フォルダ名と差分シンボルの出力
-                Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
-                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair.map(DirInfo::dirPath));
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair);
                 
                 Pair<String> dirRelNames = Side.map(
                         side -> dirInfoPair.has(side) ? relPath.apply(side, dirInfoPair.get(side).dirPath()) : null);
@@ -214,12 +214,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.topDirPair().a().dirPath();
+        Path topDirA = treeResult.treeCompareInfo().topDirInfoPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.topDirPair().b().dirPath();
+        Path topDirB = treeResult.treeCompareInfo().topDirInfoPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);

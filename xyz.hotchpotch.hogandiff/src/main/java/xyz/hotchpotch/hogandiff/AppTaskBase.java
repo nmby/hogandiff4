@@ -21,7 +21,6 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -364,19 +363,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     /**
-     * 比較対象のフォルダもしくはフォルダツリーを抽出し、
-     * トップフォルダの情報のペアを返します。<br>
-     * 
-     * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
-     * @throws ApplicationException 処理に失敗した場合
-     */
-    // CompareDirsTask, CompareTreesTask
-    // TODO: インライン化する
-    protected Pair<DirInfo> extractDirs1() throws ApplicationException {
-        return SettingKeys.CURR_DIR_INFOS.map(settings::get);
-    }
-    
-    /**
      * フォルダツリー同士の比較結果Excelブックを作成し、保存し、表示します。<br>
      * 
      * @param workDir 作業用フォルダ
@@ -439,13 +425,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
             BookCompareInfo bookCompareInfo,
-            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
+        Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
         Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
@@ -504,7 +490,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param dirId フォルダ識別子
      * @param indent インデント
      * @param dirCompareInfo 比較対象フォルダの情報
-     * @param readPasswords 比較対象ファイルの読み取りパスワード
      * @param outputDirs 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
@@ -515,7 +500,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             String dirId,
             String indent,
             DirCompareInfo dirCompareInfo,
-            Map<Path, String> readPasswords,
             Pair<Path> outputDirs,
             int progressBefore,
             int progressAfter) {
@@ -549,7 +533,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 BookResult bookResult = compareBooks(
                         dirCompareInfo.bookCompareInfos().get(bookNamePair).get(),
-                        readPasswords,
                         srcPathPair,
                         dstPathPair,
                         getProgress.applyAsInt(i),
@@ -560,7 +543,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     paintBook(
                             srcPathPair,
                             dstPathPair,
-                            readPasswords,
                             bookResult,
                             getProgress.applyAsInt(i + 1));
                 }
@@ -594,7 +576,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     private BookResult compareBooks(
             BookCompareInfo bookCompareInfo,
-            Map<Path, String> readPasswords,
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
             int progressBefore,
@@ -603,7 +584,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             return compareBooks(
                     bookCompareInfo,
-                    readPasswords,
                     progressBefore,
                     progressAfter);
             
@@ -626,11 +606,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private void paintBook(
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
-            Map<Path, String> readPasswords,
             BookResult bookResult,
             int progressAfter) {
         
         try {
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            
             for (Side side : Side.values()) {
                 Path srcPath = srcPathPair.get(side);
                 Path dstPath = dstPathPair.get(side);

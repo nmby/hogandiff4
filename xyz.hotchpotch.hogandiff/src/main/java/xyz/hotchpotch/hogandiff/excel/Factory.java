@@ -26,20 +26,18 @@ public class Factory {
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookPath} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static SheetNamesLoader sheetNamesLoader(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         return SheetNamesLoader.of(bookPath, readPassword);
@@ -50,11 +48,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static CellsLoader cellsLoader(
@@ -63,8 +60,8 @@ public class Factory {
             String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         // 設計メモ：
@@ -81,10 +78,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @return フォルダ情報を抽出するローダー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static DirLoader dirLoader(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
         return DirLoader.of(recursively);
@@ -97,7 +94,7 @@ public class Factory {
      * @return シート名同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<String> sheetNamesMatcher2(Settings settings) {
+    public static Matcher<String> sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -117,7 +114,7 @@ public class Factory {
      * @return Excelブック名同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<String> bookNamesMatcher2(Settings settings) {
+    public static Matcher<String> bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -135,17 +132,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @return フォルダ同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirsMatcher dirsMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
-        
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return DirsMatcher.of(matchNamesStrictly);
-    }
-    
-    public static Matcher<DirInfo> dirsMatcher2(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<DirInfo> dirsMatcher(Settings settings) {
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
@@ -178,10 +168,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @return セルセット同士を比較するコンパレータ
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static SheetComparator sheetComparator(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
@@ -196,11 +186,10 @@ public class Factory {
      * 
      * @param settings 設定
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookPainter painter(
@@ -209,8 +198,8 @@ public class Factory {
             String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
