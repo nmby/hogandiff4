@@ -15,6 +15,7 @@ import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -156,6 +157,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
             
+            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+            
             Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
@@ -223,10 +226,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return new TreeResult(
-                    topDirInfoPair,
-                    dirCompareInfos,
-                    dirResults);
+            return new TreeResult(treeCompareInfo, dirResults);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.110", "");

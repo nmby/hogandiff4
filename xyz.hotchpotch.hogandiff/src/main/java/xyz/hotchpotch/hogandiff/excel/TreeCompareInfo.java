@@ -1,12 +1,12 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -20,6 +20,69 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public class TreeCompareInfo {
     
     // [static members] ********************************************************
+    
+    private static class TreeCompareInfoCreator {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Matcher<DirInfo> dirsMatcher;
+        private final Matcher<String> bookNamesMatcher;
+        private final Matcher<String> sheetNamesMatcher;
+        private final Map<Path, String> readPasswords;
+        
+        private List<Pair<DirInfo>> dirInfoPairs;
+        private Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos;
+        
+        private TreeCompareInfoCreator(
+                Matcher<DirInfo> dirsMatcher,
+                Matcher<String> bookNamesMatcher,
+                Matcher<String> sheetNamesMatcher,
+                Map<Path, String> readPasswords) {
+            
+            this.dirsMatcher = dirsMatcher;
+            this.bookNamesMatcher = bookNamesMatcher;
+            this.sheetNamesMatcher = sheetNamesMatcher;
+            this.readPasswords = readPasswords;
+        }
+        
+        private TreeCompareInfo execute(Pair<DirInfo> topDirInfoPair) {
+            this.dirInfoPairs = new ArrayList<>();
+            this.dirCompareInfos = new HashMap<>();
+            
+            doOneFloor(topDirInfoPair);
+            
+            return new TreeCompareInfo(topDirInfoPair, dirInfoPairs, dirCompareInfos);
+        }
+        
+        private void doOneFloor(Pair<DirInfo> dirInfoPair) {
+            assert dirInfoPair.hasA() || dirInfoPair.hasB();
+            
+            DirCompareInfo dirCompareInfo = DirCompareInfo.of(
+                    dirInfoPair,
+                    bookNamesMatcher,
+                    sheetNamesMatcher,
+                    readPasswords);
+            
+            dirInfoPairs.add(dirInfoPair);
+            dirCompareInfos.put(dirInfoPair, Optional.of(dirCompareInfo));
+            
+            if (dirInfoPair.isPaired()) {
+                List<Pair<DirInfo>> childDirInfoPairs = dirsMatcher.makeItemPairs(
+                        dirInfoPair.a().children(),
+                        dirInfoPair.b().children());
+                
+                childDirInfoPairs.forEach(this::doOneFloor);
+                
+            } else {
+                Side side = dirInfoPair.hasA() ? Side.A : Side.B;
+                dirInfoPair.get(side).children().stream()
+                        .map(childDirInfo -> Pair.ofOnly(side, childDirInfo))
+                        .forEach(this::doOneFloor);
+            }
+        }
+    }
     
     /**
      * 与えられたマッチャーを使用して新たな {@link TreeCompareInfo} インスタンスを生成します。<br>
@@ -45,36 +108,36 @@ public class TreeCompareInfo {
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
         
-        List<Pair<DirInfo>> dirInfoPairs;
-        if (topDirInfoPair.isPaired()) {
-            dirInfoPairs = dirsMatcher.makeItemPairs(
-                    topDirInfoPair.a().children(),
-                    topDirInfoPair.b().children());
-        } else if (topDirInfoPair.hasA()) {
-            dirInfoPairs = topDirInfoPair.a().children().stream()
-                    .map(dirInfo -> Pair.ofOnly(Side.A, dirInfo))
-                    .toList();
-        } else if (topDirInfoPair.hasB()) {
-            dirInfoPairs = topDirInfoPair.b().children().stream()
-                    .map(dirInfo -> Pair.ofOnly(Side.B, dirInfo))
-                    .toList();
-        } else {
-            dirInfoPairs = List.of();
-        }
+        TreeCompareInfoCreator creator = new TreeCompareInfoCreator(
+                dirsMatcher,
+                bookNamesMatcher,
+                sheetNamesMatcher,
+                readPasswords);
         
-        Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos = dirInfoPairs.stream()
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        dirInfoPair -> Optional.of(DirCompareInfo.of(
-                                dirInfoPair,
-                                bookNamesMatcher,
-                                sheetNamesMatcher,
-                                readPasswords))));
+        return creator.execute(topDirInfoPair);
+    }
+    
+    public static TreeCompareInfo ofSingle(
+            Pair<DirInfo> topDirInfoPair,
+            Matcher<String> bookNamesMatcher,
+            Matcher<String> sheetNamesMatcher,
+            Map<Path, String> readPasswords) {
+        
+        Objects.requireNonNull(topDirInfoPair);
+        Objects.requireNonNull(bookNamesMatcher);
+        Objects.requireNonNull(sheetNamesMatcher);
+        Objects.requireNonNull(readPasswords);
+        
+        DirCompareInfo dirCompareInfo = DirCompareInfo.of(
+                topDirInfoPair,
+                bookNamesMatcher,
+                sheetNamesMatcher,
+                readPasswords);
         
         return new TreeCompareInfo(
                 topDirInfoPair,
-                dirInfoPairs,
-                dirCompareInfos);
+                List.of(topDirInfoPair),
+                Map.of(topDirInfoPair, Optional.of(dirCompareInfo)));
     }
     
     // [instance members] ******************************************************
