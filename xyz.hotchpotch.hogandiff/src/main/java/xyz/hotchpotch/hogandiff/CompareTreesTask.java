@@ -55,11 +55,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<DirInfo> topDirPair = SettingKeys.CURR_DIR_INFOS.map(settings::get);
             
             // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-            List<DirCompareInfo> dirCompareInfos = pairingDirsAndBookNames(topDirPair, 2, 5);
+            pairingDirsAndBookNames(topDirPair, 2, 5);
             
             // 4. フォルダツリー同士の比較
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            TreeResult tResult = compareTrees(workDir, topDirPair, dirCompareInfos, readPasswords, 5, 93);
+            TreeResult tResult = compareTrees(workDir, 5, 93);
             
             // 5. 比較結果テキストの作成と表示
             saveAndShowResultText(workDir, tResult.toString(), 93, 95);
@@ -104,7 +103,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-    private List<DirCompareInfo> pairingDirsAndBookNames(
+    private void pairingDirsAndBookNames(
             Pair<DirInfo> topDirInfoPair,
             int progressBefore,
             int progressAfter)
@@ -135,8 +134,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return dirCompareInfos;
-            
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.030", "");
         }
@@ -145,9 +142,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // 4. フォルダツリー同士の比較
     private TreeResult compareTrees(
             Path workDir,
-            Pair<DirInfo> topDirInfoPair,
-            List<DirCompareInfo> dirCompareInfos,
-            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -162,15 +156,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
-            int dirPairsCount = (int) dirCompareInfos.stream()
-                    .filter(data -> data.dirInfoPair().isPaired())
+            int dirPairsCount = (int) treeCompareInfo.dirInfoPairs().stream()
+                    .filter(Pair::isPaired)
                     .count();
             int num = 0;
             
-            for (int i = 0; i < dirCompareInfos.size(); i++) {
+            for (int i = 0; i < treeCompareInfo.dirInfoPairs().size(); i++) {
                 int ii = i;
                 
-                DirCompareInfo dirCompareInfo = dirCompareInfos.get(i);
+                Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
+                DirCompareInfo dirCompareInfo = treeCompareInfo.dirCompareInfos().get(dirInfoPair).get();
                 
                 str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
                 updateMessage(str.toString());
@@ -180,16 +175,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 try {
                     outputDirPair = Side.unsafeMap(side -> {
                         // 出力先ディレクトリの作成
-                        if (dirCompareInfo.dirInfoPair().has(side)) {
-                            DirInfo targetDirInfo = dirCompareInfo.dirInfoPair().get(side);
-                            Path parentDir = targetDirInfo.equals(topDirInfoPair.get(side))
+                        if (dirInfoPair.has(side)) {
+                            Path targetDirPath = dirInfoPair.get(side).dirPath();
+                            Path parentDir = targetDirPath.equals(treeCompareInfo.topDirInfoPair().get(side).dirPath())
                                     ? workDir
-                                    : outputDirsPair.get(side).get(targetDirInfo.dirPath().getParent());
+                                    : outputDirsPair.get(side).get(targetDirPath.getParent());
                             
                             Path outputDir = parentDir
-                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirInfo.dirPath().getFileName()));
+                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirPath.getFileName()));
                             Files.createDirectories(outputDir);
-                            outputDirsPair.get(side).put(targetDirInfo.dirPath(), outputDir);
+                            outputDirsPair.get(side).put(targetDirPath, outputDir);
                             return outputDir;
                         } else {
                             return null;
@@ -197,28 +192,27 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     });
                     
                 } catch (IOException e) {
-                    dirResults.putIfAbsent(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.empty());
+                    dirResults.putIfAbsent(dirInfoPair.map(DirInfo::dirPath), Optional.empty());
                     str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
                     updateMessage(str.toString());
                     e.printStackTrace();
                     continue;
                 }
                 
-                if (dirCompareInfo.dirInfoPair().isPaired()) {
+                if (dirInfoPair.isPaired()) {
                     DirResult dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
                             dirCompareInfo,
-                            readPasswords,
                             outputDirPair,
                             progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
                             progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
-                    dirResults.put(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.of(dirResult));
+                    dirResults.put(dirInfoPair.map(DirInfo::dirPath), Optional.of(dirResult));
                     num++;
                     
                 } else {
                     // FIXME: 片フォルダの場合も内部のファイルをコピーする
-                    dirResults.put(dirCompareInfo.dirInfoPair().map(DirInfo::dirPath), Optional.empty());
+                    dirResults.put(dirInfoPair.map(DirInfo::dirPath), Optional.empty());
                     str.append(BR);
                     updateMessage(str.toString());
                 }

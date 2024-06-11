@@ -117,6 +117,17 @@ public class TreeCompareInfo {
         return creator.execute(topDirInfoPair);
     }
     
+    /**
+     * 子フォルダの再帰比較はせずトップフォルダ同士のみ比較する場合の
+     * {@link BookCompareInfo} インスタンスを生成します。<br>
+     * 
+     * @param topDirInfoPair 比較対象フォルダの情報
+     * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
+     * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
+     * @param readPasswords 読み取りパスワード
+     * @return 新たなインスタンス
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
     public static TreeCompareInfo ofSingle(
             Pair<DirInfo> topDirInfoPair,
             Matcher<String> bookNamesMatcher,

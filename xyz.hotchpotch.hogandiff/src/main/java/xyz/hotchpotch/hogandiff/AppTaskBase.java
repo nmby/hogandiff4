@@ -439,13 +439,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
             BookCompareInfo bookCompareInfo,
-            Map<Path, String> readPasswords,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
         
         updateProgress(progressBefore, PROGRESS_MAX);
         
+        Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
         Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
@@ -504,7 +504,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param dirId フォルダ識別子
      * @param indent インデント
      * @param dirCompareInfo 比較対象フォルダの情報
-     * @param readPasswords 比較対象ファイルの読み取りパスワード
      * @param outputDirs 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
@@ -515,7 +514,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             String dirId,
             String indent,
             DirCompareInfo dirCompareInfo,
-            Map<Path, String> readPasswords,
             Pair<Path> outputDirs,
             int progressBefore,
             int progressAfter) {
@@ -549,7 +547,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 BookResult bookResult = compareBooks(
                         dirCompareInfo.bookCompareInfos().get(bookNamePair).get(),
-                        readPasswords,
                         srcPathPair,
                         dstPathPair,
                         getProgress.applyAsInt(i),
@@ -560,7 +557,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     paintBook(
                             srcPathPair,
                             dstPathPair,
-                            readPasswords,
                             bookResult,
                             getProgress.applyAsInt(i + 1));
                 }
@@ -594,7 +590,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     private BookResult compareBooks(
             BookCompareInfo bookCompareInfo,
-            Map<Path, String> readPasswords,
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
             int progressBefore,
@@ -603,7 +598,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             return compareBooks(
                     bookCompareInfo,
-                    readPasswords,
                     progressBefore,
                     progressAfter);
             
@@ -626,11 +620,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private void paintBook(
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
-            Map<Path, String> readPasswords,
             BookResult bookResult,
             int progressAfter) {
         
         try {
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            
             for (Side side : Side.values()) {
                 Path srcPath = srcPathPair.get(side);
                 Path dstPath = dstPathPair.get(side);

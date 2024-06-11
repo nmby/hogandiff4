@@ -147,7 +147,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             
             if (0 < dirCompareInfo.bookNamePairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
@@ -156,7 +155,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         "",
                         "",
                         dirCompareInfo,
-                        readPasswords,
                         outputDirPair,
                         progressBefore,
                         progressAfter);
