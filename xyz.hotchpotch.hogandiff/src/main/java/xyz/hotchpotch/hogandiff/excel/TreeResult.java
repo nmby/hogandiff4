@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.excel;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +21,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  */
 public record TreeResult(
         TreeCompareInfo treeCompareInfo,
-        Map<Pair<Path>, Optional<DirResult>> dirResults)
+        Map<Pair<DirInfo>, Optional<DirResult>> dirResults)
         implements Result {
     
     // [static members] ********************************************************
@@ -34,22 +33,23 @@ public record TreeResult(
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
      * @param id このフォルダペアの識別子。
-     * @param dirPair フォルダペア情報
+     * @param dirInfoPair フォルダペア情報
      * @return フォルダペアの整形済み文字列
-     * @throws NullPointerException {@code id}, {@code dirPair} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static String formatDirsPair(
+    public static String formatDirsInfoPair(
             String id,
-            Pair<DirInfo> dirPair) {
+            Pair<DirInfo> dirInfoPair) {
         
-        Objects.requireNonNull(dirPair, "dirPair");
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(dirInfoPair);
         
         return "    - %s%n    - %s%n".formatted(
-                dirPair.hasA()
-                        ? "【A%s】 %s".formatted(id, dirPair.a().dirPath())
+                dirInfoPair.hasA()
+                        ? "【A%s】 %s".formatted(id, dirInfoPair.a().dirPath())
                         : rb.getString("excel.TreeResult.010"),
-                dirPair.hasB()
-                        ? "【B%s】 %s".formatted(id, dirPair.b().dirPath())
+                dirInfoPair.hasB()
+                        ? "【B%s】 %s".formatted(id, dirInfoPair.b().dirPath())
                         : rb.getString("excel.TreeResult.010"));
     }
     
@@ -64,7 +64,7 @@ public record TreeResult(
      */
     public TreeResult(
             TreeCompareInfo treeCompareInfo,
-            Map<Pair<Path>, Optional<DirResult>> dirResults) {
+            Map<Pair<DirInfo>, Optional<DirResult>> dirResults) {
         
         Objects.requireNonNull(treeCompareInfo);
         Objects.requireNonNull(dirResults);
@@ -80,7 +80,6 @@ public record TreeResult(
      */
     public boolean hasDiff() {
         return treeCompareInfo.dirInfoPairs().stream()
-                .map(p -> p.map(DirInfo::dirPath))
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -103,9 +102,9 @@ public record TreeResult(
         for (int i = 0; i < treeCompareInfo.dirInfoPairs().size(); i++) {
             Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
             DirCompareInfo dirCompareInfo = treeCompareInfo.dirCompareInfos().get(dirInfoPair).get();
-            Optional<DirResult> dirResult = dirResults.get(dirInfoPair.map(DirInfo::dirPath));
+            Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
             
-            str.append(formatDirsPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
+            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
             
             if (dirCompareInfo.dirInfoPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));

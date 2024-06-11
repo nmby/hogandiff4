@@ -67,7 +67,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             Factory.bookNamesMatcher2(settings),
                             Factory.sheetNamesMatcher2(settings),
                             settings.get(SettingKeys.CURR_READ_PASSWORDS)),
-                    Map.of(dirInfoPair.map(DirInfo::dirPath), Optional.of(dResult)));
+                    Map.of(dirInfoPair, Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
             
@@ -93,13 +93,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<Path> dirPathPair = dirCompareInfo.dirInfoPair().map(DirInfo::dirPath);
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
             List<Pair<String>> bookNamePairs = dirCompareInfo.bookNamePairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
-                    dirPathPair.a(),
-                    dirPathPair.b()));
+                    dirInfoPair.a().dirPath(),
+                    dirInfoPair.b().dirPath()));
             
             if (bookNamePairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);

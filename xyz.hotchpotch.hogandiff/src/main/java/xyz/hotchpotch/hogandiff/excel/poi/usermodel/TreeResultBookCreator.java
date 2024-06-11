@@ -131,7 +131,7 @@ public class TreeResultBookCreator {
                 rowNo++;
                 
                 // 4-3. フォルダ名と差分シンボルの出力
-                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair.map(DirInfo::dirPath));
+                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair);
                 
                 Pair<String> dirRelNames = Side.map(
                         side -> dirInfoPair.has(side) ? relPath.apply(side, dirInfoPair.get(side).dirPath()) : null);

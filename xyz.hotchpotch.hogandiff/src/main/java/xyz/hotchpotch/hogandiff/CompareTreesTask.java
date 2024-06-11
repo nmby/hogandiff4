@@ -86,7 +86,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             for (int i = 0; i < treeCompareInfo.dirInfoPairs().size(); i++) {
                 Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
-                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
+                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
             }
             
@@ -112,7 +112,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
             
-            Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
+            Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
             double progressDelta = (progressAfter - progressBefore) / (double) treeCompareInfo.dirInfoPairs().size();
@@ -123,7 +123,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
                 DirCompareInfo dirCompareInfo = treeCompareInfo.dirCompareInfos().get(dirInfoPair).get();
                 
-                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
+                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
                 updateMessage(str.toString());
                 
                 Pair<Path> outputDirPair = null;
@@ -148,7 +148,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     });
                     
                 } catch (IOException e) {
-                    dirResults.putIfAbsent(dirInfoPair.map(DirInfo::dirPath), Optional.empty());
+                    dirResults.putIfAbsent(dirInfoPair, Optional.empty());
                     str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
                     updateMessage(str.toString());
                     e.printStackTrace();
@@ -163,11 +163,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             outputDirPair,
                             progressBefore + (int) progressDelta * i,
                             progressBefore + (int) progressDelta * (i + 1));
-                    dirResults.put(dirInfoPair.map(DirInfo::dirPath), Optional.of(dirResult));
+                    dirResults.put(dirInfoPair, Optional.of(dirResult));
                     
                 } else {
                     // FIXME: 片フォルダの場合も内部のファイルをコピーする
-                    dirResults.put(dirInfoPair.map(DirInfo::dirPath), Optional.empty());
+                    dirResults.put(dirInfoPair, Optional.empty());
                     str.append(BR);
                     updateMessage(str.toString());
                     updateProgress(progressBefore + progressDelta * (i + 1), PROGRESS_MAX);
