@@ -59,12 +59,11 @@ public class StandardDirLoader implements DirLoader {
             throw new IllegalArgumentException("not directory. path: " + path);
         }
         
-        return loadDir2(path, null, recursively);
+        return loadDir2(path, recursively);
     }
     
     private DirInfo loadDir2(
             Path path,
-            DirInfo parent,
             boolean recursively)
             throws ExcelHandlingException {
         
@@ -72,27 +71,26 @@ public class StandardDirLoader implements DirLoader {
         assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
         
         try {
-            DirInfo me = new DirInfo(path);
-            
-            me.setBookNames(Files.list(path)
+            List<String> bookNames = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(StandardDirLoader::isHandleableExcelBook)
                     .map(Path::getFileName)
                     .map(Path::toString)
                     .sorted()
-                    .toList());
+                    .toList();
             
-            me.setChildren(recursively
+            List<DirInfo> children = recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (p -> loadDir2(p, me, true))).convert())
+                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (p -> loadDir2(p, true)))
+                                    .convert())
                             .filter(r -> r.result() != null)
                             .map(ResultOrThrown::result)
                             .sorted()
                             .toList()
-                    : List.of());
+                    : List.of();
             
-            return me;
+            return new DirInfo(path, bookNames, children);
             
         } catch (IOException e) {
             throw new ExcelHandlingException(

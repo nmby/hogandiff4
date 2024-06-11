@@ -5,140 +5,56 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * フォルダを表します。<br>
+ * フォルダ情報を表す不変クラスです。<br>
  *
+ * @param dirPath このフォルダのパス
+ * @param bookNames このフォルダに含まれるExcelブック名
+ * @param children このフォルダに含まれる子フォルダ情報
  * @author nmby
  */
-// 実装メモ
-// 本クラスは record にしたいところだが、次の2つの理由から普通のクラスとして実装している。
-// 1. #equals と #hashCode を独自実装したいため（詳細は各メソッドのコメント参照）
-// 2. 親子を一度に設定することはできず #setParent という可変メソッドを設ける必要があるため
-public class DirInfo implements Comparable<DirInfo> {
+public record DirInfo(
+        Path dirPath,
+        List<String> bookNames,
+        List<DirInfo> children)
+        implements Comparable<DirInfo> {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    private final Path dirPath;
-    
-    private List<String> bookNames = List.of();
-    private List<DirInfo> children = List.of();
-    
     /**
-     * コンストラクタ<br>
+     * コンストラクタ
      * 
      * @param dirPath このフォルダのパス
-     * @throws NullPointerException {@code dirPath} が {@code null} の場合
+     * @param bookNames このフォルダに含まれるExcelブック名
+     * @param children このフォルダに含まれる子フォルダ情報
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirInfo(Path dirPath) {
+    public DirInfo {
         Objects.requireNonNull(dirPath);
-        
-        this.dirPath = dirPath;
+        Objects.requireNonNull(bookNames);
+        Objects.requireNonNull(children);
     }
     
     /**
-     * このフォルダのパスを返します。<br>
+     * {@inheritDoc}<br>
      * 
-     * @return このフォルダのパス
-     */
-    public Path dirPath() {
-        return dirPath;
-    }
-    
-    /**
-     * このフォルダに含まれるExcelブック名のリストを返します。<br>
-     * 
-     * @return このフォルダに含まれるExcelブック名のリスト
-     */
-    public List<String> bookNames() {
-        return List.copyOf(bookNames);
-    }
-    
-    /**
-     * このフォルダに含まれるExcelブック名のリストを設定します。<br>
-     * 
-     * @param bookNames このフォルダに含まれるExcelブック名のリスト
-     * @throws NullPointerException {@code bookNames} が {@code null} の場合
-     */
-    public void setBookNames(List<String> bookNames) {
-        Objects.requireNonNull(bookNames, "bookNames");
-        
-        this.bookNames = List.copyOf(bookNames);
-    }
-    
-    /**
-     * このフォルダの子フォルダのリストを返します。<br>
-     * 
-     * @return このフォルダの子フォルダのリスト
-     */
-    public List<DirInfo> children() {
-        return List.copyOf(children);
-    }
-    
-    /**
-     * このフォルダの子フォルダのリストを設定します。<br>
-     * 
-     * @param children このフォルダの子フォルダのリスト
-     * @throws NullPointerException {@code children} が {@code null} の場合
-     */
-    public void setChildren(List<DirInfo> children) {
-        Objects.requireNonNull(children, "children");
-        
-        this.children = List.copyOf(children);
-    }
-    
-    /**
-     * <strong>注意：</strong>
-     * この実装では {@link #dirPath()} の値のみに基づいて同一性を判定します。<br>
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof DirInfo other) {
-            return Objects.equals(dirPath, other.dirPath) && children.size() == other.children.size();
-            // 循環によりStackOverflowエラーが発生するため、
-            // parentはequals, hashCodeの判定対象に含めないこととする。
-            // 加えて、フォルダとしての同一性はそのパスだけで判定できるため、
-            // その他のメンバも判定対象に含めないこととする。
-            //            return Objects.equals(path, other.path)
-            //                    && Objects.equals(parent, other.parent)
-            //                    && Objects.equals(bookNames, other.bookNames)
-            //                    && Objects.equals(children, other.children);
-            // -> parent と children で参照ループを構成しているため。
-            //    こういうときはどうすれば良いのん？
-            // TODO: 要お勉強
-            // 
-            // 但し、recursively によって子フォルダの有無は異なるため、子の数だけ判定に含める。
-        }
-        return false;
-    }
-    
-    /**
-     * <strong>注意：</strong>
-     * この実装では {@link #dirPath()} の値のみに基づいてハッシュコードを計算します。<br>
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(dirPath, children.size());
-        // ある程度の深さのフォルダツリーにおいてStackOverflowエラーが発生したため、
-        // 子要素はequals, hashCodeの対象に含めないこととする。
-        //        return Objects.hash(
-        //                path,
-        //                parent,
-        //                bookNames,
-        //                children);
-        // 
-        // 但し、recursively によって子フォルダの有無は異なるため、子の数だけ判定に含める。
-    }
-    
-    /**
-     * <strong>注意：</strong>
-     * この実装では {@link #dirPath()} の値と {@link #children()} の数のみに基づいて大小関係を判断します。<br>
+     * この実装では、{@code dirPath}、{@code children.size()}、{@code bookNames.size()}
+     * に基づいて比較を行います。<br>
      */
     @Override
     public int compareTo(DirInfo o) {
         Objects.requireNonNull(o, "o");
-        return !Objects.equals(dirPath, o.dirPath)
-                ? dirPath.compareTo(o.dirPath)
-                : Integer.compare(children.size(), o.children.size());
+        
+        if (!Objects.equals(dirPath, o.dirPath)) {
+            return dirPath.compareTo(o.dirPath);
+        }
+        if (children.size() != o.children.size()) {
+            return Integer.compare(children.size(), o.children.size());
+        }
+        if (bookNames.size() != o.bookNames.size()) {
+            return Integer.compare(bookNames.size(), o.bookNames.size());
+        }
+        return 0;
     }
 }
