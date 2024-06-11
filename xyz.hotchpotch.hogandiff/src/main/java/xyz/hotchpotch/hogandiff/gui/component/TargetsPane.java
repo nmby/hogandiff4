@@ -91,7 +91,7 @@ public class TargetsPane extends VBox implements ChildController {
                                 ? BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair)
                                 : null;
                         case COMPARE_BOOKS -> bookInfoPair.isPaired()
-                                ? BookCompareInfo.of(bookInfoPair, Factory.sheetNamesMatcher2(ar.settings()))
+                                ? BookCompareInfo.of(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
                                 : null;
                         case COMPARE_DIRS, COMPARE_TREES -> null;
                         default -> throw new AssertionError();
@@ -119,8 +119,8 @@ public class TargetsPane extends VBox implements ChildController {
                         case COMPARE_DIRS -> dirInfoPair.isPaired()
                                 ? DirCompareInfo.of(
                                         dirInfoPair,
-                                        Factory.bookNamesMatcher2(ar.settings()),
-                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
                                 : null;
                         default -> throw new AssertionError();
@@ -146,9 +146,9 @@ public class TargetsPane extends VBox implements ChildController {
                         case COMPARE_TREES -> topDirInfoPair.isPaired()
                                 ? TreeCompareInfo.of(
                                         topDirInfoPair,
-                                        Factory.dirsMatcher2(ar.settings()),
-                                        Factory.bookNamesMatcher2(ar.settings()),
-                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        Factory.dirsMatcher(ar.settings()),
+                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
                                 : null;
                         default -> throw new AssertionError();

@@ -97,10 +97,10 @@ public enum AppMenu {
      * 
      * @param settings 設定
      * @return 比較対象の指定が妥当な場合は {@code true}
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean isValidTargets(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         return targetValidator.test(settings);
     }
