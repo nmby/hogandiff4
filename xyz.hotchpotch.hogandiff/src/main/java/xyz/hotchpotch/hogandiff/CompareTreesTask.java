@@ -79,10 +79,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
             
-            str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
+            str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareTreesTask.010"),
-                    treeCompareInfo.topDirInfoPair().a(),
-                    treeCompareInfo.topDirInfoPair().b()));
+                    treeCompareInfo.topDirInfoPair().a().dirPath(),
+                    treeCompareInfo.topDirInfoPair().b().dirPath()));
             
             for (int i = 0; i < treeCompareInfo.dirInfoPairs().size(); i++) {
                 Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
