@@ -21,7 +21,6 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -361,19 +360,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         } catch (Exception e) {
             throw getApplicationException(e, "AppTaskBase.090", "");
         }
-    }
-    
-    /**
-     * 比較対象のフォルダもしくはフォルダツリーを抽出し、
-     * トップフォルダの情報のペアを返します。<br>
-     * 
-     * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
-     * @throws ApplicationException 処理に失敗した場合
-     */
-    // CompareDirsTask, CompareTreesTask
-    // TODO: インライン化する
-    protected Pair<DirInfo> extractDirs1() throws ApplicationException {
-        return SettingKeys.CURR_DIR_INFOS.map(settings::get);
     }
     
     /**

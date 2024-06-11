@@ -25,7 +25,7 @@ import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Pair;
-import xyz.hotchpotch.hogandiff.util.Settings.Key;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 比較対象指定部分の画面部品です。<br>
@@ -35,43 +35,6 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
 public class TargetsPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
-    
-    /**
-     * 比較対象A, Bのどちら側かを著す列挙型です。<br>
-     * 
-     * @author nmby
-     */
-    public static enum Side {
-        
-        // [static members] ----------------------------------------------------
-        
-        /** 比較対象A */
-        A("A", SettingKeys.CURR_BOOK_INFO1, SettingKeys.CURR_DIR_INFO1),
-        
-        /** 比較対象B */
-        B("B", SettingKeys.CURR_BOOK_INFO2, SettingKeys.CURR_DIR_INFO2);
-        
-        // [instance members] --------------------------------------------------
-        
-        /** どちら側かを著すタイトル */
-        public final String title;
-        
-        /** ブックパス設定項目 */
-        public final Key<BookInfo> bookInfoKey;
-        
-        /** フォルダパス設定項目 */
-        public final Key<DirInfo> dirInfoKey;
-        
-        Side(
-                String title,
-                Key<BookInfo> bookInfoKey,
-                Key<DirInfo> dirInfoKey) {
-            
-            this.title = title;
-            this.bookInfoKey = bookInfoKey;
-            this.dirInfoKey = dirInfoKey;
-        }
-    }
     
     // [instance members] ******************************************************
     

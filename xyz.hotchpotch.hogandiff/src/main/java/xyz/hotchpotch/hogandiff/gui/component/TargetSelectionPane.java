@@ -49,7 +49,7 @@ import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.PasswordDialog;
-import xyz.hotchpotch.hogandiff.gui.component.TargetsPane.Side;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 比較対象ファイル／シート選択部分の画面部品です。<br>
@@ -177,7 +177,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         setOnDragOver(this::onDragOver);
         setOnDragDropped(this::onDragDropped);
         
-        titleLabel.setText(side.title);
+        titleLabel.setText(side.name());
         
         dirPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> dirInfo.getValue() == null ? null : dirInfo.getValue().dirPath().toString(),
@@ -210,7 +210,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 setDirPath(dirInfo.getValue().dirPath(), newValue == AppMenu.COMPARE_TREES);
             }
         });
-        dirInfo.addListener((target, oldValue, newValue) -> ar.changeSetting(side.dirInfoKey, newValue));
         bookInfo.addListener((target, oldValue, newValue) -> {
             sheetNameChoiceBox.setItems((newValue == null || newValue.sheetNames().isEmpty())
                     ? FXCollections.emptyObservableList()
@@ -218,13 +217,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         });
         
         // 3.初期値の設定
-        if (ar.settings().containsKey(side.dirInfoKey)) {
-            setDirPath(
-                    ar.settings().get(side.dirInfoKey).dirPath(),
-                    ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
-        }
-        if (ar.settings().containsKey(side.bookInfoKey)) {
-            validateAndSetTarget(ar.settings().get(side.bookInfoKey).bookPath(), null);
+        if (ar.settings().containsKey(SettingKeys.CURR_BOOK_INFOS.get(side))) {
+            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null);
         }
     }
     

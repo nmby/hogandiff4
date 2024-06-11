@@ -16,7 +16,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -140,6 +139,11 @@ public class SettingKeys {
             notSupported("cannot decode."),
             false);
     
+    /** {@link #CURR_BOOK_INFO1}, {@link #CURR_BOOK_INFO2} のペア */
+    public static final Pair<Key<BookInfo>> CURR_BOOK_INFOS = Pair.of(
+            CURR_BOOK_INFO1,
+            CURR_BOOK_INFO2);
+    
     /** 今回の実行におけるExcelブック比較情報 */
     public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookCompareInfo",
@@ -147,27 +151,6 @@ public class SettingKeys {
             BookCompareInfo::toString,
             notSupported("cannnot decode."),
             false);
-    
-    /** 今回の実行における比較対象フォルダ1の情報 */
-    public static final Key<DirInfo> CURR_DIR_INFO1 = new Key<>(
-            "current.dirInfo1",
-            () -> null,
-            DirInfo::toString,
-            notSupported("cannot decode."),
-            false);
-    
-    /** 今回の実行における比較対象フォルダ2の情報 */
-    public static final Key<DirInfo> CURR_DIR_INFO2 = new Key<>(
-            "current.dirInfo2",
-            () -> null,
-            DirInfo::toString,
-            notSupported("cannot decode."),
-            false);
-    
-    /** {@link #CURR_DIR_INFO1} と {@link #CURR_DIR_INFO2} のペア */
-    public static final Pair<Key<DirInfo>> CURR_DIR_INFOS = new Pair<>(
-            CURR_DIR_INFO1,
-            CURR_DIR_INFO2);
     
     /** 今回の実行におけるフォルダ比較情報 */
     public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
