@@ -181,7 +181,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             DirInfo targetDirInfo = dirCompareInfo.dirInfoPair().get(side);
                             Path parentDir = targetDirInfo.equals(topDirInfoPair.get(side))
                                     ? workDir
-                                    : outputDirsPair.get(side).get(targetDirInfo.parent().dirPath());
+                                    : outputDirsPair.get(side).get(targetDirInfo.dirPath().getParent());
                             
                             Path outputDir = parentDir
                                     .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirInfo.dirPath().getFileName()));

@@ -21,7 +21,6 @@ public class DirInfo implements Comparable<DirInfo> {
     
     private final Path dirPath;
     
-    private DirInfo parent;
     private List<String> bookNames = List.of();
     private List<DirInfo> children = List.of();
     
@@ -44,24 +43,6 @@ public class DirInfo implements Comparable<DirInfo> {
      */
     public Path dirPath() {
         return dirPath;
-    }
-    
-    /**
-     * このフォルダの親フォルダのパスを返します。<br>
-     * 
-     * @return このフォルダの親フォルダのパス
-     */
-    public DirInfo parent() {
-        return parent;
-    }
-    
-    /**
-     * このフォルダの親フォルダのパスを設定します。<br>
-     * 
-     * @param parent このフォルダの親フォルダのパス（{@code null} 許容）
-     */
-    public void setParent(DirInfo parent) {
-        this.parent = parent;
     }
     
     /**

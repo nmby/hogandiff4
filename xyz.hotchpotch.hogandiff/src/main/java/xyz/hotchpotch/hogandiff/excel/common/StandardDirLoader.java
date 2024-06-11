@@ -74,8 +74,6 @@ public class StandardDirLoader implements DirLoader {
         try {
             DirInfo me = new DirInfo(path);
             
-            me.setParent(parent);
-            
             me.setBookNames(Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(StandardDirLoader::isHandleableExcelBook)
