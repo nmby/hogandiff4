@@ -61,6 +61,8 @@ public class DirCompareInfo {
         Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
         
         for (Pair<String> bookNamePair : bookNamePairs) {
+            assert bookNamePair.hasA() || bookNamePair.hasB();
+            
             Pair<BookInfo> bookInfoPair = null;
             
             try {

@@ -138,14 +138,21 @@ public class Factory {
      * @throws NullPointerException {@code settings} が {@code null} の場合
      */
     public static DirsMatcher dirsMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return DirsMatcher.of(matchNamesStrictly);
     }
     
+    /**
+     * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
+     * 
+     * @param settings 設定
+     * @return フォルダ同士の対応関係を決めるマッチャー
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
     public static Matcher<DirInfo> dirsMatcher2(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
