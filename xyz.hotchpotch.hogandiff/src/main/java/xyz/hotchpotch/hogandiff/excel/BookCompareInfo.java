@@ -8,7 +8,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
- * Excelブック同士を比較するときのシートの組み合わせ情報を保持する不変クラスです。<br>
+ * Excelブック比較情報を表す不変クラスです。<br>
  * 
  * @author nmby
  */
@@ -23,6 +23,7 @@ public class BookCompareInfo {
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      * @return 新たなインスタンス
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static BookCompareInfo of(
             Pair<BookInfo> bookInfoPair,

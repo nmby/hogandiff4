@@ -17,6 +17,7 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -173,6 +174,14 @@ public class SettingKeys {
             "current.dirCompareInfo",
             () -> null,
             DirCompareInfo::toString,
+            notSupported("cannnot decode."),
+            false);
+    
+    /** 今回の実行におけるフォルダツリー比較情報 */
+    public static final Key<TreeCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
+            "current.treeCompareInfo",
+            () -> null,
+            TreeCompareInfo::toString,
             notSupported("cannnot decode."),
             false);
     

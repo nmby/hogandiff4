@@ -21,6 +21,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -83,8 +84,9 @@ public class TargetsPane extends VBox implements ChildController {
     @FXML
     private TargetSelectionPane targetSelectionPane2;
     
-    private final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
     private final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
+    private final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
+    private final Property<TreeCompareInfo> treeCompareInfo = new SimpleObjectProperty<>();
     
     /**
      * コンストラクタ<br>
@@ -110,33 +112,6 @@ public class TargetsPane extends VBox implements ChildController {
         // 2.項目ごとの各種設定
         targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
-        
-        dirCompareInfo.bind(Bindings.createObjectBinding(
-                () -> {
-                    AppMenu menu = parent.menu().getValue();
-                    DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
-                    DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
-                    Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
-                    
-                    return switch (menu) {
-                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
-                        case COMPARE_DIRS -> dirInfoPair.isPaired()
-                                ? DirCompareInfo.of(
-                                        dirInfoPair,
-                                        Factory.bookNamesMatcher2(ar.settings()),
-                                        Factory.sheetNamesMatcher2(ar.settings()),
-                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                                : null;
-                        default -> throw new AssertionError();
-                    };
-                },
-                parent.menu(),
-                targetSelectionPane1.dirInfo(),
-                targetSelectionPane2.dirInfo()));
-        
-        dirCompareInfo.addListener((target, oldValue, newValue) -> {
-            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
-        });
         
         bookCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
@@ -167,6 +142,61 @@ public class TargetsPane extends VBox implements ChildController {
         
         bookCompareInfo.addListener((target, oldValue, newValue) -> {
             ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newValue);
+        });
+        
+        dirCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
+                    DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
+                        case COMPARE_DIRS -> dirInfoPair.isPaired()
+                                ? DirCompareInfo.of(
+                                        dirInfoPair,
+                                        Factory.bookNamesMatcher2(ar.settings()),
+                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                : null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.dirInfo(),
+                targetSelectionPane2.dirInfo()));
+        
+        dirCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
+        });
+        
+        treeCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu().getValue();
+                    DirInfo topDirInfoA = targetSelectionPane1.dirInfo().getValue();
+                    DirInfo topDirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    Pair<DirInfo> topDirInfoPair = Pair.of(topDirInfoA, topDirInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_DIRS -> null;
+                        case COMPARE_TREES -> topDirInfoPair.isPaired()
+                                ? TreeCompareInfo.of(
+                                        topDirInfoPair,
+                                        Factory.dirsMatcher2(ar.settings()),
+                                        Factory.bookNamesMatcher2(ar.settings()),
+                                        Factory.sheetNamesMatcher2(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                : null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu(),
+                targetSelectionPane1.dirInfo(),
+                targetSelectionPane2.dirInfo()));
+        
+        treeCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newValue);
         });
         
         // 3.初期値の設定

@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
- * フォルダ同士を比較するときのExcelブックの組み合わせ情報を保持する不変クラスです。<br>
+ * フォルダ比較情報を表す不変クラスです。<br>
  * 
  * @author nmby
  */
@@ -21,13 +21,13 @@ public class DirCompareInfo {
     // [static members] ********************************************************
     
     /**
-     * コンストラクタ
+     * 与えられたマッチャーを使用して新たな {@link DirCompareInfo} インスタンスを生成します。<br>
      * 
-     * @param dirInfoPair 比較対象フォルダの情報
+     * @param dirInfoPair 比較対象フォルダ情報
      * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
      * @param readPasswords 読み取りパスワード
-     * @return フォルダ比較情報
+     * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static DirCompareInfo of(
@@ -87,7 +87,7 @@ public class DirCompareInfo {
             }
             
             BookCompareInfo bookCompareInfo = bookInfoPair != null
-                    ? bookCompareInfo = BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
+                    ? BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
                     : null;
             bookCompareInfos.put(bookNamePair, Optional.ofNullable(bookCompareInfo));
         }
@@ -106,9 +106,9 @@ public class DirCompareInfo {
             List<Pair<String>> bookNamePairs,
             Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos) {
         
-        Objects.requireNonNull(dirInfoPair, "dirInfoPair");
-        Objects.requireNonNull(bookNamePairs, "bookNamePairs");
-        Objects.requireNonNull(bookCompareInfos, "bookCompareInfos");
+        assert dirInfoPair != null;
+        assert bookNamePairs != null;
+        assert bookCompareInfos != null;
         
         this.dirInfoPair = dirInfoPair;
         this.bookNamePairs = List.copyOf(bookNamePairs);
@@ -116,9 +116,9 @@ public class DirCompareInfo {
     }
     
     /**
-     * 比較対象フォルダの情報を返します。<br>
+     * 比較対象フォルダ情報を返します。<br>
      * 
-     * @return 比較対象フォルダの情報
+     * @return 比較対象フォルダ情報
      */
     public Pair<DirInfo> dirInfoPair() {
         return dirInfoPair;
