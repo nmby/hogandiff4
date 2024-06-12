@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui.component;
+package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.HashMap;

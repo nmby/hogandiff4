@@ -29,10 +29,10 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row4Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**

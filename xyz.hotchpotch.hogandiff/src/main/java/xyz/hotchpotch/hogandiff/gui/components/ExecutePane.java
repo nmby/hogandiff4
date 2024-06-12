@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui.component;
+package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -14,11 +14,11 @@ import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 
 /**
- * 組み合わせ変更ボタン部分の画面部品です。<br>
+ * 実行ボタン部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class EditPairingPane extends AnchorPane implements ChildController {
+public class ExecutePane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -28,15 +28,15 @@ public class EditPairingPane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button editPairingButton;
+    private Button executeButton;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditPairingPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditPairingPane.fxml"), rb);
+    public ExecutePane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ExecutePane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -48,18 +48,15 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editPairingButton.disableProperty().bind(parent.isReady().not());
+        executeButton.disableProperty().bind(parent.isReady().not());
         
         // 2.項目ごとの各種設定
-        editPairingButton.setOnAction(event -> editPairing());
+        executeButton.setOnAction(event -> parent.execute());
         
         // 3.初期値の設定
         // nop
         
         // 4.値変更時のイベントハンドラの設定
         // nop
-    }
-    
-    private void editPairing() {
     }
 }

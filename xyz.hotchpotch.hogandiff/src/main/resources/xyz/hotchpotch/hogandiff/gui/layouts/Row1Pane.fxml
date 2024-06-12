@@ -7,11 +7,11 @@
 	type="HBox" xmlns="http://javafx.com/javafx/18"
 	xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<xyz.hotchpotch.hogandiff.gui.component.MenuPane
+		<xyz.hotchpotch.hogandiff.gui.components.MenuPane
 			fx:id="menuPane" alignment="CENTER_LEFT"
 			maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
 			minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="NEVER" />
-		<xyz.hotchpotch.hogandiff.gui.component.LinkPane
+		<xyz.hotchpotch.hogandiff.gui.components.LinkPane
 			fx:id="linkPane" alignment="CENTER_RIGHT"
 			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />

@@ -1,27 +1,28 @@
-package xyz.hotchpotch.hogandiff.gui.component;
+package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
-import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.components.ReportingPane;
+import xyz.hotchpotch.hogandiff.gui.components.TogglePane;
 
 /**
- * 設定表示切替ボタン部分の画面部品です。<br>
+ * メインビュー三段目の画面部品です。<br>
  * 
  * @author nmby
  */
-public class TogglePane extends AnchorPane implements ChildController {
+public class Row3Pane extends StackPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -31,15 +32,18 @@ public class TogglePane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private ToggleButton toggleButton;
+    private ReportingPane reportingPane;
+    
+    @FXML
+    private TogglePane togglePane;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public TogglePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TogglePane.fxml"), rb);
+    public Row3Pane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row3Pane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -53,16 +57,32 @@ public class TogglePane extends AnchorPane implements ChildController {
         // nop
         
         // 2.項目ごとの各種設定
-        toggleButton.textProperty().bind(Bindings.createStringBinding(
-                () -> toggleButton.isSelected() ? "《" : "》",
-                toggleButton.selectedProperty()));
+        reportingPane.init(parent);
+        togglePane.init(parent);
         
         // 3.初期値の設定
-        toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
+        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        toggleButton.setOnAction(event -> ar
-                .changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
+        // nop
+    }
+    
+    /**
+     * このコンポーネントとタスクをバインドします。<br>
+     * 
+     * @param task タスク
+     */
+    public void bind(Task<Report> task) {
+        Objects.requireNonNull(task, "task");
+        
+        reportingPane.bind(task);
+    }
+    
+    /**
+     * このコンポーネントとタスクをアンバインドします。<br>
+     */
+    public void unbind() {
+        reportingPane.unbind();
     }
     
     /**
@@ -71,6 +91,6 @@ public class TogglePane extends AnchorPane implements ChildController {
      * @return 設定エリアを表示する場合は {@code true}
      */
     public BooleanExpression showSettings() {
-        return toggleButton.selectedProperty();
+        return togglePane.showSettings();
     }
 }
