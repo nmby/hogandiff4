@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class TreeCompareInfo {
+public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirCompareInfo> {
     
     // [static members] ********************************************************
     
@@ -180,30 +180,18 @@ public class TreeCompareInfo {
         this.dirCompareInfos = Map.copyOf(dirCompareInfos);
     }
     
-    /**
-     * 比較対象トップフォルダ情報を返します。<br>
-     * 
-     * @return 比較対象トップフォルダ情報
-     */
-    public Pair<DirInfo> topDirInfoPair() {
+    @Override
+    public Pair<DirInfo> parentPair() {
         return topDirInfoPair;
     }
     
-    /**
-     * フォルダの組み合わせを返します。<br>
-     * 
-     * @return フォルダの組み合わせ
-     */
-    public List<Pair<DirInfo>> dirInfoPairs() {
+    @Override
+    public List<Pair<DirInfo>> childPairs() {
         return dirInfoPairs;
     }
-    
-    /**
-     * フォルダ比較情報を返します。<br>
-     * 
-     * @return フォルダ比較情報
-     */
-    public Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos() {
+
+    @Override
+    public Map<Pair<DirInfo>, Optional<DirCompareInfo>> childCompareInfos() {
         return dirCompareInfos;
     }
 }

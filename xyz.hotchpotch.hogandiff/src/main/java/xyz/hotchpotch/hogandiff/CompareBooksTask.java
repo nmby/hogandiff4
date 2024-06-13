@@ -80,13 +80,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookCompareInfo.bookInfoPair().map(BookInfo::bookPath);
+            Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
             
             str.append("%s%n[A] %s%n[B] %s%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
             
-            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
-                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
                 str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
             
@@ -111,7 +111,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<BookInfo> bookInfoPair = bookCompareInfo.bookInfoPair();
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentPair();
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
@@ -120,10 +120,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             SheetComparator sheetComparator = Factory.sheetComparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
-            double progressDelta = (progressAfter - progressBefore) / (double) bookCompareInfo.sheetNamePairs().size();
+            double progressDelta = (progressAfter - progressBefore) / (double) bookCompareInfo.childPairs().size();
             
-            for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
-                Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
                 SheetResult result = null;
                 
                 try {

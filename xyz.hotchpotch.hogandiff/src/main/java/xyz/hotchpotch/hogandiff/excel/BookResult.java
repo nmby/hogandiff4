@@ -98,7 +98,7 @@ public record BookResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return bookCompareInfo.sheetNamePairs().stream()
+        return bookCompareInfo.childPairs().stream()
                 .map(sheetResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -109,13 +109,13 @@ public record BookResult(
      * @return 比較結果を端的に表す差分サマリ
      */
     public String getDiffSimpleSummary() {
-        int diffSheets = (int) bookCompareInfo.sheetNamePairs().stream()
+        int diffSheets = (int) bookCompareInfo.childPairs().stream()
                 .filter(Pair::isPaired)
                 .map(sheetResults::get)
                 .map(Optional::get)
                 .filter(SheetResult::hasDiff)
                 .count();
-        int gapSheets = (int) bookCompareInfo.sheetNamePairs().stream()
+        int gapSheets = (int) bookCompareInfo.childPairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
                 .count();
         
@@ -158,8 +158,8 @@ public record BookResult(
     private String getDiffText(Function<SheetResult, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
             Optional<SheetResult> sResult = sheetResults.get(sheetNamePair);
             
             if (!sheetNamePair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
@@ -180,18 +180,18 @@ public record BookResult(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        if (bookCompareInfo.bookInfoPair().isIdentical()) {
+        if (bookCompareInfo.parentPair().isIdentical()) {
             str.append(rb.getString("excel.BResult.050").formatted(""))
-                    .append(bookCompareInfo.bookInfoPair().a().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentPair().a().bookPath()).append(BR);
         } else {
             str.append(rb.getString("excel.BResult.050").formatted("A"))
-                    .append(bookCompareInfo.bookInfoPair().a().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentPair().a().bookPath()).append(BR);
             str.append(rb.getString("excel.BResult.050").formatted("B"))
-                    .append(bookCompareInfo.bookInfoPair().b().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentPair().b().bookPath()).append(BR);
         }
         
-        for (int i = 0; i < bookCompareInfo.sheetNamePairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.sheetNamePairs().get(i);
+        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
             str.append(formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
         }
         

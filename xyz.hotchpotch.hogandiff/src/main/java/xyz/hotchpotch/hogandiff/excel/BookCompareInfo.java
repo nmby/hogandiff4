@@ -1,7 +1,9 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -12,7 +14,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class BookCompareInfo {
+public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void> {
     
     // [static members] ********************************************************
     
@@ -89,21 +91,18 @@ public class BookCompareInfo {
         this.sheetNamePairs = List.copyOf(sheetNamePairs);
     }
     
-    /**
-     * 比較対象Excelブックの情報のペアを返します。<br>
-     * 
-     * @return 比較対象Excelブックの情報のペア
-     */
-    public Pair<BookInfo> bookInfoPair() {
+    @Override
+    public Pair<BookInfo> parentPair() {
         return bookInfoPair;
     }
     
-    /**
-     * シート名の組み合わせ情報を返します。<br>
-     * 
-     * @return シート名の組み合わせ情報
-     */
-    public List<Pair<String>> sheetNamePairs() {
+    @Override
+    public List<Pair<String>> childPairs() {
         return sheetNamePairs;
+    }
+    
+    @Override
+    public Map<Pair<String>, Optional<Void>> childCompareInfos() {
+        throw new UnsupportedOperationException();
     }
 }

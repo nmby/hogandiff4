@@ -60,7 +60,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 7. 比較結果Excelの作成と表示
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
             TreeResult tResult = new TreeResult(
                     TreeCompareInfo.ofSingle(
                             dirInfoPair,
@@ -93,8 +93,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
-            List<Pair<String>> bookNamePairs = dirCompareInfo.bookNamePairs();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            List<Pair<String>> bookNamePairs = dirCompareInfo.childPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
@@ -122,7 +122,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirCompareInfo.dirInfoPair();
+        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
         Pair<Path> outputDirPair = null;
         
         try {
@@ -148,7 +148,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
-            if (0 < dirCompareInfo.bookNamePairs().size()) {
+            if (0 < dirCompareInfo.childPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
@@ -162,7 +162,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             } else {
                 return new DirResult(
                         dirCompareInfo,
-                        dirCompareInfo.bookNamePairs().stream().collect(Collectors.toMap(
+                        dirCompareInfo.childPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

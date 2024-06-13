@@ -112,21 +112,21 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.treeCompareInfo().topDirInfoPair().get(side).dirPath().getParent(),
+                        treeResult.treeCompareInfo().parentPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.treeCompareInfo().topDirInfoPair().get(side).dirPath().getNameCount() - 1,
+                    treeResult.treeCompareInfo().parentPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (int j = 0; j < treeResult.treeCompareInfo().dirInfoPairs().size(); j++) {
-                Pair<DirInfo> dirInfoPair = treeResult.treeCompareInfo().dirInfoPairs().get(j);
-                DirCompareInfo dirCompareInfo = treeResult.treeCompareInfo().dirCompareInfos().get(dirInfoPair).get();
+            for (int j = 0; j < treeResult.treeCompareInfo().childPairs().size(); j++) {
+                Pair<DirInfo> dirInfoPair = treeResult.treeCompareInfo().childPairs().get(j);
+                DirCompareInfo dirCompareInfo = treeResult.treeCompareInfo().childCompareInfos().get(dirInfoPair).get();
                 String dirId = recursively ? Integer.toString(j + 1) : "";
                 rowNo++;
                 
@@ -162,11 +162,11 @@ public class TreeResultBookCreator {
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブック名ペアごとの処理
-                for (int i = 0; i < dirCompareInfo.bookNamePairs().size(); i++) {
+                for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<String> bookNamePair = dirCompareInfo.bookNamePairs().get(i);
+                    Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
                     Optional<BookResult> bookResult = dirResult
                             .map(DirResult::bookResults)
                             .flatMap(br -> br.get(bookNamePair));
@@ -214,12 +214,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.treeCompareInfo().topDirInfoPair().a().dirPath();
+        Path topDirA = treeResult.treeCompareInfo().parentPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.treeCompareInfo().topDirInfoPair().b().dirPath();
+        Path topDirB = treeResult.treeCompareInfo().parentPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);
