@@ -29,7 +29,13 @@ public class SettingKeys {
     
     // [static members] ********************************************************
     
-    private static <T> Function<String, T> notSupported(String msg) {
+    private static <T> Function<T, String> encodeNotSupported(String msg) {
+        return obj -> {
+            throw new UnsupportedOperationException(msg);
+        };
+    }
+    
+    private static <T> Function<String, T> decodeNotSupported(String msg) {
         return str -> {
             throw new UnsupportedOperationException(msg);
         };
@@ -119,24 +125,24 @@ public class SettingKeys {
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
             () -> Map.of(),
-            Map::toString,
-            notSupported("cannot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelブック1の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
             "current.bookInfo1",
             () -> null,
-            BookInfo::toString,
-            notSupported("cannot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannot decode."),
             false);
     
     /** 今回の実行における比較対象Excelブック2の情報 */
     public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<>(
             "current.bookInfo2",
             () -> null,
-            BookInfo::toString,
-            notSupported("cannot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannot decode."),
             false);
     
     /** {@link #CURR_BOOK_INFO1}, {@link #CURR_BOOK_INFO2} のペア */
@@ -148,24 +154,24 @@ public class SettingKeys {
     public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookCompareInfo",
             () -> null,
-            BookCompareInfo::toString,
-            notSupported("cannnot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダ比較情報 */
     public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
             "current.dirCompareInfo",
             () -> null,
-            DirCompareInfo::toString,
-            notSupported("cannnot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダツリー比較情報 */
     public static final Key<TreeCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
             "current.treeCompareInfo",
             () -> null,
-            TreeCompareInfo::toString,
-            notSupported("cannnot decode."),
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannnot decode."),
             false);
     
     /** 行の挿入／削除を考慮するか */
