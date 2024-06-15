@@ -147,31 +147,31 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         // 1.disableプロパティとvisibleプロパティのバインディング
         disableProperty().bind(parent.isRunning().or(isBusy));
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_SHEETS,
-                parent.menu()));
+                () -> parent.menu.getValue() != AppMenu.COMPARE_SHEETS,
+                parent.menu));
         sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_SHEETS,
-                parent.menu()));
+                () -> parent.menu.getValue() != AppMenu.COMPARE_SHEETS,
+                parent.menu));
         
         dirPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> isDirOperation(parent.menu.getValue()),
+                parent.menu));
         dirPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> isDirOperation(parent.menu.getValue()),
+                parent.menu));
         dirPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> isDirOperation(parent.menu.getValue()),
+                parent.menu));
         
         bookPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> !isDirOperation(parent.menu.getValue()),
+                parent.menu));
         bookPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> !isDirOperation(parent.menu.getValue()),
+                parent.menu));
         bookPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menu().getValue()),
-                parent.menu()));
+                () -> !isDirOperation(parent.menu.getValue()),
+                parent.menu));
         
         // 2.項目ごとの各種設定
         setOnDragOver(this::onDragOver);
@@ -192,18 +192,18 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         sheetName.bind(sheetNameChoiceBox.valueProperty());
         
         isReady.bind(Bindings.createBooleanBinding(
-                () -> switch (parent.menu().getValue()) {
+                () -> switch (parent.menu.getValue()) {
                     case COMPARE_BOOKS -> bookInfo.getValue() != null;
                     case COMPARE_SHEETS -> bookInfo.getValue() != null && sheetName.getValue() != null;
                     case COMPARE_DIRS -> dirInfo.getValue() != null;
                     case COMPARE_TREES -> dirInfo.getValue() != null;
                     default -> throw new AssertionError();
                 },
-                parent.menu(), bookInfo, sheetName, dirInfo));
+                parent.menu, bookInfo, sheetName, dirInfo));
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
-        parent.menu().addListener((target, oldValue, newValue) -> {
+        parent.menu.addListener((target, oldValue, newValue) -> {
             if (dirInfo.getValue() != null
                     && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)
                     && (oldValue == AppMenu.COMPARE_DIRS || oldValue == AppMenu.COMPARE_TREES)) {
@@ -230,7 +230,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private void onDragOver(DragEvent event) {
         try {
             event.consume();
-            Predicate<File> isAcceptableType = isDirOperation(parent.menu().getValue())
+            Predicate<File> isAcceptableType = isDirOperation(parent.menu.getValue())
                     ? File::isDirectory
                     : File::isFile;
             
@@ -256,7 +256,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             event.consume();
             
-            AppMenu menu = parent.menu().getValue();
+            AppMenu menu = parent.menu.getValue();
             Predicate<File> isAcceptableType = isDirOperation(menu)
                     ? File::isDirectory
                     : File::isFile;

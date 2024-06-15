@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -64,14 +62,5 @@ public class Row1Pane extends HBox implements ChildController {
         
         // 4.値変更時のイベントハンドラの設定
         // nop
-    }
-    
-    /**
-     * 選択されている比較メニューを返します。<br>
-     * 
-     * @return 選択されている比較メニュー
-     */
-    public ReadOnlyProperty<AppMenu> menu() {
-        return menuPane.menu();
     }
 }

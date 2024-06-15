@@ -5,9 +5,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -54,8 +51,6 @@ public class MenuPane extends HBox implements ChildController {
     @FXML
     private CheckBox recursivelyCheckBox;
     
-    private final Property<AppMenu> menu = new SimpleObjectProperty<>();
-    
     /**
      * コンストラクタ<br>
      * 
@@ -77,7 +72,7 @@ public class MenuPane extends HBox implements ChildController {
         recursivelyCheckBox.disableProperty().bind(compareDirsRadioButton.selectedProperty().not());
         
         // 2.項目ごとの各種設定
-        menu.bind(Bindings.createObjectBinding(
+        parent.menu.bind(Bindings.createObjectBinding(
                 () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? AppMenu.COMPARE_BOOKS
                         : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? AppMenu.COMPARE_SHEETS
                                 : recursivelyCheckBox.isSelected()
@@ -100,20 +95,11 @@ public class MenuPane extends HBox implements ChildController {
                 ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
         
         // 4.値変更時のイベントハンドラの設定
-        menu.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+        parent.menu.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
         
         recursivelyCheckBox.selectedProperty()
                 .addListener((target, oldValue, newValue) -> ar.changeSetting(
                         SettingKeys.COMPARE_DIRS_RECURSIVELY,
                         newValue));
-    }
-    
-    /**
-     * 選択されている比較メニューを返します。<br>
-     * 
-     * @return 選択されている比較メニュー
-     */
-    public ReadOnlyProperty<AppMenu> menu() {
-        return menu;
     }
 }

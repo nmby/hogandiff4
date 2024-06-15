@@ -61,8 +61,8 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
         editPairingButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
-                parent.menu(), parent.isReady()));
+                () -> parent.menu.getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
+                parent.menu, parent.isReady()));
         
         // 2.項目ごとの各種設定
         editPairingButton.setOnAction(event -> editPairing());
@@ -76,7 +76,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
     
     private void editPairing() {
         try {
-            AppMenu menu = parent.menu().getValue();
+            AppMenu menu = parent.menu.getValue();
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,

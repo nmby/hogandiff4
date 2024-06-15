@@ -13,8 +13,9 @@ import java.util.concurrent.Executors;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -64,6 +65,9 @@ public class MainController extends VBox {
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
     
+    /** 現在選択されている比較メニュー */
+    public final Property<AppMenu> menu = new SimpleObjectProperty<>();
+    
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
@@ -100,15 +104,6 @@ public class MainController extends VBox {
         
         // 4.値変更時のイベントハンドラの設定
         // nop
-    }
-    
-    /**
-     * 比較メニューを返します。<br>
-     * 
-     * @return 比較メニュー
-     */
-    public ReadOnlyProperty<AppMenu> menu() {
-        return row1Pane.menu();
     }
     
     /**

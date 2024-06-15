@@ -78,7 +78,7 @@ public class TargetsPane extends VBox implements ChildController {
         
         bookCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
-                    AppMenu menu = parent.menu().getValue();
+                    AppMenu menu = parent.menu.getValue();
                     BookInfo bookInfoA = targetSelectionPane1.bookInfo().getValue();
                     BookInfo bookInfoB = targetSelectionPane2.bookInfo().getValue();
                     Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
@@ -97,7 +97,7 @@ public class TargetsPane extends VBox implements ChildController {
                         default -> throw new AssertionError();
                     };
                 },
-                parent.menu(),
+                parent.menu,
                 targetSelectionPane1.bookInfo(),
                 targetSelectionPane2.bookInfo(),
                 targetSelectionPane1.sheetName(),
@@ -109,7 +109,7 @@ public class TargetsPane extends VBox implements ChildController {
         
         dirCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
-                    AppMenu menu = parent.menu().getValue();
+                    AppMenu menu = parent.menu.getValue();
                     DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
                     DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
                     Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
@@ -126,7 +126,7 @@ public class TargetsPane extends VBox implements ChildController {
                         default -> throw new AssertionError();
                     };
                 },
-                parent.menu(),
+                parent.menu,
                 targetSelectionPane1.dirInfo(),
                 targetSelectionPane2.dirInfo()));
         
@@ -136,7 +136,7 @@ public class TargetsPane extends VBox implements ChildController {
         
         treeCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
-                    AppMenu menu = parent.menu().getValue();
+                    AppMenu menu = parent.menu.getValue();
                     DirInfo topDirInfoA = targetSelectionPane1.dirInfo().getValue();
                     DirInfo topDirInfoB = targetSelectionPane2.dirInfo().getValue();
                     Pair<DirInfo> topDirInfoPair = Pair.of(topDirInfoA, topDirInfoB);
@@ -154,7 +154,7 @@ public class TargetsPane extends VBox implements ChildController {
                         default -> throw new AssertionError();
                     };
                 },
-                parent.menu(),
+                parent.menu,
                 targetSelectionPane1.dirInfo(),
                 targetSelectionPane2.dirInfo()));
         
