@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
+import javafx.beans.property.Property;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
@@ -73,20 +74,29 @@ public class TargetsPane extends VBox implements ChildController {
         parent.sheetCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    BookInfo bookInfoA = parent.bookInfoPair.a().getValue();
-                    BookInfo bookInfoB = parent.bookInfoPair.b().getValue();
-                    Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
-                    String sheetNameA = parent.sheetNamePair.a().getValue();
-                    String sheetNameB = parent.sheetNamePair.b().getValue();
-                    Pair<String> sheetNamePair = Pair.of(sheetNameA, sheetNameB);
+                    Pair<BookInfo> bookInfoPair = parent.bookInfoPair.map(Property::getValue);
+                    Pair<String> sheetNamePair = parent.sheetNamePair.map(Property::getValue);
+                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                     
-                    return switch (menu) {
-                        case COMPARE_SHEETS -> bookInfoPair.isPaired() && sheetNamePair.isPaired()
-                                ? BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair)
-                                : null;
-                        case COMPARE_BOOKS, COMPARE_DIRS, COMPARE_TREES -> null;
-                        default -> throw new AssertionError();
-                    };
+                    switch (menu) {
+                        case COMPARE_SHEETS:
+                            if (!bookInfoPair.isPaired() || !sheetNamePair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null
+                                    && bookInfoPair.equals(prevValue.parentPair())
+                                    && sheetNamePair.equals(prevValue.childPairs().get(0))) {
+                                return prevValue;
+                            } else {
+                                return BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair);
+                            }
+                        case COMPARE_BOOKS:
+                        case COMPARE_DIRS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
                 },
                 parent.menu,
                 parent.bookInfoPair.a(),
@@ -97,17 +107,28 @@ public class TargetsPane extends VBox implements ChildController {
         parent.bookCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    BookInfo bookInfoA = parent.bookInfoPair.a().getValue();
-                    BookInfo bookInfoB = parent.bookInfoPair.b().getValue();
-                    Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
+                    Pair<BookInfo> bookInfoPair = parent.bookInfoPair.map(Property::getValue);
+                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                     
-                    return switch (menu) {
-                        case COMPARE_BOOKS -> bookInfoPair.isPaired()
-                                ? BookCompareInfo.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
-                                : null;
-                        case COMPARE_SHEETS, COMPARE_DIRS, COMPARE_TREES -> null;
-                        default -> throw new AssertionError();
-                    };
+                    switch (menu) {
+                        case COMPARE_BOOKS:
+                            if (!bookInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && bookInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return BookCompareInfo.calculate(
+                                        bookInfoPair,
+                                        Factory.sheetNamesMatcher(ar.settings()));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_DIRS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
                 },
                 parent.menu,
                 parent.bookInfoPair.a(),
@@ -116,21 +137,30 @@ public class TargetsPane extends VBox implements ChildController {
         parent.dirCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    DirInfo dirInfoA = parent.dirInfoPair.a().getValue();
-                    DirInfo dirInfoB = parent.dirInfoPair.b().getValue();
-                    Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
+                    Pair<DirInfo> dirInfoPair = parent.dirInfoPair.map(Property::getValue);
+                    DirCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
                     
-                    return switch (menu) {
-                        case COMPARE_DIRS -> dirInfoPair.isPaired()
-                                ? DirCompareInfo.calculate(
+                    switch (menu) {
+                        case COMPARE_DIRS:
+                            if (!dirInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return DirCompareInfo.calculate(
                                         dirInfoPair,
                                         Factory.bookNamesMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
-                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                                : null;
-                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
-                        default -> throw new AssertionError();
-                    };
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_BOOKS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
                 },
                 parent.menu,
                 parent.dirInfoPair.a(),
@@ -139,22 +169,31 @@ public class TargetsPane extends VBox implements ChildController {
         parent.treeCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    DirInfo topDirInfoA = parent.dirInfoPair.a().getValue();
-                    DirInfo topDirInfoB = parent.dirInfoPair.b().getValue();
-                    Pair<DirInfo> topDirInfoPair = Pair.of(topDirInfoA, topDirInfoB);
+                    Pair<DirInfo> dirInfoPair = parent.dirInfoPair.map(Property::getValue);
+                    TreeCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
                     
-                    return switch (menu) {
-                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_DIRS -> null;
-                        case COMPARE_TREES -> topDirInfoPair.isPaired()
-                                ? TreeCompareInfo.calculate(
-                                        topDirInfoPair,
+                    switch (menu) {
+                        case COMPARE_TREES:
+                            if (!dirInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return TreeCompareInfo.calculate(
+                                        dirInfoPair,
                                         Factory.dirsMatcher(ar.settings()),
                                         Factory.bookNamesMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
-                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                                : null;
-                        default -> throw new AssertionError();
-                    };
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_BOOKS:
+                        case COMPARE_DIRS:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
                 },
                 parent.menu,
                 parent.dirInfoPair.a(),
