@@ -36,6 +36,7 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
@@ -77,7 +78,7 @@ public class MainController extends VBox {
     public final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
     /** シート比較情報 */
-    public final Property<BookCompareInfo> sheetCompareInfo = new SimpleObjectProperty<>();
+    public final Property<SheetCompareInfo> sheetCompareInfo = new SimpleObjectProperty<>();
     
     /** Excelブック比較情報 */
     public final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();

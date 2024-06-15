@@ -13,6 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -55,8 +56,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             saveAndShowResultText(workDir, bResult.toString(), 75, 80);
             
             // 4. 比較結果の表示（Excelブック）
-            BookCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            paintSaveAndShowBook(sheetCompareInfo, workDir, bResult, 80, 98);
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            paintSaveAndShowBook(workDir, sheetCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
             
             // 5. 処理終了のアナウンス
             announceEnd();
@@ -79,7 +80,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            BookCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
             Pair<Path> bookPathPair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
             Pair<String> sheetNamePair = sheetCompareInfo.childPairs().get(0);
             
@@ -109,7 +110,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            BookCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = sheetCompareInfo.parentPair();
             Pair<String> sheetNamePair = sheetCompareInfo.childPairs().get(0);
             
@@ -134,7 +135,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    sheetCompareInfo,
+                    BookCompareInfo.of(
+                            sheetCompareInfo.parentPair(),
+                            sheetCompareInfo.childPairs()),
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {

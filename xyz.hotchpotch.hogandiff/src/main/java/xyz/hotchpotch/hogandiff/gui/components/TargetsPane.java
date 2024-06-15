@@ -20,6 +20,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -76,7 +77,7 @@ public class TargetsPane extends VBox implements ChildController {
                     AppMenu menu = parent.menu.getValue();
                     Pair<BookInfo> bookInfoPair = parent.bookInfoPair.map(Property::getValue);
                     Pair<String> sheetNamePair = parent.sheetNamePair.map(Property::getValue);
-                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    SheetCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_SHEETS:
@@ -88,7 +89,7 @@ public class TargetsPane extends VBox implements ChildController {
                                     && sheetNamePair.equals(prevValue.childPairs().get(0))) {
                                 return prevValue;
                             } else {
-                                return BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair);
+                                return SheetCompareInfo.of(bookInfoPair, sheetNamePair);
                             }
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:

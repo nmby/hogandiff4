@@ -57,7 +57,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 3. 比較結果の表示（Excelブック）
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            paintSaveAndShowBook(bookCompareInfo, workDir, bResult, 80, 98);
+            paintSaveAndShowBook(workDir, bookCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
             
             // 4. 処理終了のアナウンス
             announceEnd();

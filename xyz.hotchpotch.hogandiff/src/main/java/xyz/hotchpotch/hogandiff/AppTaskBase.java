@@ -208,8 +208,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * Excelブックの各シートに比較結果の色を付けて保存し、
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 
-     * @param bookCompareInfo Excelブック比較情報
      * @param workDir 作業用フォルダ
+     * @param srcBookPath Excelブックのパス
      * @param bResult Excelブック比較結果
      * @param progressBefore 進捗率（開始時）
      * @param progressAfter 進捗率（終了時）
@@ -217,8 +217,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // CompareSheetsTask, CompareBooksTask
     protected void paintSaveAndShowBook(
-            BookCompareInfo bookCompareInfo,
             Path workDir,
+            Pair<Path> srcBookPath,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -226,9 +226,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, bookCompareInfo, bResult, 80, 98);
+                paintSaveAndShowBook1(workDir, srcBookPath.a(), bResult, 80, 98);
             } else {
-                paintSaveAndShowBook2(workDir, bookCompareInfo, bResult, 80, 98);
+                paintSaveAndShowBook2(workDir, srcBookPath, bResult, 80, 98);
             }
             
         } catch (Exception e) {
@@ -249,7 +249,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     private void paintSaveAndShowBook1(
             Path workDir,
-            BookCompareInfo bookCompareInfo,
+            Path srcBookPath,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -263,7 +263,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Path srcBookPath = bookCompareInfo.parentPair().a().bookPath();
             dstBookPath = workDir.resolve(srcBookPath.getFileName());
             String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
@@ -308,7 +307,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     private void paintSaveAndShowBook2(
             Path workDir,
-            BookCompareInfo bookCompareInfo,
+            Pair<Path> srcBookPathPair,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -319,7 +318,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> srcBookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
             Pair<Path> dstBookPathPair = Side.map(
                     side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);

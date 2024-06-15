@@ -7,7 +7,7 @@ import java.util.Optional;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 public sealed interface CompareInfo<P, C, I>
-        permits BookCompareInfo, DirCompareInfo, TreeCompareInfo {
+        permits SheetCompareInfo, BookCompareInfo, DirCompareInfo, TreeCompareInfo {
     
     // [static members] ********************************************************
     
