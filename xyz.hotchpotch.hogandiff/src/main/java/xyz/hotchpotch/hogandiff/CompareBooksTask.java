@@ -56,7 +56,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             saveAndShowResultText(workDir, bResult.toString(), 75, 80);
             
             // 3. 比較結果の表示（Excelブック）
-            paintSaveAndShowBook(workDir, bResult, 80, 98);
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            paintSaveAndShowBook(bookCompareInfo, workDir, bResult, 80, 98);
             
             // 4. 処理終了のアナウンス
             announceEnd();

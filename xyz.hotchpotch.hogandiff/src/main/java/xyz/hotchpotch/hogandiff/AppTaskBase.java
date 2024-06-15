@@ -208,6 +208,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * Excelブックの各シートに比較結果の色を付けて保存し、
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 
+     * @param bookCompareInfo Excelブック比較情報
      * @param workDir 作業用フォルダ
      * @param bResult Excelブック比較結果
      * @param progressBefore 進捗率（開始時）
@@ -216,6 +217,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // CompareSheetsTask, CompareBooksTask
     protected void paintSaveAndShowBook(
+            BookCompareInfo bookCompareInfo,
             Path workDir,
             BookResult bResult,
             int progressBefore,
@@ -223,7 +225,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         try {
-            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             if (isSameBook()) {
                 paintSaveAndShowBook1(workDir, bookCompareInfo, bResult, 80, 98);
             } else {
@@ -477,7 +478,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         AppMenu menu = settings.get(SettingKeys.CURR_MENU);
         
         return switch (menu) {
-            case COMPARE_BOOKS, COMPARE_SHEETS -> settings
+            case COMPARE_SHEETS -> settings
+                    .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentPair().isIdentical();
+            case COMPARE_BOOKS -> settings
                     .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentPair().isIdentical();
         
             default -> throw new IllegalStateException("not suitable for " + menu);

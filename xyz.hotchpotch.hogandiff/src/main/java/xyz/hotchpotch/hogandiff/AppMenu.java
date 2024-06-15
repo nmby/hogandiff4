@@ -39,11 +39,11 @@ public enum AppMenu {
     COMPARE_SHEETS(
             CompareSheetsTask::new,
             settings -> {
-                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Objects.requireNonNull(bookCompareInfo);
+                BookCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Objects.requireNonNull(sheetCompareInfo);
                 
-                return !bookCompareInfo.parentPair().isIdentical()
-                        || !bookCompareInfo.childPairs().get(0).isIdentical();
+                return !sheetCompareInfo.parentPair().isIdentical()
+                        || !sheetCompareInfo.childPairs().get(0).isIdentical();
             }),
     
     /**

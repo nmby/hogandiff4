@@ -70,7 +70,7 @@ public class TargetsPane extends VBox implements ChildController {
         targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
         
-        parent.bookCompareInfo.bind(Bindings.createObjectBinding(
+        parent.sheetCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
                     BookInfo bookInfoA = parent.bookInfoPair.a().getValue();
@@ -84,10 +84,7 @@ public class TargetsPane extends VBox implements ChildController {
                         case COMPARE_SHEETS -> bookInfoPair.isPaired() && sheetNamePair.isPaired()
                                 ? BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair)
                                 : null;
-                        case COMPARE_BOOKS -> bookInfoPair.isPaired()
-                                ? BookCompareInfo.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
-                                : null;
-                        case COMPARE_DIRS, COMPARE_TREES -> null;
+                        case COMPARE_BOOKS, COMPARE_DIRS, COMPARE_TREES -> null;
                         default -> throw new AssertionError();
                     };
                 },
@@ -97,6 +94,25 @@ public class TargetsPane extends VBox implements ChildController {
                 parent.sheetNamePair.a(),
                 parent.sheetNamePair.b()));
         
+        parent.bookCompareInfo.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = parent.menu.getValue();
+                    BookInfo bookInfoA = parent.bookInfoPair.a().getValue();
+                    BookInfo bookInfoB = parent.bookInfoPair.b().getValue();
+                    Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
+                    
+                    return switch (menu) {
+                        case COMPARE_BOOKS -> bookInfoPair.isPaired()
+                                ? BookCompareInfo.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
+                                : null;
+                        case COMPARE_SHEETS, COMPARE_DIRS, COMPARE_TREES -> null;
+                        default -> throw new AssertionError();
+                    };
+                },
+                parent.menu,
+                parent.bookInfoPair.a(),
+                parent.bookInfoPair.b()));
+        
         parent.dirCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
@@ -105,7 +121,6 @@ public class TargetsPane extends VBox implements ChildController {
                     Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
                     
                     return switch (menu) {
-                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
                         case COMPARE_DIRS -> dirInfoPair.isPaired()
                                 ? DirCompareInfo.calculate(
                                         dirInfoPair,
@@ -113,6 +128,7 @@ public class TargetsPane extends VBox implements ChildController {
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
                                 : null;
+                        case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
                         default -> throw new AssertionError();
                     };
                 },

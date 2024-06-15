@@ -76,6 +76,9 @@ public class MainController extends VBox {
     /** 現在選択されている比較メニュー */
     public final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
+    /** シート比較情報 */
+    public final Property<BookCompareInfo> sheetCompareInfo = new SimpleObjectProperty<>();
+    
     /** Excelブック比較情報 */
     public final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
     
@@ -85,20 +88,20 @@ public class MainController extends VBox {
     /** フォルダツリー比較情報 */
     public final Property<TreeCompareInfo> treeCompareInfo = new SimpleObjectProperty<>();
     
-    /** フォルダ情報のペア */
-    public final Pair<Property<DirInfo>> dirInfoPair = Pair.of(
-            new SimpleObjectProperty<>(),
-            new SimpleObjectProperty<>());
+    /** シート名のペア */
+    public final Pair<StringProperty> sheetNamePair = Pair.of(
+            new SimpleStringProperty(),
+            new SimpleStringProperty());
     
     /** Excelブック情報のペア */
     public final Pair<Property<BookInfo>> bookInfoPair = Pair.of(
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
-    /** シート名のペア */
-    public final Pair<StringProperty> sheetNamePair = Pair.of(
-            new SimpleStringProperty(),
-            new SimpleStringProperty());
+    /** フォルダ情報のペア */
+    public final Pair<Property<DirInfo>> dirInfoPair = Pair.of(
+            new SimpleObjectProperty<>(),
+            new SimpleObjectProperty<>());
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
@@ -129,6 +132,10 @@ public class MainController extends VBox {
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
                 row4Pane.setVisible2(false);
             }
+        });
+        
+        sheetCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newValue);
         });
         
         bookCompareInfo.addListener((target, oldValue, newValue) -> {

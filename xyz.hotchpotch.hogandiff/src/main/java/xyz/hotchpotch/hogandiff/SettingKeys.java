@@ -150,6 +150,14 @@ public class SettingKeys {
             CURR_BOOK_INFO1,
             CURR_BOOK_INFO2);
     
+    /** 今回の実行におけるシート比較情報 */
+    public static final Key<BookCompareInfo> CURR_SHEET_COMPARE_INFO = new Key<>(
+            "current.sheetCompareInfo",
+            () -> null,
+            encodeNotSupported("cannot encode."),
+            decodeNotSupported("cannnot decode."),
+            false);
+    
     /** 今回の実行におけるExcelブック比較情報 */
     public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookCompareInfo",
