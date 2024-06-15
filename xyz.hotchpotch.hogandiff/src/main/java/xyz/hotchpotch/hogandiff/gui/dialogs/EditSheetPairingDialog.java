@@ -8,15 +8,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.CompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
  * 
- * @param <T> 比較情報の型
  * @author nmby
  */
-public class EditPairingDialog<P, C, I> extends Dialog<String> {
+public class EditSheetPairingDialog extends Dialog<BookCompareInfo> {
     
     // static members **********************************************************
     
@@ -31,10 +30,10 @@ public class EditPairingDialog<P, C, I> extends Dialog<String> {
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditPairingDialog(CompareInfo<P, C, I> compareInfo) throws IOException {
+    public EditSheetPairingDialog(BookCompareInfo compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
-        EditPairingDialogPane2<P, C, I> editPairingDialogPane = new EditPairingDialogPane2<>();
+        EditSheetPairingDialogPane editPairingDialogPane = new EditSheetPairingDialogPane();
         editPairingDialogPane.init(this, compareInfo);
         editPairingDialogPane.getStylesheets().add(getClass().getResource("editPairingDialog.css").toExternalForm());
         
@@ -47,7 +46,7 @@ public class EditPairingDialog<P, C, I> extends Dialog<String> {
         this.setTitle("組み合わせ変更");
         this.setResizable(true);
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? "OK!!!"
+                ? editPairingDialogPane.getResult()
                 : null);
     }
 }

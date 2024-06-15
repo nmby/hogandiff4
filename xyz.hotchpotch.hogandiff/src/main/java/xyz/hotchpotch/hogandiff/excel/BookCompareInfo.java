@@ -75,6 +75,16 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
         return new BookCompareInfo(bookInfoPair, List.of(sheetNamePair));
     }
     
+    public static BookCompareInfo of(
+            Pair<BookInfo> bookInfoPair,
+            List<Pair<String>> sheetNamePairs) {
+        
+        Objects.requireNonNull(bookInfoPair);
+        Objects.requireNonNull(sheetNamePairs);
+        
+        return new BookCompareInfo(bookInfoPair, sheetNamePairs);
+    }
+    
     // [instance members] ******************************************************
     
     private final Pair<BookInfo> bookInfoPair;

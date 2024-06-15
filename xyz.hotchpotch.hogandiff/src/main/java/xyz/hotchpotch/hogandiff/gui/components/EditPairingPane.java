@@ -2,22 +2,25 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.CompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditPairingDialog;
-import xyz.hotchpotch.hogandiff.util.Settings.Key;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditSheetPairingDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
@@ -58,7 +61,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
         editPairingButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menu().getValue() == AppMenu.COMPARE_SHEETS || !parent.isReady().getValue(),
+                () -> parent.menu().getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
                 parent.menu(), parent.isReady()));
         
         // 2.項目ごとの各種設定
@@ -74,17 +77,29 @@ public class EditPairingPane extends AnchorPane implements ChildController {
     private void editPairing() {
         try {
             AppMenu menu = parent.menu().getValue();
+            if (!menu.isValidTargets(ar.settings())) {
+                new Alert(
+                        AlertType.WARNING,
+                        rb.getString("gui.MainController.010"),
+                        ButtonType.OK)
+                                .showAndWait();
+                return;
+            }
             
-            Key<? extends CompareInfo<?, ?, ?>> key = switch (menu) {
-                case COMPARE_SHEETS -> throw new AssertionError();
-                case COMPARE_BOOKS -> SettingKeys.CURR_BOOK_COMPARE_INFO;
-                case COMPARE_DIRS -> SettingKeys.CURR_DIR_COMPARE_INFO;
-                case COMPARE_TREES -> SettingKeys.CURR_TREE_COMPARE_INFO;
-            };
-            CompareInfo<?, ?, ?> compareInfo = ar.settings().get(key);
-            
-            EditPairingDialog<?, ?, ?> dialog = new EditPairingDialog<>(compareInfo);
-            dialog.showAndWait();
+            switch (menu) {
+                case COMPARE_BOOKS:
+                    BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    EditSheetPairingDialog dialog = new EditSheetPairingDialog(compareInfo);
+                    Optional<BookCompareInfo> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        
+                    }
+                    
+                case COMPARE_SHEETS:
+                case COMPARE_DIRS:
+                case COMPARE_TREES:
+                    throw new UnsupportedOperationException();
+            }
             
         } catch (IOException e) {
             // TODO 自動生成された catch ブロック

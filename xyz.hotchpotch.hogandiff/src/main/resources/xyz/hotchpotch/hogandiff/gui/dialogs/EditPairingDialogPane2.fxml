@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -9,23 +10,27 @@
 <?import javafx.scene.layout.VBox?>
 
 <fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" type="VBox" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="parentPane" VBox.vgrow="ALWAYS">
-         <children>
-            <Label fx:id="parentLabelA" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
-            <Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="75.0" HBox.hgrow="NEVER" />
-            <Label fx:id="parentLabelB" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
-      <GridPane fx:id="gridPane" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="600.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="75.0" />
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="NEVER" />
-        </rowConstraints>
-      </GridPane>
-   </children>
+	<children>
+		<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="parentPane" VBox.vgrow="ALWAYS">
+			<children>
+				<Label fx:id="parentLabelA" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
+				<Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="75.0" HBox.hgrow="NEVER" />
+				<Label fx:id="parentLabelB" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
+			</children>
+		</HBox>
+      <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+         <content>
+      		<GridPane fx:id="gridPane" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="600.0">
+      			<columnConstraints>
+      				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+      				<ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="75.0" />
+      				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+      			</columnConstraints>
+      			<rowConstraints>
+      				<RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="NEVER" />
+      			</rowConstraints>
+      		</GridPane>
+         </content>
+      </ScrollPane>
+	</children>
 </fx:root>
