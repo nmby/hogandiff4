@@ -7,8 +7,6 @@ import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
@@ -47,10 +45,6 @@ public class TargetsPane extends VBox implements ChildController {
     @FXML
     private TargetSelectionPane targetSelectionPane2;
     
-    private final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
-    private final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
-    private final Property<TreeCompareInfo> treeCompareInfo = new SimpleObjectProperty<>();
-    
     /**
      * コンストラクタ<br>
      * 
@@ -76,14 +70,14 @@ public class TargetsPane extends VBox implements ChildController {
         targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
         
-        bookCompareInfo.bind(Bindings.createObjectBinding(
+        parent.bookCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    BookInfo bookInfoA = targetSelectionPane1.bookInfo().getValue();
-                    BookInfo bookInfoB = targetSelectionPane2.bookInfo().getValue();
+                    BookInfo bookInfoA = parent.bookInfoPair.a().getValue();
+                    BookInfo bookInfoB = parent.bookInfoPair.b().getValue();
                     Pair<BookInfo> bookInfoPair = Pair.of(bookInfoA, bookInfoB);
-                    String sheetNameA = targetSelectionPane1.sheetName().getValue();
-                    String sheetNameB = targetSelectionPane2.sheetName().getValue();
+                    String sheetNameA = parent.sheetNamePair.a().getValue();
+                    String sheetNameB = parent.sheetNamePair.b().getValue();
                     Pair<String> sheetNamePair = Pair.of(sheetNameA, sheetNameB);
                     
                     return switch (menu) {
@@ -98,20 +92,16 @@ public class TargetsPane extends VBox implements ChildController {
                     };
                 },
                 parent.menu,
-                targetSelectionPane1.bookInfo(),
-                targetSelectionPane2.bookInfo(),
-                targetSelectionPane1.sheetName(),
-                targetSelectionPane2.sheetName()));
+                parent.bookInfoPair.a(),
+                parent.bookInfoPair.b(),
+                parent.sheetNamePair.a(),
+                parent.sheetNamePair.b()));
         
-        bookCompareInfo.addListener((target, oldValue, newValue) -> {
-            ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newValue);
-        });
-        
-        dirCompareInfo.bind(Bindings.createObjectBinding(
+        parent.dirCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    DirInfo dirInfoA = targetSelectionPane1.dirInfo().getValue();
-                    DirInfo dirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    DirInfo dirInfoA = parent.dirInfoPair.a().getValue();
+                    DirInfo dirInfoB = parent.dirInfoPair.b().getValue();
                     Pair<DirInfo> dirInfoPair = Pair.of(dirInfoA, dirInfoB);
                     
                     return switch (menu) {
@@ -127,18 +117,14 @@ public class TargetsPane extends VBox implements ChildController {
                     };
                 },
                 parent.menu,
-                targetSelectionPane1.dirInfo(),
-                targetSelectionPane2.dirInfo()));
+                parent.dirInfoPair.a(),
+                parent.dirInfoPair.b()));
         
-        dirCompareInfo.addListener((target, oldValue, newValue) -> {
-            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
-        });
-        
-        treeCompareInfo.bind(Bindings.createObjectBinding(
+        parent.treeCompareInfo.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = parent.menu.getValue();
-                    DirInfo topDirInfoA = targetSelectionPane1.dirInfo().getValue();
-                    DirInfo topDirInfoB = targetSelectionPane2.dirInfo().getValue();
+                    DirInfo topDirInfoA = parent.dirInfoPair.a().getValue();
+                    DirInfo topDirInfoB = parent.dirInfoPair.b().getValue();
                     Pair<DirInfo> topDirInfoPair = Pair.of(topDirInfoA, topDirInfoB);
                     
                     return switch (menu) {
@@ -155,12 +141,8 @@ public class TargetsPane extends VBox implements ChildController {
                     };
                 },
                 parent.menu,
-                targetSelectionPane1.dirInfo(),
-                targetSelectionPane2.dirInfo()));
-        
-        treeCompareInfo.addListener((target, oldValue, newValue) -> {
-            ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newValue);
-        });
+                parent.dirInfoPair.a(),
+                parent.dirInfoPair.b()));
         
         // 3.初期値の設定
         // nop

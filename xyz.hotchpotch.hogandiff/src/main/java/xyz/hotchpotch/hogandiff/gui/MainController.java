@@ -16,6 +16,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -30,10 +32,16 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -68,6 +76,30 @@ public class MainController extends VBox {
     /** 現在選択されている比較メニュー */
     public final Property<AppMenu> menu = new SimpleObjectProperty<>();
     
+    /** Excelブック比較情報 */
+    public final Property<BookCompareInfo> bookCompareInfo = new SimpleObjectProperty<>();
+    
+    /** フォルダ比較情報 */
+    public final Property<DirCompareInfo> dirCompareInfo = new SimpleObjectProperty<>();
+    
+    /** フォルダツリー比較情報 */
+    public final Property<TreeCompareInfo> treeCompareInfo = new SimpleObjectProperty<>();
+    
+    /** フォルダ情報のペア */
+    public final Pair<Property<DirInfo>> dirInfoPair = Pair.of(
+            new SimpleObjectProperty<>(),
+            new SimpleObjectProperty<>());
+    
+    /** Excelブック情報のペア */
+    public final Pair<Property<BookInfo>> bookInfoPair = Pair.of(
+            new SimpleObjectProperty<>(),
+            new SimpleObjectProperty<>());
+    
+    /** シート名のペア */
+    public final Pair<StringProperty> sheetNamePair = Pair.of(
+            new SimpleStringProperty(),
+            new SimpleStringProperty());
+    
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
@@ -97,6 +129,18 @@ public class MainController extends VBox {
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
                 row4Pane.setVisible2(false);
             }
+        });
+        
+        bookCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newValue);
+        });
+        
+        dirCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newValue);
+        });
+        
+        treeCompareInfo.addListener((target, oldValue, newValue) -> {
+            ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newValue);
         });
         
         // 3.初期値の設定
