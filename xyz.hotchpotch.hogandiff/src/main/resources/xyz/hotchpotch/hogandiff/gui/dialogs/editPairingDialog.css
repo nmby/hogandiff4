@@ -1,0 +1,16 @@
+
+/*
+    -fx-alignment: center;
+    -fx-background-color: white;
+    -fx-background-insets: 0.0px 0.0px 0.0px 2.0px;
+    -fx-border-insets: 0.0px 0.0px 0.0px 2.0px;
+    -fx-font-size: 12.0px;
+    -fx-padding: 10.0px 10.0px 7.0px 10.0px;
+    -fx-pref-width: 28.0px;
+    -fx-spacing: 3.0px;
+    -fx-text-fill: white;
+*/
+
+.parentPane {
+    -fx-padding: 10.0px 0.0px;
+}

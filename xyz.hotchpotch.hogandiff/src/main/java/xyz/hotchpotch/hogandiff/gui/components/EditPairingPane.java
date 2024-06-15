@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -56,7 +57,9 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editPairingButton.disableProperty().bind(parent.isReady().not());
+        editPairingButton.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.menu().getValue() == AppMenu.COMPARE_SHEETS || !parent.isReady().getValue(),
+                parent.menu(), parent.isReady()));
         
         // 2.項目ごとの各種設定
         editPairingButton.setOnAction(event -> editPairing());
@@ -80,7 +83,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
             };
             CompareInfo<?, ?, ?> compareInfo = ar.settings().get(key);
             
-            EditPairingDialog<?> dialog = new EditPairingDialog<>(compareInfo);
+            EditPairingDialog<?, ?, ?> dialog = new EditPairingDialog<>(compareInfo);
             dialog.showAndWait();
             
         } catch (IOException e) {

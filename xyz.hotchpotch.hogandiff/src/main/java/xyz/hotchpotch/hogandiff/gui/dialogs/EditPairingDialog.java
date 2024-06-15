@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.excel.CompareInfo;
  * @param <T> 比較情報の型
  * @author nmby
  */
-public class EditPairingDialog<T extends CompareInfo<?, ?, ?>> extends Dialog<String> {
+public class EditPairingDialog<P, C, I> extends Dialog<String> {
     
     // static members **********************************************************
     
@@ -31,11 +31,12 @@ public class EditPairingDialog<T extends CompareInfo<?, ?, ?>> extends Dialog<St
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditPairingDialog(T compareInfo) throws IOException {
+    public EditPairingDialog(CompareInfo<P, C, I> compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
-        EditPairingDialogPane editPairingDialogPane = new EditPairingDialogPane();
+        EditPairingDialogPane2<P, C, I> editPairingDialogPane = new EditPairingDialogPane2<>();
         editPairingDialogPane.init(this, compareInfo);
+        editPairingDialogPane.getStylesheets().add(getClass().getResource("editPairingDialog.css").toExternalForm());
         
         DialogPane me = getDialogPane();
         me.setContent(editPairingDialogPane);
@@ -44,6 +45,7 @@ public class EditPairingDialog<T extends CompareInfo<?, ?, ?>> extends Dialog<St
                 ButtonType.CANCEL);
         
         this.setTitle("組み合わせ変更");
+        this.setResizable(true);
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? "OK!!!"
                 : null);
