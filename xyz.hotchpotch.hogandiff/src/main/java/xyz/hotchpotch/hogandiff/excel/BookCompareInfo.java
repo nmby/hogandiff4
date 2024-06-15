@@ -27,7 +27,7 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static BookCompareInfo of(
+    public static BookCompareInfo calculate(
             Pair<BookInfo> bookInfoPair,
             Matcher<String> sheetNamesMatcher) {
         
@@ -62,8 +62,8 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
      * 
      * @param bookInfoPair 比較対象Excelブックの情報
      * @param sheetNamePair シート名のペア
-     * @throws NullPointerException パラメータが {@code null} の場合
      * @return 新たなインスタンス
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static BookCompareInfo ofSingle(
             Pair<BookInfo> bookInfoPair,
@@ -75,6 +75,14 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
         return new BookCompareInfo(bookInfoPair, List.of(sheetNamePair));
     }
     
+    /**
+     * 指定した内容で {@link BookCompareInfo} インスタンスを生成します。<br>
+     * 
+     * @param bookInfoPair Excelブック情報
+     * @param sheetNamePairs シート名の組み合わせ
+     * @return 新たなインスタンス
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
     public static BookCompareInfo of(
             Pair<BookInfo> bookInfoPair,
             List<Pair<String>> sheetNamePairs) {

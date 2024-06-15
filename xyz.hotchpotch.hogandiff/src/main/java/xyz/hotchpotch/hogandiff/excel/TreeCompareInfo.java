@@ -59,7 +59,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         private void doOneFloor(Pair<DirInfo> dirInfoPair) {
             assert dirInfoPair.hasA() || dirInfoPair.hasB();
             
-            DirCompareInfo dirCompareInfo = DirCompareInfo.of(
+            DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
                     dirInfoPair,
                     bookNamesMatcher,
                     sheetNamesMatcher,
@@ -95,7 +95,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static TreeCompareInfo of(
+    public static TreeCompareInfo calculate(
             Pair<DirInfo> topDirInfoPair,
             Matcher<DirInfo> dirsMatcher,
             Matcher<String> bookNamesMatcher,
@@ -139,7 +139,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
         
-        DirCompareInfo dirCompareInfo = DirCompareInfo.of(
+        DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
                 topDirInfoPair,
                 bookNamesMatcher,
                 sheetNamesMatcher,

@@ -91,7 +91,7 @@ public class TargetsPane extends VBox implements ChildController {
                                 ? BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair)
                                 : null;
                         case COMPARE_BOOKS -> bookInfoPair.isPaired()
-                                ? BookCompareInfo.of(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
+                                ? BookCompareInfo.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings()))
                                 : null;
                         case COMPARE_DIRS, COMPARE_TREES -> null;
                         default -> throw new AssertionError();
@@ -117,7 +117,7 @@ public class TargetsPane extends VBox implements ChildController {
                     return switch (menu) {
                         case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_TREES -> null;
                         case COMPARE_DIRS -> dirInfoPair.isPaired()
-                                ? DirCompareInfo.of(
+                                ? DirCompareInfo.calculate(
                                         dirInfoPair,
                                         Factory.bookNamesMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
@@ -144,7 +144,7 @@ public class TargetsPane extends VBox implements ChildController {
                     return switch (menu) {
                         case COMPARE_SHEETS, COMPARE_BOOKS, COMPARE_DIRS -> null;
                         case COMPARE_TREES -> topDirInfoPair.isPaired()
-                                ? TreeCompareInfo.of(
+                                ? TreeCompareInfo.calculate(
                                         topDirInfoPair,
                                         Factory.dirsMatcher(ar.settings()),
                                         Factory.bookNamesMatcher(ar.settings()),

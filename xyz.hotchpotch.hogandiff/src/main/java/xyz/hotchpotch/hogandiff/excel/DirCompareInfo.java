@@ -30,7 +30,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirCompareInfo of(
+    public static DirCompareInfo calculate(
             Pair<DirInfo> dirInfoPair,
             Matcher<String> bookNamesMatcher,
             Matcher<String> sheetNamesMatcher,
@@ -89,7 +89,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
             }
             
             BookCompareInfo bookCompareInfo = bookInfoPair != null
-                    ? BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
+                    ? BookCompareInfo.calculate(bookInfoPair, sheetNamesMatcher)
                     : null;
             bookCompareInfos.put(bookNamePair, Optional.ofNullable(bookCompareInfo));
         }
