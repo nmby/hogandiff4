@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param treeCompareInfo フォルダツリー比較情報
+ * @param treeCompareInfoProp フォルダツリー比較情報
  * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(

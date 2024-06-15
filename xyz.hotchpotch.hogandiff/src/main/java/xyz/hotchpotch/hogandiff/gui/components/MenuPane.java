@@ -72,7 +72,7 @@ public class MenuPane extends HBox implements ChildController {
         recursivelyCheckBox.disableProperty().bind(compareDirsRadioButton.selectedProperty().not());
         
         // 2.項目ごとの各種設定
-        parent.menu.bind(Bindings.createObjectBinding(
+        parent.menuProp.bind(Bindings.createObjectBinding(
                 () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? AppMenu.COMPARE_BOOKS
                         : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? AppMenu.COMPARE_SHEETS
                                 : recursivelyCheckBox.isSelected()
@@ -95,7 +95,7 @@ public class MenuPane extends HBox implements ChildController {
                 ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
         
         // 4.値変更時のイベントハンドラの設定
-        parent.menu.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+        parent.menuProp.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
         
         recursivelyCheckBox.selectedProperty()
                 .addListener((target, oldValue, newValue) -> ar.changeSetting(

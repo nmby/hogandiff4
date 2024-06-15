@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param dirCompareInfo フォルダ比較情報
+ * @param dirCompareInfoProp フォルダ比較情報
  * @param bookResults Excelブック名のペアに対応するExcelブック同士の比較結果のマップ
  * @param dirId フォルダの識別番号
  */

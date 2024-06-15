@@ -91,8 +91,6 @@ public class EditSheetPairingDialogPane extends VBox {
     }
     
     private void unpair(int i) {
-        System.out.println("unpair: " + i);
-        
         Pair<String> paired = currentPairs.get(i);
         Pair<String> unpairedA = Pair.of(paired.a(), null);
         Pair<String> unpairedB = Pair.of(null, paired.b());
