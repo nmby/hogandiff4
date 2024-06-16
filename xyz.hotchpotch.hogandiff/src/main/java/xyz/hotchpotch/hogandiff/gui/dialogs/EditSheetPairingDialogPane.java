@@ -155,6 +155,11 @@ public class EditSheetPairingDialogPane extends VBox {
         drawGrid();
     }
     
+    /**
+     * ユーザーによる編集を反映したExcelブック比較情報を返します。<br>
+     * 
+     * @return ユーザーによる編集を反映したExcelブック比較情報
+     */
     public BookCompareInfo getResult() {
         return BookCompareInfo.of(bookInfoPair, currentPairs);
     }

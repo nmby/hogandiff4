@@ -158,6 +158,9 @@ public class MainController extends VBox {
         // nop
     }
     
+    /**
+     * sheetCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
     // こんなメソッドをpublicにするのはいくらなんでもおかしい。
     // TODO: 処理構成を見直す
     public void bindSheetCompareInfoProp() {
@@ -195,6 +198,9 @@ public class MainController extends VBox {
                 sheetNamePropPair.b()));
     }
     
+    /**
+     * bookCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
     public void bindBookCompareInfoProp() {
         bookCompareInfoProp.bind(Bindings.createObjectBinding(
                 () -> {
@@ -227,6 +233,9 @@ public class MainController extends VBox {
                 bookInfoPropPair.b()));
     }
     
+    /**
+     * dirCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
     public void bindDirCompareInfoProp() {
         dirCompareInfoProp.bind(Bindings.createObjectBinding(
                 () -> {
@@ -261,6 +270,9 @@ public class MainController extends VBox {
                 dirInfoPropPair.b()));
     }
     
+    /**
+     * treeCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
     public void bindTreeCompareInfoProp() {
         treeCompareInfoProp.bind(Bindings.createObjectBinding(
                 () -> {

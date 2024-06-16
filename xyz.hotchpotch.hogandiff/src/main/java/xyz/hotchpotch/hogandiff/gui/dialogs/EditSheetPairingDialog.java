@@ -43,7 +43,7 @@ public class EditSheetPairingDialog extends Dialog<BookCompareInfo> {
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        this.setTitle("組み合わせ変更");
+        this.setTitle(rb.getString("fx.EditPairingPane.010"));
         this.setResizable(true);
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editPairingDialogPane.getResult()

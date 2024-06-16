@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  * 
- * @param bookCompareInfoProp Excelブック比較情報
+ * @param bookCompareInfo Excelブック比較情報
  * @param sheetResults Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
 public record BookResult(

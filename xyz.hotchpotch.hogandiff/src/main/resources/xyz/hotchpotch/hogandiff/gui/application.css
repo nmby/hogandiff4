@@ -38,12 +38,11 @@
 
 .editPairingPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
-    -fx-padding: 10.0px 10.0px 10.0px 10.0px;
+    -fx-padding: 12.0px 10.0px 12.0px 4.0px;
 }
 
 .editPairingButton {
-    -fx-font-size: 12.0px;
-    -fx-pref-width: 30.0px;
+    -fx-pref-width: 28.0px;
 }
 
 .executePane {
