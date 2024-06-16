@@ -14,3 +14,11 @@
 .parentPane {
     -fx-padding: 10.0px 0.0px;
 }
+
+.pairedNameLabel {
+    -fx-background-color: rgb(219.0, 244.0, 231.0);
+}
+
+.unpairedNameLabel {
+    -fx-background-color: rgb(255.0, 200.0, 200.0);
+}
