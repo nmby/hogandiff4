@@ -37,4 +37,9 @@ public record BookInfo(
         this.bookPath = bookPath;
         this.sheetNames = List.copyOf(sheetNames);
     }
+    
+    @Override
+    public String toString() {
+        return bookPath.getFileName().toString();
+    }
 }

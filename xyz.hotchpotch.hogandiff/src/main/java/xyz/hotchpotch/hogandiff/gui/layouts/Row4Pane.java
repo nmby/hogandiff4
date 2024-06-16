@@ -1,27 +1,25 @@
-package xyz.hotchpotch.hogandiff.gui.layout;
+package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.component.LinkPane;
-import xyz.hotchpotch.hogandiff.gui.component.MenuPane;
+import xyz.hotchpotch.hogandiff.gui.components.SettingsPane1;
+import xyz.hotchpotch.hogandiff.gui.components.SettingsPane2;
 
 /**
- * メインビュー一段目の画面部品です。<br>
+ * メインビュー四段目の画面部品です。<br>
  * 
  * @author nmby
  */
-public class Row1Pane extends HBox implements ChildController {
+public class Row4Pane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -29,20 +27,21 @@ public class Row1Pane extends HBox implements ChildController {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
+    private final double originalHeight = 155d;
     
     @FXML
-    private MenuPane menuPane;
+    private SettingsPane1 settingsPane1;
     
     @FXML
-    private LinkPane linkPane;
+    private SettingsPane2 settingsPane2;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public Row1Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row1Pane.fxml"), rb);
+    public Row4Pane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row4Pane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -56,8 +55,8 @@ public class Row1Pane extends HBox implements ChildController {
         // nop
         
         // 2.項目ごとの各種設定
-        menuPane.init(parent);
-        linkPane.init(parent);
+        settingsPane1.init(parent);
+        settingsPane2.init(parent);
         
         // 3.初期値の設定
         // nop
@@ -67,11 +66,22 @@ public class Row1Pane extends HBox implements ChildController {
     }
     
     /**
-     * 選択されている比較メニューを返します。<br>
+     * このコンポーネントの本来の高さを返します。<br>
      * 
-     * @return 選択されている比較メニュー
+     * @return このコンポーネントの本来の高さ
      */
-    public ReadOnlyProperty<AppMenu> menu() {
-        return menuPane.menu();
+    public double originalHeight() {
+        return originalHeight;
+    }
+    
+    /**
+     * このコンポーネントの表示／非表示を指定します。<br>
+     * 
+     * @param visible このコンポーネントを表示する場合は {@code true}
+     */
+    public void setVisible2(boolean visible) {
+        setVisible(visible);
+        setMaxHeight(visible ? USE_COMPUTED_SIZE : 0);
+        setMinHeight(visible ? USE_COMPUTED_SIZE : 0);
     }
 }

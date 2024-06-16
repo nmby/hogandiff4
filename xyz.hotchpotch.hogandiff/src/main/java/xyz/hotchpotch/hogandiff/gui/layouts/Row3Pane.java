@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui.layout;
+package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -14,8 +14,8 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.component.ReportingPane;
-import xyz.hotchpotch.hogandiff.gui.component.TogglePane;
+import xyz.hotchpotch.hogandiff.gui.components.ReportingPane;
+import xyz.hotchpotch.hogandiff.gui.components.TogglePane;
 
 /**
  * メインビュー三段目の画面部品です。<br>

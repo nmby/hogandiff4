@@ -79,7 +79,7 @@ public record TreeResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return treeCompareInfo.dirInfoPairs().stream()
+        return treeCompareInfo.childPairs().stream()
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -99,14 +99,14 @@ public record TreeResult(
     private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < treeCompareInfo.dirInfoPairs().size(); i++) {
-            Pair<DirInfo> dirInfoPair = treeCompareInfo.dirInfoPairs().get(i);
-            DirCompareInfo dirCompareInfo = treeCompareInfo.dirCompareInfos().get(dirInfoPair).get();
+        for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
+            Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
+            DirCompareInfo dirCompareInfo = treeCompareInfo.childCompareInfos().get(dirInfoPair).get();
             Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
             
-            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.dirInfoPair()));
+            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
             
-            if (dirCompareInfo.dirInfoPair().isPaired()) {
+            if (dirCompareInfo.parentPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
             } else {
                 str.append(BR);
@@ -121,10 +121,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(treeCompareInfo.topDirInfoPair().a().dirPath())
+                .append(treeCompareInfo.parentPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(treeCompareInfo.topDirInfoPair().b().dirPath())
+                .append(treeCompareInfo.parentPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui.component;
+package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -6,19 +6,20 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.components.LinkPane;
+import xyz.hotchpotch.hogandiff.gui.components.MenuPane;
 
 /**
- * 実行ボタン部分の画面部品です。<br>
+ * メインビュー一段目の画面部品です。<br>
  * 
  * @author nmby
  */
-public class ExecutePane extends AnchorPane implements ChildController {
+public class Row1Pane extends HBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -28,15 +29,18 @@ public class ExecutePane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button executeButton;
+    private MenuPane menuPane;
+    
+    @FXML
+    private LinkPane linkPane;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public ExecutePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ExecutePane.fxml"), rb);
+    public Row1Pane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row1Pane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -47,11 +51,11 @@ public class ExecutePane extends AnchorPane implements ChildController {
         Objects.requireNonNull(parent, "parent");
         
         // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        executeButton.disableProperty().bind(parent.isReady().not());
+        // nop
         
         // 2.項目ごとの各種設定
-        executeButton.setOnAction(event -> parent.execute());
+        menuPane.init(parent);
+        linkPane.init(parent);
         
         // 3.初期値の設定
         // nop

@@ -42,4 +42,9 @@ public record DirInfo(
         this.bookNames = List.copyOf(bookNames);
         this.children = List.copyOf(children);
     }
+    
+    @Override
+    public String toString() {
+        return dirPath.getFileName().toString();
+    }
 }

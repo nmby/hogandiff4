@@ -7,11 +7,11 @@
 	minWidth="-Infinity" styleClass="row3Pane" type="StackPane"
 	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<xyz.hotchpotch.hogandiff.gui.component.ReportingPane
+		<xyz.hotchpotch.hogandiff.gui.components.ReportingPane
 			fx:id="reportingPane" maxHeight="1.7976931348623157E308"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" styleClass="reportingPane" />
-		<xyz.hotchpotch.hogandiff.gui.component.TogglePane
+		<xyz.hotchpotch.hogandiff.gui.components.TogglePane
 			fx:id="togglePane" maxHeight="-Infinity" maxWidth="-Infinity"
 			minHeight="-Infinity" minWidth="-Infinity" styleClass="togglePane"
 			StackPane.alignment="BOTTOM_RIGHT" />

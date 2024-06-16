@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class DirCompareInfo {
+public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCompareInfo> {
     
     // [static members] ********************************************************
     
@@ -30,7 +30,7 @@ public class DirCompareInfo {
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirCompareInfo of(
+    public static DirCompareInfo calculate(
             Pair<DirInfo> dirInfoPair,
             Matcher<String> bookNamesMatcher,
             Matcher<String> sheetNamesMatcher,
@@ -89,7 +89,7 @@ public class DirCompareInfo {
             }
             
             BookCompareInfo bookCompareInfo = bookInfoPair != null
-                    ? BookCompareInfo.of(bookInfoPair, sheetNamesMatcher)
+                    ? BookCompareInfo.calculate(bookInfoPair, sheetNamesMatcher)
                     : null;
             bookCompareInfos.put(bookNamePair, Optional.ofNullable(bookCompareInfo));
         }
@@ -117,30 +117,18 @@ public class DirCompareInfo {
         this.bookCompareInfos = Map.copyOf(bookCompareInfos);
     }
     
-    /**
-     * 比較対象フォルダ情報を返します。<br>
-     * 
-     * @return 比較対象フォルダ情報
-     */
-    public Pair<DirInfo> dirInfoPair() {
+    @Override
+    public Pair<DirInfo> parentPair() {
         return dirInfoPair;
     }
     
-    /**
-     * Excelブック名の組み合わせを返します。<br>
-     * 
-     * @return Excelブック名の組み合わせ
-     */
-    public List<Pair<String>> bookNamePairs() {
+    @Override
+    public List<Pair<String>> childPairs() {
         return bookNamePairs;
     }
     
-    /**
-     * Excelブック比較情報を返します。<br>
-     * 
-     * @return Excelブック比較情報
-     */
-    public Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos() {
+    @Override
+    public Map<Pair<String>, Optional<BookCompareInfo>> childCompareInfos() {
         return bookCompareInfos;
     }
 }

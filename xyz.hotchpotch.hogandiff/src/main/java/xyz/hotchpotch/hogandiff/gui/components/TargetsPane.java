@@ -1,25 +1,27 @@
-package xyz.hotchpotch.hogandiff.gui.layout;
+package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.component.SettingsPane1;
-import xyz.hotchpotch.hogandiff.gui.component.SettingsPane2;
+import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
- * メインビュー四段目の画面部品です。<br>
+ * 比較対象指定部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class Row4Pane extends HBox implements ChildController {
+public class TargetsPane extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -27,21 +29,20 @@ public class Row4Pane extends HBox implements ChildController {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
-    private final double originalHeight = 155d;
     
     @FXML
-    private SettingsPane1 settingsPane1;
+    private TargetSelectionPane targetSelectionPane1;
     
     @FXML
-    private SettingsPane2 settingsPane2;
+    private TargetSelectionPane targetSelectionPane2;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public Row4Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row4Pane.fxml"), rb);
+    public TargetsPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -51,12 +52,14 @@ public class Row4Pane extends HBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent, "parent");
         
+        ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
+        
         // 1.disableプロパティのバインディング
-        // nop
+        disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
-        settingsPane1.init(parent);
-        settingsPane2.init(parent);
+        targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
+        targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
         
         // 3.初期値の設定
         // nop
@@ -65,23 +68,8 @@ public class Row4Pane extends HBox implements ChildController {
         // nop
     }
     
-    /**
-     * このコンポーネントの本来の高さを返します。<br>
-     * 
-     * @return このコンポーネントの本来の高さ
-     */
-    public double originalHeight() {
-        return originalHeight;
-    }
-    
-    /**
-     * このコンポーネントの表示／非表示を指定します。<br>
-     * 
-     * @param visible このコンポーネントを表示する場合は {@code true}
-     */
-    public void setVisible2(boolean visible) {
-        setVisible(visible);
-        setMaxHeight(visible ? USE_COMPUTED_SIZE : 0);
-        setMinHeight(visible ? USE_COMPUTED_SIZE : 0);
+    @Override
+    public BooleanExpression isReady() {
+        return targetSelectionPane1.isReady().and(targetSelectionPane2.isReady());
     }
 }

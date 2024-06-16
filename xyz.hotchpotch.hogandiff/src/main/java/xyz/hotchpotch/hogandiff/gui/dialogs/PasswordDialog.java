@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.gui;
+package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
 import java.nio.file.Path;

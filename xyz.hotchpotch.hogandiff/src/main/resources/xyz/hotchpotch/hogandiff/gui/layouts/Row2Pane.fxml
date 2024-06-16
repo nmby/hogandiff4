@@ -7,11 +7,15 @@
 	type="HBox" xmlns="http://javafx.com/javafx/18"
 	xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<xyz.hotchpotch.hogandiff.gui.component.TargetsPane
+		<xyz.hotchpotch.hogandiff.gui.components.TargetsPane
 			fx:id="targetsPane" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-		<xyz.hotchpotch.hogandiff.gui.component.ExecutePane
+		<xyz.hotchpotch.hogandiff.gui.components.EditPairingPane
+			fx:id="editPairingPane" maxHeight="1.7976931348623157E308"
+			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+			HBox.hgrow="NEVER" />
+		<xyz.hotchpotch.hogandiff.gui.components.ExecutePane
 			fx:id="executePane" maxHeight="1.7976931348623157E308"
 			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
 			HBox.hgrow="NEVER" />

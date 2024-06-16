@@ -1,19 +1,16 @@
-
 .root {
     -fx-font-size: 12.0px;
-	-fx-padding: 10.0px 10.0px 7.0px 10.0px;
-	-fx-background-color: white;
+    -fx-padding: 10.0px 10.0px 7.0px 10.0px;
+    -fx-background-color: white;
 }
 
 .row1Pane {
     -fx-padding: 0.0px 0.0px 7.0px 0.0px;
 }
 
-.menuPane {
-}
+.menuPane {}
 
 .row2Pane {
-    -fx-spacing: 2.0px;
     -fx-padding: 0.0px 0.0px 3.0px 0.0px;
 }
 
@@ -23,7 +20,7 @@
 
 .targetSelectionPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
-    -fx-padding: 0.0px 12.0px 0.0px 0.0px
+    -fx-padding: 0.0px;
 }
 
 .targetTitleLabel {
@@ -39,9 +36,20 @@
     -fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
+.editPairingPane {
+    -fx-background-color: rgb(219.0, 244.0, 231.0);
+    -fx-padding: 12.0px 10.0px 12.0px 4.0px;
+}
+
+.editPairingButton {
+    -fx-pref-width: 28.0px;
+}
+
 .executePane {
     -fx-background-color: rgb(255.0, 200.0, 200.0);
-    -fx-padding: 10.0px 10.0px 10.0px 10.0px;
+    -fx-padding: 10.0px 10.0px 10.0px 12.0px;
+    -fx-border-insets: 0.0px 0.0px 0.0px 2.0px;
+    -fx-background-insets: 0.0px 0.0px 0.0px 2.0px;
 }
 
 .executeButton {

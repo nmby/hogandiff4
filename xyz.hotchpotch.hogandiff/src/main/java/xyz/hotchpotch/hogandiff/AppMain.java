@@ -76,8 +76,8 @@ public class AppMain extends Application {
                 appResource.get());
         Parent root = loader.load();
         Scene scene = new Scene(root);
-        String cssPath = getClass().getResource("gui/application.css").toExternalForm();
-        root.getStylesheets().add(cssPath.replace(" ", "%20"));
+        String cssPath = getClass().getResource("gui/application.css").toExternalForm().replace(" ", "%20");
+        root.getStylesheets().add(cssPath);
         Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
         Settings settings = appResource.settings();
         
