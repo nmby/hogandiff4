@@ -13,17 +13,17 @@
 	<children>
 		<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="parentPane" VBox.vgrow="ALWAYS">
 			<children>
-				<Label fx:id="parentLabelA" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
-				<Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="75.0" HBox.hgrow="NEVER" />
-				<Label fx:id="parentLabelB" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" text="Label" HBox.hgrow="ALWAYS" />
+				<Label fx:id="parentLabelA" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" styleClass="parentLabel" text="Label" HBox.hgrow="ALWAYS" />
+				<Pane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="50.0" HBox.hgrow="NEVER" />
+				<Label fx:id="parentLabelB" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" styleClass="parentLabel" text="Label" HBox.hgrow="ALWAYS" />
 			</children>
 		</HBox>
-      <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+      <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
          <content>
       		<GridPane fx:id="gridPane" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="300.0" prefWidth="600.0">
       			<columnConstraints>
       				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-      				<ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="75.0" />
+      				<ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" />
       				<ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
       			</columnConstraints>
       			<rowConstraints>

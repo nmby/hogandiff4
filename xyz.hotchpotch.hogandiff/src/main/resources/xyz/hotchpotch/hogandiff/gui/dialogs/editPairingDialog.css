@@ -1,4 +1,3 @@
-
 /*
     -fx-alignment: center;
     -fx-background-color: white;
@@ -13,6 +12,19 @@
 
 .parentPane {
     -fx-padding: 10.0px 0.0px;
+    -fx-pref-width: 100;
+}
+
+.parentLabel {
+    -fx-background-color: red;
+}
+
+.nameLabel {
+    -fx-pref-height: 30px;
+    -fx-padding: 3.0px 10.0px;
+    -fx-background-color: white;
+    -fx-background-insets: 2.0px 3.0px;
+    -fx-border-insets: 2.0px 3.0px;
 }
 
 .pairedNameLabel {
@@ -21,4 +33,8 @@
 
 .unpairedNameLabel {
     -fx-background-color: rgb(255.0, 200.0, 200.0);
+}
+
+.unpairButton {
+    -fx-pref-width: 50px;
 }

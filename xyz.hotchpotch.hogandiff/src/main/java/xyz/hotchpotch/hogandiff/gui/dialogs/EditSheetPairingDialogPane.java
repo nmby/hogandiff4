@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -151,6 +153,7 @@ public class EditSheetPairingDialogPane extends VBox {
             this.idx = idx;
             this.side = side;
             setText(name);
+            setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("nameLabel");
             getStyleClass().add("pairedNameLabel");
         }
@@ -171,6 +174,7 @@ public class EditSheetPairingDialogPane extends VBox {
             this.side = side;
             this.name = name;
             setText(name);
+            setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("nameLabel");
             getStyleClass().add("unpairedNameLabel");
             setOnDragDetected(this::onDragDetected);
@@ -203,7 +207,7 @@ public class EditSheetPairingDialogPane extends VBox {
         private DummyLabel(int idx, Side side) {
             this.idx = idx;
             this.side = side;
-            setText("(dummy)");
+            setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("dummyLabel");
             setOnDragOver(this::onDragOver);
             setOnDragDropped(this::onDragDropped);
@@ -277,12 +281,16 @@ public class EditSheetPairingDialogPane extends VBox {
         
         // static members ------------------------------------------------------
         
+        private static Image linkOffImage = new Image(UnpairButton.class.getResourceAsStream("link-off.png"));
+        
         // instance members ----------------------------------------------------
         
         private final int idx;
         
         private UnpairButton(int idx) {
             this.idx = idx;
+            ImageView linkOffImageView = new ImageView(linkOffImage);
+            setGraphic(linkOffImageView);
             getStyleClass().add("unpairButton");
             
             setOnAction(event -> unpair(idx));
