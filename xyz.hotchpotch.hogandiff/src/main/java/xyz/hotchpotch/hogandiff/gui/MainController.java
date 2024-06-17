@@ -6,9 +6,11 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -338,15 +340,54 @@ public class MainController extends VBox {
     // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
     // FIXME: タスクの結果に応じて精緻に判定を行うように修正する
     private void alertPasswordUnlocked() {
-        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-        boolean passwordUsed = 0 < readPasswords.values().stream().filter(password -> password != null).count();
-        if (passwordUsed) {
+        if (isPasswordUsed()) {
             new Alert(
                     AlertType.WARNING,
                     rb.getString("gui.MainController.020"),
                     ButtonType.OK)
                             .showAndWait();
         }
+    }
+    
+    private boolean isPasswordUsed() {
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        
+        Stream<Path> bookPathStream = switch (menu) {
+            case COMPARE_SHEETS -> {
+                SheetCompareInfo sheetCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> pair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield pair.isIdentical() ? Stream.of(pair.a()) : Stream.of(pair.a(), pair.b());
+            }
+            case COMPARE_BOOKS -> {
+                BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Pair<Path> pair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield Stream.of(pair.a(), pair.b()).filter(bookPath -> bookPath != null);
+            }
+            case COMPARE_DIRS -> {
+                DirCompareInfo dirCompareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                yield bookPathStream(dirCompareInfo);
+            }
+            case COMPARE_TREES -> {
+                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                yield treeCompareInfo.childCompareInfos().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .flatMap(this::bookPathStream);
+            }
+        };
+        
+        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+        return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+    }
+    
+    private Stream<Path> bookPathStream(DirCompareInfo dirCompareInfo) {
+        return dirCompareInfo.childPairs().stream()
+                .flatMap(bookNamePair -> {
+                    Pair<Path> dirPathPair = dirCompareInfo.parentPair().map(DirInfo::dirPath);
+                    Path bookPathA = bookNamePair.hasA() ? dirPathPair.a().resolve(bookNamePair.a()) : null;
+                    Path bookPathB = bookNamePair.hasB() ? dirPathPair.b().resolve(bookNamePair.b()) : null;
+                    return Stream.of(bookPathA, bookPathB).filter(bookPath -> bookPath != null);
+                });
     }
     
     /**
