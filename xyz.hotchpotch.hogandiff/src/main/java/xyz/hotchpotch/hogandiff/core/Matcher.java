@@ -170,7 +170,8 @@ public interface Matcher<T> {
      * マッチャーを返します。<br>
      * 
      * @param <T> リストの要素の型
-     * @param gapEvaluator 余剰コスト評価関数
+     * @param gapEvaluatorA 比較対象Aに適用する余剰コスト評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
      * @throws NullPointerException

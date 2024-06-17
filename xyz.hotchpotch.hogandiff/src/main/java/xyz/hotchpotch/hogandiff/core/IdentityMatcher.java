@@ -31,16 +31,31 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     private Map<?, Integer> mapA;
     private Map<?, Integer> mapB;
     
+    /**
+     * コンストラクタ
+     */
     /*package*/ IdentityMatcher() {
         this(Function.identity());
     }
     
+    /**
+     * コンストラクタ
+     * 
+     * @param extractor 識別子抽出関数
+     */
     /*package*/ IdentityMatcher(Function<? super T, ?> extractor) {
         super(null, null);
+        
         assert extractor != null;
+        
         this.idExtractor = extractor;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IllegalArgumentException {@code listA}, {@code listB} のいずれかに重複要素が含まれる場合
+     */
     @Override
     protected void makeIdxPairsPrecheck(
             List<? extends T> listA,
@@ -67,6 +82,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
+        
+        // 親クラスでバリデーションチェック済み
         
         List<IntPair> result = new ArrayList<>();
         

@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 
@@ -16,10 +15,10 @@ class CombinedSheetNamesLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final SheetNamesLoader successLoader = bookOpenInfo -> new BookInfo(
-            bookOpenInfo, List.of("success"));
+    private static final SheetNamesLoader successLoader = (bookPath, readPassword) -> new BookInfo(
+            bookPath, List.of("success"));
     
-    private static final SheetNamesLoader failLoader = bookPath -> {
+    private static final SheetNamesLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
     };
     
@@ -52,7 +51,7 @@ class CombinedSheetNamesLoaderTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadSheetNames(null));
+                () -> testee.loadSheetNames(null, null));
     }
     
     @Test
@@ -64,12 +63,12 @@ class CombinedSheetNamesLoaderTest {
         // 失敗１つ
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                () -> testeeF.loadSheetNames(Path.of("dummy.xlsx"), null));
         
         // 全て失敗
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testeeFFF.loadSheetNames(new BookOpenInfo(Path.of("dummy.xlsx"), null)));
+                () -> testeeFFF.loadSheetNames(Path.of("dummy.xlsx"), null));
     }
     
     @Test
@@ -82,19 +81,19 @@ class CombinedSheetNamesLoaderTest {
                 () -> failLoader));
         
         // 成功１つ
-        BookOpenInfo info1 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
+        Path path1 = Path.of("dummy.xlsx");
         assertEquals(
                 new BookInfo(
-                        info1,
+                        path1,
                         List.of("success")),
-                testeeS.loadSheetNames(info1));
+                testeeS.loadSheetNames(path1, null));
         
         // いくつかの失敗ののちに成功
-        BookOpenInfo info2 = new BookOpenInfo(Path.of("dummy.xlsx"), null);
+        Path path2 = Path.of("dummy.xlsx");
         assertEquals(
                 new BookInfo(
-                        info2,
+                        path2,
                         List.of("success")),
-                testeeFFSF.loadSheetNames(info2));
+                testeeFFSF.loadSheetNames(path2, null));
     }
 }

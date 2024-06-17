@@ -9,6 +9,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * Excelシート上のセルを表します。<br>
  *
  * @author nmby
+ * 
+ * @param row 行インデックス（0開始）
+ * @param column 列インデックス（0開始）
+ * @param content セル内容
+ * @param comment セルコメント
  */
 public record CellData(
         int row,
@@ -48,6 +53,16 @@ public record CellData(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ
+     * 
+     * @param row 行インデックス（0開始）
+     * @param column 列インデックス（0開始）
+     * @param content セル内容
+     * @param comment セルコメント
+     * @throws NullPointerException {@code content} が {@code null} の場合
+     * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが負数の場合
+     */
     public CellData {
         Objects.requireNonNull(content, "content");
         if (row < 0 || column < 0) {

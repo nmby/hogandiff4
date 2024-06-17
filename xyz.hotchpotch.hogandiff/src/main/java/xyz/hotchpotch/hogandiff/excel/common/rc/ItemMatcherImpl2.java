@@ -1,13 +1,10 @@
 package xyz.hotchpotch.hogandiff.excel.common.rc;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -32,13 +29,20 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     
     // [instance members] ******************************************************
     
-    private final Function<CellData, Integer> vertical;
-    private final Function<CellData, Integer> horizontal;
+    private final ToIntFunction<CellData> vertical;
+    private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     
+    /**
+     * コンストラクタ
+     * 
+     * @param vertical 縦インデックス抽出関数
+     * @param horizontal 横インデックス抽出関数
+     * @param horizontalComparator 横方向比較関数
+     */
     /* package */ ItemMatcherImpl2(
-            Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> vertical,
+            ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
         assert vertical != null;
@@ -50,42 +54,56 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         this.horizontalComparator = horizontalComparator;
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code cellsSetPair} が {@code null} の場合
+     */
     @Override
     public List<IntPair> makePairs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSets, "cellsSets");
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         
-        Pair<Set<Integer>> horizontalRedundants = Side.map(
-                side -> horizontalPairs == null
-                        ? null
-                        : horizontalPairs.stream()
-                                .filter(pair -> pair.isOnly(side))
-                                .map(pair -> pair.get(side))
-                                .collect(Collectors.toSet()));
+        Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
+                ? new Pair<>(Set.of(), Set.of())
+                : Side.map(side -> horizontalPairs.stream()
+                        .filter(pair -> pair.isOnly(side))
+                        .map(pair -> pair.get(side))
+                        .collect(Collectors.toSet()));
         
-        Pair<List<List<CellData>>> lists = Side.unsafeMap(
-                side -> convert(cellsSets.get(side), horizontalRedundants.get(side)));
+        List<List<CellData>> listA = convert(cellsSetPair.a(), horizontalRedundants.a());
+        List<List<CellData>> listB = convert(cellsSetPair.b(), horizontalRedundants.b());
         
-        Pair<Map<Integer, Double>> weights = Side.map(
-                side -> weights(cellsSets.get(side), horizontalRedundants.get(side)));
+        double[] weightsA = weights(cellsSetPair.a(), horizontalRedundants.a());
+        double[] weightsB = weights(cellsSetPair.b(), horizontalRedundants.b());
         
         Matcher<List<CellData>> matcher = Matcher.minimumEditDistanceMatcherOf(
-                gapEvaluator(weights.a()),
-                gapEvaluator(weights.b()),
-                diffEvaluator(horizontalComparator, weights));
+                gapEvaluator(weightsA),
+                gapEvaluator(weightsB),
+                diffEvaluator(weightsA, weightsB));
         
-        return matcher.makeIdxPairs(lists.a(), lists.b());
+        return matcher.makeIdxPairs(listA, listB);
     }
     
+    /**
+     * セルセットを横方向リストを要素に持つ縦方向リストに変換します。<br>
+     * 
+     * @param cells セルセット
+     * @param horizontalRedundants 横方向の余剰インデックス
+     * @return 横方向リストを要素に持つ縦方向リスト
+     */
     private List<List<CellData>> convert(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
         
+        assert cells != null;
+        assert horizontalRedundants != null;
+        
         Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
-                .collect(Collectors.groupingBy(vertical));
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
+                .collect(Collectors.groupingBy(vertical::applyAsInt));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
         
@@ -102,72 +120,105 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 .toList();
     }
     
-    private Map<Integer, Double> weights(
+    /**
+     * 横方向インデックスごとの重みづけを計算して返します。<br>
+     * 
+     * @param cells セルセット
+     * @param horizontalRedundants 横方向の余剰インデックス
+     * @return 横方向インデックスごとの重みづけ
+     */
+    private double[] weights(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
         
+        assert cells != null;
+        assert horizontalRedundants != null;
+        
         Map<Integer, Set<String>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
                 .collect(Collectors.groupingBy(
-                        horizontal,
+                        horizontal::applyAsInt,
                         Collectors.mapping(CellData::content, Collectors.toSet())));
         
-        return map.entrySet().parallelStream()
-                .map(entry -> {
-                    int key = entry.getKey();
-                    Set<String> strs = entry.getValue();
-                    int sumLen = strs.parallelStream().mapToInt(String::length).sum();
-                    return Map.entry(key, Math.sqrt(sumLen));
-                })
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        int max = map.keySet().stream().mapToInt(i -> i).max().orElse(0);
+        double[] weights = new double[max + 1];
+        
+        map.entrySet().parallelStream().forEach(entry -> {
+            int key = entry.getKey();
+            Set<String> strs = entry.getValue();
+            int sumLen = strs.parallelStream().mapToInt(String::length).sum();
+            weights[key] = Math.sqrt(sumLen);
+        });
+        
+        return weights;
     }
     
-    private ToIntFunction<List<CellData>> gapEvaluator(Map<Integer, Double> weights) {
+    /**
+     * 余剰評価関数を返します。<br>
+     * 
+     * @param weights 横方向インデックスごとの重みづけ
+     * @return 余剰評価関数
+     */
+    private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
+        assert weights != null;
+        
         return (list) -> (int) list.parallelStream()
-                .mapToInt(horizontal::apply)
-                .mapToDouble(weights::get)
+                .mapToInt(horizontal)
+                .mapToDouble(i -> weights[i])
                 .sum();
     }
     
+    /**
+     * 差分評価関数を返します。<br>
+     * 
+     * @param weightsA 比較対象Aの横方向インデックスごとの重みづけ
+     * @param weightsB 比較対象Bの横方向インデックスごとの重みづけ
+     * @return 差分評価関数
+     */
     private ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
-            Comparator<CellData> horizontalComparator,
-            Pair<Map<Integer, Double>> weights) {
+            double[] weightsA,
+            double[] weightsB) {
+        
+        assert weightsA != null;
+        assert weightsB != null;
         
         return (list1, list2) -> {
             int comp = 0;
             double cost = 0d;
             CellData cell1 = null;
             CellData cell2 = null;
-            Iterator<CellData> itr1 = list1.iterator();
-            Iterator<CellData> itr2 = list2.iterator();
+            int idx1 = 0;
+            int idx2 = 0;
             
-            while (itr1.hasNext() && itr2.hasNext()) {
+            while (idx1 < list1.size() && idx2 < list2.size()) {
                 if (comp <= 0) {
-                    cell1 = itr1.next();
+                    cell1 = list1.get(idx1);
+                    idx1++;
                 }
                 if (0 <= comp) {
-                    cell2 = itr2.next();
+                    cell2 = list2.get(idx2);
+                    idx2++;
                 }
                 
                 comp = horizontalComparator.compare(cell1, cell2);
                 
                 if (comp < 0) {
-                    cost += weights.a().get(horizontal.apply(cell1));
+                    cost += weightsA[horizontal.applyAsInt(cell1)];
                 } else if (0 < comp) {
-                    cost += weights.b().get(horizontal.apply(cell2));
+                    cost += weightsB[horizontal.applyAsInt(cell2)];
                 } else if (!cell1.contentEquals(cell2)) {
                     // TODO: セルコメント加味の要否について再検討する。
-                    cost += weights.a().get(horizontal.apply(cell1)) + weights.b().get(horizontal.apply(cell2));
+                    cost += weightsA[horizontal.applyAsInt(cell1)] + weightsB[horizontal.applyAsInt(cell2)];
                 }
             }
             
-            while (itr1.hasNext()) {
-                cell1 = itr1.next();
-                cost += weights.a().get(horizontal.apply(cell1));
+            while (idx1 < list1.size()) {
+                cost += weightsA[horizontal.applyAsInt(list1.get(idx1))];
+                idx1++;
             }
-            while (itr2.hasNext()) {
-                cell2 = itr2.next();
-                cost += weights.b().get(horizontal.apply(cell2));
+            while (idx2 < list2.size()) {
+                cost += weightsB[horizontal.applyAsInt(list2.get(idx2))];
+                idx2++;
             }
             return (int) cost;
         };

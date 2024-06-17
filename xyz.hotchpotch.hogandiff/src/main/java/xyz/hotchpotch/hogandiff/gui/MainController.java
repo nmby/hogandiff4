@@ -3,15 +3,24 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -23,13 +32,21 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.gui.layout.Row1Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row2Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row3Pane;
-import xyz.hotchpotch.hogandiff.gui.layout.Row4Pane;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
+import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -60,6 +77,36 @@ public class MainController extends VBox {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
+    
+    /** 現在選択されている比較メニュー */
+    public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
+    
+    /** シート比較情報 */
+    public final Property<SheetCompareInfo> sheetCompareInfoProp = new SimpleObjectProperty<>();
+    
+    /** Excelブック比較情報 */
+    public final Property<BookCompareInfo> bookCompareInfoProp = new SimpleObjectProperty<>();
+    
+    /** フォルダ比較情報 */
+    public final Property<DirCompareInfo> dirCompareInfoProp = new SimpleObjectProperty<>();
+    
+    /** フォルダツリー比較情報 */
+    public final Property<TreeCompareInfo> treeCompareInfoProp = new SimpleObjectProperty<>();
+    
+    /** シート名のペア */
+    public final Pair<StringProperty> sheetNamePropPair = Pair.of(
+            new SimpleStringProperty(),
+            new SimpleStringProperty());
+    
+    /** Excelブック情報のペア */
+    public final Pair<Property<BookInfo>> bookInfoPropPair = Pair.of(
+            new SimpleObjectProperty<>(),
+            new SimpleObjectProperty<>());
+    
+    /** フォルダ情報のペア */
+    public final Pair<Property<DirInfo>> dirInfoPropPair = Pair.of(
+            new SimpleObjectProperty<>(),
+            new SimpleObjectProperty<>());
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
@@ -92,6 +139,20 @@ public class MainController extends VBox {
             }
         });
         
+        bindSheetCompareInfoProp();
+        bindBookCompareInfoProp();
+        bindDirCompareInfoProp();
+        bindTreeCompareInfoProp();
+        
+        sheetCompareInfoProp.addListener(
+                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newVal));
+        bookCompareInfoProp.addListener(
+                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newVal));
+        dirCompareInfoProp.addListener(
+                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newVal));
+        treeCompareInfoProp.addListener(
+                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newVal));
+        
         // 3.初期値の設定
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
@@ -100,12 +161,153 @@ public class MainController extends VBox {
     }
     
     /**
-     * 比較メニューを返します。<br>
-     * 
-     * @return 比較メニュー
+     * sheetCompareInfoPropプロパティにデータソースをバインドします。<br>
      */
-    public ReadOnlyProperty<AppMenu> menu() {
-        return row1Pane.menu();
+    // こんなメソッドをpublicにするのはいくらなんでもおかしい。
+    // TODO: 処理構成を見直す
+    public void bindSheetCompareInfoProp() {
+        sheetCompareInfoProp.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = menuProp.getValue();
+                    Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+                    Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
+                    SheetCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    
+                    switch (menu) {
+                        case COMPARE_SHEETS:
+                            if (!bookInfoPair.isPaired() || !sheetNamePair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null
+                                    && bookInfoPair.equals(prevValue.parentPair())
+                                    && sheetNamePair.equals(prevValue.childPairs().get(0))) {
+                                return prevValue;
+                            } else {
+                                return SheetCompareInfo.of(bookInfoPair, sheetNamePair);
+                            }
+                        case COMPARE_BOOKS:
+                        case COMPARE_DIRS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
+                },
+                menuProp,
+                bookInfoPropPair.a(),
+                bookInfoPropPair.b(),
+                sheetNamePropPair.a(),
+                sheetNamePropPair.b()));
+    }
+    
+    /**
+     * bookCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
+    public void bindBookCompareInfoProp() {
+        bookCompareInfoProp.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = menuProp.getValue();
+                    Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    
+                    switch (menu) {
+                        case COMPARE_BOOKS:
+                            if (!bookInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && bookInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return BookCompareInfo.calculate(
+                                        bookInfoPair,
+                                        Factory.sheetNamesMatcher(ar.settings()));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_DIRS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
+                },
+                menuProp,
+                bookInfoPropPair.a(),
+                bookInfoPropPair.b()));
+    }
+    
+    /**
+     * dirCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
+    public void bindDirCompareInfoProp() {
+        dirCompareInfoProp.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = menuProp.getValue();
+                    Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+                    DirCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    
+                    switch (menu) {
+                        case COMPARE_DIRS:
+                            if (!dirInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return DirCompareInfo.calculate(
+                                        dirInfoPair,
+                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.sheetNamesMatcher(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_BOOKS:
+                        case COMPARE_TREES:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
+                },
+                menuProp,
+                dirInfoPropPair.a(),
+                dirInfoPropPair.b()));
+    }
+    
+    /**
+     * treeCompareInfoPropプロパティにデータソースをバインドします。<br>
+     */
+    public void bindTreeCompareInfoProp() {
+        treeCompareInfoProp.bind(Bindings.createObjectBinding(
+                () -> {
+                    AppMenu menu = menuProp.getValue();
+                    Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+                    TreeCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    
+                    switch (menu) {
+                        case COMPARE_TREES:
+                            if (!dirInfoPair.isPaired()) {
+                                return null;
+                            }
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                                return prevValue;
+                            } else {
+                                return TreeCompareInfo.calculate(
+                                        dirInfoPair,
+                                        Factory.dirsMatcher(ar.settings()),
+                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.sheetNamesMatcher(ar.settings()),
+                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
+                            }
+                        case COMPARE_SHEETS:
+                        case COMPARE_BOOKS:
+                        case COMPARE_DIRS:
+                            return prevValue;
+                        default:
+                            throw new AssertionError();
+                    }
+                },
+                menuProp,
+                dirInfoPropPair.a(),
+                dirInfoPropPair.b()));
     }
     
     /**
@@ -135,6 +337,59 @@ public class MainController extends VBox {
         return isRunning;
     }
     
+    // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
+    // FIXME: タスクの結果に応じて精緻に判定を行うように修正する
+    private void alertPasswordUnlocked() {
+        if (isPasswordUsed()) {
+            new Alert(
+                    AlertType.WARNING,
+                    rb.getString("gui.MainController.020"),
+                    ButtonType.OK)
+                            .showAndWait();
+        }
+    }
+    
+    private boolean isPasswordUsed() {
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        
+        Stream<Path> bookPathStream = switch (menu) {
+            case COMPARE_SHEETS -> {
+                SheetCompareInfo sheetCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> pair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield pair.isIdentical() ? Stream.of(pair.a()) : Stream.of(pair.a(), pair.b());
+            }
+            case COMPARE_BOOKS -> {
+                BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Pair<Path> pair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield Stream.of(pair.a(), pair.b()).filter(bookPath -> bookPath != null);
+            }
+            case COMPARE_DIRS -> {
+                DirCompareInfo dirCompareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                yield bookPathStream(dirCompareInfo);
+            }
+            case COMPARE_TREES -> {
+                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                yield treeCompareInfo.childCompareInfos().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .flatMap(this::bookPathStream);
+            }
+        };
+        
+        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+        return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+    }
+    
+    private Stream<Path> bookPathStream(DirCompareInfo dirCompareInfo) {
+        return dirCompareInfo.childPairs().stream()
+                .flatMap(bookNamePair -> {
+                    Pair<Path> dirPathPair = dirCompareInfo.parentPair().map(DirInfo::dirPath);
+                    Path bookPathA = bookNamePair.hasA() ? dirPathPair.a().resolve(bookNamePair.a()) : null;
+                    Path bookPathB = bookNamePair.hasB() ? dirPathPair.b().resolve(bookNamePair.b()) : null;
+                    return Stream.of(bookPathA, bookPathB).filter(bookPath -> bookPath != null);
+                });
+    }
+    
     /**
      * 比較処理を実行します。<br>
      * 
@@ -145,7 +400,7 @@ public class MainController extends VBox {
             throw new IllegalStateException();
         }
         
-        AppMenu menu = ar.settings().getOrDefault(SettingKeys.CURR_MENU);
+        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(
@@ -158,6 +413,7 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
+        // FIXME: createWorkDirもTaskの中に入れるべき
         Path workDir = createWorkDir(ar.settings());
         if (workDir == null) {
             new Alert(
@@ -170,7 +426,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Report> task = menu.getTask(ar.settings(), Factory.of());
+        Task<Report> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         
@@ -178,18 +434,9 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
-                
-                new Alert(
-                        AlertType.WARNING,
-                        rb.getString("gui.MainController.020"),
-                        ButtonType.OK)
-                                .showAndWait();
-            }
+            alertPasswordUnlocked();
             
-            if (ar.settings().getOrDefault(SettingKeys.EXIT_WHEN_FINISHED)) {
+            if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
                 isRunning.set(false);
@@ -202,25 +449,27 @@ public class MainController extends VBox {
             executor.shutdown();
             row3Pane.unbind();
             
-            if ((menu != AppMenu.COMPARE_DIRS && menu != AppMenu.COMPARE_TREES)
-                    && (ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO1).readPassword() != null
-                            || ar.settings().get(SettingKeys.CURR_BOOK_OPEN_INFO2).readPassword() != null)) {
-                
+            alertPasswordUnlocked();
+            
+            // エラーが発生したことを通知する
+            if (e instanceof ApplicationException) {
                 new Alert(
                         AlertType.WARNING,
-                        rb.getString("gui.MainController.020"),
+                        "%s%n%s".formatted(
+                                e.getClass().getName(),
+                                e.getMessage()),
+                        ButtonType.OK)
+                                .showAndWait();
+            } else {
+                new Alert(
+                        AlertType.WARNING,
+                        "%s%n%s%n%s".formatted(
+                                rb.getString("gui.MainController.030"),
+                                e.getClass().getName(),
+                                e.getMessage()),
                         ButtonType.OK)
                                 .showAndWait();
             }
-            
-            new Alert(
-                    AlertType.WARNING,
-                    "%s%n%s%n%s".formatted(
-                            rb.getString("gui.MainController.030"),
-                            e.getClass().getName(),
-                            e.getMessage()),
-                    ButtonType.OK)
-                            .showAndWait();
             
             isRunning.set(false);
         });
@@ -229,14 +478,16 @@ public class MainController extends VBox {
     }
     
     private Path createWorkDir(Settings settings) {
-        String timestamp = SettingKeys.CURR_TIMESTAMP.defaultValueSupplier().get();
-        Path workDir = settings.getOrDefault(SettingKeys.WORK_DIR_BASE).resolve(timestamp);
+        final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+        ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
+        
+        Path workDirBase = settings.get(SettingKeys.WORK_DIR_BASE);
         
         while (true) {
             try {
+                Path workDir = workDirBase.resolve(timestamp);
                 Files.createDirectories(workDir);
-                ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDir.getParent());
-                ar.changeSetting(SettingKeys.CURR_TIMESTAMP, timestamp);
+                ar.changeSetting(SettingKeys.WORK_DIR_BASE, workDirBase);
                 return workDir;
                 
             } catch (Exception e) {
@@ -246,7 +497,7 @@ public class MainController extends VBox {
                         AlertType.WARNING,
                         "%s%n%s%n%n%s".formatted(
                                 rb.getString("gui.MainController.040"),
-                                workDir.getParent(),
+                                workDirBase,
                                 rb.getString("gui.MainController.050")),
                         ButtonType.OK)
                                 .showAndWait();
@@ -260,7 +511,7 @@ public class MainController extends VBox {
                     if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
                         newPath = newPath.resolve(AppMain.APP_DOMAIN);
                     }
-                    workDir = newPath.resolve(timestamp);
+                    workDirBase = newPath;
                     
                 } else {
                     return null;

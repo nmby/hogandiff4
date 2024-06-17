@@ -21,6 +21,7 @@ public interface SheetComparator {
      * 
      * @param considerRowGaps 行の挿入／削除を考慮する場合は {@code true}
      * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
+     * @param prioritizeSpeed 比較処理の速度を優先する場合は {@code true}
      * @return コンパレータ
      */
     public static SheetComparator of(
@@ -39,8 +40,8 @@ public interface SheetComparator {
     /**
      * 2つのシートから抽出したセルセット同士を比較して結果を返します。<br>
      * 
-     * @param cellsSets セルセット
+     * @param cellsSetPair セルセット
      * @return 比較結果
      */
-    SheetResult compare(Pair<Set<CellData>> cellsSets);
+    SheetResult compare(Pair<Set<CellData>> cellsSetPair);
 }

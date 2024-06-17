@@ -5,33 +5,27 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirLoader;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesMatcher;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
@@ -44,20 +38,21 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract class AppTaskBase extends Task<Report> {
+/*package*/ abstract sealed class AppTaskBase extends Task<Report>
+        permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
     
     // [static members] ********************************************************
     
+    /** 改行文字 */
     protected static final String BR = System.lineSeparator();
+    
+    /** 進捗度の最大値 */
     protected static final int PROGRESS_MAX = 100;
     
     // [instance members] ******************************************************
     
     /** 今回の実行における各種設定を保持する設定セット */
     protected final Settings settings;
-    
-    /** 各種インスタンスのファクトリ */
-    protected final Factory factory;
     
     /** 今回の実行における作業用ディレクトリ */
     protected final Path workDir;
@@ -68,281 +63,82 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** このアプリケーションのリソースバンドル */
     protected final ResourceBundle rb = AppMain.appResource.get();
     
-    /*package*/ AppTaskBase(
-            Settings settings,
-            Factory factory) {
-        
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     * @param factory ファクトリ
+     */
+    /*package*/ AppTaskBase(Settings settings) {
         assert settings != null;
-        assert factory != null;
         
         this.settings = settings;
-        this.factory = factory;
         this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
+    protected ApplicationException getApplicationException(Throwable e, String msgId, String appendMsg) {
+        if (e instanceof ApplicationException ee) {
+            return ee;
+            
+        } else {
+            str.append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
+            updateMessage(str.toString());
+            return new ApplicationException(rb.getString(msgId) + appendMsg, e);
+        }
+    }
+    
     @Override
-    protected Report call() throws Exception {
+    protected Report call() throws ApplicationException {
+        Instant start = Instant.now();
+        Report report = null;
+        
         try {
-            Instant time1 = Instant.now();
             Result result = call2();
-            Instant time2 = Instant.now();
             
-            Report report = new Report(
-                    settings,
-                    result,
-                    Duration.between(time1, time2));
-            
-            report(report);
+            report = new Report.Succeeded(settings, start, Instant.now(), result);
             
             return report;
             
         } catch (OutOfMemoryError e) {
-            str.append(BR).append(BR).append(rb.getString("AppTaskBase.170")).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.170"), e);
+            report = new Report.Failed(settings, start, Instant.now(), e);
+            throw getApplicationException(e, "AppTaskBase.170", "");
+            
+        } catch (Exception e) {
+            report = new Report.Failed(settings, start, Instant.now(), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
+            
+        } finally {
+            writeReport(report);
         }
     }
     
-    protected abstract Result call2() throws Exception;
-    
-    private void report(Report report) {
-        Path reportPath = workDir.resolve("report.json");
-        try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
-            writer.write(report.toJsonString());
+    /**
+     * 統計情報を report.json ファイルに出力します。<br>
+     * 
+     * @param report 統計情報
+     */
+    private void writeReport(Report report) {
+        try {
+            Path reportPath = workDir.resolve("report.json");
+            try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
+                writer.write(report.toJsonString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             // nop
         }
     }
     
-    // ↓↓↓ common operations / utilities ↓↓↓
-    
     /**
-     * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
+     * タスク本体。タスクを実行し結果を返します。<br>
      * 
-     * @return 同一ブックの場合は {@code true}
-     * @throws IllegalStateException 今回の実行メニューがブック同士の比較でもシート同士の比較でもない場合
+     * @return タスクの結果
+     * @throws ApplicationException 処理が失敗した場合
      */
-    protected boolean isSameBook() {
-        AppMenu menu = settings.getOrDefault(SettingKeys.CURR_MENU);
-        
-        switch (menu) {
-            case COMPARE_BOOKS:
-            case COMPARE_SHEETS:
-                return BookOpenInfo.isSameBook(
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1),
-                        settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2));
-            
-            default:
-                throw new IllegalStateException("not suitable for " + menu);
-        }
-    }
+    protected abstract Result call2() throws ApplicationException;
     
-    // 実装メモ：
-    // 子クラスで使ういろんな機能を親に詰め込むというのはオブジェクト志向として間違ってる！
-    // というのは分かりつつも、、、まぁそのうち整理するので許して。。。
-    // TODO: AppTask周りの機能構成を整理する
-    
-    /**
-     * 指定された2つのExcelブックに含まれるシート名をロードし、
-     * 設定内容に基づいてシート名をペアリングして返します。<br>
-     * 
-     * @param bookOpenInfos Excelブック情報
-     * @return シート名のペアのリスト
-     * @throws ExcelHandlingException 処理に失敗した場合
-     */
-    protected List<Pair<String>> getSheetNamePairs(
-            Pair<BookOpenInfo> bookOpenInfos)
-            throws ExcelHandlingException {
-        
-        assert bookOpenInfos != null;
-        assert !Objects.equals(bookOpenInfos.a().bookPath(), bookOpenInfos.b().bookPath());
-        
-        Pair<SheetNamesLoader> sheetNamesLoaders = bookOpenInfos.unsafeMap(factory::sheetNamesLoader);
-        Pair<BookInfo> bookInfos = Side.unsafeMap(
-                side -> sheetNamesLoaders.get(side).loadSheetNames(bookOpenInfos.get(side)));
-        
-        SheetNamesMatcher matcher = factory.sheetNamesMatcher(settings);
-        return matcher.pairingSheetNames(bookInfos);
-    }
-    
-    /**
-     * 比較対象のフォルダもしくはフォルダツリーを抽出し、
-     * トップフォルダの情報のペアを返します。<br>
-     * 
-     * @return 比較対象フォルダ・フォルダツリーのトップフォルダの情報のペア
-     * @throws ExcelHandlingException 処理に失敗した場合
-     */
-    protected Pair<DirInfo> extractDirs() throws ExcelHandlingException {
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        DirLoader dirLoader = factory.dirLoader(settings);
-        return dirPaths.unsafeMap(dirLoader::loadDir);
-    }
-    
-    protected BookResult compareBooks(
-            Pair<BookOpenInfo> bookOpenInfos,
-            int progressBefore,
-            int progressAfter)
-            throws ExcelHandlingException {
-        
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        List<Pair<String>> sheetNamePairs = getSheetNamePairs(bookOpenInfos);
-        
-        Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
-        
-        SheetComparator comparator = factory.comparator(settings);
-        Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
-        
-        for (int i = 0; i < sheetNamePairs.size(); i++) {
-            Pair<String> sheetNamePair = sheetNamePairs.get(i);
-            
-            if (sheetNamePair.isPaired()) {
-                Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                        side -> loaders.get(side).loadCells(bookOpenInfos.get(side), sheetNamePair.get(side)));
-                
-                SheetResult result = comparator.compare(cellsSets);
-                results.put(sheetNamePair, Optional.of(result));
-                
-            } else {
-                results.put(sheetNamePair, Optional.empty());
-            }
-            
-            updateProgress(
-                    progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
-                    PROGRESS_MAX);
-        }
-        
-        return new BookResult(
-                bookOpenInfos.map(BookOpenInfo::bookPath),
-                sheetNamePairs,
-                results);
-    }
-    
-    protected DirResult compareDirs(
-            String dirId,
-            String indent,
-            DirPairData data,
-            Pair<Path> outputDirs,
-            int progressBefore,
-            int progressAfter) {
-        
-        Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
-        int bookPairsCount = (int) data.bookNamePairs().stream().filter(Pair::isPaired).count();
-        int num = 0;
-        
-        if (data.bookNamePairs().size() == 0) {
-            str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
-            updateMessage(str.toString());
-        }
-        
-        for (int i = 0; i < data.bookNamePairs().size(); i++) {
-            int ii = i;
-            
-            Pair<String> bookNamePair = data.bookNamePairs().get(i);
-            
-            str.append(indent
-                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
-            updateMessage(str.toString());
-            
-            if (bookNamePair.isPaired()) {
-                
-                Pair<BookOpenInfo> srcInfos = Side.map(side -> new BookOpenInfo(
-                        data.dirPair().get(side).path().resolve(bookNamePair.get(side)), null));
-                Pair<BookOpenInfo> dstInfos = Side.map(side -> new BookOpenInfo(
-                        outputDirs.get(side).resolve("【A%s-%d】%s".formatted(dirId, ii + 1, bookNamePair.get(side))),
-                        null));
-                BookResult bookResult = null;
-                
-                try {
-                    
-                    bookResult = compareBooks(
-                            srcInfos,
-                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
-                            progressBefore + (progressAfter - progressBefore) * (num + 1) / bookPairsCount);
-                    bookResults.put(bookNamePair, Optional.of(bookResult));
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    
-                    Side.forEach(side -> {
-                        try {
-                            Files.copy(srcInfos.get(side).bookPath(), dstInfos.get(side).bookPath());
-                        } catch (IOException e1) {
-                            // nop
-                        }
-                    });
-                    continue;
-                }
-                
-                try {
-                    Pair<BookPainter> painters = srcInfos.unsafeMap(info -> factory.painter(settings, info));
-                    BookResult bookResult2 = bookResult;
-                    
-                    Side.unsafeForEach(
-                            side -> painters.get(side).paintAndSave(
-                                    srcInfos.get(side),
-                                    dstInfos.get(side),
-                                    bookResult2.getPiece(side)));
-                    
-                    str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
-                    updateMessage(str.toString());
-                    
-                    num++;
-                    updateProgress(
-                            progressBefore + (progressAfter - progressBefore) * num / bookPairsCount,
-                            PROGRESS_MAX);
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    continue;
-                }
-                
-            } else {
-                
-                try {
-                    Path src = bookNamePair.hasA()
-                            ? data.dirPair().a().path().resolve(bookNamePair.a())
-                            : data.dirPair().b().path().resolve(bookNamePair.b());
-                    Path dst = bookNamePair.hasA()
-                            ? outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()))
-                            : outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
-                    
-                    Files.copy(src, dst);
-                    dst.toFile().setReadable(true, false);
-                    dst.toFile().setWritable(true, false);
-                    
-                    bookResults.put(bookNamePair, Optional.empty());
-                    
-                    str.append(BR);
-                    updateMessage(str.toString());
-                    
-                } catch (Exception e) {
-                    bookResults.putIfAbsent(bookNamePair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
-                    updateMessage(str.toString());
-                    e.printStackTrace();
-                    continue;
-                }
-            }
-        }
-        str.append(BR);
-        updateMessage(str.toString());
-        
-        return new DirResult(
-                data.dirPair(),
-                data.bookNamePairs(),
-                bookResults,
-                dirId);
-    }
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     /**
      * 比較結果文字列をテキストファイルに保存するとともに、
@@ -354,6 +150,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param progressAfter 進捗率（終了時）
      * @throws ApplicationException 処理に失敗した場合
      */
+    // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
     protected void saveAndShowResultText(
             Path workDir,
             String resultText,
@@ -367,9 +164,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         assert progressBefore <= progressAfter;
         assert progressAfter <= PROGRESS_MAX;
         
-        Path textPath = null;
         try {
-            textPath = workDir.resolve("result.txt");
+            Path textPath = workDir.resolve("result.txt");
             
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.030"), textPath));
@@ -378,7 +174,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(resultText);
             }
-            if (settings.getOrDefault(SettingKeys.SHOW_RESULT_TEXT)) {
+            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
                 str.append(rb.getString("AppTaskBase.040")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(textPath.toFile());
@@ -387,12 +183,24 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.050")).append(BR).append(BR);
+            throw getApplicationException(e, "AppTaskBase.050", "");
+        }
+    }
+    
+    /**
+     * 処理修了をアナウンスする。<br>
+     * 
+     * @throws ApplicationException 処理に失敗した場合
+     */
+    // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
+    protected void announceEnd() throws ApplicationException {
+        try {
+            str.append(rb.getString("AppTaskBase.120"));
             updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("AppTaskBase.050"), textPath),
-                    e);
+            updateProgress(PROGRESS_MAX, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::announceEnd");
         }
     }
     
@@ -401,39 +209,53 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 
      * @param workDir 作業用フォルダ
+     * @param srcBookPath Excelブックのパス
      * @param bResult Excelブック比較結果
      * @param progressBefore 進捗率（開始時）
      * @param progressAfter 進捗率（終了時）
      * @throws ApplicationException 処理に失敗した場合
      */
+    // CompareSheetsTask, CompareBooksTask
     protected void paintSaveAndShowBook(
             Path workDir,
+            Pair<Path> srcBookPath,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
-        assert workDir != null;
-        assert bResult != null;
-        assert 0 <= progressBefore;
-        assert progressBefore <= progressAfter;
-        assert progressAfter <= PROGRESS_MAX;
-        
-        if (isSameBook()) {
-            paintSaveAndShowBook1(workDir, bResult, progressBefore, progressAfter);
-        } else {
-            paintSaveAndShowBook2(workDir, bResult, progressBefore, progressAfter);
+        try {
+            if (isSameBook()) {
+                paintSaveAndShowBook1(workDir, srcBookPath.a(), bResult, 80, 98);
+            } else {
+                paintSaveAndShowBook2(workDir, srcBookPath, bResult, 80, 98);
+            }
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::paintSaveAndShowBook");
         }
     }
     
+    /**
+     * Excelブックの各シートに比較結果の色を付けて保存し、
+     * 設定に応じてExcelを立ち上げて表示します。<br>
+     * 比較対象シートが同一ブックに属する場合のためのメソッドです。<br>
+     * 
+     * @param workDir 作業用フォルダ
+     * @param bResult Excelブック比較結果
+     * @param progressBefore 進捗率（開始時）
+     * @param progressAfter 進捗率（終了時）
+     * @throws ApplicationException 処理に失敗した場合
+     */
     private void paintSaveAndShowBook1(
             Path workDir,
+            Path srcBookPath,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
-        BookOpenInfo dst = null;
+        Path dstBookPath = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -441,119 +263,114 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst = new BookOpenInfo(
-                    workDir.resolve(src.bookPath().getFileName()),
-                    src.readPassword());
+            dstBookPath = workDir.resolve(srcBookPath.getFileName());
+            String readPassword = settings.get(SettingKeys.CURR_READ_PASSWORDS).get(srcBookPath);
             
-            str.append("    - %s%n%n".formatted(dst));
+            str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
             
-            BookPainter painter = factory.painter(settings, dst);
+            BookPainter painter = Factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
-            painter.paintAndSave(src, dst, result);
+            painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
             
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.070")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.070"), e);
+            throw getApplicationException(e, "AppTaskBase.070", "");
         }
         
         try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPath.toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.090")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.090"), e);
+            throw getApplicationException(e, "AppTaskBase.090", "");
         }
     }
     
+    /**
+     * Excelブックの各シートに比較結果の色を付けて保存し、
+     * 設定に応じてExcelを立ち上げて表示します。<br>
+     * 比較対象シートが別々のブックに属する場合のためのメソッドです。<br>
+     * 
+     * @param workDir 作業用フォルダ
+     * @param bResult Excelブック比較結果
+     * @param progressBefore 進捗率（開始時）
+     * @param progressAfter 進捗率（終了時）
+     * @throws ApplicationException 処理に失敗した場合
+     */
     private void paintSaveAndShowBook2(
             Path workDir,
+            Pair<Path> srcBookPathPair,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
-        
-        BookOpenInfo dst1 = null;
-        BookOpenInfo dst2 = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append(rb.getString("AppTaskBase.060")).append(BR);
             updateMessage(str.toString());
             
-            BookOpenInfo src1 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1);
-            dst1 = new BookOpenInfo(
-                    workDir.resolve("【A】" + src1.bookPath().getFileName()),
-                    src1.readPassword());
+            Pair<Path> dstBookPathPair = Side.map(
+                    side -> workDir.resolve("【%s】%s".formatted(side, srcBookPathPair.get(side).getFileName())));
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             
-            str.append("    - %s%n".formatted(dst1));
-            updateMessage(str.toString());
+            for (Side side : Side.values()) {
+                try {
+                    str.append("    - %s%n".formatted(dstBookPathPair.get(side)));
+                    updateMessage(str.toString());
+                    
+                    Path srcBookPath = srcBookPathPair.get(side);
+                    Path dstBookPath = dstBookPathPair.get(side);
+                    
+                    BookPainter painter = Factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
+                    painter.paintAndSave(
+                            srcBookPath,
+                            dstBookPath,
+                            readPasswords.get(srcBookPath),
+                            bResult.getPiece(side));
+                    updateProgress(
+                            progressBefore + (progressAfter - progressBefore) * (side == Side.A ? 2 : 4) / 5,
+                            PROGRESS_MAX);
+                    
+                } catch (Exception e) {
+                    throw getApplicationException(e, side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                }
+            }
             
-            BookPainter painter1 = factory.painter(settings, dst1);
-            painter1.paintAndSave(src1, dst1, bResult.getPiece(Side.A));
-            
-            updateProgress(progressBefore + (progressAfter - progressBefore) * 2 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.100")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.100"), e);
-        }
-        
-        try {
-            BookOpenInfo src2 = settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2);
-            dst2 = new BookOpenInfo(
-                    workDir.resolve("【B】" + src2.bookPath().getFileName()),
-                    src2.readPassword());
-            
-            str.append("    - %s%n%n".formatted(dst2));
-            updateMessage(str.toString());
-            
-            BookPainter painter2 = factory.painter(settings, dst2);
-            painter2.paintAndSave(src2, dst2, bResult.getPiece(Side.B));
-            
-            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
-            
-        } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.110")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.110"), e);
-        }
-        
-        try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+                str.append(BR).append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dst1.bookPath().toFile());
-                Desktop.getDesktop().open(dst2.bookPath().toFile());
+                Desktop.getDesktop().open(dstBookPathPair.a().toFile());
+                Desktop.getDesktop().open(dstBookPathPair.b().toFile());
+            } else {
+                str.append(BR);
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append(rb.getString("AppTaskBase.090")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("AppTaskBase.090"), e);
+            throw getApplicationException(e, "AppTaskBase.090", "");
         }
     }
     
+    /**
+     * フォルダツリー同士の比較結果Excelブックを作成し、保存し、表示します。<br>
+     * 
+     * @param workDir 作業用フォルダ
+     * @param tResult フォルダツリー比較結果
+     * @param progressBefore 進捗率（開始時）
+     * @param progressAfter 進捗率（終了時）
+     * @throws ApplicationException 処理に失敗した場合
+     */
+    // CompareDirsTask, CompareTreesTask
     protected void createSaveAndShowResultBook(
             Path workDir,
             TreeResult tResult,
@@ -561,49 +378,274 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
         Path resultBookPath = null;
-        
         try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
             resultBookPath = workDir.resolve("result.xlsx");
             str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
             updateMessage(str.toString());
             
             TreeResultBookCreator creator = new TreeResultBookCreator();
-            creator.createResultBook(resultBookPath, tResult);
+            creator.createResultBook(
+                    resultBookPath,
+                    tResult,
+                    settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_TREES);
             
-        } catch (ExcelHandlingException e) {
-            str.append(rb.getString("CompareTreesTask.080")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.080"), resultBookPath),
-                    e);
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareTreesTask.080", "");
         }
         
         try {
-            if (settings.getOrDefault(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
-        } catch (IOException e) {
-            str.append(rb.getString("CompareTreesTask.100")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s".formatted(rb.getString("CompareTreesTask.100"), resultBookPath),
-                    e);
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareTreesTask.100", "");
         }
-        updateProgress(progressAfter, PROGRESS_MAX);
+    }
+    
+    //■ 要素処理 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    /**
+     * Excelブック同士の比較を行います。<br>
+     * 
+     * @param bookPathPair 比較対象ブックのパス
+     * @param readPasswords 比較対象ブックの読み取りパスワード
+     * @param progressBefore 処理開始時の進捗度
+     * @param progressAfter 処理終了時の進捗度
+     * @return 比較結果
+     * @throws ExcelHandlingException Excel関連処理に失敗した場合
+     */
+    // AppTaskBase#compareDirs
+    private BookResult compareBooks(
+            BookCompareInfo bookCompareInfo,
+            int progressBefore,
+            int progressAfter)
+            throws ExcelHandlingException {
+        
+        updateProgress(progressBefore, PROGRESS_MAX);
+        
+        Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+        Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.parentPair().map(BookInfo::bookPath).unsafeMap(
+                bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+        
+        SheetComparator sheetComparator = Factory.sheetComparator(settings);
+        Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
+        
+        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+            
+            if (sheetNamePair.isPaired()) {
+                
+                Path bookPathA = bookCompareInfo.parentPair().a().bookPath();
+                Path bookPathB = bookCompareInfo.parentPair().b().bookPath();
+                Set<CellData> cellsSetA = cellsLoaderPair.a().loadCells(
+                        bookPathA, readPasswords.get(bookPathA), sheetNamePair.a());
+                Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
+                        bookPathB, readPasswords.get(bookPathB), sheetNamePair.b());
+                
+                SheetResult result = sheetComparator.compare(Pair.of(cellsSetA, cellsSetB));
+                results.put(sheetNamePair, Optional.of(result));
+                
+            } else {
+                results.put(sheetNamePair, Optional.empty());
+            }
+            
+            updateProgress(
+                    progressBefore
+                            + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.childPairs().size(),
+                    PROGRESS_MAX);
+        }
+        
+        return new BookResult(bookCompareInfo, results);
     }
     
     /**
-     * 処理修了をアナウンスする。<br>
+     * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
+     * 
+     * @return 同一ブックの場合は {@code true}
+     * @throws IllegalStateException 今回の実行メニューがブック同士の比較でもシート同士の比較でもない場合
      */
-    protected void announceEnd() {
-        str.append(rb.getString("AppTaskBase.120"));
+    // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
+    protected boolean isSameBook() {
+        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
+        
+        return switch (menu) {
+            case COMPARE_SHEETS -> settings
+                    .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentPair().isIdentical();
+            case COMPARE_BOOKS -> settings
+                    .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentPair().isIdentical();
+        
+            default -> throw new IllegalStateException("not suitable for " + menu);
+        };
+    }
+    
+    /**
+     * フォルダ同士の比較を行います。<br>
+     * 
+     * @param dirId フォルダ識別子
+     * @param indent インデント
+     * @param dirCompareInfo 比較対象フォルダの情報
+     * @param outputDirs 出力先フォルダ
+     * @param progressBefore 処理開始時の進捗度
+     * @param progressAfter 処理終了時の進捗度
+     * @return 比較結果
+     */
+    // CompareDirsTask, CompareTreesTask
+    protected DirResult compareDirs(
+            String dirId,
+            String indent,
+            DirCompareInfo dirCompareInfo,
+            Pair<Path> outputDirs,
+            int progressBefore,
+            int progressAfter) {
+        
+        Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
+        IntUnaryOperator getProgress = n -> progressBefore
+                + (progressAfter - progressBefore) * n / dirCompareInfo.childPairs().size();
+        
+        if (dirCompareInfo.childPairs().size() == 0) {
+            str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
+            updateMessage(str.toString());
+        }
+        
+        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
+            int ii = i;
+            
+            Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
+            
+            str.append(indent
+                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
+            updateMessage(str.toString());
+            
+            if (bookNamePair.isPaired()
+                    && dirCompareInfo.childCompareInfos().get(bookNamePair).isPresent()) {
+                
+                Pair<Path> srcPathPair = Side.map(
+                        side -> dirCompareInfo.parentPair().get(side).dirPath().resolve(bookNamePair.get(side)));
+                Pair<Path> dstPathPair = Side.map(
+                        side -> outputDirs.get(side)
+                                .resolve("【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookNamePair.get(side))));
+                
+                BookResult bookResult = compareBooks(
+                        dirCompareInfo.childCompareInfos().get(bookNamePair).get(),
+                        srcPathPair,
+                        dstPathPair,
+                        getProgress.applyAsInt(i),
+                        getProgress.applyAsInt(i + 1));
+                bookResults.put(bookNamePair, Optional.ofNullable(bookResult));
+                
+                if (bookResult != null) {
+                    paintBook(
+                            srcPathPair,
+                            dstPathPair,
+                            bookResult,
+                            getProgress.applyAsInt(i + 1));
+                }
+                
+            } else {
+                if (bookNamePair.isPaired()) {
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    updateMessage(str.toString());
+                } else {
+                    str.append(BR);
+                    updateMessage(str.toString());
+                }
+                if (bookNamePair.hasA()) {
+                    Path srcBookPath = dirCompareInfo.parentPair().a().dirPath().resolve(bookNamePair.a());
+                    Path dstBookPath = outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()));
+                    skipUnpairedBook(Side.A, srcBookPath, dstBookPath);
+                }
+                if (bookNamePair.hasB()) {
+                    Path srcBookPath = dirCompareInfo.parentPair().b().dirPath().resolve(bookNamePair.b());
+                    Path dstBookPath = outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
+                    skipUnpairedBook(Side.B, srcBookPath, dstBookPath);
+                }
+                bookResults.put(bookNamePair, Optional.empty());
+            }
+        }
+        str.append(BR);
         updateMessage(str.toString());
-        updateProgress(PROGRESS_MAX, PROGRESS_MAX);
+        
+        return new DirResult(dirCompareInfo, bookResults, dirId);
+    }
+    
+    private BookResult compareBooks(
+            BookCompareInfo bookCompareInfo,
+            Pair<Path> srcPathPair,
+            Pair<Path> dstPathPair,
+            int progressBefore,
+            int progressAfter) {
+        
+        try {
+            return compareBooks(
+                    bookCompareInfo,
+                    progressBefore,
+                    progressAfter);
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+            
+            Side.forEach(side -> {
+                try {
+                    Files.copy(srcPathPair.get(side), dstPathPair.get(side));
+                } catch (IOException e1) {
+                    // nop
+                }
+            });
+            return null;
+        }
+    }
+    
+    private void paintBook(
+            Pair<Path> srcPathPair,
+            Pair<Path> dstPathPair,
+            BookResult bookResult,
+            int progressAfter) {
+        
+        try {
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            
+            for (Side side : Side.values()) {
+                Path srcPath = srcPathPair.get(side);
+                Path dstPath = dstPathPair.get(side);
+                BookPainter painter = Factory.painter(settings, srcPath, readPasswords.get(srcPath));
+                
+                painter.paintAndSave(
+                        srcPath,
+                        dstPath,
+                        readPasswords.get(srcPath),
+                        bookResult.getPiece(side));
+            }
+            
+            str.append("  -  ").append(bookResult.getDiffSimpleSummary()).append(BR);
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+        }
+    }
+    
+    private void skipUnpairedBook(Side side, Path srcBookPath, Path dstBookPath) {
+        try {
+            Files.copy(srcBookPath, dstBookPath);
+            dstBookPath.toFile().setReadable(true, false);
+            dstBookPath.toFile().setWritable(true, false);
+            
+        } catch (Exception e) {
+            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            updateMessage(str.toString());
+            e.printStackTrace();
+        }
     }
 }

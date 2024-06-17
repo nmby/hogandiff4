@@ -1,3 +1,8 @@
+/**
+ * このアプリケーションのメインモジュール
+ * 
+ * @author nmby
+ */
 module xyz.hotchpotch.hogandiff {
     requires java.desktop;
     requires java.management;

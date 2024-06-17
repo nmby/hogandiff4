@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.NumberToTextConverter;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -263,6 +263,8 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
          * @param record レコード
          */
         private void readingCellContentsAndComments(Record record) {
+            assert record != null;
+            
             if (record instanceof CellRecord && prevFormulaRec != null) {
                 throw new AssertionError("no following string record");
             }
@@ -272,24 +274,20 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             
             String value = null;
             
-            switch (record.getSid()) {
-                case LabelSSTRecord.sid: // セル内容抽出用
-                    LabelSSTRecord lRec = (LabelSSTRecord) record;
+            switch (record) {
+                case LabelSSTRecord lRec: // セル内容抽出用
                     value = sst.get(lRec.getSSTIndex());
                     break;
                 
-                case NumberRecord.sid: // セル内容抽出用
-                    NumberRecord nRec = (NumberRecord) record;
+                case NumberRecord nRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(nRec.getValue());
                     break;
                 
-                case RKRecord.sid: // セル内容抽出用
-                    RKRecord rkRec = (RKRecord) record;
+                case RKRecord rkRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(rkRec.getRKNumber());
                     break;
                 
-                case BoolErrRecord.sid: // セル内容抽出用
-                    BoolErrRecord beRec = (BoolErrRecord) record;
+                case BoolErrRecord beRec: // セル内容抽出用
                     if (beRec.isBoolean()) {
                         value = Boolean.toString(beRec.getBooleanValue());
                     } else {
@@ -297,12 +295,11 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     }
                     break;
                 
-                case FormulaRecord.sid: // セル内容抽出用
-                    value = getValueFromFormulaRecord((FormulaRecord) record);
+                case FormulaRecord fRec: // セル内容抽出用
+                    value = getValueFromFormulaRecord(fRec);
                     break;
                 
-                case StringRecord.sid: // 数式計算値抽出用
-                    StringRecord sRec = (StringRecord) record;
+                case StringRecord sRec: // 数式計算値抽出用
                     String calculated = sRec.getString();
                     if (calculated != null && !"".equals(calculated)) {
                         cells.put(
@@ -318,8 +315,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     prevFormulaRec = null;
                     break;
                 
-                case ObjRecord.sid: // セルコメント抽出用
-                    ObjRecord objRec = (ObjRecord) record;
+                case ObjRecord objRec: // セルコメント抽出用
                     Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
                             .filter(sub -> sub instanceof CommonObjectDataSubRecord)
                             .map(sub -> (CommonObjectDataSubRecord) sub)
@@ -333,19 +329,17 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     });
                     break;
                 
-                case TextObjectRecord.sid: // セルコメント抽出用
+                case TextObjectRecord txoRec: // セルコメント抽出用
                     if (prevFtCmoRec == null) {
                         // throw new AssertionError("no preceding ftCmo record");
                         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
                         break;
                     }
-                    TextObjectRecord txoRec = (TextObjectRecord) record;
                     comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
                     prevFtCmoRec = null;
                     break;
                 
-                case NoteRecord.sid: // セルコメント抽出用
-                    NoteRecord noteRec = (NoteRecord) record;
+                case NoteRecord noteRec: // セルコメント抽出用
                     String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
                     String comment = comments.remove(noteRec.getShapeId());
                     
@@ -357,9 +351,12 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     }
                     break;
                 
-                case EOFRecord.sid: // 次ステップに移行
+                case EOFRecord eofRec: // 次ステップに移行
                     step = ProcessingStep.COMPLETED;
                     break;
+                
+                default:
+                    // nop
             }
             
             if (value != null && !"".equals(value)) {
@@ -393,36 +390,26 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 
                 CellType type = fRec.getCachedResultTypeEnum();
                 
-                switch (type) {
-                    case NUMERIC:
-                        return NumberToTextConverter.toText(fRec.getValue());
-                    
-                    case BOOLEAN:
-                        return Boolean.toString(fRec.getCachedBooleanValue());
-                    
-                    case ERROR:
-                        return ErrorEval.getText(fRec.getCachedErrorValue());
-                    
-                    case BLANK:
-                        // nop: 空のセルは抽出しない。
-                        return null;
-                    
-                    case _NONE:
-                        throw new AssertionError("_NONE");
-                    
-                    case FORMULA:
-                        // キャッシュされた値のタイプが FORMULA というのは無いはず
-                        throw new AssertionError("FORMULA");
-                    
-                    case STRING:
-                        // 利用者からのレポートによると、このパスに入る場合があるらしい。
-                        // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
-                        // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
-                        return null;
-                    
-                    default:
-                        throw new AssertionError("unknown cell type: " + type);
-                }
+                return switch (type) {
+                    case NUMERIC -> NumberToTextConverter.toText(fRec.getValue());
+                    case BOOLEAN -> Boolean.toString(fRec.getCachedBooleanValue());
+                    case ERROR -> ErrorEval.getText(fRec.getCachedErrorValue());
+                
+                    // nop: 空のセルは抽出しない。
+                    case BLANK -> null;
+                
+                    // 利用者からのレポートによると、このパスに入る場合があるらしい。
+                    // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
+                    // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
+                    case STRING -> null;
+                
+                    case _NONE -> throw new AssertionError("_NONE");
+                
+                    // キャッシュされた値のタイプが FORMULA というのは無いはず
+                    case FORMULA -> throw new AssertionError("FORMULA");
+                
+                    default -> throw new AssertionError("unknown cell type: " + type);
+                };
                 
             } else {
                 // FIXME: [No.4 数式サポート改善] 数式文字列もサポートできるようにする
@@ -456,9 +443,9 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -469,16 +456,18 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
-        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
+        Biff8EncryptionKey.setCurrentUserPassword(readPassword);
+        try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -490,7 +479,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookPath, sheetName), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

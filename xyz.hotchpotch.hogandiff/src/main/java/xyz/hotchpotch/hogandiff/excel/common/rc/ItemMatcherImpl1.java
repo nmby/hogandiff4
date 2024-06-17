@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -20,6 +19,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link ItemMatcher} の実装です。<br>
  * 横方向の挿入／削除を考慮しない場合と考慮する場合の双方に対応できます。<br>
+ * 横方向の要素の重みづけは行いません。<br>
  * 
  * @author nmby
  */
@@ -27,10 +27,19 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     
     // [static members] ********************************************************
     
+    /** 余剰評価関数 */
     private static final ToIntFunction<List<CellData>> gapEvaluator = List::size;
     
+    /**
+     * 差分評価関数を返します。<br>
+     * 
+     * @param horizontalComparator 横方向の比較関数
+     * @return 差分評価関数
+     */
     private static ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
             Comparator<CellData> horizontalComparator) {
+        
+        assert horizontalComparator != null;
         
         return (list1, list2) -> {
             int idx1 = 0;
@@ -74,14 +83,21 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     
     // [instance members] ******************************************************
     
-    private final Function<CellData, Integer> vertical;
-    private final Function<CellData, Integer> horizontal;
+    private final ToIntFunction<CellData> vertical;
+    private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     private final Matcher<List<CellData>> matcher;
     
+    /**
+     * コンストラクタ
+     * 
+     * @param vertical 縦インデックス抽出関数
+     * @param horizontal 横インデックス抽出関数
+     * @param horizontalComparator 横方向比較関数
+     */
     /* package */ ItemMatcherImpl1(
-            Function<CellData, Integer> vertical,
-            Function<CellData, Integer> horizontal,
+            ToIntFunction<CellData> vertical,
+            ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
         
         assert vertical != null;
@@ -96,33 +112,48 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                 diffEvaluator(horizontalComparator));
     }
     
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws NullPointerException {@code cellsSetPair} が {@code null} の場合
+     */
     @Override
     public List<IntPair> makePairs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSets, "cellsSets");
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         
-        Pair<List<List<CellData>>> lists = Side.map(side -> {
-            Set<Integer> horizontalRedundants = horizontalPairs == null
-                    ? null
-                    : horizontalPairs.stream()
-                            .filter(pair -> pair.isOnly(side))
-                            .map(pair -> pair.get(side))
-                            .collect(Collectors.toSet());
-            return convert(cellsSets.get(side), horizontalRedundants);
-        });
+        Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
+                ? new Pair<>(Set.of(), Set.of())
+                : Side.map(side -> horizontalPairs.stream()
+                        .filter(pair -> pair.isOnly(side))
+                        .map(pair -> pair.get(side))
+                        .collect(Collectors.toSet()));
         
-        return matcher.makeIdxPairs(lists.a(), lists.b());
+        List<List<CellData>> listA = convert(cellsSetPair.a(), horizontalRedundants.a());
+        List<List<CellData>> listB = convert(cellsSetPair.b(), horizontalRedundants.b());
+        
+        return matcher.makeIdxPairs(listA, listB);
     }
     
+    /**
+     * セルセットを横方向リストを要素に持つ縦方向リストに変換します。<br>
+     * 
+     * @param cells セルセット
+     * @param horizontalRedundants 横方向の余剰インデックス
+     * @return 横方向リストを要素に持つ縦方向リスト
+     */
     private List<List<CellData>> convert(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
         
+        assert cells != null;
+        assert horizontalRedundants != null;
+        
         Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> horizontalRedundants == null || !horizontalRedundants.contains(horizontal.apply(cell)))
-                .collect(Collectors.groupingBy(vertical));
+                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
+                .collect(Collectors.groupingBy(vertical::applyAsInt));
         
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
         

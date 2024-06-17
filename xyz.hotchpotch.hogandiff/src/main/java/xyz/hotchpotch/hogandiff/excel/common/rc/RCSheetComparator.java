@@ -28,6 +28,14 @@ public class RCSheetComparator implements SheetComparator {
     private static final int[] EMPTY_INT_ARRAY = new int[] {};
     private static final Pair<int[]> EMPTY_INT_ARRAY_PAIR = new Pair<>(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY);
     
+    /**
+     * 新たなコンパレータを返します。<br>
+     * 
+     * @param considerRowGaps 行の挿入／削除を考慮する場合は {@code true}
+     * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
+     * @param prioritizeSpeed 比較処理の速度を優先する場合は {@code true}
+     * @return 新たなコンパレータ
+     */
     public static RCSheetComparator of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
@@ -54,18 +62,18 @@ public class RCSheetComparator implements SheetComparator {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code cells1}, {@code cells2} のいずれかが {@code null} の場合
+     *              {@code cellsSetPair} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code cells1}, {@code cells2} が同一インスタンスの場合
+     *              {@code cellsSetPair} に含まれるセルセットが同一インスタンスの場合
      */
     @Override
-    public SheetResult compare(Pair<Set<CellData>> cellsSets) {
-        Objects.requireNonNull(cellsSets, "cellsSets");
+    public SheetResult compare(Pair<Set<CellData>> cellsSetPair) {
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         
-        if (cellsSets.a() == cellsSets.b()) {
-            if (cellsSets.a().isEmpty()) {
+        if (cellsSetPair.a() == cellsSetPair.b()) {
+            if (cellsSetPair.a().isEmpty()) {
                 return new SheetResult(
-                        cellsSets,
+                        cellsSetPair,
                         EMPTY_INT_ARRAY_PAIR,
                         EMPTY_INT_ARRAY_PAIR,
                         List.of());
@@ -74,7 +82,7 @@ public class RCSheetComparator implements SheetComparator {
             }
         }
         
-        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cellsSets);
+        Pair<List<IntPair>> pairs = rcMatcher.make2Pairs(cellsSetPair);
         List<IntPair> rowPairs = pairs.a();
         List<IntPair> columnPairs = pairs.b();
         
@@ -91,26 +99,26 @@ public class RCSheetComparator implements SheetComparator {
                 .toArray());
         
         // 差分セルの収集
-        List<Pair<CellData>> diffCells = extractDiffs(cellsSets, rowPairs, columnPairs);
+        List<Pair<CellData>> diffCells = extractDiffs(cellsSetPair, rowPairs, columnPairs);
         
         return new SheetResult(
-                cellsSets,
+                cellsSetPair,
                 redundantRows,
                 redundantColumns,
                 diffCells);
     }
     
     private List<Pair<CellData>> extractDiffs(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             List<IntPair> rowPairs,
             List<IntPair> columnPairs) {
         
-        assert cellsSets != null;
-        assert cellsSets.a() != cellsSets.b();
+        assert cellsSetPair != null;
+        assert cellsSetPair.a() != cellsSetPair.b();
         assert rowPairs != null;
         assert columnPairs != null;
         
-        Pair<Map<String, CellData>> maps = cellsSets.map(cells -> cells.stream()
+        Pair<Map<String, CellData>> maps = cellsSetPair.map(cells -> cells.stream()
                 .collect(Collectors.toMap(CellData::address, Function.identity())));
         
         List<IntPair> columnPairsFiltered = columnPairs.stream().filter(IntPair::isPaired).toList();

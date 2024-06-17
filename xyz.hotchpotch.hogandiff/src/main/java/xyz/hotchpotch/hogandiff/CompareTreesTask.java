@@ -3,20 +3,15 @@ package xyz.hotchpotch.hogandiff;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
-import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -31,197 +26,160 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareTreesTask extends AppTaskBase {
+/*package*/ final class CompareTreesTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareTreesTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     */
+    /*package*/ CompareTreesTask(Settings settings) {
+        super(settings);
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> topDirPair = extractDirs();
-        
-        // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-        List<DirPairData> pairs = pairingDirsAndBookNames(topDirPair, 2, 5);
-        
-        // 4. フォルダツリー同士の比較
-        TreeResult tResult = compareTrees(workDir, topDirPair, pairs, 5, 93);
-        
-        // 5. 比較結果テキストの作成と表示
-        saveAndShowResultText(workDir, tResult.toString(), 93, 95);
-        
-        // 6. 比較結果Excelの作成と表示
-        createSaveAndShowResultBook(workDir, tResult, 95, 99);
-        
-        // 7. 処理終了のアナウンス
-        announceEnd();
-        
-        return tResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 5);
+            
+            // 1. フォルダツリー同士の比較
+            TreeResult tResult = compareTrees(workDir, 5, 93);
+            
+            // 2. 比較結果テキストの作成と表示
+            saveAndShowResultText(workDir, tResult.toString(), 93, 95);
+            
+            // 3. 比較結果Excelの作成と表示
+            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            
+            // 4. 処理終了のアナウンス
+            announceEnd();
+            
+            return tResult;
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::call2");
+        }
     }
+    
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     // 0. 処理開始のアナウンス
     private void announceStart(
-            int progressBefore,
-            int progressAfter) {
-        
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
-                rb.getString("CompareTreesTask.010"),
-                dirPaths.a(),
-                dirPaths.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
-    }
-    
-    // 3. 比較するフォルダとExcelブック名の組み合わせの決定
-    private List<DirPairData> pairingDirsAndBookNames(
-            Pair<DirInfo> topDirPair,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareTreesTask.020")).append(BR);
-            updateMessage(str.toString());
             
-            DirsMatcher dirMatcher = factory.dirsMatcher(settings);
-            List<Pair<DirInfo>> dirPairs = dirMatcher.pairingDirs(topDirPair);
+            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
             
-            BooksMatcher bookNamesMatcher = factory.bookNamesMatcher(settings);
-            BiFunction<Side, Pair<DirInfo>, List<Pair<String>>> bookNamePairs = (side, dirPair) -> dirPair
-                    .get(side).bookNames().stream()
-                    .map(bookName -> side == Side.A ? new Pair<>(bookName, null) : new Pair<>(null, bookName))
-                    .toList();
+            str.append("%s%n[A] %s%n[B] %s%n".formatted(
+                    rb.getString("CompareTreesTask.010"),
+                    treeCompareInfo.parentPair().a().dirPath(),
+                    treeCompareInfo.parentPair().b().dirPath()));
             
-            List<DirPairData> pairDataList = new ArrayList<>();
-            
-            for (int i = 0; i < dirPairs.size(); i++) {
-                Pair<DirInfo> dirPair = dirPairs.get(i);
-                
-                str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), dirPair)).append(BR);
+            for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
+                Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
+                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
-                
-                DirPairData data = new DirPairData(
-                        Integer.toString(i + 1),
-                        dirPair,
-                        dirPair.isPaired()
-                                ? bookNamesMatcher.pairingBooks(dirPair)
-                                : dirPair.isOnlyA()
-                                        ? bookNamePairs.apply(Side.A, dirPair)
-                                        : bookNamePairs.apply(Side.B, dirPair));
-                pairDataList.add(data);
             }
             
+            updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return pairDataList;
-            
         } catch (Exception e) {
-            str.append(rb.getString("CompareTreesTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareTreesTask.030"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::announceStart");
         }
     }
     
-    // 4. フォルダツリー同士の比較
+    // 1. フォルダツリー同士の比較
     private TreeResult compareTrees(
             Path workDir,
-            Pair<DirInfo> topDirPair,
-            List<DirPairData> pairDataList,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        str.append(rb.getString("CompareTreesTask.040")).append(BR);
-        updateMessage(str.toString());
-        
-        Map<Pair<Path>, Optional<DirResult>> dirResults = new HashMap<>();
-        Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
-        
-        int dirPairsCount = (int) pairDataList.stream()
-                .filter(data -> data.dirPair().isPaired())
-                .count();
-        int num = 0;
-        
-        for (int i = 0; i < pairDataList.size(); i++) {
-            int ii = i;
-            
-            DirPairData data = pairDataList.get(i);
-            
-            str.append(TreeResult.formatDirsPair(Integer.toString(i + 1), data.dirPair()));
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
             
-            Pair<Path> outputDirs = null;
+            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
             
-            try {
-                outputDirs = Side.unsafeMap(side -> {
-                    // 出力先ディレクトリの作成
-                    if (data.dirPair().has(side)) {
-                        DirInfo targetDir = data.dirPair().get(side);
-                        Path parentDir = targetDir.equals(topDirPair.get(side))
-                                ? workDir
-                                : outputDirsPair.get(side).get(targetDir.parent().path());
-                        
-                        Path outputDir = parentDir
-                                .resolve("【%s%d】%s".formatted(side, ii + 1, targetDir.path().getFileName()));
-                        Files.createDirectories(outputDir);
-                        outputDirsPair.get(side).put(targetDir.path(), outputDir);
-                        return outputDir;
-                    } else {
-                        return null;
-                    }
-                });
+            Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
+            Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
+            
+            double progressDelta = (progressAfter - progressBefore) / (double) treeCompareInfo.childPairs().size();
+            
+            for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
+                int ii = i;
                 
-            } catch (IOException e) {
-                dirResults.putIfAbsent(data.dirPair().map(DirInfo::path), Optional.empty());
-                str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
+                Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
+                DirCompareInfo dirCompareInfo = treeCompareInfo.childCompareInfos().get(dirInfoPair).get();
+                
+                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
                 updateMessage(str.toString());
-                e.printStackTrace();
-                continue;
+                
+                Pair<Path> outputDirPair = null;
+                
+                try {
+                    outputDirPair = Side.unsafeMap(side -> {
+                        // 出力先ディレクトリの作成
+                        if (dirInfoPair.has(side)) {
+                            Path targetDirPath = dirInfoPair.get(side).dirPath();
+                            Path parentDir = targetDirPath.equals(treeCompareInfo.parentPair().get(side).dirPath())
+                                    ? workDir
+                                    : outputDirsPair.get(side).get(targetDirPath.getParent());
+                            
+                            Path outputDir = parentDir
+                                    .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirPath.getFileName()));
+                            Files.createDirectories(outputDir);
+                            outputDirsPair.get(side).put(targetDirPath, outputDir);
+                            return outputDir;
+                        } else {
+                            return null;
+                        }
+                    });
+                    
+                } catch (IOException e) {
+                    dirResults.putIfAbsent(dirInfoPair, Optional.empty());
+                    str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
+                    updateMessage(str.toString());
+                    e.printStackTrace();
+                    continue;
+                }
+                
+                if (dirInfoPair.isPaired()) {
+                    DirResult dirResult = compareDirs(
+                            String.valueOf(i + 1),
+                            "      ",
+                            dirCompareInfo,
+                            outputDirPair,
+                            progressBefore + (int) progressDelta * i,
+                            progressBefore + (int) progressDelta * (i + 1));
+                    dirResults.put(dirInfoPair, Optional.of(dirResult));
+                    
+                } else {
+                    // FIXME: 片フォルダの場合も内部のファイルをコピーする
+                    dirResults.put(dirInfoPair, Optional.empty());
+                    str.append(BR);
+                    updateMessage(str.toString());
+                    updateProgress(progressBefore + progressDelta * (i + 1), PROGRESS_MAX);
+                }
             }
             
-            if (data.dirPair().isPaired()) {
-                DirResult dirResult = compareDirs(
-                        String.valueOf(i + 1),
-                        "      ",
-                        data,
-                        outputDirs,
-                        progressBefore + (progressAfter - progressBefore) * num / dirPairsCount,
-                        progressBefore + (progressAfter - progressBefore) * (num + 1) / dirPairsCount);
-                dirResults.put(data.dirPair().map(DirInfo::path), Optional.of(dirResult));
-                num++;
-                
-            } else {
-                dirResults.put(data.dirPair().map(DirInfo::path), Optional.empty());
-                str.append(BR);
-                updateMessage(str.toString());
-            }
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+            return new TreeResult(treeCompareInfo, dirResults);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareTreesTask.110", "");
         }
-        
-        updateProgress(progressAfter, PROGRESS_MAX);
-        
-        return new TreeResult(
-                topDirPair,
-                pairDataList,
-                dirResults);
     }
 }

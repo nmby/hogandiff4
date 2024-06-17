@@ -106,7 +106,7 @@ public class AppResource {
         this.properties = properties;
         this.settings = settings;
         
-        Locale appLocale = settings.getOrDefault(SettingKeys.APP_LOCALE);
+        Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
     
@@ -152,12 +152,12 @@ public class AppResource {
      * 
      * @param <T> 設定値の型
      * @param key 設定キー
-     * @param value 設定値
+     * @param value 設定値（{@code null} 許容）
      * @return 保存に成功した場合は {@code true}
      * @throws NullPointerException {@code key} が {@code null} の場合
      */
     public <T> boolean changeSetting(Key<T> key, T value) {
-        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(key);
         
         settings = settings.getAltered(key, value);
         
@@ -169,8 +169,14 @@ public class AppResource {
         }
     }
     
+    /**
+     * このリソースセットにアプリケーション実行時引数から得られる内容を上書きで反映します。<br>
+     * 
+     * @param args アプリケーション実行時引数
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
     public void reflectArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
+        Objects.requireNonNull(args);
         
         Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
         

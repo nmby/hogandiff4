@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
@@ -21,33 +20,21 @@ class XSSFSheetNamesLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
-    private static BookOpenInfo test1_xls;
-    private static BookOpenInfo test1_xlsb;
-    private static BookOpenInfo test1_xlsm;
-    private static BookOpenInfo test1_xlsx;
-    private static BookOpenInfo test2_xls;
-    private static BookOpenInfo test2_xlsx;
+    private static Path test1_xls;
+    private static Path test1_xlsb;
+    private static Path test1_xlsm;
+    private static Path test1_xlsx;
+    private static Path test2_xls;
+    private static Path test2_xlsx;
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xls").toURI()),
-                null);
-        test1_xlsb = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI()),
-                null);
-        test1_xlsm = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI()),
-                null);
-        test1_xlsx = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI()),
-                null);
-        test2_xls = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xls").toURI()),
-                null);
-        test2_xlsx = new BookOpenInfo(
-                Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsx").toURI()),
-                null);
+        test1_xls = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(XSSFSheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
     }
     
     // [instance members] ******************************************************
@@ -75,18 +62,18 @@ class XSSFSheetNamesLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> testee.loadSheetNames(null));
+                () -> testee.loadSheetNames(null, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadSheetNames(test1_xls));
+                () -> testee.loadSheetNames(test1_xls, null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadSheetNames(test1_xlsb));
+                () -> testee.loadSheetNames(test1_xlsb, null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> testee.loadSheetNames(test2_xls));
+                () -> testee.loadSheetNames(test2_xls, null));
     }
     
     @Test
@@ -96,12 +83,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(new BookOpenInfo(Path.of("X:\\dummy\\dummy.xlsx"), null)));
+                () -> testee.loadSheetNames(Path.of("X:\\dummy\\dummy.xlsx"), null));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> testee.loadSheetNames(test2_xlsx));
+                () -> testee.loadSheetNames(test2_xlsx, null));
     }
     
     @Test
@@ -113,13 +100,13 @@ class XSSFSheetNamesLoaderWithSaxTest {
                         test1_xlsx,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
     }
     
     @Test
@@ -133,13 +120,13 @@ class XSSFSheetNamesLoaderWithSaxTest {
                         test1_xlsx,
                         List.of("A1_ワークシート", "A4_マクロ",
                                 "B1_ワークシート", "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A1_ワークシート",
                                 "B1_ワークシート")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
     }
     
     @Test
@@ -151,13 +138,13 @@ class XSSFSheetNamesLoaderWithSaxTest {
                         test1_xlsx,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
     }
     
     @Test
@@ -169,13 +156,13 @@ class XSSFSheetNamesLoaderWithSaxTest {
                         test1_xlsx,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A3_ダイアログ",
                                 "B3_ダイアログ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
     }
     
     @Test
@@ -188,12 +175,12 @@ class XSSFSheetNamesLoaderWithSaxTest {
                 new BookInfo(
                         test1_xlsx,
                         List.of()),
-                testee.loadSheetNames(test1_xlsx));
+                testee.loadSheetNames(test1_xlsx, null));
         assertEquals(
                 new BookInfo(
                         test1_xlsm,
                         List.of("A4_マクロ",
                                 "B4_マクロ")),
-                testee.loadSheetNames(test1_xlsm));
+                testee.loadSheetNames(test1_xlsm, null));
     }
 }

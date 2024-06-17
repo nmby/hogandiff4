@@ -1,12 +1,13 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -27,61 +28,51 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareBooksTask extends AppTaskBase {
+/*package*/ final class CompareBooksTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareBooksTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     */
+    /*package*/ CompareBooksTask(Settings settings) {
+        super(settings);
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 2. 比較するシートの組み合わせの決定
-        List<Pair<String>> sheetNamePairs = pairingSheets(0, 3);
-        
-        // 3. シート同士の比較
-        BookResult bResult = compareSheets(sheetNamePairs, 3, 75);
-        
-        // 4. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, bResult.toString(), 75, 80);
-        
-        // 5. 比較結果の表示（Excelブック）
-        paintSaveAndShowBook(workDir, bResult, 80, 98);
-        
-        // 6. 処理終了のアナウンス
-        announceEnd();
-        
-        return bResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 3);
+            
+            // 1. シート同士の比較
+            BookResult bResult = compareSheets(3, 75);
+            
+            // 2. 比較結果の表示（テキスト）
+            saveAndShowResultText(workDir, bResult.toString(), 75, 80);
+            
+            // 3. 比較結果の表示（Excelブック）
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            paintSaveAndShowBook(workDir, bookCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
+            
+            // 4. 処理終了のアナウンス
+            announceEnd();
+            
+            return bResult;
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::call2");
+        }
     }
+    
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     // 0. 処理開始のアナウンス
     private void announceStart(
-            int progressBefore,
-            int progressAfter) {
-        
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n"
-                .formatted(rb.getString("CompareBooksTask.010"), bookOpenInfos.a(), bookOpenInfos.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
-    }
-    
-    // 2. 比較するシートの組み合わせの決定
-    private List<Pair<String>> pairingSheets(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -89,34 +80,28 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            str.append(rb.getString("CompareBooksTask.020")).append(BR);
-            updateMessage(str.toString());
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
             
-            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-            List<Pair<String>> pairs = getSheetNamePairs(bookOpenInfos);
+            str.append("%s%n[A] %s%n[B] %s%n"
+                    .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
             
-            for (int i = 0; i < pairs.size(); i++) {
-                Pair<String> pair = pairs.get(i);
-                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), pair)).append(BR);
+            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
-            str.append(BR);
             
+            str.append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return pairs;
-            
         } catch (Exception e) {
-            str.append(rb.getString("CompareBooksTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareBooksTask.030"), e);
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::announceStart");
         }
     }
     
-    // 3. シート同士の比較
+    // 1. シート同士の比較
     private BookResult compareSheets(
-            List<Pair<String>> sheetNamePairs,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -126,51 +111,54 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
             
-            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
+            BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentPair();
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            Pair<CellsLoader> loaderPair = bookInfoPair
+                    .map(BookInfo::bookPath)
+                    .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
             
-            SheetComparator comparator = factory.comparator(settings);
+            SheetComparator sheetComparator = Factory.sheetComparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
-            for (int i = 0; i < sheetNamePairs.size(); i++) {
-                Pair<String> sheetNamePair = sheetNamePairs.get(i);
+            double progressDelta = (progressAfter - progressBefore) / (double) bookCompareInfo.childPairs().size();
+            
+            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+                SheetResult result = null;
                 
-                if (sheetNamePair.isPaired()) {
-                    str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
-                    updateMessage(str.toString());
-                    
-                    Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                            side -> loaders.get(side).loadCells(bookOpenInfos.get(side), sheetNamePair.get(side)));
-                    
-                    SheetResult result = comparator.compare(cellsSets);
-                    results.put(sheetNamePair, Optional.of(result));
-                    
-                    str.append("  -  ").append(result.getDiffSummary()).append(BR);
-                    updateMessage(str.toString());
-                    
-                } else {
-                    results.put(sheetNamePair, Optional.empty());
+                try {
+                    if (sheetNamePair.isPaired()) {
+                        str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
+                        updateMessage(str.toString());
+                        
+                        Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
+                                side -> loaderPair.get(side).loadCells(
+                                        bookInfoPair.get(side).bookPath(),
+                                        readPasswords.get(bookInfoPair.get(side).bookPath()),
+                                        sheetNamePair.get(side)));
+                        
+                        result = sheetComparator.compare(cellsSetPair);
+                        
+                        str.append("  -  ").append(result.getDiffSummary()).append(BR);
+                        updateMessage(str.toString());
+                    }
+                } catch (Exception e) {
+                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
                 }
                 
-                updateProgress(
-                        progressBefore + (progressAfter - progressBefore) * (i + 1) / sheetNamePairs.size(),
-                        PROGRESS_MAX);
+                results.put(sheetNamePair, Optional.ofNullable(result));
+                updateProgress(progressBefore + progressDelta * (i + 1), PROGRESS_MAX);
             }
             
             str.append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return new BookResult(
-                    bookOpenInfos.map(BookOpenInfo::bookPath),
-                    sheetNamePairs,
-                    results);
+            return new BookResult(bookCompareInfo, results);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareBooksTask.050")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareBooksTask.050"), e);
+            throw getApplicationException(e, "CompareBooksTask.050", "");
         }
     }
 }

@@ -107,6 +107,23 @@ public final class SheetResult implements Result {
         
         // [instance members] --------------------------------------------------
         
+        /**
+         * コンストラクタ
+         * 
+         * @param rows 各比較対象シートの行数
+         * @param columns 各比較対象シートの列数
+         * @param cells 各比較対象シートのセル数
+         * @param redundantRows 各比較対象シートの余剰行数
+         * @param redundantColumns 各比較対象シートの余剰列数
+         * @param diffCells 差分セル数
+         */
+        public Stats {
+            Objects.requireNonNull(rows, "rows");
+            Objects.requireNonNull(columns, "columns");
+            Objects.requireNonNull(cells, "cells");
+            Objects.requireNonNull(redundantRows, "redundantRows");
+            Objects.requireNonNull(redundantColumns, "redundantColumns");
+        }
     }
     
     // [instance members] ******************************************************
@@ -119,23 +136,23 @@ public final class SheetResult implements Result {
     /**
      * コンストラクタ<br>
      * 
-     * @param cellsSets 各シートに含まれるセル
+     * @param cellsSetPair 各シートに含まれるセル
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
      * @throws NullPointerException
-     *              {@code redundantRows}, {@code redundantColumns}, {@code diffCells}
+     *              {@code cellsSetPair}, {@code redundantRows}, {@code redundantColumns}, {@code diffCells}
      *              のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
     public SheetResult(
-            Pair<Set<CellData>> cellsSets,
+            Pair<Set<CellData>> cellsSetPair,
             Pair<int[]> redundantRows,
             Pair<int[]> redundantColumns,
             List<Pair<CellData>> diffCells) {
         
-        Objects.requireNonNull(cellsSets, "cellsSets");
+        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
         Objects.requireNonNull(redundantRows, "redundantRows");
         Objects.requireNonNull(redundantColumns, "redundantColumns");
         Objects.requireNonNull(diffCells, "diffCells");
@@ -159,9 +176,9 @@ public final class SheetResult implements Result {
         this.diffCells = diffCells;
         
         this.stats = new Stats(
-                IntPair.from(cellsSets.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
-                IntPair.from(cellsSets.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
-                IntPair.from(cellsSets.map(Set::size)),
+                IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
+                IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
+                IntPair.from(cellsSetPair.map(Set::size)),
                 IntPair.from(redundantRows.map(rows -> rows.length)),
                 IntPair.from(redundantColumns.map(columns -> columns.length)),
                 diffCells.size());

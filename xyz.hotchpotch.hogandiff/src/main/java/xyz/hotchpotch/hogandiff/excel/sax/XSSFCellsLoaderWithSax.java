@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -24,7 +25,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
@@ -42,6 +42,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
  *
  * @author nmby
  */
+// FIXME: このローダーが読み取りパスワード付きExcelファイルに対応できるようにする
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class XSSFCellsLoaderWithSax implements CellsLoader {
@@ -249,62 +250,69 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
      * @param extractCachedValue
      *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *              数式文字列を抽出する場合は {@code false}
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード
      * @return 新しいローダー
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              ローダーの構成に失敗した場合。
      *              具体的には、Excelブックから共通情報の取得に失敗した場合
      */
     public static CellsLoader of(
             boolean extractCachedValue,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(
                 XSSFCellsLoaderWithSax.class,
-                bookOpenInfo.bookType());
+                BookType.of(bookPath));
         
-        return new XSSFCellsLoaderWithSax(extractCachedValue, bookOpenInfo);
+        return new XSSFCellsLoaderWithSax(extractCachedValue, bookPath, readPassword);
     }
     
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
-    private final BookOpenInfo bookOpenInfo;
+    private final Path bookPath;
+    //private final String readPassword;
     private final Map<String, SheetInfo> nameToInfo;
     private final List<String> sst;
     
     private XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        assert bookOpenInfo != null;
-        assert CommonUtil.isSupportedBookType(getClass(), bookOpenInfo.bookType());
+        assert bookPath != null;
+        // readPassword may be null.
+        assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
         
         this.extractCachedValue = extractCachedValue;
-        this.bookOpenInfo = bookOpenInfo;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookOpenInfo).stream()
+        this.bookPath = bookPath;
+        //this.readPassword = readPassword;
+        this.nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
                 .collect(Collectors.toMap(
                         SheetInfo::name,
                         Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookOpenInfo);
+        this.sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
     }
     
     /**
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo}, {@code sheetName} のいずれかが {@code null} の場合
+     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} が構成時に指定されたExcelブックと異なる場合
+     *              {@code bookPath} が構成時に指定されたExcelブックと異なる場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -315,19 +323,21 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
     //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            BookOpenInfo bookOpenInfo,
+            Path bookPath,
+            String readPassword,
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
         Objects.requireNonNull(sheetName, "sheetName");
-        if (!Objects.equals(this.bookOpenInfo.bookPath(), bookOpenInfo.bookPath())) {
+        if (!Objects.equals(this.bookPath, bookPath)) {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."
-                            .formatted(this.bookOpenInfo, bookOpenInfo));
+                            .formatted(this.bookPath, bookPath));
         }
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookOpenInfo.bookPath())) {
+        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
             
             if (!nameToInfo.containsKey(sheetName)) {
                 // 例外カスケードポリシーに従い、
@@ -360,7 +370,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookOpenInfo, sheetName), e);
+                    "processing failed : %s - %s".formatted(bookPath, sheetName), e);
         }
     }
 }

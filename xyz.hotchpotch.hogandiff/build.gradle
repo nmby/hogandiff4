@@ -49,3 +49,8 @@ jar {
             "Class-Path": configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
     }
 }
+
+run {
+    // for performance monitoring
+    //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
+}

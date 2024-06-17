@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -9,12 +8,12 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.excel.BooksMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher.DirPairData;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -29,107 +28,78 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareDirsTask extends AppTaskBase {
+/*package*/ final class CompareDirsTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareDirsTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     */
+    /*package*/ CompareDirsTask(Settings settings) {
+        super(settings);
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 1. ディレクトリ情報の抽出
-        Pair<DirInfo> dirPair = extractDirs();
-        
-        // 3. 出力用ディレクトリの作成
-        Pair<Path> outputDirs = createOutputDirs(workDir, dirPair);
-        
-        // 4. 比較するExcelブックの組み合わせの決定
-        List<Pair<String>> bookNamePairs = pairingBookNames(dirPair, 2, 5);
-        
-        // 5. フォルダ同士の比較
-        DirResult dResult = compareDirs(dirPair, outputDirs, bookNamePairs, 5, 93);
-        
-        // 6. 比較結果テキストの作成と表示
-        saveAndShowResultText(workDir, dResult.toString(), 93, 95);
-        
-        // 7. 比較結果Excelの作成と表示
-        TreeResult tResult = new TreeResult(
-                dirPair,
-                List.of(new DirPairData("", dirPair, bookNamePairs)),
-                Map.of(dirPair.map(info -> info.path()), Optional.of(dResult)));
-        createSaveAndShowResultBook(workDir, tResult, 95, 99);
-        
-        // 8. 処理終了のアナウンス
-        announceEnd();
-        
-        return tResult;
-    }
-    
-    // 0. 処理開始のアナウンス
-    private void announceStart(
-            int progressBefore,
-            int progressAfter) {
-        
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<Path> dirPaths = SettingKeys.CURR_DIR_PATHS.map(settings::get);
-        
-        str.append("%s%n[A] %s%n[B] %s%n%n".formatted(
-                rb.getString("CompareDirsTask.010"),
-                dirPaths.a(),
-                dirPaths.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
-    }
-    
-    // 3. 出力用ディレクトリの作成
-    private Pair<Path> createOutputDirs(
-            Path workDir,
-            Pair<DirInfo> dirPair)
-            throws ApplicationException {
-        
-        Pair<Path> outputDirs = Side.map(
-                side -> workDir.resolve("【%s】%s".formatted(side, dirPair.get(side).path().getFileName())));
-        
+    protected Result call2() throws ApplicationException {
         try {
-            return outputDirs.unsafeMap(Files::createDirectory);
+            // 0. 処理開始のアナウンス
+            announceStart(0, 5);
             
-        } catch (IOException e) {
-            str.append(rb.getString("CompareDirsTask.020")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(
-                    "%s%n%s%n%s".formatted(rb.getString("CompareDirsTask.020"), outputDirs.a(), outputDirs.b()),
-                    e);
+            // 3. 出力用ディレクトリの作成
+            Pair<Path> outputDirPair = createOutputDirs(workDir);
+            
+            // 5. フォルダ同士の比較
+            DirResult dResult = compareDirs(outputDirPair, 5, 93);
+            
+            // 6. 比較結果テキストの作成と表示
+            saveAndShowResultText(workDir, dResult.toString(), 93, 95);
+            
+            // 7. 比較結果Excelの作成と表示
+            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            TreeResult tResult = new TreeResult(
+                    TreeCompareInfo.ofSingle(
+                            dirInfoPair,
+                            Factory.bookNamesMatcher(settings),
+                            Factory.sheetNamesMatcher(settings),
+                            settings.get(SettingKeys.CURR_READ_PASSWORDS)),
+                    Map.of(dirInfoPair, Optional.of(dResult)));
+            
+            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            
+            // 8. 処理終了のアナウンス
+            announceEnd();
+            
+            return tResult;
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::call2");
         }
     }
     
-    // 4. 比較するExcelブック名の組み合わせの決定
-    private List<Pair<String>> pairingBookNames(
-            Pair<DirInfo> dirPair,
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+    
+    // 0. 処理開始のアナウンス
+    private void announceStart(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareDirsTask.030")).append(BR);
-            updateMessage(str.toString());
             
-            BooksMatcher matcher = factory.bookNamesMatcher(settings);
-            List<Pair<String>> bookNamePairs = matcher.pairingBooks(dirPair);
+            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            List<Pair<String>> bookNamePairs = dirCompareInfo.childPairs();
+            
+            str.append("%s%n[A] %s%n[B] %s%n".formatted(
+                    rb.getString("CompareDirsTask.010"),
+                    dirInfoPair.a().dirPath(),
+                    dirInfoPair.b().dirPath()));
             
             if (bookNamePairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
@@ -139,50 +109,67 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
             }
             
-            str.append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return bookNamePairs;
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::announceStart");
+        }
+    }
+    
+    // 3. 出力用ディレクトリの作成
+    private Pair<Path> createOutputDirs(Path workDir)
+            throws ApplicationException {
+        
+        DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+        Pair<Path> outputDirPair = null;
+        
+        try {
+            outputDirPair = Side.map(
+                    side -> workDir.resolve("【%s】%s".formatted(side, dirInfoPair.get(side).dirPath().getFileName())));
+            
+            return outputDirPair.unsafeMap(Files::createDirectory);
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareDirsTask.040")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareDirsTask.040"), e);
+            throw getApplicationException(e, "CompareDirsTask.020", "");
         }
     }
     
     // 5. フォルダ同士の比較
     private DirResult compareDirs(
-            Pair<DirInfo> dirPair,
-            Pair<Path> outputDirs,
-            List<Pair<String>> bookNamePairs,
+            Pair<Path> outputDirPair,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        if (0 < bookNamePairs.size()) {
-            str.append(rb.getString("CompareDirsTask.050")).append(BR);
-            updateMessage(str.toString());
-            return compareDirs(
-                    "",
-                    "",
-                    new DirPairData("", dirPair, bookNamePairs),
-                    outputDirs,
-                    progressBefore,
-                    progressAfter);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
             
-        } else {
-            return new DirResult(
-                    dirPair,
-                    bookNamePairs,
-                    bookNamePairs.stream().collect(Collectors.toMap(
-                            Function.identity(),
-                            name -> Optional.empty())),
-                    "");
+            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            
+            if (0 < dirCompareInfo.childPairs().size()) {
+                str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
+                updateMessage(str.toString());
+                return compareDirs(
+                        "",
+                        "",
+                        dirCompareInfo,
+                        outputDirPair,
+                        progressBefore,
+                        progressAfter);
+                
+            } else {
+                return new DirResult(
+                        dirCompareInfo,
+                        dirCompareInfo.childPairs().stream().collect(Collectors.toMap(
+                                Function.identity(),
+                                name -> Optional.empty())),
+                        "");
+            }
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareDirsTask.080", "");
         }
-        
     }
 }

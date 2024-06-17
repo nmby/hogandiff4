@@ -18,11 +18,12 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
+// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirsMatcher} も実装する
 public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     // [static members] ********************************************************
     
-    private static final Function<DirInfo, String> dirNameExtractor = d -> d.path().getFileName().toString();
+    private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
     
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
@@ -106,9 +107,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
             DirInfo dirInfo,
             Side side) {
         
-        pairs.add(side == Side.A
-                ? new Pair<>(dirInfo, null)
-                : new Pair<>(null, dirInfo));
+        pairs.add(Pair.ofOnly(side, dirInfo));
         
         dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
     }

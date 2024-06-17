@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -30,19 +30,19 @@ public class AppArgsParser {
             + BR
             + "<OPTIONS>" + BR
             + "    --consider-row-gaps=[true|false]     : default value is "
-            + SettingKeys.CONSIDER_ROW_GAPS.defaultValueSupplier().get() + BR
+            + SettingKeys.CONSIDER_ROW_GAPS.ifNotSetSupplier().get() + BR
             + "    --consider-column-gaps=[true|false]  : default value is "
-            + SettingKeys.CONSIDER_COLUMN_GAPS.defaultValueSupplier().get() + BR
+            + SettingKeys.CONSIDER_COLUMN_GAPS.ifNotSetSupplier().get() + BR
             + "    --compare-on-formulas=[true|false]   : default value is "
-            + SettingKeys.COMPARE_ON_FORMULA_STRING.defaultValueSupplier().get() + BR
+            + SettingKeys.COMPARE_ON_FORMULA_STRING.ifNotSetSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
-            + SettingKeys.SHOW_PAINTED_SHEETS.defaultValueSupplier().get() + BR
+            + SettingKeys.SHOW_PAINTED_SHEETS.ifNotSetSupplier().get() + BR
             + "    --show-result-text=[true|false]      : default value is "
-            + SettingKeys.SHOW_RESULT_TEXT.defaultValueSupplier().get() + BR
+            + SettingKeys.SHOW_RESULT_TEXT.ifNotSetSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
-            + SettingKeys.EXIT_WHEN_FINISHED.defaultValueSupplier().get() + BR
+            + SettingKeys.EXIT_WHEN_FINISHED.ifNotSetSupplier().get() + BR
             + "    --prioritize-speed=[true|false]      : default value is "
-            + SettingKeys.PRIORITIZE_SPEED.defaultValueSupplier().get() + BR
+            + SettingKeys.PRIORITIZE_SPEED.ifNotSetSupplier().get() + BR
             + BR;
     
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
@@ -61,10 +61,10 @@ public class AppArgsParser {
      * 
      * @param args アプリケーション実行時引数
      * @return アプリケーション設定。解析できない場合は空の {@link Optional}
-     * @throws NullPointerException {@code args} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static Optional<Settings> parseArgs(String[] args) {
-        Objects.requireNonNull(args, "args");
+        Objects.requireNonNull(args);
         
         if (args.length < 2) {
             return Optional.empty();
@@ -74,8 +74,8 @@ public class AppArgsParser {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
                     .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_OPEN_INFO1, new BookOpenInfo(Path.of(args[0]), null))
-                    .set(SettingKeys.CURR_BOOK_OPEN_INFO2, new BookOpenInfo(Path.of(args[1]), null));
+                    .set(SettingKeys.CURR_BOOK_INFO1, new BookInfo(Path.of(args[0]), List.of()))
+                    .set(SettingKeys.CURR_BOOK_INFO2, new BookInfo(Path.of(args[1]), List.of()));
             
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
             remainingParams.remove();

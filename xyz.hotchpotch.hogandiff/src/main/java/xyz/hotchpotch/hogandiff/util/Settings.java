@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -27,18 +26,15 @@ public class Settings {
      *
      * @param <T> 設定値の型
      * @param name キーの名前
-     * @param defaultValueSupplier デフォルト値のサプライヤ
+     * @param ifNotSetSupplier 設定値が未設定の場合の値のサプライヤ
      * @param encoder 設定値を文字列に変換するエンコーダ
      * @param decoder 文字列を設定値に変換するデコーダ
      * @param storable 設定値をプロパティファイルに保存する場合は {@code true}
      * @author nmby
      */
-    // java16で正式導入されたRecordを使ってみる。
-    // 外形的にはこのクラスがRecordであることは全く問題がないが、
-    // 思想的?にはRecordじゃない気もするけど、まぁ試しに使ってみる。
-    public static record Key<T> (
+    public static record Key<T>(
             String name,
-            Supplier<? extends T> defaultValueSupplier,
+            Supplier<? extends T> ifNotSetSupplier,
             Function<? super T, String> encoder,
             Function<String, ? extends T> decoder,
             boolean storable) {
@@ -51,23 +47,19 @@ public class Settings {
          * 新しい設定項目を定義します。<br>
          * 
          * @param name 設定項目の名前
-         * @param defaultValueSupplier 設定項目のデフォルト値のサプライヤ
+         * @param ifNotSetSupplier 設定値が未設定の場合の値のサプライヤ
          * @param encoder 設定値を文字列に変換するエンコーダー
          * @param decoder 文字列を設定値に変換するエンコーダー
          * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
          * @throws NullPointerException
-         *          {@code name}, {@code defaultValueSupplier}, {@code encoder}
+         *          {@code name}, {@code ifNotSetSupplier}, {@code encoder}, {@code decoder}
          *          のいずれかが {@code null} の場合
-         * @throws NullPointerException
-         *          {@code storable} が {@code true} でありながら {@code decoder} が {@code null} の場合
          */
         public Key {
             Objects.requireNonNull(name, "name");
-            Objects.requireNonNull(defaultValueSupplier, "defaultValueSupplier");
+            Objects.requireNonNull(ifNotSetSupplier, "ifNotSetSupplier");
             Objects.requireNonNull(encoder, "encoder");
-            if (storable) {
-                Objects.requireNonNull(decoder, "decoder");
-            }
+            Objects.requireNonNull(decoder, "decoder");
         }
     }
     
@@ -82,29 +74,26 @@ public class Settings {
         
         // [instance members] --------------------------------------------------
         
-        private final Map<Key<?>, Object> map;
+        private final Map<Key<?>, Optional<?>> map;
         
-        private Builder(Map<Key<?>, ?> original) {
+        private Builder(Map<Key<?>, Optional<?>> original) {
             this.map = new HashMap<>(original);
         }
         
         /**
          * このビルダーに設定を追加します。<br>
-         * {@code null} 値は許容されません。値が無い可能性のある設定値を管理したい場合は
          * {@link Optional} を利用してください。<br>
          * 
          * @param <T> 設定値の型
          * @param key 設定項目
-         * @param value 設定値
+         * @param value 設定値（{@code null} 許容）
          * @return このビルダー
-         * @throws NullPointerException
-         *              {@code key}, {@code value} のいずれかが {@code null} の場合
+         * @throws NullPointerException {@code key} が {@code null} の場合
          */
         public <T> Builder set(Key<T> key, T value) {
             Objects.requireNonNull(key, "key");
-            Objects.requireNonNull(value, "value");
             
-            map.put(key, value);
+            map.put(key, Optional.ofNullable(value));
             return this;
         }
         
@@ -145,11 +134,9 @@ public class Settings {
     }
     
     /**
-     * 指定されたプロパティセットと設定項目セットで初期化された、
-     * このクラスのビルダーを返します。<br>
-     * 具体的には、指定された設定項目セットに含まれる設定項目名のプロパティが
-     * 指定されたプロパティセットに含まれる場合はそのプロパティ値を初期値とし、
-     * 含まれない場合はその設定項目のデフォルト値を初期値として、ビルダーを構成します。<br>
+     * 指定されたプロパティセットと設定項目セットで初期化されたビルダーを返します。<br>
+     * 具体的には、指定されたプロパティセットから指定された設定項目のプロパティ値を抽出して
+     * ビルダーを構成します。<br>
      * 
      * @param properties プロパティセット
      * @param keys 設定項目セット
@@ -164,16 +151,14 @@ public class Settings {
         Objects.requireNonNull(keys, "keys");
         ifDuplicatedThenThrow(keys, IllegalArgumentException::new);
         
-        Map<Key<?>, Object> map = keys.stream()
+        Map<Key<?>, Optional<?>> map = keys.stream()
+                .filter(key -> properties.containsKey(key.name))
                 .collect(Collectors.toMap(
                         Function.identity(),
                         key -> {
-                            if (properties.containsKey(key.name())) {
-                                String value = properties.getProperty(key.name());
-                                return key.decoder().apply(value);
-                            } else {
-                                return key.defaultValueSupplier().get();
-                            }
+                            String strValue = properties.getProperty(key.name);
+                            Object value = key.decoder.apply(strValue);
+                            return Optional.ofNullable(value);
                         }));
         
         return new Builder(map);
@@ -211,7 +196,7 @@ public class Settings {
     
     // [instance members] ******************************************************
     
-    private final Map<Key<?>, ?> map;
+    private final Map<Key<?>, Optional<?>> map;
     
     private Settings(Builder builder) {
         assert builder != null;
@@ -226,37 +211,16 @@ public class Settings {
      * 
      * @param <T> 設定値の型
      * @param key 設定項目
-     * @return 設定値
-     * @throws NullPointerException {@code item} が {@code null} の場合
-     * @throws NoSuchElementException {@code item} が設定されていない場合
+     * @return 設定値。{@code key} が設定されていない場合は {@code ifNotSetSupplier} による値
+     * @throws NullPointerException {@code key} が {@code null} の場合
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
         Objects.requireNonNull(key, "key");
         
-        if (map.containsKey(key)) {
-            return (T) map.get(key);
-        } else {
-            throw new NoSuchElementException("no such key : " + key.name());
-        }
-    }
-    
-    /**
-     * 指定された設定項目の値を返します。
-     * 設定項目が設定されていない場合はデフォルト値を返します。<br>
-     * 
-     * @param <T> 設定値の型
-     * @param key 設定項目
-     * @return 設定値
-     * @throws NullPointerException {@code item} が {@code null} の場合
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T getOrDefault(Key<T> key) {
-        Objects.requireNonNull(key, "key");
-        
         return map.containsKey(key)
-                ? (T) map.get(key)
-                : key.defaultValueSupplier.get();
+                ? (T) map.get(key).orElse(null)
+                : key.ifNotSetSupplier.get();
     }
     
     /**

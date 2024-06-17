@@ -8,19 +8,19 @@
 	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="xyz.hotchpotch.hogandiff.gui.MainController">
 	<children>
-		<xyz.hotchpotch.hogandiff.gui.layout.Row1Pane
+		<xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane
 			fx:id="row1Pane" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="NEVER" />
-		<xyz.hotchpotch.hogandiff.gui.layout.Row2Pane
+		<xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane
 			fx:id="row2Pane" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="NEVER" />
-		<xyz.hotchpotch.hogandiff.gui.layout.Row3Pane
+		<xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane
 			fx:id="row3Pane" maxHeight="1.7976931348623157E308"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="ALWAYS" />
-		<xyz.hotchpotch.hogandiff.gui.layout.Row4Pane
+		<xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane
 			fx:id="row4Pane" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="NEVER" />

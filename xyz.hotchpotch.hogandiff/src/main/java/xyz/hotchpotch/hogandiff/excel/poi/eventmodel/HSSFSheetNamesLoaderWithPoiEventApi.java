@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.poi.eventmodel;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -69,15 +69,12 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
         public void processRecord(Record record) {
             assert record != null;
             
-            switch (record.getSid()) {
-                case BoundSheetRecord.sid:
-                    BoundSheetRecord bsRec = (BoundSheetRecord) record;
+            switch (record) {
+                case BoundSheetRecord bsRec:
                     sheets.add(new SheetInfo(bsRec.getSheetname()));
                     break;
                 
-                case BOFRecord.sid:
-                    BOFRecord bof = (BOFRecord) record;
-                    
+                case BOFRecord bof:
                     switch (bof.getType()) {
                         case BOFRecord.TYPE_WORKBOOK:
                         case BOFRecord.TYPE_WORKSPACE_FILE:
@@ -109,8 +106,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
                     }
                     break;
                 
-                case WSBoolRecord.sid:
-                    WSBoolRecord wsbRec = (WSBoolRecord) record;
+                case WSBoolRecord wsbRec:
                     if (wsbRec.getDialog()) {
                         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
                         sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
@@ -118,6 +114,9 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
                         sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
                     }
                     break;
+                
+                default:
+                    // nop
             }
         }
         
@@ -166,9 +165,9 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
      * ごめんなさい m(_ _)m <br>
      * 
      * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
+     *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     *              {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *              処理に失敗した場合
      */
@@ -181,14 +180,16 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public BookInfo loadSheetNames(
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), bookOpenInfo.bookType());
+        Objects.requireNonNull(bookPath, "bookPath");
+        // readPassword may be null.
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Biff8EncryptionKey.setCurrentUserPassword(bookOpenInfo.readPassword());
-        try (FileInputStream fin = new FileInputStream(bookOpenInfo.bookPath().toFile());
+        Biff8EncryptionKey.setCurrentUserPassword(readPassword);
+        try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
             
             HSSFRequest req = new HSSFRequest();
@@ -198,18 +199,18 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
             factory.abortableProcessWorkbookEvents(req, poifs);
             
             return new BookInfo(
-                    bookOpenInfo,
+                    bookPath,
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
             throw new PasswordHandlingException(
-                    (bookOpenInfo.readPassword() == null
+                    (readPassword == null
                             ? "book is encrypted : %s"
                             : "password is incorrect : %s")
-                                    .formatted(bookOpenInfo),
+                                    .formatted(bookPath),
                     e);
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookOpenInfo), e);
+            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);

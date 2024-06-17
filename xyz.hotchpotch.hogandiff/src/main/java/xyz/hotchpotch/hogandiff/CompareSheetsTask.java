@@ -1,17 +1,19 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.util.List;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.BookOpenInfo;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -26,59 +28,75 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ class CompareSheetsTask extends AppTaskBase {
+/*package*/ final class CompareSheetsTask extends AppTaskBase {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
-    /*package*/ CompareSheetsTask(
-            Settings settings,
-            Factory factory) {
-        
-        super(settings, factory);
+    /**
+     * コンストラクタ
+     * 
+     * @param settings 設定セット
+     */
+    /*package*/ CompareSheetsTask(Settings settings) {
+        super(settings);
     }
     
     @Override
-    protected Result call2() throws Exception {
-        
-        // 0. 処理開始のアナウンス
-        announceStart(0, 0);
-        
-        // 2. シート同士の比較
-        BookResult bResult = compareSheets(0, 75);
-        
-        // 3. 比較結果の表示（テキスト）
-        saveAndShowResultText(workDir, bResult.toString(), 75, 80);
-        
-        // 4. 比較結果の表示（Excelブック）
-        paintSaveAndShowBook(workDir, bResult, 80, 98);
-        
-        // 5. 処理終了のアナウンス
-        announceEnd();
-        
-        return bResult;
+    protected Result call2() throws ApplicationException {
+        try {
+            // 0. 処理開始のアナウンス
+            announceStart(0, 0);
+            
+            // 2. シート同士の比較
+            BookResult bResult = compareSheets(0, 75);
+            
+            // 3. 比較結果の表示（テキスト）
+            saveAndShowResultText(workDir, bResult.toString(), 75, 80);
+            
+            // 4. 比較結果の表示（Excelブック）
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            paintSaveAndShowBook(workDir, sheetCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
+            
+            // 5. 処理終了のアナウンス
+            announceEnd();
+            
+            return bResult;
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::call2");
+        }
     }
+    
+    //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     // 0. 処理開始のアナウンス
     private void announceStart(
             int progressBefore,
-            int progressAfter) {
+            int progressAfter)
+            throws ApplicationException {
         
-        updateProgress(progressBefore, PROGRESS_MAX);
-        
-        Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-        Pair<String> sheetNames = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
-        
-        str.append(rb.getString("CompareSheetsTask.010")).append(BR);
-        str.append(isSameBook()
-                ? "%s%n[A] %s%n[B] %s%n%n".formatted(
-                        bookOpenInfos.a(), sheetNames.a(), sheetNames.b())
-                : "[A] %s - %s%n[B] %s - %s%n%n".formatted(
-                        bookOpenInfos.a(), sheetNames.a(), bookOpenInfos.b(), sheetNames.b()));
-        
-        updateMessage(str.toString());
-        updateProgress(progressAfter, PROGRESS_MAX);
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            Pair<Path> bookPathPair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
+            Pair<String> sheetNamePair = sheetCompareInfo.childPairs().get(0);
+            
+            str.append(rb.getString("CompareSheetsTask.010")).append(BR);
+            str.append(isSameBook()
+                    ? "%s%n[A] %s%n[B] %s%n%n".formatted(
+                            bookPathPair.a(), sheetNamePair.a(), sheetNamePair.b())
+                    : "[A] %s - %s%n[B] %s - %s%n%n".formatted(
+                            bookPathPair.a(), sheetNamePair.a(), bookPathPair.b(), sheetNamePair.b()));
+            
+            updateMessage(str.toString());
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::announceStart");
+        }
     }
     
     // 2. シート同士の比較
@@ -92,33 +110,38 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
             
-            Pair<BookOpenInfo> bookOpenInfos = SettingKeys.CURR_BOOK_OPEN_INFOS.map(settings::get);
-            Pair<CellsLoader> loaders = bookOpenInfos.unsafeMap(info -> factory.cellsLoader(settings, info));
-            Pair<String> pair = SettingKeys.CURR_SHEET_NAMES.map(settings::get);
+            SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = sheetCompareInfo.parentPair();
+            Pair<String> sheetNamePair = sheetCompareInfo.childPairs().get(0);
             
-            str.append(BookResult.formatSheetNamesPair("1", pair));
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
+            Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
+                    bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+            
+            str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
             
-            Pair<Set<CellData>> cellsSets = Side.unsafeMap(
-                    side -> loaders.get(side).loadCells(bookOpenInfos.get(side), pair.get(side)));
+            Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
+                    side -> loaderPair.get(side).loadCells(
+                            bookInfoPair.get(side).bookPath(),
+                            readPasswords.get(bookInfoPair.get(side).bookPath()),
+                            sheetNamePair.get(side)));
             
-            SheetComparator comparator = factory.comparator(settings);
-            SheetResult result = comparator.compare(cellsSets);
+            SheetComparator comparator = Factory.sheetComparator(settings);
+            SheetResult result = comparator.compare(cellsSetPair);
             
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    bookOpenInfos.map(BookOpenInfo::bookPath),
-                    List.of(pair),
-                    Map.of(pair, Optional.of(result)));
+                    BookCompareInfo.of(
+                            sheetCompareInfo.parentPair(),
+                            sheetCompareInfo.childPairs()),
+                    Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
-            str.append(rb.getString("CompareSheetsTask.030")).append(BR).append(BR);
-            updateMessage(str.toString());
-            e.printStackTrace();
-            throw new ApplicationException(rb.getString("CompareSheetsTask.030"), e);
+            throw getApplicationException(e, "CompareSheetsTask.030", "");
         }
     }
 }

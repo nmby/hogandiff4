@@ -52,22 +52,60 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     }
     
     /**
-     * 内部処理用の不変クラス（レコード）です。<br>
      * エディットグラフ上の各点における遷移経路を表します。<br>
      * 
      * @author nmby
      */
-    private static record ComeFrom(
-            ComeFrom prev,
-            Direction direction) {
+    private static sealed interface ComeFrom
+            permits ComeFrom.Upper, ComeFrom.Left, ComeFrom.UpperLeft {
         
         // [static members] ----------------------------------------------------
         
+        /**
+         * エディットグラフの上から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record Upper(ComeFrom prev) implements ComeFrom {
+        }
+        
+        /**
+         * エディットグラフの左から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record Left(ComeFrom prev) implements ComeFrom {
+        }
+        
+        /**
+         * エディットグラフの左上から遷移してきたことを表します。
+         * 
+         * @param prev 遷移元ノード
+         */
+        static record UpperLeft(ComeFrom prev) implements ComeFrom {
+        }
+        
         // [instance members] --------------------------------------------------
+        
+        default Direction direction() {
+            return switch (this) {
+                case Upper from -> Direction.FROM_UPPER;
+                case Left from -> Direction.FROM_LEFT;
+                case UpperLeft from -> Direction.FROM_UPPER_LEFT;
+            };
+        }
+        
+        ComeFrom prev();
     }
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluator 余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ MinimumEditDistanceMatcher(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
@@ -78,6 +116,13 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         assert diffEvaluator != null;
     }
     
+    /**
+     * コンストラクタ
+     * 
+     * @param gapEvaluatorA 比較対象Aに適用する余剰評価関数
+     * @param gapEvaluatorB 比較対象Bに適用する余剰評価関数
+     * @param diffEvaluator 差分評価関数
+     */
     /*package*/ MinimumEditDistanceMatcher(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
@@ -93,6 +138,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
+        
+        // 親クラスでバリデーションチェック実施済み
         
         ComeFrom bestRoute = calcBestRoute(listA, listB);
         
@@ -140,11 +187,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             
             if (n < listA.size()) {
                 accCosts0[0] = accCosts1[0] + gapCostsA[n];
-                comeFrom0[0] = new ComeFrom(comeFrom1[0], Direction.FROM_UPPER);
+                comeFrom0[0] = new ComeFrom.Upper(comeFrom1[0]);
             }
             if (n < listB.size()) {
                 accCosts0[accCosts0.length - 1] = accCosts1[accCosts1.length - 1] + gapCostsB[n];
-                comeFrom0[comeFrom0.length - 1] = new ComeFrom(comeFrom1[comeFrom1.length - 1], Direction.FROM_LEFT);
+                comeFrom0[comeFrom0.length - 1] = new ComeFrom.Left(comeFrom1[comeFrom1.length - 1]);
             }
             
             final int nf = n;
@@ -159,27 +206,32 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 int a = nf < listA.size() ? nf - k : listA.size() - k;
                 int b = nf - a - 1;
                 
-                // 左上からの遷移（つまりリストA, リストBの要素が対応する場合）が最適であると仮置きする。
+                //// それぞれの方向から遷移した場合のコストを計算する。
+                int dk1 = (nf <= listA.size()) ? -1 : 0;
                 int dk2 = (nf <= listA.size()) ? -1 : (nf == listA.size() + 1) ? 0 : 1;
-                long minCost = accCosts2f[k + dk2] + diffEvaluator.applyAsInt(listA.get(a), listB.get(b));
-                comeFrom0f[k] = new ComeFrom(comeFrom2f[k + dk2], Direction.FROM_UPPER_LEFT);
+                
+                // 左上からの遷移（つまりリストA, リストBの要素が対応する場合）が最適であると仮置きする。
+                long tmpCostAB = accCosts2f[k + dk2] + diffEvaluator.applyAsInt(listA.get(a), listB.get(b));
                 
                 // 左から遷移した場合（つまりリストBの要素が余剰である場合）のコストを求めて比較する。
-                int dk1 = (nf <= listA.size()) ? -1 : 0;
                 long tmpCostB = accCosts1f[k + dk1] + gapCostsB[b];
-                if (tmpCostB < minCost) {
-                    minCost = tmpCostB;
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1], Direction.FROM_LEFT);
-                }
                 
                 // 上から遷移した場合（つまりリストAの要素が余剰である場合）のコストを求めて比較する。
                 long tmpCostA = accCosts1f[k + dk1 + 1] + gapCostsA[a];
-                if (tmpCostA < minCost) {
-                    minCost = tmpCostA;
-                    comeFrom0f[k] = new ComeFrom(comeFrom1f[k + dk1 + 1], Direction.FROM_UPPER);
-                }
                 
-                accCosts0f[k] = minCost;
+                //// 最も小さいコストの遷移元を採用する。
+                if (tmpCostA < tmpCostB && tmpCostA < tmpCostAB) {
+                    comeFrom0f[k] = new ComeFrom.Upper(comeFrom1f[k + dk1 + 1]);
+                    accCosts0f[k] = tmpCostA;
+                    
+                } else if (tmpCostB <= tmpCostA && tmpCostB < tmpCostAB) {
+                    comeFrom0f[k] = new ComeFrom.Left(comeFrom1f[k + dk1]);
+                    accCosts0f[k] = tmpCostB;
+                    
+                } else {
+                    comeFrom0f[k] = new ComeFrom.UpperLeft(comeFrom2f[k + dk2]);
+                    accCosts0f[k] = tmpCostAB;
+                }
             });
             
             accCosts2 = accCosts1;
@@ -205,7 +257,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         int b = listB.size();
         
         while (comeFrom != null) {
-            switch (comeFrom.direction) {
+            switch (comeFrom.direction()) {
                 case FROM_UPPER_LEFT:
                     a--;
                     b--;
@@ -220,9 +272,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     bestRoute.addFirst(IntPair.onlyB(b));
                     break;
                 default:
-                    throw new AssertionError(comeFrom.direction);
+                    throw new AssertionError(comeFrom.direction());
             }
-            comeFrom = comeFrom.prev;
+            comeFrom = comeFrom.prev();
         }
         
         return bestRoute;

@@ -1,11 +1,14 @@
 package xyz.hotchpotch.hogandiff;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -24,21 +27,25 @@ public enum AppMenu {
      */
     COMPARE_BOOKS(
             CompareBooksTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath())),
+            settings -> {
+                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Objects.requireNonNull(bookCompareInfo);
+                
+                return !bookCompareInfo.parentPair().isIdentical();
+            }),
     
     /**
      * 特定のExcelシート同士を比較します。
      */
     COMPARE_SHEETS(
             CompareSheetsTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO1).bookPath(),
-                    settings.get(SettingKeys.CURR_BOOK_OPEN_INFO2).bookPath())
-                    || !Objects.equals(
-                            settings.get(SettingKeys.CURR_SHEET_NAME1),
-                            settings.get(SettingKeys.CURR_SHEET_NAME2))),
+            settings -> {
+                SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Objects.requireNonNull(sheetCompareInfo);
+                
+                return !sheetCompareInfo.parentPair().isIdentical()
+                        || !sheetCompareInfo.childPairs().get(0).isIdentical();
+            }),
     
     /**
      * 指定されたフォルダに含まれる全Excelブックを比較します。
@@ -47,9 +54,12 @@ public enum AppMenu {
      */
     COMPARE_DIRS(
             CompareDirsTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_PATH1),
-                    settings.get(SettingKeys.CURR_DIR_PATH2))),
+            settings -> {
+                DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                Objects.requireNonNull(dirCompareInfo);
+                
+                return !dirCompareInfo.parentPair().isIdentical();
+            }),
     
     /**
      * 指定されたフォルダ配下のフォルダツリーを比較します。
@@ -58,17 +68,20 @@ public enum AppMenu {
      */
     COMPARE_TREES(
             CompareTreesTask::new,
-            settings -> !Objects.equals(
-                    settings.get(SettingKeys.CURR_DIR_PATH1),
-                    settings.get(SettingKeys.CURR_DIR_PATH2)));
+            settings -> {
+                TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                Objects.requireNonNull(treeCompareInfo);
+                
+                return !treeCompareInfo.parentPair().isIdentical();
+            });
     
     // [instance members] ******************************************************
     
-    private final BiFunction<Settings, Factory, Task<Report>> taskFactory;
+    private final Function<Settings, Task<Report>> taskFactory;
     private final Predicate<Settings> targetValidator;
     
     private AppMenu(
-            BiFunction<Settings, Factory, Task<Report>> taskFactory,
+            Function<Settings, Task<Report>> taskFactory,
             Predicate<Settings> targetValidator) {
         
         assert taskFactory != null;
@@ -85,10 +98,10 @@ public enum AppMenu {
      * 
      * @param settings 設定
      * @return 比較対象の指定が妥当な場合は {@code true}
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean isValidTargets(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+        Objects.requireNonNull(settings);
         
         return targetValidator.test(settings);
     }
@@ -97,14 +110,12 @@ public enum AppMenu {
      * このメニューを実行するためのタスクを生成して返します。<br>
      * 
      * @param settings 設定
-     * @param factory ファクトリ
      * @return 新しいタスク
-     * @throws NullPointerException {@code settings}, {@code factory} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public Task<Report> getTask(Settings settings, Factory factory) {
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(factory, "factory");
+    public Task<Report> getTask(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        return taskFactory.apply(settings, factory);
+        return taskFactory.apply(settings);
     }
 }

@@ -1,9 +1,16 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.awt.Color;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.core.Matcher;
+import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
+import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -16,66 +23,54 @@ public class Factory {
     // [static members] ********************************************************
     
     /**
-     * 新しいファクトリを返します。<br>
-     * 
-     * @return 新しいファクトリ
-     */
-    public static Factory of() {
-        return new Factory();
-    }
-    
-    // [instance members] ******************************************************
-    
-    private Factory() {
-    }
-    
-    /**
      * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
      * 
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excelブックのパス
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code bookOpenInfo} が {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public SheetNamesLoader sheetNamesLoader(
-            BookOpenInfo bookOpenInfo)
+    public static SheetNamesLoader sheetNamesLoader(
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(bookPath);
+        // readPassword may be null.
         
-        return SheetNamesLoader.of(bookOpenInfo);
+        return SheetNamesLoader.of(bookPath, readPassword);
     }
     
     /**
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelシートからセルデータを抽出するローダー
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public CellsLoader cellsLoader(
+    public static CellsLoader cellsLoader(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(bookPath);
+        // readPassword may be null.
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
         
-        boolean useCachedValue = !settings.getOrDefault(SettingKeys.COMPARE_ON_FORMULA_STRING);
+        boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        return CellsLoader.of(bookOpenInfo, useCachedValue);
+        return CellsLoader.of(bookPath, readPassword, useCachedValue);
     }
     
     /**
@@ -83,12 +78,12 @@ public class Factory {
      * 
      * @param settings 設定
      * @return フォルダ情報を抽出するローダー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirLoader dirLoader(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static DirLoader dirLoader(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        boolean recursively = settings.getOrDefault(SettingKeys.COMPARE_DIRS_RECURSIVELY);
+        boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
         return DirLoader.of(recursively);
     }
     
@@ -97,13 +92,19 @@ public class Factory {
      * 
      * @param settings 設定
      * @return シート名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public SheetNamesMatcher sheetNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<String> sheetNamesMatcher(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
-        return SheetNamesMatcher.of(matchNamesStrictly);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
     }
     
     /**
@@ -111,13 +112,19 @@ public class Factory {
      * 
      * @param settings 設定
      * @return Excelブック名同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BooksMatcher bookNamesMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<String> bookNamesMatcher(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
-        return BooksMatcher.of(matchNamesStrictly);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? Matcher.identityMatcherOf()
+                : Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(),
+                        Matcher.minimumCostFlowMatcherOf(
+                                String::length,
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
     }
     
     /**
@@ -125,28 +132,50 @@ public class Factory {
      * 
      * @param settings 設定
      * @return フォルダ同士の対応関係を決めるマッチャー
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirsMatcher dirsMatcher(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static Matcher<DirInfo> dirsMatcher(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.getOrDefault(SettingKeys.MATCH_NAMES_STRICTLY);
-        return DirsMatcher.of(matchNamesStrictly);
+        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
+        return matchNamesStrictly
+                ? strictDirNamesMatcher
+                : Matcher.combinedMatcherOf(List.of(
+                        strictDirNamesMatcher,
+                        fuzzyButSimpleDirsMatcher));
     }
+    
+    private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
+    
+    private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
+    
+    private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
+            d -> d.children().size() + d.bookNames().size(),
+            (d1, d2) -> {
+                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                
+                int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.bookNames(), d2.bookNames())
+                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                
+                return gapChildren + gapBookNames;
+            });
     
     /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
      * 
      * @param settings 設定
      * @return セルセット同士を比較するコンパレータ
-     * @throws NullPointerException {@code settings} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public SheetComparator comparator(Settings settings) {
-        Objects.requireNonNull(settings, "settings");
+    public static SheetComparator sheetComparator(Settings settings) {
+        Objects.requireNonNull(settings);
         
-        boolean considerRowGaps = settings.getOrDefault(SettingKeys.CONSIDER_ROW_GAPS);
-        boolean considerColumnGaps = settings.getOrDefault(SettingKeys.CONSIDER_COLUMN_GAPS);
-        boolean prioritizeSpeed = settings.getOrDefault(SettingKeys.PRIORITIZE_SPEED);
+        boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
+        boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
+        boolean prioritizeSpeed = settings.get(SettingKeys.PRIORITIZE_SPEED);
         
         return SheetComparator.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
     }
@@ -156,35 +185,37 @@ public class Factory {
      * ペインターを返します。<br>
      * 
      * @param settings 設定
-     * @param bookOpenInfo Excelブックの情報
+     * @param bookPath Excepブックのパス
+     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックの差分個所に色を付けて保存するペインター
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException
-     *              {@code settings}, {@code bookOpenInfo} のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException
-     *              {@code bookOpenInfo} がサポート対象外の形式の場合
+     * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
+     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public BookPainter painter(
+    public static BookPainter painter(
             Settings settings,
-            BookOpenInfo bookOpenInfo)
+            Path bookPath,
+            String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(settings, "settings");
-        Objects.requireNonNull(bookOpenInfo, "bookOpenInfo");
+        Objects.requireNonNull(settings);
+        Objects.requireNonNull(bookPath);
+        // readPassword may be null.
         
-        short redundantColor = settings.getOrDefault(SettingKeys.REDUNDANT_COLOR);
-        short diffColor = settings.getOrDefault(SettingKeys.DIFF_COLOR);
-        Color redundantCommentColor = settings.getOrDefault(SettingKeys.REDUNDANT_COMMENT_COLOR);
-        Color diffCommentColor = settings.getOrDefault(SettingKeys.DIFF_COMMENT_COLOR);
+        short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
+        short diffColor = settings.get(SettingKeys.DIFF_COLOR);
+        Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
+        Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
         // もうなんか滅茶苦茶や・・・
         String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
         String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
-        Color redundantSheetColor = settings.getOrDefault(SettingKeys.REDUNDANT_SHEET_COLOR);
-        Color diffSheetColor = settings.getOrDefault(SettingKeys.DIFF_SHEET_COLOR);
-        Color sameSheetColor = settings.getOrDefault(SettingKeys.SAME_SHEET_COLOR);
+        Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
+        Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
+        Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
         
         return BookPainter.of(
-                bookOpenInfo,
+                bookPath,
+                readPassword,
                 redundantColor,
                 diffColor,
                 redundantCommentColor,
@@ -194,5 +225,10 @@ public class Factory {
                 redundantSheetColor,
                 diffSheetColor,
                 sameSheetColor);
+    }
+    
+    // [instance members] ******************************************************
+    
+    private Factory() {
     }
 }

@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 
 /**
@@ -81,20 +80,6 @@ public record Pair<T>(T a, T b) {
             operation.accept(B);
         }
         
-        /**
-         * 各側に指定されたオペレーションを適用します。<br>
-         * 
-         * @param <E> {@code operation} がスローしうるチェック例外の型
-         * @param operation 各側に適用するオペレーション
-         * @throws NullPointerException {@code operation} が {@code null} の場合
-         */
-        public static <E extends Exception> void unsafeForEach(UnsafeConsumer<Side, E> operation) throws E {
-            Objects.requireNonNull(operation, "operation");
-            
-            operation.accept(A);
-            operation.accept(B);
-        }
-        
         // [instance members] --------------------------------------------------
         
         /**
@@ -105,6 +90,31 @@ public record Pair<T>(T a, T b) {
         public Side opposite() {
             return this == A ? B : A;
         }
+    }
+    
+    /**
+     * 新しいペアを返します。<br>
+     * 
+     * @param <T> 要素の型
+     * @param a 要素a
+     * @param b 要素b
+     * @return 新しいペア
+     */
+    public static <T> Pair<T> of(T a, T b) {
+        return new Pair<>(a, b);
+    }
+    
+    /**
+     * 指定された側だけの要素を持つ新しいペアを返します。<br>
+     * 
+     * @param <T> 要素の型
+     * @param side 要素の側
+     * @param value 指定された側の要素
+     * @return 新しいペア
+     */
+    public static <T> Pair<T> ofOnly(Side side, T value) {
+        Objects.requireNonNull(side);
+        return side == Side.A ? new Pair<>(value, null) : new Pair<>(null, value);
     }
     
     // [instance members] ******************************************************
