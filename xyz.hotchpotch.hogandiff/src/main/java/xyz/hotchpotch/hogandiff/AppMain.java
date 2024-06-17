@@ -26,7 +26,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    public static final String VERSION = "v0.19.1";
+    public static final String VERSION = "v0.20.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -138,11 +138,11 @@ public class AppMain extends Application {
         String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
             
-            assert VERSION.equals("v0.19.1");
-            // v0.19.1 では新機能紹介ページを表示する。
+            assert VERSION.equals("v0.20.0");
+            // v0.20.0 では新機能紹介ページを表示する。
             
             try {
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-19-1/"));
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-20-0/"));
             } catch (IOException e) {
                 e.printStackTrace();
                 // nop
