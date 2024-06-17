@@ -18,6 +18,7 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
@@ -103,16 +104,18 @@ public class EditSheetPairingDialogPane extends VBox {
             Pair<String> pair = currentPairs.get(i);
             
             if (pair.isPaired()) {
-                childGridPane.add(new PairedNameLabel(i, Side.A, pair.a()), 0, i);
+                childGridPane.add(new PairedNameLabel(pair.a()), 0, i);
                 childGridPane.add(new UnpairButton(i), 1, i);
-                childGridPane.add(new PairedNameLabel(i, Side.B, pair.b()), 2, i);
+                childGridPane.add(new PairedNameLabel(pair.b()), 2, i);
                 
             } else if (pair.hasA()) {
+                childGridPane.add(new DummyLabel(), 2, i);
+                childGridPane.add(new UnpairedPane(i, Side.B), 0, i, 3, 1);
                 childGridPane.add(new UnpairedNameLabel(i, Side.A, pair.a()), 0, i);
-                childGridPane.add(new DummyLabel(i, Side.B), 2, i);
                 
             } else {
-                childGridPane.add(new DummyLabel(i, Side.A), 0, i);
+                childGridPane.add(new DummyLabel(), 0, i);
+                childGridPane.add(new UnpairedPane(i, Side.A), 0, i, 3, 1);
                 childGridPane.add(new UnpairedNameLabel(i, Side.B, pair.b()), 2, i);
             }
         }
@@ -164,13 +167,140 @@ public class EditSheetPairingDialogPane extends VBox {
         return BookCompareInfo.of(bookInfoPair, currentPairs);
     }
     
+    private class UnpairedPane extends Pane {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        private final int idx;
+        private final Side lackedSide;
+        
+        private UnpairedPane(int idx, Side lackedSide) {
+            this.idx = idx;
+            this.lackedSide = lackedSide;
+            setMaxHeight(Double.MAX_VALUE);
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("unpairedPane");
+            setOnDragEntered(this::onDragEntered);
+            setOnDragOver(this::onDragOver);
+            setOnDragExited(this::onDragExited);
+            setOnDragDropped(this::onDragDropped);
+        }
+        
+        /**
+         * {@code A0}, {@code B77} 形式の id を受け取り、idx 成分を返す。
+         * 但し、id に含まれる side 成分が自らの lackedSide と異なる場合は
+         * 受け入れ不可として null を返す。<br>
+         * 
+         * @param id {@code A0}, {@code B77} 形式のソースノードの位置を表す文字列
+         * @return ソースノードを受け入れ可能な場合にその idx 成分
+         */
+        private Integer getIdx(String id) {
+            if (id == null || id.length() < 2) {
+                return null;
+            }
+            try {
+                Side side = Side.valueOf(id.substring(0, 1));
+                int idx = Integer.parseInt(id.substring(1));
+                if (side != this.lackedSide || idx == this.idx) {
+                    return null;
+                }
+                return idx;
+                
+            } catch (RuntimeException e) {
+                return null;
+            }
+        }
+        
+        private void onDragEntered(DragEvent event) {
+            try {
+                event.consume();
+                
+                if (!event.getDragboard().hasString()) {
+                    return;
+                }
+                String id = event.getDragboard().getString();
+                Integer idx = getIdx(id);
+                if (idx == null) {
+                    return;
+                }
+                
+                UnpairedPane target = (UnpairedPane) event.getTarget();
+                target.getStyleClass().add("dragging");
+                
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
+        
+        private void onDragOver(DragEvent event) {
+            try {
+                event.consume();
+                
+                if (!event.getDragboard().hasString()) {
+                    return;
+                }
+                String id = event.getDragboard().getString();
+                Integer idx = getIdx(id);
+                if (idx == null) {
+                    return;
+                }
+                event.acceptTransferModes(TransferMode.MOVE);
+                
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
+        
+        private void onDragExited(DragEvent event) {
+            try {
+                event.consume();
+                
+                UnpairedPane target = (UnpairedPane) event.getTarget();
+                target.getStyleClass().remove("dragging");
+                
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
+        
+        private void onDragDropped(DragEvent event) {
+            try {
+                event.consume();
+                
+                if (!event.getDragboard().hasString()) {
+                    event.setDropCompleted(false);
+                    return;
+                }
+                String id = event.getDragboard().getString();
+                Integer idx = getIdx(id);
+                if (idx == null) {
+                    event.setDropCompleted(false);
+                    return;
+                }
+                
+                makePair(idx, this.idx);
+                event.setDropCompleted(true);
+                
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                event.setDropCompleted(false);
+                // nop
+            }
+        }
+    }
+    
     private class PairedNameLabel extends Label {
         
         // static members ------------------------------------------------------
         
         // instance members ----------------------------------------------------
         
-        private PairedNameLabel(int idx, Side side, String name) {
+        private PairedNameLabel(String name) {
             setText(name);
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
@@ -218,117 +348,10 @@ public class EditSheetPairingDialogPane extends VBox {
         
         // instance members ----------------------------------------------------
         
-        private final int idx;
-        private final Side side;
-        
-        private DummyLabel(int idx, Side side) {
-            this.idx = idx;
-            this.side = side;
-            // TODO: リソース化する
-            setText(rb.getString("excel.BResult.010"));
+        private DummyLabel() {
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
             getStyleClass().add("dummyLabel");
-            setOnDragEntered(this::onDragEntered);
-            setOnDragOver(this::onDragOver);
-            setOnDragExited(this::onDragExited);
-            setOnDragDropped(this::onDragDropped);
-        }
-        
-        private Integer getIdx(String id) {
-            if (id == null || id.length() < 2) {
-                return null;
-            }
-            try {
-                Side side = Side.valueOf(id.substring(0, 1));
-                int idx = Integer.parseInt(id.substring(1));
-                if (side != this.side || idx == this.idx) {
-                    return null;
-                }
-                return idx;
-                
-            } catch (RuntimeException e) {
-                return null;
-            }
-        }
-        
-        private void onDragEntered(DragEvent event) {
-            try {
-                event.consume();
-                
-                if (!event.getDragboard().hasString()) {
-                    return;
-                }
-                String id = event.getDragboard().getString();
-                Integer idx = getIdx(id);
-                if (idx == null) {
-                    return;
-                }
-                DummyLabel target = (DummyLabel) event.getTarget();
-                target.getStyleClass().add("dragging");
-                
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
-        }
-        
-        private void onDragOver(DragEvent event) {
-            try {
-                event.consume();
-                
-                if (!event.getDragboard().hasString()) {
-                    return;
-                }
-                String id = event.getDragboard().getString();
-                Integer idx = getIdx(id);
-                if (idx == null) {
-                    return;
-                }
-                event.acceptTransferModes(TransferMode.MOVE);
-                
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
-        }
-        
-        private void onDragExited(DragEvent event) {
-            try {
-                event.consume();
-                DummyLabel target = (DummyLabel) event.getTarget();
-                target.getStyleClass().remove("dragging");
-                
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
-        }
-        
-        private void onDragDropped(DragEvent event) {
-            try {
-                // TODO: event.consume()の位置がおかしい気がするので見直す
-                event.consume();
-                
-                if (!event.getDragboard().hasString()) {
-                    event.setDropCompleted(false);
-                    return;
-                }
-                String id = event.getDragboard().getString();
-                Integer idx = getIdx(id);
-                if (idx == null) {
-                    event.setDropCompleted(false);
-                    return;
-                }
-                
-                makePair(idx, this.idx);
-                event.setDropCompleted(true);
-                
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                event.setDropCompleted(false);
-                // nop
-            }
         }
     }
     

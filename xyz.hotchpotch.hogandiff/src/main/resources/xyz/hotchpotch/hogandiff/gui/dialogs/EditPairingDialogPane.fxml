@@ -19,6 +19,7 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
          </rowConstraints>
          <children>
 				<Label fx:id="parentLabelA" styleClass="parentLabel" text="Label" />
