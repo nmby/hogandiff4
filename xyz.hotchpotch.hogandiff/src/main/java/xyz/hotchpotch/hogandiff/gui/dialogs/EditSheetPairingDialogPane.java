@@ -224,8 +224,6 @@ public class EditSheetPairingDialogPane extends VBox {
         private DummyLabel(int idx, Side side) {
             this.idx = idx;
             this.side = side;
-            // TODO: リソース化する
-            setText(rb.getString("excel.BResult.010"));
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
             getStyleClass().add("dummyLabel");
