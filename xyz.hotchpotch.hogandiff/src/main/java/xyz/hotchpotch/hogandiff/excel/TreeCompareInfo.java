@@ -27,7 +27,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         
         // [instance members] --------------------------------------------------
         
-        private final Matcher<DirInfo> dirsMatcher;
+        private final Matcher<DirInfo> dirInfosMatcher;
         private final Matcher<Path> bookPathsMatcher;
         private final Matcher<String> sheetNamesMatcher;
         private final Map<Path, String> readPasswords;
@@ -36,12 +36,12 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         private Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos;
         
         private TreeCompareInfoCreator(
-                Matcher<DirInfo> dirsMatcher,
+                Matcher<DirInfo> dirInfosMatcher,
                 Matcher<Path> bookPathsMatcher,
                 Matcher<String> sheetNamesMatcher,
                 Map<Path, String> readPasswords) {
             
-            this.dirsMatcher = dirsMatcher;
+            this.dirInfosMatcher = dirInfosMatcher;
             this.bookPathsMatcher = bookPathsMatcher;
             this.sheetNamesMatcher = sheetNamesMatcher;
             this.readPasswords = readPasswords;
@@ -61,7 +61,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
             
             DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
                     dirInfoPair,
-                    dirsMatcher,
+                    dirInfosMatcher,
                     bookPathsMatcher,
                     sheetNamesMatcher,
                     readPasswords);
@@ -70,7 +70,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
             dirCompareInfos.put(dirInfoPair, Optional.of(dirCompareInfo));
             
             if (dirInfoPair.isPaired()) {
-                List<Pair<DirInfo>> childDirInfoPairs = dirsMatcher.makeItemPairs(
+                List<Pair<DirInfo>> childDirInfoPairs = dirInfosMatcher.makeItemPairs(
                         dirInfoPair.a().childDirInfos(),
                         dirInfoPair.b().childDirInfos());
                 

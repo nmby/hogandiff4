@@ -8,18 +8,18 @@ import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirInfosMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
- * 同一階層のフォルダ同士をペアリングする {@link DirsMatcher} の実装です。<br>
+ * 同一階層のフォルダ同士をペアリングする {@link DirInfosMatcher} の実装です。<br>
  * 
  * @author nmby
  */
-// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirsMatcher} も実装する
-public class VerticallyStrictDirsMatcher implements DirsMatcher {
+// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirInfosMatcher} も実装する
+public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
     
     // [static members] ********************************************************
     
@@ -35,20 +35,21 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.childBookPaths(), d2.childBookPaths())
-                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                int gapBookNames = (int) Matcher.identityMatcherOf()
+                        .makeIdxPairs(d1.childBookPaths(), d2.childBookPaths()).stream()
+                        .filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
             });
     
     /**
-     * {@link DirsMatcher} のインスタンスを返します。<br>
+     * {@link DirInfosMatcher} のインスタンスを返します。<br>
      * 
      * @param matchNamesStrictly フォルダ名の曖昧一致を許さない場合は {@code true}
      * @return マッチャー
      */
-    public static DirsMatcher of(boolean matchNamesStrictly) {
-        return new VerticallyStrictDirsMatcher(matchNamesStrictly
+    public static DirInfosMatcher of(boolean matchNamesStrictly) {
+        return new VerticallyStrictDirInfosMatcher(matchNamesStrictly
                 ? strictDirNamesMatcher
                 : Matcher.combinedMatcherOf(List.of(
                         strictDirNamesMatcher,
@@ -59,7 +60,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     private final Matcher<DirInfo> coreMatcher;
     
-    private VerticallyStrictDirsMatcher(Matcher<DirInfo> coreMatcher) {
+    private VerticallyStrictDirInfosMatcher(Matcher<DirInfo> coreMatcher) {
         assert coreMatcher != null;
         this.coreMatcher = coreMatcher;
     }

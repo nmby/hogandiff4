@@ -255,8 +255,8 @@ public class MainController extends VBox {
                             } else {
                                 return DirCompareInfo.calculate(
                                         dirInfoPair,
-                                        Factory.dirsMatcher(ar.settings()),
-                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.dirInfosMatcher(ar.settings()),
+                                        Factory.bookPathsMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }
@@ -293,8 +293,8 @@ public class MainController extends VBox {
                             } else {
                                 return TreeCompareInfo.calculate(
                                         dirInfoPair,
-                                        Factory.dirsMatcher(ar.settings()),
-                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.dirInfosMatcher(ar.settings()),
+                                        Factory.bookPathsMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }

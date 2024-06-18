@@ -115,7 +115,7 @@ public class Factory {
      * @return Excelブックパス同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<Path> bookNamesMatcher(Settings settings) {
+    public static Matcher<Path> bookPathsMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -139,22 +139,22 @@ public class Factory {
      * @return フォルダ同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<DirInfo> dirsMatcher(Settings settings) {
+    public static Matcher<DirInfo> dirInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
-                ? strictDirNamesMatcher
+                ? strictDirInfosMatcher
                 : Matcher.combinedMatcherOf(List.of(
-                        strictDirNamesMatcher,
-                        fuzzyButSimpleDirsMatcher));
+                        strictDirInfosMatcher,
+                        fuzzyButSimpleDirInfosMatcher));
     }
     
     private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
     
-    private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
+    private static final Matcher<DirInfo> strictDirInfosMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
-    private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
+    private static final Matcher<DirInfo> fuzzyButSimpleDirInfosMatcher = Matcher.minimumCostFlowMatcherOf(
             d -> d.childDirInfos().size() + d.childBookPaths().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();

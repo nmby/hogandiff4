@@ -64,8 +64,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             TreeResult tResult = new TreeResult(
                     TreeCompareInfo.ofSingle(
                             dirInfoPair,
-                            Factory.dirsMatcher(settings),
-                            Factory.bookNamesMatcher(settings),
+                            Factory.dirInfosMatcher(settings),
+                            Factory.bookPathsMatcher(settings),
                             Factory.sheetNamesMatcher(settings),
                             settings.get(SettingKeys.CURR_READ_PASSWORDS)),
                     Map.of(dirInfoPair, Optional.of(dResult)));
