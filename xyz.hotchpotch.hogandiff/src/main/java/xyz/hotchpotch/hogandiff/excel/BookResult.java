@@ -37,23 +37,23 @@ public record BookResult(
      * シート名ペアをユーザー表示用に整形して返します。<br>
      * 
      * @param id シート名ペアの識別子。
-     * @param pair シート名ペア
+     * @param sheetNamePair シート名ペア
      * @return シート名ペアの整形済み文字列
-     * @throws NullPointerException {@code id}, {@code pair} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static String formatSheetNamesPair(
             String id,
-            Pair<String> pair) {
+            Pair<String> sheetNamePair) {
         
-        Objects.requireNonNull(id, "id");
-        Objects.requireNonNull(pair, "pair");
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(sheetNamePair);
         
         //ResourceBundle rb = AppMain.appResource.get();
         
         return "    %s) %s  vs  %s".formatted(
                 id,
-                pair.hasA() ? "A[ " + pair.a() + " ]" : rb.getString("excel.BResult.010"),
-                pair.hasB() ? "B[ " + pair.b() + " ]" : rb.getString("excel.BResult.010"));
+                sheetNamePair.hasA() ? "A[ " + sheetNamePair.a() + " ]" : rb.getString("excel.BResult.010"),
+                sheetNamePair.hasB() ? "B[ " + sheetNamePair.b() + " ]" : rb.getString("excel.BResult.010"));
     }
     
     // [instance members] ******************************************************

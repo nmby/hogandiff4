@@ -355,13 +355,15 @@ public class MainController extends VBox {
         Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
                 SheetCompareInfo sheetCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> pair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
-                yield pair.isIdentical() ? Stream.of(pair.a()) : Stream.of(pair.a(), pair.b());
+                Pair<Path> bookPathPair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield bookPathPair.isIdentical()
+                        ? Stream.of(bookPathPair.a())
+                        : Stream.of(bookPathPair.a(), bookPathPair.b());
             }
             case COMPARE_BOOKS -> {
                 BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> pair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
-                yield Stream.of(pair.a(), pair.b()).filter(bookPath -> bookPath != null);
+                Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
             }
             case COMPARE_DIRS -> {
                 DirCompareInfo dirCompareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);

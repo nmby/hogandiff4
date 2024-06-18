@@ -209,7 +209,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 
      * @param workDir 作業用フォルダ
-     * @param srcBookPath Excelブックのパス
+     * @param srcBookPathPair Excelブックのパス
      * @param bResult Excelブック比較結果
      * @param progressBefore 進捗率（開始時）
      * @param progressAfter 進捗率（終了時）
@@ -218,7 +218,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareSheetsTask, CompareBooksTask
     protected void paintSaveAndShowBook(
             Path workDir,
-            Pair<Path> srcBookPath,
+            Pair<Path> srcBookPathPair,
             BookResult bResult,
             int progressBefore,
             int progressAfter)
@@ -226,9 +226,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, srcBookPath.a(), bResult, 80, 98);
+                paintSaveAndShowBook1(workDir, srcBookPathPair.a(), bResult, 80, 98);
             } else {
-                paintSaveAndShowBook2(workDir, srcBookPath, bResult, 80, 98);
+                paintSaveAndShowBook2(workDir, srcBookPathPair, bResult, 80, 98);
             }
             
         } catch (Exception e) {
@@ -491,7 +491,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param dirId フォルダ識別子
      * @param indent インデント
      * @param dirCompareInfo 比較対象フォルダの情報
-     * @param outputDirs 出力先フォルダ
+     * @param outputDirPair 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
      * @return 比較結果
@@ -501,7 +501,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             String dirId,
             String indent,
             DirCompareInfo dirCompareInfo,
-            Pair<Path> outputDirs,
+            Pair<Path> outputDirPair,
             int progressBefore,
             int progressAfter) {
         
@@ -527,7 +527,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     && dirCompareInfo.childCompareInfos().get(bookPathPair).isPresent()) {
                 
                 Pair<Path> srcPathPair = Side.map(side -> bookPathPair.get(side));
-                Pair<Path> dstPathPair = Side.map(side -> outputDirs.get(side).resolve(
+                Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookPathPair.get(side).getFileName().toString())));
                 
                 BookResult bookResult = compareBooks(
@@ -556,13 +556,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 if (bookPathPair.hasA()) {
                     Path srcBookPath = bookPathPair.a();
-                    Path dstBookPath = outputDirs.a().resolve(
+                    Path dstBookPath = outputDirPair.a().resolve(
                             "【A%s-%d】%s".formatted(dirId, i + 1, bookPathPair.a().getFileName().toString()));
                     skipUnpairedBook(Side.A, srcBookPath, dstBookPath);
                 }
                 if (bookPathPair.hasB()) {
                     Path srcBookPath = bookPathPair.b();
-                    Path dstBookPath = outputDirs.b().resolve(
+                    Path dstBookPath = outputDirPair.b().resolve(
                             "【B%s-%d】%s".formatted(dirId, i + 1, bookPathPair.b().getFileName().toString()));
                     skipUnpairedBook(Side.B, srcBookPath, dstBookPath);
                 }

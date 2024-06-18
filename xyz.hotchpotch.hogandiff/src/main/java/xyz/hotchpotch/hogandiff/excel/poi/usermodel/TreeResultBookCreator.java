@@ -133,10 +133,10 @@ public class TreeResultBookCreator {
                 // 4-3. フォルダ名と差分シンボルの出力
                 Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair);
                 
-                Pair<String> dirRelNames = Side.map(
+                Pair<String> dirRelNamePair = Side.map(
                         side -> dirInfoPair.has(side) ? relPath.apply(side, dirInfoPair.get(side).dirPath()) : null);
                 
-                Pair<Path> outputDirs = Side.map(side -> dirInfoPair.has(side)
+                Pair<Path> outputDirPair = Side.map(side -> dirInfoPair.has(side)
                         ? outputDirsMaps.get(side).get(dirInfoPair.get(side).dirPath().getParent())
                                 .resolve("【%s%s】%s".formatted(side, dirId,
                                         dirInfoPair.get(side).dirPath().getFileName().toString()))
@@ -144,7 +144,7 @@ public class TreeResultBookCreator {
                 
                 for (Side side : Side.values()) {
                     if (dirInfoPair.has(side)) {
-                        outputDirsMaps.get(side).put(dirInfoPair.get(side).dirPath(), outputDirs.get(side));
+                        outputDirsMaps.get(side).put(dirInfoPair.get(side).dirPath(), outputDirPair.get(side));
                     }
                 }
                 
@@ -153,8 +153,8 @@ public class TreeResultBookCreator {
                         sheet,
                         rowNo,
                         dirId,
-                        outputDirs,
-                        dirRelNames,
+                        outputDirPair,
+                        dirRelNamePair,
                         dirInfoPair,
                         dirResult);
                 
@@ -177,8 +177,8 @@ public class TreeResultBookCreator {
                             rowNo,
                             dirId,
                             i + 1,
-                            outputDirs,
-                            dirRelNames,
+                            outputDirPair,
+                            dirRelNamePair,
                             bookPathPair,
                             bookResult);
                     
@@ -234,8 +234,8 @@ public class TreeResultBookCreator {
             Sheet sheet,
             int rowNo,
             String dirId,
-            Pair<Path> outputDirs,
-            Pair<String> dirRelNames,
+            Pair<Path> outputDirPair,
+            Pair<String> dirRelNamePair,
             Pair<DirInfo> dirPair,
             Optional<DirResult> dirResult) {
         
@@ -243,11 +243,11 @@ public class TreeResultBookCreator {
             if (dirPair.has(side)) {
                 // フォルダパスの出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNamePair.get(side));
                 
                 // ハイパーリンクの設定
                 Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
-                link.setAddress(sanitize(outputDirs.get(side)));
+                link.setAddress(sanitize(outputDirPair.get(side)));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(link);
             }
         }
@@ -259,38 +259,38 @@ public class TreeResultBookCreator {
             int rowNo,
             String dirId,
             int bookNo,
-            Pair<Path> outputDirs,
-            Pair<String> dirRelNames,
-            Pair<Path> bookPaths,
+            Pair<Path> outputDirPair,
+            Pair<String> dirRelNamePair,
+            Pair<Path> bookPathPair,
             Optional<BookResult> bookResult) {
         
         for (Side side : Side.values()) {
-            if (bookPaths.has(side)) {
-                String bookName = bookPaths.get(side).getFileName().toString();
+            if (bookPathPair.has(side)) {
+                String bookName = bookPathPair.get(side).getFileName().toString();
                 
                 // フォルダ名とファイル名の出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNamePair.get(side));
                 
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 2, "【%s%s-%d】".formatted(side, dirId, bookNo));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookName);
                 
                 // ハイパーリンクの設定
                 Hyperlink dirLink = ch.createHyperlink(HyperlinkType.FILE);
-                dirLink.setAddress(sanitize(outputDirs.get(side)));
+                dirLink.setAddress(sanitize(outputDirPair.get(side)));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(dirLink);
                 
                 Hyperlink fileLink = ch.createHyperlink(HyperlinkType.FILE);
-                fileLink.setAddress(sanitize(outputDirs.get(side)
+                fileLink.setAddress(sanitize(outputDirPair.get(side)
                         .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookName))));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(fileLink);
             }
         }
         
         // 差分記号の出力
-        if (bookPaths.isOnlyA()) {
+        if (bookPathPair.isOnlyA()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_A);
-        } else if (bookPaths.isOnlyB()) {
+        } else if (bookPathPair.isOnlyB()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_B);
         } else if (bookResult.isEmpty()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_FAILED);

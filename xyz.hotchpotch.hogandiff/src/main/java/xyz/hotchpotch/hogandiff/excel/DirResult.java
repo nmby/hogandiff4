@@ -38,25 +38,29 @@ public record DirResult(
      * 
      * @param dirId 親フォルダのペアを示す識別子。
      * @param bookId このExcelブックパスペアを示す識別子。
-     * @param pair Excelブックパスペア
+     * @param bookPathPair Excelブックパスペア
      * @return Excelブックパスペアの整形済み文字列
-     * @throws NullPointerException {@code dirId}, {@code bookId}, {@code pair} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static String formatBookNamesPair(
             String dirId,
             String bookId,
-            Pair<Path> pair) {
+            Pair<Path> bookPathPair) {
         
-        Objects.requireNonNull(dirId, "dirId");
-        Objects.requireNonNull(bookId, "bookId");
-        Objects.requireNonNull(pair, "pair");
+        Objects.requireNonNull(dirId);
+        Objects.requireNonNull(bookId);
+        Objects.requireNonNull(bookPathPair);
         
-        String bookNameA = pair.hasA() ? pair.a().getFileName().toString() : null;
-        String bookNameB = pair.hasB() ? pair.b().getFileName().toString() : null;
+        String bookNameA = bookPathPair.hasA() ? bookPathPair.a().getFileName().toString() : null;
+        String bookNameB = bookPathPair.hasB() ? bookPathPair.b().getFileName().toString() : null;
         
         return "    %s  vs  %s".formatted(
-                pair.hasA() ? "【A%s-%s】%s".formatted(dirId, bookId, bookNameA) : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "【B%s-%s】%s".formatted(dirId, bookId, bookNameB) : rb.getString("excel.DResult.010"));
+                bookPathPair.hasA()
+                        ? "【A%s-%s】%s".formatted(dirId, bookId, bookNameA)
+                        : rb.getString("excel.DResult.010"),
+                bookPathPair.hasB()
+                        ? "【B%s-%s】%s".formatted(dirId, bookId, bookNameB)
+                        : rb.getString("excel.DResult.010"));
     }
     
     // [instance members] ******************************************************
