@@ -44,14 +44,14 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
         List<Pair<String>> bookNamePairs;
         if (dirInfoPair.isPaired()) {
             bookNamePairs = bookNamesMatcher.makeItemPairs(
-                    dirInfoPair.a().bookNames(),
-                    dirInfoPair.b().bookNames());
+                    dirInfoPair.a().childBookNames(),
+                    dirInfoPair.b().childBookNames());
         } else if (dirInfoPair.hasA()) {
-            bookNamePairs = dirInfoPair.a().bookNames().stream()
+            bookNamePairs = dirInfoPair.a().childBookNames().stream()
                     .map(bookName -> Pair.ofOnly(Side.A, bookName))
                     .toList();
         } else if (dirInfoPair.hasB()) {
-            bookNamePairs = dirInfoPair.b().bookNames().stream()
+            bookNamePairs = dirInfoPair.b().childBookNames().stream()
                     .map(bookName -> Pair.ofOnly(Side.B, bookName))
                     .toList();
         } else {

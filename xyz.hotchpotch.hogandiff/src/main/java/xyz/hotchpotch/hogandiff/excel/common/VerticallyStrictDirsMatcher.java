@@ -28,14 +28,14 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.children().size() + d.bookNames().size(),
+            d -> d.childDirInfos().size() + d.childBookNames().size(),
             (d1, d2) -> {
-                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
-                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.bookNames(), d2.bookNames())
+                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.childBookNames(), d2.childBookNames())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
@@ -85,8 +85,8 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
         assert dirInfos != null;
         
         List<Pair<DirInfo>> dirPairs = coreMatcher.makeItemPairs(
-                dirInfos.a().children(),
-                dirInfos.b().children());
+                dirInfos.a().childDirInfos(),
+                dirInfos.b().childDirInfos());
         
         for (Pair<DirInfo> dirPair : dirPairs) {
             if (dirPair.isPaired()) {
@@ -109,6 +109,6 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
         
         pairs.add(Pair.ofOnly(side, dirInfo));
         
-        dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
+        dirInfo.childDirInfos().forEach(d -> setAloneDirs(pairs, d, side));
     }
 }

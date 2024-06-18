@@ -70,14 +70,14 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
             
             if (dirInfoPair.isPaired()) {
                 List<Pair<DirInfo>> childDirInfoPairs = dirsMatcher.makeItemPairs(
-                        dirInfoPair.a().children(),
-                        dirInfoPair.b().children());
+                        dirInfoPair.a().childDirInfos(),
+                        dirInfoPair.b().childDirInfos());
                 
                 childDirInfoPairs.forEach(this::doOneFloor);
                 
             } else {
                 Side side = dirInfoPair.hasA() ? Side.A : Side.B;
-                dirInfoPair.get(side).children().stream()
+                dirInfoPair.get(side).childDirInfos().stream()
                         .map(childDirInfo -> Pair.ofOnly(side, childDirInfo))
                         .forEach(this::doOneFloor);
             }
