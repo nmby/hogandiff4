@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
  * 
  * @author nmby
  */
-public class EditSheetPairingDialog extends Dialog<BookCompareInfo> {
+public class EditPairingDialog extends Dialog<BookCompareInfo> {
     
     // static members **********************************************************
     
@@ -30,10 +30,10 @@ public class EditSheetPairingDialog extends Dialog<BookCompareInfo> {
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditSheetPairingDialog(BookCompareInfo compareInfo) throws IOException {
+    public EditPairingDialog(BookCompareInfo compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
-        EditSheetPairingDialogPane editPairingDialogPane = new EditSheetPairingDialogPane();
+        EditPairingDialogPane editPairingDialogPane = new EditPairingDialogPane();
         editPairingDialogPane.init(this, compareInfo);
         editPairingDialogPane.getStylesheets().add(getClass().getResource("editPairingDialog.css").toExternalForm());
         

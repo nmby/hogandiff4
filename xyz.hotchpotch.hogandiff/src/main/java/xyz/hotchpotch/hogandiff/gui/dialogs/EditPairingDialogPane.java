@@ -31,9 +31,31 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class EditSheetPairingDialogPane extends VBox {
+public class EditPairingDialogPane extends VBox {
     
     // static members **********************************************************
+    
+    private enum ItemType {
+        
+        // static members ------------------------------------------------------
+        
+        DIR("icon-folder.png"), BOOK("icon-book.png"), SHEET("icon-sheet.png");
+        
+        // instance members ----------------------------------------------------
+        
+        private final Image image;
+        
+        ItemType(String imagePath) {
+            this.image = new Image(ItemType.class.getResourceAsStream(imagePath));
+        }
+        
+        private ImageView createImageView(double size) {
+            ImageView imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(size);
+            return imageView;
+        }
+    }
     
     // instance members ********************************************************
     
@@ -51,15 +73,16 @@ public class EditSheetPairingDialogPane extends VBox {
     @FXML
     private GridPane childGridPane;
     
-    private Pair<BookInfo> bookInfoPair;
-    private List<Pair<String>> currentPairs;
+    private Pair<BookInfo> parentPair;
+    private List<Pair<String>> currentChildPairs;
+    private ItemType parentType;
     
     /**
      * コンストラクタ<br>
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditSheetPairingDialogPane() throws IOException {
+    public EditPairingDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("EditPairingDialogPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
@@ -73,7 +96,13 @@ public class EditSheetPairingDialogPane extends VBox {
      * @param bookPath 開こうとしているExcelブックのパス
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      */
-    /*package*/ void init(EditSheetPairingDialog parent, BookCompareInfo compareInfo) throws IOException {
+    /*package*/ void init(
+            EditPairingDialog parent,
+            BookCompareInfo compareInfo)
+            throws IOException {
+        
+        parentType = (compareInfo instanceof BookCompareInfo) ? ItemType.BOOK : ItemType.DIR;
+        
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
                 () -> (parentGridPane.getWidth() - 50) / 2,
@@ -88,11 +117,13 @@ public class EditSheetPairingDialogPane extends VBox {
                 () -> (childGridPane.getWidth() - 50) / 2,
                 childGridPane.widthProperty()));
         
-        parentLabelA.setText("【A】 " + compareInfo.parentPair().a());
-        parentLabelB.setText("【B】 " + compareInfo.parentPair().b());
+        parentLabelA.setGraphic(parentType.createImageView(24));
+        parentLabelB.setGraphic(parentType.createImageView(24));
+        parentLabelA.setText("【A】 " + compareInfo.parentPair().a().toString());
+        parentLabelB.setText("【B】 " + compareInfo.parentPair().b().toString());
         
-        bookInfoPair = compareInfo.parentPair();
-        currentPairs = new ArrayList<>(compareInfo.childPairs());
+        parentPair = compareInfo.parentPair();
+        currentChildPairs = new ArrayList<>(compareInfo.childPairs());
         
         drawGrid();
     }
@@ -100,46 +131,46 @@ public class EditSheetPairingDialogPane extends VBox {
     private void drawGrid() {
         childGridPane.getChildren().clear();
         
-        for (int i = 0; i < currentPairs.size(); i++) {
-            Pair<String> pair = currentPairs.get(i);
+        for (int i = 0; i < currentChildPairs.size(); i++) {
+            Pair<String> pair = currentChildPairs.get(i);
             
             if (pair.isPaired()) {
-                childGridPane.add(new PairedNameLabel(pair.a()), 0, i);
+                childGridPane.add(new PairedNameLabel(ItemType.SHEET, pair.a().toString()), 0, i);
                 childGridPane.add(new UnpairButton(i), 1, i);
-                childGridPane.add(new PairedNameLabel(pair.b()), 2, i);
+                childGridPane.add(new PairedNameLabel(ItemType.SHEET, pair.b().toString()), 2, i);
                 
             } else if (pair.hasA()) {
                 childGridPane.add(new DummyLabel(), 2, i);
                 childGridPane.add(new UnpairedPane(i, Side.B), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(i, Side.A, pair.a()), 0, i);
+                childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.A, pair.a().toString()), 0, i);
                 
             } else {
                 childGridPane.add(new DummyLabel(), 0, i);
                 childGridPane.add(new UnpairedPane(i, Side.A), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(i, Side.B, pair.b()), 2, i);
+                childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.B, pair.b().toString()), 2, i);
             }
         }
     }
     
     private void unpair(int i) {
-        Pair<String> paired = currentPairs.get(i);
+        Pair<String> paired = currentChildPairs.get(i);
         Pair<String> unpairedA = Pair.of(paired.a(), null);
         Pair<String> unpairedB = Pair.of(null, paired.b());
         
-        currentPairs.add(i + 1, unpairedA);
-        currentPairs.add(i + 2, unpairedB);
-        currentPairs.remove(i);
+        currentChildPairs.add(i + 1, unpairedA);
+        currentChildPairs.add(i + 2, unpairedB);
+        currentChildPairs.remove(i);
         
         drawGrid();
     }
     
     private void makePair(int src, int dst) {
         assert src != dst;
-        assert 0 <= src && src < currentPairs.size();
-        assert 0 <= dst && dst < currentPairs.size();
+        assert 0 <= src && src < currentChildPairs.size();
+        assert 0 <= dst && dst < currentChildPairs.size();
         
-        Pair<String> srcPair = currentPairs.get(src);
-        Pair<String> dstPair = currentPairs.get(dst);
+        Pair<String> srcPair = currentChildPairs.get(src);
+        Pair<String> dstPair = currentChildPairs.get(dst);
         assert !srcPair.isPaired();
         assert !dstPair.isPaired();
         assert srcPair.hasA() != srcPair.hasB();
@@ -151,9 +182,9 @@ public class EditSheetPairingDialogPane extends VBox {
                 srcPair.hasA() ? srcPair.a() : dstPair.a(),
                 srcPair.hasB() ? srcPair.b() : dstPair.b());
         
-        currentPairs.remove(dst);
-        currentPairs.add(dst, paired);
-        currentPairs.remove(src);
+        currentChildPairs.remove(dst);
+        currentChildPairs.add(dst, paired);
+        currentChildPairs.remove(src);
         
         drawGrid();
     }
@@ -164,7 +195,7 @@ public class EditSheetPairingDialogPane extends VBox {
      * @return ユーザーによる編集を反映したExcelブック比較情報
      */
     public BookCompareInfo getResult() {
-        return BookCompareInfo.of(bookInfoPair, currentPairs);
+        return BookCompareInfo.of(parentPair, currentChildPairs);
     }
     
     private class UnpairedPane extends Pane {
@@ -300,7 +331,9 @@ public class EditSheetPairingDialogPane extends VBox {
         
         // instance members ----------------------------------------------------
         
-        private PairedNameLabel(String name) {
+        private PairedNameLabel(ItemType type, String name) {
+            setGraphic(type.createImageView(18));
+            setGraphicTextGap(5);
             setText(name);
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
@@ -317,9 +350,11 @@ public class EditSheetPairingDialogPane extends VBox {
         private final int idx;
         private final Side side;
         
-        private UnpairedNameLabel(int idx, Side side, String name) {
+        private UnpairedNameLabel(ItemType type, int idx, Side side, String name) {
             this.idx = idx;
             this.side = side;
+            setGraphic(type.createImageView(18));
+            setGraphicTextGap(5);
             setText(name);
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
@@ -365,6 +400,8 @@ public class EditSheetPairingDialogPane extends VBox {
         
         private UnpairButton(int idx) {
             ImageView linkOffImageView = new ImageView(linkOffImage);
+            linkOffImageView.setPreserveRatio(true);
+            linkOffImageView.setFitWidth(16);
             setGraphic(linkOffImageView);
             getStyleClass().add("unpairButton");
             

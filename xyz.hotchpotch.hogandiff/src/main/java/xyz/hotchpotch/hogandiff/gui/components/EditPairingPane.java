@@ -12,8 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
@@ -22,7 +20,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditSheetPairingDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditPairingDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
@@ -68,7 +66,6 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         
         // 2.項目ごとの各種設定
         editPairingButton.setOnAction(event -> editPairing());
-        editPairingButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("tune-vertical.png"))));
         
         // 3.初期値の設定
         // nop
@@ -92,7 +89,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
             switch (menu) {
                 case COMPARE_BOOKS:
                     BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditSheetPairingDialog dialog = new EditSheetPairingDialog(compareInfo);
+                    EditPairingDialog dialog = new EditPairingDialog(compareInfo);
                     Optional<BookCompareInfo> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookCompareInfoProp.unbind();
