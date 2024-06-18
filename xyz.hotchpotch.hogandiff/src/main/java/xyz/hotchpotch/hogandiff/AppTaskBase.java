@@ -505,7 +505,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore,
             int progressAfter) {
         
-        Map<Pair<String>, Optional<BookResult>> bookResults = new HashMap<>();
+        Map<Pair<Path>, Optional<BookResult>> bookResults = new HashMap<>();
         IntUnaryOperator getProgress = n -> progressBefore
                 + (progressAfter - progressBefore) * n / dirCompareInfo.childPairs().size();
         
@@ -517,28 +517,26 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
             int ii = i;
             
-            Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
+            Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
             
             str.append(indent
-                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
+                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair));
             updateMessage(str.toString());
             
-            if (bookNamePair.isPaired()
-                    && dirCompareInfo.childCompareInfos().get(bookNamePair).isPresent()) {
+            if (bookPathPair.isPaired()
+                    && dirCompareInfo.childCompareInfos().get(bookPathPair).isPresent()) {
                 
-                Pair<Path> srcPathPair = Side.map(
-                        side -> dirCompareInfo.parentPair().get(side).dirPath().resolve(bookNamePair.get(side)));
-                Pair<Path> dstPathPair = Side.map(
-                        side -> outputDirs.get(side)
-                                .resolve("【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookNamePair.get(side))));
+                Pair<Path> srcPathPair = Side.map(side -> bookPathPair.get(side));
+                Pair<Path> dstPathPair = Side.map(side -> outputDirs.get(side).resolve(
+                        "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookPathPair.get(side).getFileName().toString())));
                 
                 BookResult bookResult = compareBooks(
-                        dirCompareInfo.childCompareInfos().get(bookNamePair).get(),
+                        dirCompareInfo.childCompareInfos().get(bookPathPair).get(),
                         srcPathPair,
                         dstPathPair,
                         getProgress.applyAsInt(i),
                         getProgress.applyAsInt(i + 1));
-                bookResults.put(bookNamePair, Optional.ofNullable(bookResult));
+                bookResults.put(bookPathPair, Optional.ofNullable(bookResult));
                 
                 if (bookResult != null) {
                     paintBook(
@@ -549,24 +547,26 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
             } else {
-                if (bookNamePair.isPaired()) {
+                if (bookPathPair.isPaired()) {
                     str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
                     updateMessage(str.toString());
                 } else {
                     str.append(BR);
                     updateMessage(str.toString());
                 }
-                if (bookNamePair.hasA()) {
-                    Path srcBookPath = dirCompareInfo.parentPair().a().dirPath().resolve(bookNamePair.a());
-                    Path dstBookPath = outputDirs.a().resolve("【A%s-%d】%s".formatted(dirId, i + 1, bookNamePair.a()));
+                if (bookPathPair.hasA()) {
+                    Path srcBookPath = bookPathPair.a();
+                    Path dstBookPath = outputDirs.a().resolve(
+                            "【A%s-%d】%s".formatted(dirId, i + 1, bookPathPair.a().getFileName().toString()));
                     skipUnpairedBook(Side.A, srcBookPath, dstBookPath);
                 }
-                if (bookNamePair.hasB()) {
-                    Path srcBookPath = dirCompareInfo.parentPair().b().dirPath().resolve(bookNamePair.b());
-                    Path dstBookPath = outputDirs.b().resolve("【B%s-%d】%s".formatted(dirId, i + 1, bookNamePair.b()));
+                if (bookPathPair.hasB()) {
+                    Path srcBookPath = bookPathPair.b();
+                    Path dstBookPath = outputDirs.b().resolve(
+                            "【B%s-%d】%s".formatted(dirId, i + 1, bookPathPair.b().getFileName().toString()));
                     skipUnpairedBook(Side.B, srcBookPath, dstBookPath);
                 }
-                bookResults.put(bookNamePair, Optional.empty());
+                bookResults.put(bookPathPair, Optional.empty());
             }
         }
         str.append(BR);

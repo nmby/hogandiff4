@@ -28,7 +28,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         // [instance members] --------------------------------------------------
         
         private final Matcher<DirInfo> dirsMatcher;
-        private final Matcher<String> bookNamesMatcher;
+        private final Matcher<Path> bookPathsMatcher;
         private final Matcher<String> sheetNamesMatcher;
         private final Map<Path, String> readPasswords;
         
@@ -37,12 +37,12 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
         
         private TreeCompareInfoCreator(
                 Matcher<DirInfo> dirsMatcher,
-                Matcher<String> bookNamesMatcher,
+                Matcher<Path> bookPathsMatcher,
                 Matcher<String> sheetNamesMatcher,
                 Map<Path, String> readPasswords) {
             
             this.dirsMatcher = dirsMatcher;
-            this.bookNamesMatcher = bookNamesMatcher;
+            this.bookPathsMatcher = bookPathsMatcher;
             this.sheetNamesMatcher = sheetNamesMatcher;
             this.readPasswords = readPasswords;
         }
@@ -61,7 +61,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
             
             DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
                     dirInfoPair,
-                    bookNamesMatcher,
+                    bookPathsMatcher,
                     sheetNamesMatcher,
                     readPasswords);
             
@@ -89,7 +89,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      * 
      * @param topDirInfoPair 比較対象フォルダの情報
      * @param dirsMatcher フォルダの組み合わせを決めるマッチャー
-     * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
+     * @param bookPathsMatcher Excelブックパスの組み合わせを決めるマッチャー
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
      * @param readPasswords 読み取りパスワード
      * @return 新たなインスタンス
@@ -98,19 +98,19 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
     public static TreeCompareInfo calculate(
             Pair<DirInfo> topDirInfoPair,
             Matcher<DirInfo> dirsMatcher,
-            Matcher<String> bookNamesMatcher,
+            Matcher<Path> bookPathsMatcher,
             Matcher<String> sheetNamesMatcher,
             Map<Path, String> readPasswords) {
         
         Objects.requireNonNull(topDirInfoPair);
         Objects.requireNonNull(dirsMatcher);
-        Objects.requireNonNull(bookNamesMatcher);
+        Objects.requireNonNull(bookPathsMatcher);
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
         
         TreeCompareInfoCreator creator = new TreeCompareInfoCreator(
                 dirsMatcher,
-                bookNamesMatcher,
+                bookPathsMatcher,
                 sheetNamesMatcher,
                 readPasswords);
         
@@ -122,7 +122,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      * {@link BookCompareInfo} インスタンスを生成します。<br>
      * 
      * @param topDirInfoPair 比較対象フォルダの情報
-     * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
+     * @param bookPathsMatcher Excelブックパスの組み合わせを決めるマッチャー
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
      * @param readPasswords 読み取りパスワード
      * @return 新たなインスタンス
@@ -130,18 +130,18 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      */
     public static TreeCompareInfo ofSingle(
             Pair<DirInfo> topDirInfoPair,
-            Matcher<String> bookNamesMatcher,
+            Matcher<Path> bookPathsMatcher,
             Matcher<String> sheetNamesMatcher,
             Map<Path, String> readPasswords) {
         
         Objects.requireNonNull(topDirInfoPair);
-        Objects.requireNonNull(bookNamesMatcher);
+        Objects.requireNonNull(bookPathsMatcher);
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
         
         DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
                 topDirInfoPair,
-                bookNamesMatcher,
+                bookPathsMatcher,
                 sheetNamesMatcher,
                 readPasswords);
         
@@ -189,7 +189,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
     public List<Pair<DirInfo>> childPairs() {
         return dirInfoPairs;
     }
-
+    
     @Override
     public Map<Pair<DirInfo>, Optional<DirCompareInfo>> childCompareInfos() {
         return dirCompareInfos;

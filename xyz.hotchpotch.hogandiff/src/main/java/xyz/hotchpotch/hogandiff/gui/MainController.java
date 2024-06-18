@@ -382,12 +382,8 @@ public class MainController extends VBox {
     
     private Stream<Path> bookPathStream(DirCompareInfo dirCompareInfo) {
         return dirCompareInfo.childPairs().stream()
-                .flatMap(bookNamePair -> {
-                    Pair<Path> dirPathPair = dirCompareInfo.parentPair().map(DirInfo::dirPath);
-                    Path bookPathA = bookNamePair.hasA() ? dirPathPair.a().resolve(bookNamePair.a()) : null;
-                    Path bookPathB = bookNamePair.hasB() ? dirPathPair.b().resolve(bookNamePair.b()) : null;
-                    return Stream.of(bookPathA, bookPathB).filter(bookPath -> bookPath != null);
-                });
+                .flatMap(bookPathPair -> Stream.of(bookPathPair.a(), bookPathPair.b())
+                        .filter(bookPath -> bookPath != null));
     }
     
     /**

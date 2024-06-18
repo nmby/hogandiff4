@@ -94,19 +94,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
-            List<Pair<String>> bookNamePairs = dirCompareInfo.childPairs();
+            List<Pair<Path>> bookPathPairs = dirCompareInfo.childPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
                     dirInfoPair.a().dirPath(),
                     dirInfoPair.b().dirPath()));
             
-            if (bookNamePairs.size() == 0) {
+            if (bookPathPairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
             }
-            for (int i = 0; i < bookNamePairs.size(); i++) {
-                Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
+            for (int i = 0; i < bookPathPairs.size(); i++) {
+                Pair<Path> bookPathPair = bookPathPairs.get(i);
+                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookPathPair)).append(BR);
             }
             
             updateMessage(str.toString());

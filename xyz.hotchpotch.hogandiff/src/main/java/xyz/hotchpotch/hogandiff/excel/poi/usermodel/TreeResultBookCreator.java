@@ -161,15 +161,15 @@ public class TreeResultBookCreator {
                 // 4-4. セル書式を整える
                 copyCellStyles(sheet, rowNo, templateRow);
                 
-                // 4-5. Excelブック名ペアごとの処理
+                // 4-5. Excelブックパスペアごとの処理
                 for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
+                    Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
                     Optional<BookResult> bookResult = dirResult
                             .map(DirResult::bookResults)
-                            .flatMap(br -> br.get(bookNamePair));
+                            .flatMap(br -> br.get(bookPathPair));
                     
                     outputFileLine(
                             ch,
@@ -179,7 +179,7 @@ public class TreeResultBookCreator {
                             i + 1,
                             outputDirs,
                             dirRelNames,
-                            bookNamePair,
+                            bookPathPair,
                             bookResult);
                     
                     // 4-7. セル書式を整える
@@ -261,17 +261,19 @@ public class TreeResultBookCreator {
             int bookNo,
             Pair<Path> outputDirs,
             Pair<String> dirRelNames,
-            Pair<String> bookNames,
+            Pair<Path> bookPaths,
             Optional<BookResult> bookResult) {
         
         for (Side side : Side.values()) {
-            if (bookNames.has(side)) {
+            if (bookPaths.has(side)) {
+                String bookName = bookPaths.get(side).getFileName().toString();
+                
                 // フォルダ名とファイル名の出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNames.get(side));
                 
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 2, "【%s%s-%d】".formatted(side, dirId, bookNo));
-                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookNames.get(side));
+                PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookName);
                 
                 // ハイパーリンクの設定
                 Hyperlink dirLink = ch.createHyperlink(HyperlinkType.FILE);
@@ -280,15 +282,15 @@ public class TreeResultBookCreator {
                 
                 Hyperlink fileLink = ch.createHyperlink(HyperlinkType.FILE);
                 fileLink.setAddress(sanitize(outputDirs.get(side)
-                        .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookNames.get(side)))));
+                        .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookName))));
                 PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(fileLink);
             }
         }
         
         // 差分記号の出力
-        if (bookNames.isOnlyA()) {
+        if (bookPaths.isOnlyA()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_A);
-        } else if (bookNames.isOnlyB()) {
+        } else if (bookPaths.isOnlyB()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_B);
         } else if (bookResult.isEmpty()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_FAILED);

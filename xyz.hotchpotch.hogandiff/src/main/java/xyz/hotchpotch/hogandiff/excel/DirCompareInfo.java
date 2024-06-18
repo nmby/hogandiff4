@@ -16,7 +16,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCompareInfo> {
+public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookCompareInfo> {
     
     // [static members] ********************************************************
     
@@ -24,7 +24,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
      * 与えられたマッチャーを使用して新たな {@link DirCompareInfo} インスタンスを生成します。<br>
      * 
      * @param dirInfoPair 比較対象フォルダ情報
-     * @param bookNamesMatcher Excelブック名の組み合わせを決めるマッチャー
+     * @param bookPathsMatcher Excelブックパスの組み合わせを決めるマッチャー
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
      * @param readPasswords 読み取りパスワード
      * @return 新たなインスタンス
@@ -32,51 +32,51 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
      */
     public static DirCompareInfo calculate(
             Pair<DirInfo> dirInfoPair,
-            Matcher<String> bookNamesMatcher,
+            Matcher<Path> bookPathsMatcher,
             Matcher<String> sheetNamesMatcher,
             Map<Path, String> readPasswords) {
         
         Objects.requireNonNull(dirInfoPair);
-        Objects.requireNonNull(bookNamesMatcher);
+        Objects.requireNonNull(bookPathsMatcher);
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
         
-        List<Pair<String>> bookNamePairs;
+        List<Pair<Path>> bookPathPairs;
         if (dirInfoPair.isPaired()) {
-            bookNamePairs = bookNamesMatcher.makeItemPairs(
-                    dirInfoPair.a().childBookNames(),
-                    dirInfoPair.b().childBookNames());
+            bookPathPairs = bookPathsMatcher.makeItemPairs(
+                    dirInfoPair.a().childBookPaths(),
+                    dirInfoPair.b().childBookPaths());
         } else if (dirInfoPair.hasA()) {
-            bookNamePairs = dirInfoPair.a().childBookNames().stream()
+            bookPathPairs = dirInfoPair.a().childBookPaths().stream()
                     .map(bookName -> Pair.ofOnly(Side.A, bookName))
                     .toList();
         } else if (dirInfoPair.hasB()) {
-            bookNamePairs = dirInfoPair.b().childBookNames().stream()
+            bookPathPairs = dirInfoPair.b().childBookPaths().stream()
                     .map(bookName -> Pair.ofOnly(Side.B, bookName))
                     .toList();
         } else {
-            bookNamePairs = List.of();
+            bookPathPairs = List.of();
         }
         
-        Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
+        Map<Pair<Path>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
         
-        for (Pair<String> bookNamePair : bookNamePairs) {
-            assert bookNamePair.hasA() || bookNamePair.hasB();
+        for (Pair<Path> bookPathPair : bookPathPairs) {
+            assert bookPathPair.hasA() || bookPathPair.hasB();
             
             Pair<BookInfo> bookInfoPair = null;
             
             try {
                 BookInfo bookInfoA = null;
-                if (bookNamePair.hasA()) {
-                    Path bookPathA = dirInfoPair.a().dirPath().resolve(bookNamePair.a());
+                if (bookPathPair.hasA()) {
+                    Path bookPathA = bookPathPair.a();
                     String readPasswordA = readPasswords.get(bookPathA);
                     SheetNamesLoader sheetNamesLoaderA = Factory.sheetNamesLoader(bookPathA, readPasswordA);
                     bookInfoA = sheetNamesLoaderA.loadSheetNames(bookPathA, readPasswordA);
                 }
                 
                 BookInfo bookInfoB = null;
-                if (bookNamePair.hasB()) {
-                    Path bookPathB = dirInfoPair.b().dirPath().resolve(bookNamePair.b());
+                if (bookPathPair.hasB()) {
+                    Path bookPathB = bookPathPair.b();
                     String readPasswordB = readPasswords.get(bookPathB);
                     SheetNamesLoader sheetNamesLoaderB = Factory.sheetNamesLoader(bookPathB, readPasswordB);
                     bookInfoB = sheetNamesLoaderB.loadSheetNames(bookPathB, readPasswordB);
@@ -91,29 +91,29 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
             BookCompareInfo bookCompareInfo = bookInfoPair != null
                     ? BookCompareInfo.calculate(bookInfoPair, sheetNamesMatcher)
                     : null;
-            bookCompareInfos.put(bookNamePair, Optional.ofNullable(bookCompareInfo));
+            bookCompareInfos.put(bookPathPair, Optional.ofNullable(bookCompareInfo));
         }
         
-        return new DirCompareInfo(dirInfoPair, bookNamePairs, bookCompareInfos);
+        return new DirCompareInfo(dirInfoPair, bookPathPairs, bookCompareInfos);
     }
     
     // [instance members] ******************************************************
     
     private final Pair<DirInfo> dirInfoPair;
-    private final List<Pair<String>> bookNamePairs;
-    private final Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos;
+    private final List<Pair<Path>> bookPathPairs;
+    private final Map<Pair<Path>, Optional<BookCompareInfo>> bookCompareInfos;
     
     private DirCompareInfo(
             Pair<DirInfo> dirInfoPair,
-            List<Pair<String>> bookNamePairs,
-            Map<Pair<String>, Optional<BookCompareInfo>> bookCompareInfos) {
+            List<Pair<Path>> bookPathPairs,
+            Map<Pair<Path>, Optional<BookCompareInfo>> bookCompareInfos) {
         
         assert dirInfoPair != null;
-        assert bookNamePairs != null;
+        assert bookPathPairs != null;
         assert bookCompareInfos != null;
         
         this.dirInfoPair = dirInfoPair;
-        this.bookNamePairs = List.copyOf(bookNamePairs);
+        this.bookPathPairs = List.copyOf(bookPathPairs);
         this.bookCompareInfos = Map.copyOf(bookCompareInfos);
     }
     
@@ -123,12 +123,12 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, String, BookCo
     }
     
     @Override
-    public List<Pair<String>> childPairs() {
-        return bookNamePairs;
+    public List<Pair<Path>> childPairs() {
+        return bookPathPairs;
     }
     
     @Override
-    public Map<Pair<String>, Optional<BookCompareInfo>> childCompareInfos() {
+    public Map<Pair<Path>, Optional<BookCompareInfo>> childCompareInfos() {
         return bookCompareInfos;
     }
 }

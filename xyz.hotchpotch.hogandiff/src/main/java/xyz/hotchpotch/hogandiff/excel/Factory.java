@@ -108,13 +108,14 @@ public class Factory {
     }
     
     /**
-     * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーを返します。<br>
+     * 2つのフォルダに含まれるExcelブックパス同士の対応関係を決めるマッチャーを返します。<br>
+     * Excelブックパスの末尾のファイル名に基づいて対応関係を求めます。<br>
      * 
      * @param settings 設定
-     * @return Excelブック名同士の対応関係を決めるマッチャー
+     * @return Excelブックパス同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<String> bookNamesMatcher(Settings settings) {
+    public static Matcher<Path> bookNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -123,8 +124,12 @@ public class Factory {
                 : Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
-                                String::length,
-                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
+                                bookPath -> bookPath.getFileName().toString().length(),
+                                (bookPath1, bookPath2) -> {
+                                    String bookName1 = bookPath1.getFileName().toString();
+                                    String bookName2 = bookPath2.getFileName().toString();
+                                    return StringDiffUtil.levenshteinDistance(bookName1, bookName2) + 1;
+                                })));
     }
     
     /**
@@ -150,14 +155,15 @@ public class Factory {
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.childDirInfos().size() + d.childBookNames().size(),
+            d -> d.childDirInfos().size() + d.childBookPaths().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.childBookNames(), d2.childBookNames())
+                int gapBookNames = (int) Matcher.identityMatcherOf()
+                        .makeIdxPairs(d1.childBookPaths(), d2.childBookPaths())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;

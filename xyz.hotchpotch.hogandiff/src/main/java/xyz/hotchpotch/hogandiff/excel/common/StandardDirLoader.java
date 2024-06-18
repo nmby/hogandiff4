@@ -59,38 +59,31 @@ public class StandardDirLoader implements DirLoader {
             throw new IllegalArgumentException("not directory. path: " + path);
         }
         
-        return loadDir2(path, recursively);
+        return loadDir2(path);
     }
     
-    private DirInfo loadDir2(
-            Path path,
-            boolean recursively)
-            throws ExcelHandlingException {
-        
+    private DirInfo loadDir2(Path path) throws ExcelHandlingException {
         assert path != null;
         assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
         
         try {
-            List<String> bookNames = Files.list(path)
+            List<Path> childBookPaths = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
                     .filter(StandardDirLoader::isHandleableExcelBook)
-                    .map(Path::getFileName)
-                    .map(Path::toString)
                     .sorted()
                     .toList();
             
-            List<DirInfo> children = recursively
+            List<DirInfo> childDirInfos = recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (p -> loadDir2(p, true)))
-                                    .convert())
+                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (this::loadDir2)).convert())
                             .filter(r -> r.result() != null)
                             .map(ResultOrThrown::result)
                             .sorted()
                             .toList()
                     : List.of();
             
-            return new DirInfo(path, bookNames, children);
+            return new DirInfo(path, childBookPaths, childDirInfos);
             
         } catch (IOException e) {
             throw new ExcelHandlingException(

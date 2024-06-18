@@ -28,14 +28,14 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.childDirInfos().size() + d.childBookNames().size(),
+            d -> d.childDirInfos().size() + d.childBookPaths().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.childBookNames(), d2.childBookNames())
+                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.childBookPaths(), d2.childBookPaths())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
