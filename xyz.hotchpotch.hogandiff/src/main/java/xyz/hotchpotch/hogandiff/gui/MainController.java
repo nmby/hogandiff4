@@ -255,6 +255,7 @@ public class MainController extends VBox {
                             } else {
                                 return DirCompareInfo.calculate(
                                         dirInfoPair,
+                                        Factory.dirsMatcher(ar.settings()),
                                         Factory.bookNamesMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
