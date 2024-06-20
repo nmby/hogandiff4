@@ -96,6 +96,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
+    @Deprecated
     public static TreeCompareInfo calculate(
             Pair<DirInfo> topDirInfoPair,
             Matcher<DirInfo> dirInfosMatcher,
@@ -130,6 +131,7 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
+    @Deprecated
     public static TreeCompareInfo ofSingle(
             Pair<DirInfo> topDirInfoPair,
             Matcher<DirInfo> dirInfosMatcher,
@@ -153,6 +155,17 @@ public final class TreeCompareInfo implements CompareInfo<DirInfo, DirInfo, DirC
                 topDirInfoPair,
                 List.of(topDirInfoPair),
                 Map.of(topDirInfoPair, Optional.of(dirCompareInfo)));
+    }
+    
+    public static TreeCompareInfo of(
+            Pair<DirInfo> topDirInfoPair,
+            List<Pair<DirInfo>> dirInfoPairs,
+            Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos) {
+        
+        return new TreeCompareInfo(
+                topDirInfoPair,
+                dirInfoPairs,
+                dirCompareInfos);
     }
     
     // [instance members] ******************************************************

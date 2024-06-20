@@ -77,7 +77,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareTreesTask.010"),
@@ -110,7 +110,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
             
-            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
             
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());

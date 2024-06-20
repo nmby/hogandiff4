@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,26 +123,26 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> dirInfoPair;
+    private final Pair<DirInfo> topDirInfoPair;
     private final List<Pair<DirInfo>> childDirInfoPairs;
     private final Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos;
     private final List<Pair<Path>> childBookPathPairs;
     private final Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos;
     
     private DirCompareInfo(
-            Pair<DirInfo> dirInfoPair,
+            Pair<DirInfo> topDirInfoPair,
             List<Pair<DirInfo>> childDirInfoPairs,
             Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
             List<Pair<Path>> childBookPathPairs,
             Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos) {
         
-        assert dirInfoPair != null;
+        assert topDirInfoPair != null;
         assert childDirInfoPairs != null;
         assert childDirCompareInfos != null;
         assert childBookPathPairs != null;
         assert childBookCompareInfos != null;
         
-        this.dirInfoPair = dirInfoPair;
+        this.topDirInfoPair = topDirInfoPair;
         this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
         this.childDirCompareInfos = Map.copyOf(childDirCompareInfos);
         this.childBookPathPairs = List.copyOf(childBookPathPairs);
@@ -150,7 +151,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     
     @Override
     public Pair<DirInfo> parentPair() {
-        return dirInfoPair;
+        return topDirInfoPair;
     }
     
     @Override
@@ -161,5 +162,38 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     @Override
     public Map<Pair<Path>, Optional<BookCompareInfo>> childCompareInfos() {
         return childBookCompareInfos;
+    }
+    
+    /**
+     * ツリー状の本オフジェクトの内容を一層に並べた {@link TreeCompareInfo} オブジェクトに
+     * 変換して返します。<br>
+     * 
+     * @return 新たなツリー比較情報
+     */
+    public TreeCompareInfo flatten() {
+        List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
+        Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos = new HashMap<>();
+        
+        accDirInfoPairs.add(topDirInfoPair);
+        accDirCompareInfos.put(topDirInfoPair, Optional.of(this));
+        gather(this, accDirInfoPairs, accDirCompareInfos);
+        
+        return TreeCompareInfo.of(
+                topDirInfoPair,
+                accDirInfoPairs,
+                accDirCompareInfos);
+    }
+    
+    private void gather(
+            DirCompareInfo dirCompareInfo,
+            List<Pair<DirInfo>> accDirInfoPairs,
+            Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos) {
+        
+        for (Pair<DirInfo> childDirInfoPair : dirCompareInfo.childDirInfoPairs) {
+            Optional<DirCompareInfo> childDirCompareInfo = dirCompareInfo.childDirCompareInfos.get(childDirInfoPair);
+            accDirInfoPairs.add(childDirInfoPair);
+            accDirCompareInfos.put(childDirInfoPair, childDirCompareInfo);
+            childDirCompareInfo.ifPresent(info -> gather(info, accDirInfoPairs, accDirCompareInfos));
+        }
     }
 }

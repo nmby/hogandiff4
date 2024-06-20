@@ -17,7 +17,6 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -176,7 +175,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行におけるフォルダツリー比較情報 */
-    public static final Key<TreeCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
+    public static final Key<DirCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
             "current.treeCompareInfo",
             () -> null,
             encodeNotSupported("cannot encode."),

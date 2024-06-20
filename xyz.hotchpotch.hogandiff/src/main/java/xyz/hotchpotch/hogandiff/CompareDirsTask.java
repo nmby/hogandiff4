@@ -11,9 +11,7 @@ import java.util.stream.Collectors;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -62,12 +60,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
             TreeResult tResult = new TreeResult(
-                    TreeCompareInfo.ofSingle(
-                            dirInfoPair,
-                            Factory.dirInfosMatcher(settings),
-                            Factory.bookPathsMatcher(settings),
-                            Factory.sheetNamesMatcher(settings),
-                            settings.get(SettingKeys.CURR_READ_PASSWORDS)),
+                    dirCompareInfo.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);

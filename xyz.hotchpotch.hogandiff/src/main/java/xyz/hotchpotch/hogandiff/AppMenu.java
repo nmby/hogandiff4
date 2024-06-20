@@ -8,7 +8,6 @@ import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -69,10 +68,10 @@ public enum AppMenu {
     COMPARE_TREES(
             CompareTreesTask::new,
             settings -> {
-                TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                Objects.requireNonNull(treeCompareInfo);
+                DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                Objects.requireNonNull(dirCompareInfo);
                 
-                return !treeCompareInfo.parentPair().isIdentical();
+                return !dirCompareInfo.parentPair().isIdentical();
             });
     
     // [instance members] ******************************************************

@@ -91,7 +91,7 @@ public class MainController extends VBox {
     public final Property<DirCompareInfo> dirCompareInfoProp = new SimpleObjectProperty<>();
     
     /** フォルダツリー比較情報 */
-    public final Property<TreeCompareInfo> treeCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<DirCompareInfo> treeCompareInfoProp = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -281,7 +281,7 @@ public class MainController extends VBox {
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                    TreeCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    DirCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_TREES:
@@ -291,7 +291,7 @@ public class MainController extends VBox {
                             if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
                                 return prevValue;
                             } else {
-                                return TreeCompareInfo.calculate(
+                                return DirCompareInfo.calculate(
                                         dirInfoPair,
                                         Factory.dirInfosMatcher(ar.settings()),
                                         Factory.bookPathsMatcher(ar.settings()),
@@ -371,7 +371,7 @@ public class MainController extends VBox {
                 yield bookPathStream(dirCompareInfo);
             }
             case COMPARE_TREES -> {
-                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
                 yield treeCompareInfo.childCompareInfos().values().stream()
                         .filter(Optional::isPresent)
                         .map(Optional::get)
