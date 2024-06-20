@@ -1,9 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -107,10 +105,5 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
      */
     public List<Pair<String>> childSheetNamePairs() {
         return sheetNamePairs;
-    }
-    
-    @Override
-    public Map<Pair<String>, Optional<Void>> childCompareInfos() {
-        throw new UnsupportedOperationException();
     }
 }

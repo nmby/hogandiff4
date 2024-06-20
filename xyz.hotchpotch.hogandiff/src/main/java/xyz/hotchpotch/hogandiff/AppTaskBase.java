@@ -524,14 +524,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             if (bookPathPair.isPaired()
-                    && dirCompareInfo.childCompareInfos().get(bookPathPair).isPresent()) {
+                    && dirCompareInfo.childBookCompareInfos().get(bookPathPair).isPresent()) {
                 
                 Pair<Path> srcPathPair = Side.map(side -> bookPathPair.get(side));
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookPathPair.get(side).getFileName().toString())));
                 
                 BookResult bookResult = compareBooks(
-                        dirCompareInfo.childCompareInfos().get(bookPathPair).get(),
+                        dirCompareInfo.childBookCompareInfos().get(bookPathPair).get(),
                         srcPathPair,
                         dstPathPair,
                         getProgress.applyAsInt(i),

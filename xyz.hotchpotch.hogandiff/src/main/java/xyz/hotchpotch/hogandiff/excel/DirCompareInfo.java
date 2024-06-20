@@ -184,8 +184,12 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
         return childBookPathPairs;
     }
     
-    @Override
-    public Map<Pair<Path>, Optional<BookCompareInfo>> childCompareInfos() {
+    /**
+     * 子Excelブック比較情報を返します。<br>
+     * 
+     * @return 子Excelブック比較情報
+     */
+    public Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos() {
         return childBookCompareInfos;
     }
     
