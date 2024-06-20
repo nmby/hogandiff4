@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -39,11 +38,11 @@ public enum AppMenu {
     COMPARE_SHEETS(
             CompareSheetsTask::new,
             settings -> {
-                SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Objects.requireNonNull(sheetCompareInfo);
+                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Objects.requireNonNull(bookCompareInfo);
                 
-                return !sheetCompareInfo.parentPair().isIdentical()
-                        || !sheetCompareInfo.childPairs().get(0).isIdentical();
+                return !bookCompareInfo.parentPair().isIdentical()
+                        || !bookCompareInfo.childPairs().get(0).isIdentical();
             }),
     
     /**

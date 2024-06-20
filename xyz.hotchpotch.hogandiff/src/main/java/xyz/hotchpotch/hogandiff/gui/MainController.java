@@ -41,7 +41,6 @@ import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo.FlattenDirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
@@ -82,7 +81,7 @@ public class MainController extends VBox {
     public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
     
     /** シート比較情報 */
-    public final Property<SheetCompareInfo> sheetCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<BookCompareInfo> sheetCompareInfoProp = new SimpleObjectProperty<>();
     
     /** Excelブック比較情報 */
     public final Property<BookCompareInfo> bookCompareInfoProp = new SimpleObjectProperty<>();
@@ -171,7 +170,7 @@ public class MainController extends VBox {
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
                     Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
-                    SheetCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_SHEETS:
@@ -183,7 +182,7 @@ public class MainController extends VBox {
                                     && sheetNamePair.equals(prevValue.childPairs().get(0))) {
                                 return prevValue;
                             } else {
-                                return SheetCompareInfo.of(bookInfoPair, sheetNamePair);
+                                return BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair);
                             }
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
@@ -355,8 +354,8 @@ public class MainController extends VBox {
         
         Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
-                SheetCompareInfo sheetCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> bookPathPair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
+                BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
                 yield bookPathPair.isIdentical()
                         ? Stream.of(bookPathPair.a())
                         : Stream.of(bookPathPair.a(), bookPathPair.b());
