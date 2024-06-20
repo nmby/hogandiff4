@@ -14,13 +14,6 @@ public sealed interface CompareInfo<P, C, I>
     // [instance members] ******************************************************
     
     /**
-     * 比較対象のペアを返します。<br>
-     * 
-     * @return 比較対象のペア
-     */
-    Pair<P> parentPair();
-    
-    /**
      * 子要素の組み合わせを返します。<br>
      * 
      * @return 子要素の組み合わせ

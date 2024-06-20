@@ -431,7 +431,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressBefore, PROGRESS_MAX);
         
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-        Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.parentPair().map(BookInfo::bookPath).unsafeMap(
+        Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator sheetComparator = Factory.sheetComparator(settings);
@@ -442,8 +442,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             if (sheetNamePair.isPaired()) {
                 
-                Path bookPathA = bookCompareInfo.parentPair().a().bookPath();
-                Path bookPathB = bookCompareInfo.parentPair().b().bookPath();
+                Path bookPathA = bookCompareInfo.parentBookInfoPair().a().bookPath();
+                Path bookPathB = bookCompareInfo.parentBookInfoPair().b().bookPath();
                 Set<CellData> cellsSetA = cellsLoaderPair.a().loadCells(
                         bookPathA, readPasswords.get(bookPathA), sheetNamePair.a());
                 Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
@@ -477,9 +477,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         return switch (menu) {
             case COMPARE_SHEETS -> settings
-                    .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentPair().isIdentical();
+                    .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentBookInfoPair().isIdentical();
             case COMPARE_BOOKS -> settings
-                    .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentPair().isIdentical();
+                    .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentBookInfoPair().isIdentical();
         
             default -> throw new IllegalStateException("not suitable for " + menu);
         };

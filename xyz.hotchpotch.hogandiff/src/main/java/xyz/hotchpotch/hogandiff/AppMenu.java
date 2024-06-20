@@ -29,7 +29,7 @@ public enum AppMenu {
                 BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                 Objects.requireNonNull(bookCompareInfo);
                 
-                return !bookCompareInfo.parentPair().isIdentical();
+                return !bookCompareInfo.parentBookInfoPair().isIdentical();
             }),
     
     /**
@@ -41,7 +41,7 @@ public enum AppMenu {
                 BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                 Objects.requireNonNull(bookCompareInfo);
                 
-                return !bookCompareInfo.parentPair().isIdentical()
+                return !bookCompareInfo.parentBookInfoPair().isIdentical()
                         || !bookCompareInfo.childPairs().get(0).isIdentical();
             }),
     
@@ -56,7 +56,7 @@ public enum AppMenu {
                 DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
                 Objects.requireNonNull(dirCompareInfo);
                 
-                return !dirCompareInfo.parentPair().isIdentical();
+                return !dirCompareInfo.parentDirInfoPair().isIdentical();
             }),
     
     /**
@@ -70,7 +70,7 @@ public enum AppMenu {
                 DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
                 Objects.requireNonNull(dirCompareInfo);
                 
-                return !dirCompareInfo.parentPair().isIdentical();
+                return !dirCompareInfo.parentDirInfoPair().isIdentical();
             });
     
     // [instance members] ******************************************************

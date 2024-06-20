@@ -81,8 +81,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareTreesTask.010"),
-                    flattenDirCompareInfo.topDirInfoPair().a().dirPath(),
-                    flattenDirCompareInfo.topDirInfoPair().b().dirPath()));
+                    flattenDirCompareInfo.parentDirInfoPair().a().dirPath(),
+                    flattenDirCompareInfo.parentDirInfoPair().b().dirPath()));
             
             for (int i = 0; i < flattenDirCompareInfo.dirInfoPairs().size(); i++) {
                 Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
@@ -124,7 +124,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
                 DirCompareInfo dirCompareInfo = flattenDirCompareInfo.dirCompareInfos().get(dirInfoPair).get();
                 
-                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
+                str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentDirInfoPair()));
                 updateMessage(str.toString());
                 
                 Pair<Path> outputDirPair = null;
@@ -135,7 +135,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         if (dirInfoPair.has(side)) {
                             Path targetDirPath = dirInfoPair.get(side).dirPath();
                             Path parentDir = targetDirPath
-                                    .equals(flattenDirCompareInfo.topDirInfoPair().get(side).dirPath())
+                                    .equals(flattenDirCompareInfo.parentDirInfoPair().get(side).dirPath())
                                             ? workDir
                                             : outputDirsPair.get(side).get(targetDirPath.getParent());
                             

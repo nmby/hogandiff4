@@ -105,9 +105,9 @@ public record TreeResult(
             DirCompareInfo dirCompareInfo = flattenDirCompareInfo.dirCompareInfos().get(dirInfoPair).get();
             Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
             
-            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
+            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentDirInfoPair()));
             
-            if (dirCompareInfo.parentPair().isPaired()) {
+            if (dirCompareInfo.parentDirInfoPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
             } else {
                 str.append(BR);
@@ -122,10 +122,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(flattenDirCompareInfo.topDirInfoPair().a().dirPath())
+                .append(flattenDirCompareInfo.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(flattenDirCompareInfo.topDirInfoPair().b().dirPath())
+                .append(flattenDirCompareInfo.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);

@@ -180,14 +180,14 @@ public record BookResult(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        if (bookCompareInfo.parentPair().isIdentical()) {
+        if (bookCompareInfo.parentBookInfoPair().isIdentical()) {
             str.append(rb.getString("excel.BResult.050").formatted(""))
-                    .append(bookCompareInfo.parentPair().a().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentBookInfoPair().a().bookPath()).append(BR);
         } else {
             str.append(rb.getString("excel.BResult.050").formatted("A"))
-                    .append(bookCompareInfo.parentPair().a().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentBookInfoPair().a().bookPath()).append(BR);
             str.append(rb.getString("excel.BResult.050").formatted("B"))
-                    .append(bookCompareInfo.parentPair().b().bookPath()).append(BR);
+                    .append(bookCompareInfo.parentBookInfoPair().b().bookPath()).append(BR);
         }
         
         for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {

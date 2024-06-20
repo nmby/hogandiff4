@@ -58,24 +58,6 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
     }
     
     /**
-     * シートの組み合わせが一組のみの {@link BookCompareInfo} インスタンスを生成します。<br>
-     * 
-     * @param bookInfoPair 比較対象Excelブックの情報
-     * @param sheetNamePair シート名のペア
-     * @return 新たなインスタンス
-     * @throws NullPointerException パラメータが {@code null} の場合
-     */
-    public static BookCompareInfo ofSingle(
-            Pair<BookInfo> bookInfoPair,
-            Pair<String> sheetNamePair) {
-        
-        Objects.requireNonNull(bookInfoPair);
-        Objects.requireNonNull(sheetNamePair);
-        
-        return new BookCompareInfo(bookInfoPair, List.of(sheetNamePair));
-    }
-    
-    /**
      * 指定した内容で {@link BookCompareInfo} インスタンスを生成します。<br>
      * 
      * @param bookInfoPair Excelブック情報
@@ -109,8 +91,12 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
         this.sheetNamePairs = List.copyOf(sheetNamePairs);
     }
     
-    @Override
-    public Pair<BookInfo> parentPair() {
+    /**
+     * 比較対象Excelブック情報を返します。<br>
+     * 
+     * @return 比較対象Excelブック情報
+     */
+    public Pair<BookInfo> parentBookInfoPair() {
         return bookInfoPair;
     }
     

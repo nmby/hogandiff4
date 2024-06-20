@@ -58,7 +58,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 7. 比較結果Excelの作成と表示
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
                     dirCompareInfo.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
@@ -87,7 +87,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
             List<Pair<Path>> bookPathPairs = dirCompareInfo.childPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
@@ -116,7 +116,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
         
         try {

@@ -203,10 +203,10 @@ public record DirResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirCompareInfo.parentPair().a().dirPath())
+                .append(dirCompareInfo.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirCompareInfo.parentPair().b().dirPath())
+                .append(dirCompareInfo.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
         for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {

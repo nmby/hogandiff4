@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -178,11 +179,11 @@ public class MainController extends VBox {
                                 return null;
                             }
                             if (prevValue != null
-                                    && bookInfoPair.equals(prevValue.parentPair())
+                                    && bookInfoPair.equals(prevValue.parentBookInfoPair())
                                     && sheetNamePair.equals(prevValue.childPairs().get(0))) {
                                 return prevValue;
                             } else {
-                                return BookCompareInfo.ofSingle(bookInfoPair, sheetNamePair);
+                                return BookCompareInfo.of(bookInfoPair, List.of(sheetNamePair));
                             }
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
@@ -214,7 +215,7 @@ public class MainController extends VBox {
                             if (!bookInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && bookInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && bookInfoPair.equals(prevValue.parentBookInfoPair())) {
                                 return prevValue;
                             } else {
                                 return BookCompareInfo.calculate(
@@ -249,7 +250,7 @@ public class MainController extends VBox {
                             if (!dirInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
                                 return prevValue;
                             } else {
                                 return DirCompareInfo.calculate(
@@ -287,7 +288,7 @@ public class MainController extends VBox {
                             if (!dirInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
                                 return prevValue;
                             } else {
                                 return DirCompareInfo.calculate(
@@ -355,14 +356,14 @@ public class MainController extends VBox {
         Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
                 BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+                Pair<Path> bookPathPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath);
                 yield bookPathPair.isIdentical()
                         ? Stream.of(bookPathPair.a())
                         : Stream.of(bookPathPair.a(), bookPathPair.b());
             }
             case COMPARE_BOOKS -> {
                 BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+                Pair<Path> bookPathPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath);
                 yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
             }
             case COMPARE_DIRS -> {

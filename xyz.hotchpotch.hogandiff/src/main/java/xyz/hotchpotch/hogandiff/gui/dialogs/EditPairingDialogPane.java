@@ -119,10 +119,10 @@ public class EditPairingDialogPane extends VBox {
         
         parentLabelA.setGraphic(parentType.createImageView(24));
         parentLabelB.setGraphic(parentType.createImageView(24));
-        parentLabelA.setText("【A】 " + compareInfo.parentPair().a().toString());
-        parentLabelB.setText("【B】 " + compareInfo.parentPair().b().toString());
+        parentLabelA.setText("【A】 " + compareInfo.parentBookInfoPair().a().toString());
+        parentLabelB.setText("【B】 " + compareInfo.parentBookInfoPair().b().toString());
         
-        parentPair = compareInfo.parentPair();
+        parentPair = compareInfo.parentBookInfoPair();
         currentChildPairs = new ArrayList<>(compareInfo.childPairs());
         
         drawGrid();

@@ -24,12 +24,12 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     /**
      * 階層状の {@link DirCompareInfo} の内容を一層に平坦化した情報を保持するレコードです。<br>
      * 
-     * @param topDirInfoPair 比較対象フォルダ情報
+     * @param parentDirInfoPair 比較対象フォルダ情報
      * @param dirInfoPairs 子フォルダ情報
      * @param dirCompareInfos 子フォルダ比較情報
      */
     public static record FlattenDirCompareInfo(
-            Pair<DirInfo> topDirInfoPair,
+            Pair<DirInfo> parentDirInfoPair,
             List<Pair<DirInfo>> dirInfoPairs,
             Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos) {
         
@@ -41,7 +41,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     /**
      * 与えられたマッチャーを使用して新たな {@link DirCompareInfo} インスタンスを生成します。<br>
      * 
-     * @param topDirInfoPair 比較対象フォルダ情報
+     * @param parentDirInfoPair 比較対象フォルダ情報
      * @param dirInfosMatcher フォルダ情報の組み合わせを決めるマッチャー
      * @param bookPathsMatcher Excelブックパスの組み合わせを決めるマッチャー
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
@@ -50,13 +50,13 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static DirCompareInfo calculate(
-            Pair<DirInfo> topDirInfoPair,
+            Pair<DirInfo> parentDirInfoPair,
             Matcher<DirInfo> dirInfosMatcher,
             Matcher<Path> bookPathsMatcher,
             Matcher<String> sheetNamesMatcher,
             Map<Path, String> readPasswords) {
         
-        Objects.requireNonNull(topDirInfoPair);
+        Objects.requireNonNull(parentDirInfoPair);
         Objects.requireNonNull(bookPathsMatcher);
         Objects.requireNonNull(sheetNamesMatcher);
         Objects.requireNonNull(readPasswords);
@@ -64,27 +64,27 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
         List<Pair<DirInfo>> dirInfoPairs;
         List<Pair<Path>> bookPathPairs;
         
-        if (topDirInfoPair.isPaired()) {
+        if (parentDirInfoPair.isPaired()) {
             dirInfoPairs = dirInfosMatcher.makeItemPairs(
-                    topDirInfoPair.a().childDirInfos(),
-                    topDirInfoPair.b().childDirInfos());
+                    parentDirInfoPair.a().childDirInfos(),
+                    parentDirInfoPair.b().childDirInfos());
             bookPathPairs = bookPathsMatcher.makeItemPairs(
-                    topDirInfoPair.a().childBookPaths(),
-                    topDirInfoPair.b().childBookPaths());
+                    parentDirInfoPair.a().childBookPaths(),
+                    parentDirInfoPair.b().childBookPaths());
             
-        } else if (topDirInfoPair.hasA()) {
-            dirInfoPairs = topDirInfoPair.a().childDirInfos().stream()
+        } else if (parentDirInfoPair.hasA()) {
+            dirInfoPairs = parentDirInfoPair.a().childDirInfos().stream()
                     .map(dirInfo -> Pair.ofOnly(Side.A, dirInfo))
                     .toList();
-            bookPathPairs = topDirInfoPair.a().childBookPaths().stream()
+            bookPathPairs = parentDirInfoPair.a().childBookPaths().stream()
                     .map(bookName -> Pair.ofOnly(Side.A, bookName))
                     .toList();
             
-        } else if (topDirInfoPair.hasB()) {
-            dirInfoPairs = topDirInfoPair.b().childDirInfos().stream()
+        } else if (parentDirInfoPair.hasB()) {
+            dirInfoPairs = parentDirInfoPair.b().childDirInfos().stream()
                     .map(dirInfo -> Pair.ofOnly(Side.B, dirInfo))
                     .toList();
-            bookPathPairs = topDirInfoPair.b().childBookPaths().stream()
+            bookPathPairs = parentDirInfoPair.b().childBookPaths().stream()
                     .map(bookName -> Pair.ofOnly(Side.B, bookName))
                     .toList();
             
@@ -131,7 +131,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
         }
         
         return new DirCompareInfo(
-                topDirInfoPair,
+                parentDirInfoPair,
                 dirInfoPairs,
                 dirCompareInfos,
                 bookPathPairs,
@@ -140,35 +140,39 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> topDirInfoPair;
+    private final Pair<DirInfo> parentDirInfoPair;
     private final List<Pair<DirInfo>> childDirInfoPairs;
     private final Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos;
     private final List<Pair<Path>> childBookPathPairs;
     private final Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos;
     
     private DirCompareInfo(
-            Pair<DirInfo> topDirInfoPair,
+            Pair<DirInfo> parentDirInfoPair,
             List<Pair<DirInfo>> childDirInfoPairs,
             Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
             List<Pair<Path>> childBookPathPairs,
             Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos) {
         
-        assert topDirInfoPair != null;
+        assert parentDirInfoPair != null;
         assert childDirInfoPairs != null;
         assert childDirCompareInfos != null;
         assert childBookPathPairs != null;
         assert childBookCompareInfos != null;
         
-        this.topDirInfoPair = topDirInfoPair;
+        this.parentDirInfoPair = parentDirInfoPair;
         this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
         this.childDirCompareInfos = Map.copyOf(childDirCompareInfos);
         this.childBookPathPairs = List.copyOf(childBookPathPairs);
         this.childBookCompareInfos = Map.copyOf(childBookCompareInfos);
     }
     
-    @Override
-    public Pair<DirInfo> parentPair() {
-        return topDirInfoPair;
+    /**
+     * 比較対象フォルダ情報を返します。<br>
+     * 
+     * @return 比較対象フォルダ情報
+     */
+    public Pair<DirInfo> parentDirInfoPair() {
+        return parentDirInfoPair;
     }
     
     @Override
@@ -191,12 +195,12 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
         List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
         Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos = new HashMap<>();
         
-        accDirInfoPairs.add(topDirInfoPair);
-        accDirCompareInfos.put(topDirInfoPair, Optional.of(this));
+        accDirInfoPairs.add(parentDirInfoPair);
+        accDirCompareInfos.put(parentDirInfoPair, Optional.of(this));
         gather(this, accDirInfoPairs, accDirCompareInfos);
         
         return new FlattenDirCompareInfo(
-                topDirInfoPair,
+                parentDirInfoPair,
                 accDirInfoPairs,
                 accDirCompareInfos);
     }

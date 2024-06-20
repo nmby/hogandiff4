@@ -57,7 +57,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 3. 比較結果の表示（Excelブック）
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            paintSaveAndShowBook(workDir, bookCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
+            paintSaveAndShowBook(workDir, bookCompareInfo.parentBookInfoPair()
+                    .map(BookInfo::bookPath), bResult, 80, 98);
             
             // 4. 処理終了のアナウンス
             announceEnd();
@@ -81,7 +82,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+            Pair<Path> bookPathPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath);
             
             str.append("%s%n[A] %s%n[B] %s%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
@@ -112,7 +113,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentPair();
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentBookInfoPair();
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)

@@ -56,7 +56,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 4. 比較結果の表示（Excelブック）
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            paintSaveAndShowBook(workDir, bookCompareInfo.parentPair().map(BookInfo::bookPath), bResult, 80, 98);
+            paintSaveAndShowBook(workDir, bookCompareInfo.parentBookInfoPair()
+                    .map(BookInfo::bookPath), bResult, 80, 98);
             
             // 5. 処理終了のアナウンス
             announceEnd();
@@ -80,7 +81,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
+            Pair<Path> bookPathPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath);
             Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(0);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
@@ -110,7 +111,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentPair();
+            Pair<BookInfo> bookInfoPair = bookCompareInfo.parentBookInfoPair();
             Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(0);
             
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
@@ -135,7 +136,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             return new BookResult(
                     BookCompareInfo.of(
-                            bookCompareInfo.parentPair(),
+                            bookCompareInfo.parentBookInfoPair(),
                             bookCompareInfo.childPairs()),
                     Map.of(sheetNamePair, Optional.of(result)));
             
