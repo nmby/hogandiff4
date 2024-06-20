@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo.FlattenDirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -77,15 +77,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
+            FlattenDirCompareInfo flattenDirCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareTreesTask.010"),
-                    treeCompareInfo.parentPair().a().dirPath(),
-                    treeCompareInfo.parentPair().b().dirPath()));
+                    flattenDirCompareInfo.topDirInfoPair().a().dirPath(),
+                    flattenDirCompareInfo.topDirInfoPair().b().dirPath()));
             
-            for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
-                Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
+            for (int i = 0; i < flattenDirCompareInfo.dirInfoPairs().size(); i++) {
+                Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
                 str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
             }
@@ -110,18 +110,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
             
-            TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
+            FlattenDirCompareInfo flattenDirCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
             
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
             
-            double progressDelta = (progressAfter - progressBefore) / (double) treeCompareInfo.childPairs().size();
+            double progressDelta = (progressAfter - progressBefore)
+                    / (double) flattenDirCompareInfo.dirInfoPairs().size();
             
-            for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
+            for (int i = 0; i < flattenDirCompareInfo.dirInfoPairs().size(); i++) {
                 int ii = i;
                 
-                Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
-                DirCompareInfo dirCompareInfo = treeCompareInfo.childCompareInfos().get(dirInfoPair).get();
+                Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
+                DirCompareInfo dirCompareInfo = flattenDirCompareInfo.dirCompareInfos().get(dirInfoPair).get();
                 
                 str.append(TreeResult.formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
                 updateMessage(str.toString());
@@ -133,9 +134,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                         // 出力先ディレクトリの作成
                         if (dirInfoPair.has(side)) {
                             Path targetDirPath = dirInfoPair.get(side).dirPath();
-                            Path parentDir = targetDirPath.equals(treeCompareInfo.parentPair().get(side).dirPath())
-                                    ? workDir
-                                    : outputDirsPair.get(side).get(targetDirPath.getParent());
+                            Path parentDir = targetDirPath
+                                    .equals(flattenDirCompareInfo.topDirInfoPair().get(side).dirPath())
+                                            ? workDir
+                                            : outputDirsPair.get(side).get(targetDirPath.getParent());
                             
                             Path outputDir = parentDir
                                     .resolve("【%s%d】%s".formatted(side, ii + 1, targetDirPath.getFileName()));
@@ -176,7 +178,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             updateProgress(progressAfter, PROGRESS_MAX);
             
-            return new TreeResult(treeCompareInfo, dirResults);
+            return new TreeResult(flattenDirCompareInfo, dirResults);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.110", "");

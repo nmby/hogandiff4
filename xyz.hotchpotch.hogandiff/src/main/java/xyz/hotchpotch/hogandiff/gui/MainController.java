@@ -38,10 +38,10 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo.FlattenDirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
@@ -371,8 +371,9 @@ public class MainController extends VBox {
                 yield bookPathStream(dirCompareInfo);
             }
             case COMPARE_TREES -> {
-                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO).flatten();
-                yield treeCompareInfo.childCompareInfos().values().stream()
+                FlattenDirCompareInfo flattenDirCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                        .flatten();
+                yield flattenDirCompareInfo.dirCompareInfos().values().stream()
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .flatMap(this::bookPathStream);

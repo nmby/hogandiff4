@@ -61,7 +61,7 @@ public class TreeResultBookCreator {
     // [instance members] ******************************************************
     
     private final ResourceBundle rb = AppMain.appResource.get();
-
+    
     /**
      * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
      * 
@@ -112,21 +112,22 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.treeCompareInfo().parentPair().get(side).dirPath().getParent(),
+                        treeResult.flattenDirCompareInfo().topDirInfoPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.treeCompareInfo().parentPair().get(side).dirPath().getNameCount() - 1,
+                    treeResult.flattenDirCompareInfo().topDirInfoPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (int j = 0; j < treeResult.treeCompareInfo().childPairs().size(); j++) {
-                Pair<DirInfo> dirInfoPair = treeResult.treeCompareInfo().childPairs().get(j);
-                DirCompareInfo dirCompareInfo = treeResult.treeCompareInfo().childCompareInfos().get(dirInfoPair).get();
+            for (int j = 0; j < treeResult.flattenDirCompareInfo().dirInfoPairs().size(); j++) {
+                Pair<DirInfo> dirInfoPair = treeResult.flattenDirCompareInfo().dirInfoPairs().get(j);
+                DirCompareInfo dirCompareInfo = treeResult.flattenDirCompareInfo().dirCompareInfos().get(dirInfoPair)
+                        .get();
                 String dirId = recursively ? Integer.toString(j + 1) : "";
                 rowNo++;
                 
@@ -214,12 +215,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.treeCompareInfo().parentPair().a().dirPath();
+        Path topDirA = treeResult.flattenDirCompareInfo().topDirInfoPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.treeCompareInfo().parentPair().b().dirPath();
+        Path topDirB = treeResult.flattenDirCompareInfo().topDirInfoPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);

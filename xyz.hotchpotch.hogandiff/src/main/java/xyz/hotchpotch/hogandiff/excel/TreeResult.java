@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo.FlattenDirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -16,11 +17,11 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param treeCompareInfo フォルダツリー比較情報
+ * @param flattenDirCompareInfo フォルダツリー比較情報
  * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(
-        TreeCompareInfo treeCompareInfo,
+        FlattenDirCompareInfo flattenDirCompareInfo,
         Map<Pair<DirInfo>, Optional<DirResult>> dirResults)
         implements Result {
     
@@ -58,18 +59,18 @@ public record TreeResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param treeCompareInfo フォルダツリー比較情報
+     * @param flattenDirCompareInfo フォルダツリー比較情報
      * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public TreeResult(
-            TreeCompareInfo treeCompareInfo,
+            FlattenDirCompareInfo flattenDirCompareInfo,
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults) {
         
-        Objects.requireNonNull(treeCompareInfo);
+        Objects.requireNonNull(flattenDirCompareInfo);
         Objects.requireNonNull(dirResults);
         
-        this.treeCompareInfo = treeCompareInfo;
+        this.flattenDirCompareInfo = flattenDirCompareInfo;
         this.dirResults = Map.copyOf(dirResults);
     }
     
@@ -79,7 +80,7 @@ public record TreeResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return treeCompareInfo.childPairs().stream()
+        return flattenDirCompareInfo.dirInfoPairs().stream()
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -99,9 +100,9 @@ public record TreeResult(
     private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < treeCompareInfo.childPairs().size(); i++) {
-            Pair<DirInfo> dirInfoPair = treeCompareInfo.childPairs().get(i);
-            DirCompareInfo dirCompareInfo = treeCompareInfo.childCompareInfos().get(dirInfoPair).get();
+        for (int i = 0; i < flattenDirCompareInfo.dirInfoPairs().size(); i++) {
+            Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
+            DirCompareInfo dirCompareInfo = flattenDirCompareInfo.dirCompareInfos().get(dirInfoPair).get();
             Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
             
             str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentPair()));
@@ -121,10 +122,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(treeCompareInfo.parentPair().a().dirPath())
+                .append(flattenDirCompareInfo.topDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(treeCompareInfo.parentPair().b().dirPath())
+                .append(flattenDirCompareInfo.topDirInfoPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);

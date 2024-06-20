@@ -22,6 +22,23 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     // [static members] ********************************************************
     
     /**
+     * 階層状の {@link DirCompareInfo} の内容を一層に平坦化した情報を保持するレコードです。<br>
+     * 
+     * @param topDirInfoPair 比較対象フォルダ情報
+     * @param dirInfoPairs 子フォルダ情報
+     * @param dirCompareInfos 子フォルダ比較情報
+     */
+    public static record FlattenDirCompareInfo(
+            Pair<DirInfo> topDirInfoPair,
+            List<Pair<DirInfo>> dirInfoPairs,
+            Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+    }
+    
+    /**
      * 与えられたマッチャーを使用して新たな {@link DirCompareInfo} インスタンスを生成します。<br>
      * 
      * @param topDirInfoPair 比較対象フォルダ情報
@@ -165,12 +182,12 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
     }
     
     /**
-     * ツリー状の本オフジェクトの内容を一層に並べた {@link TreeCompareInfo} オブジェクトに
-     * 変換して返します。<br>
+     * ツリー状の本オフジェクトの内容を一層に並べた
+     * {@link FlattenDirCompareInfo} オブジェクトに変換して返します。<br>
      * 
-     * @return 新たなツリー比較情報
+     * @return 平坦化されたフォルダ比較情報
      */
-    public TreeCompareInfo flatten() {
+    public FlattenDirCompareInfo flatten() {
         List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
         Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos = new HashMap<>();
         
@@ -178,7 +195,7 @@ public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookComp
         accDirCompareInfos.put(topDirInfoPair, Optional.of(this));
         gather(this, accDirInfoPairs, accDirCompareInfos);
         
-        return TreeCompareInfo.of(
+        return new FlattenDirCompareInfo(
                 topDirInfoPair,
                 accDirInfoPairs,
                 accDirCompareInfos);
