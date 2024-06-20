@@ -88,7 +88,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
-            List<Pair<Path>> bookPathPairs = dirCompareInfo.childPairs();
+            List<Pair<Path>> bookPathPairs = dirCompareInfo.childBookPathPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
@@ -142,7 +142,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
-            if (0 < dirCompareInfo.childPairs().size()) {
+            if (0 < dirCompareInfo.childBookPathPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
@@ -156,7 +156,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             } else {
                 return new DirResult(
                         dirCompareInfo,
-                        dirCompareInfo.childPairs().stream().collect(Collectors.toMap(
+                        dirCompareInfo.childBookPathPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

@@ -437,8 +437,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         SheetComparator sheetComparator = Factory.sheetComparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
-        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+        for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
             
             if (sheetNamePair.isPaired()) {
                 
@@ -458,7 +458,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             updateProgress(
                     progressBefore
-                            + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.childPairs().size(),
+                            + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.childSheetNamePairs().size(),
                     PROGRESS_MAX);
         }
         
@@ -507,17 +507,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         Map<Pair<Path>, Optional<BookResult>> bookResults = new HashMap<>();
         IntUnaryOperator getProgress = n -> progressBefore
-                + (progressAfter - progressBefore) * n / dirCompareInfo.childPairs().size();
+                + (progressAfter - progressBefore) * n / dirCompareInfo.childBookPathPairs().size();
         
-        if (dirCompareInfo.childPairs().size() == 0) {
+        if (dirCompareInfo.childBookPathPairs().size() == 0) {
             str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
             updateMessage(str.toString());
         }
         
-        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
+        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
             int ii = i;
             
-            Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
+            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
             
             str.append(indent
                     + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair));

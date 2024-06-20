@@ -42,7 +42,7 @@ public enum AppMenu {
                 Objects.requireNonNull(bookCompareInfo);
                 
                 return !bookCompareInfo.parentBookInfoPair().isIdentical()
-                        || !bookCompareInfo.childPairs().get(0).isIdentical();
+                        || !bookCompareInfo.childSheetNamePairs().get(0).isIdentical();
             }),
     
     /**

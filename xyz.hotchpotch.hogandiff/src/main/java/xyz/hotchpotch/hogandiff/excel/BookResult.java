@@ -98,7 +98,7 @@ public record BookResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return bookCompareInfo.childPairs().stream()
+        return bookCompareInfo.childSheetNamePairs().stream()
                 .map(sheetResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -109,13 +109,13 @@ public record BookResult(
      * @return 比較結果を端的に表す差分サマリ
      */
     public String getDiffSimpleSummary() {
-        int diffSheets = (int) bookCompareInfo.childPairs().stream()
+        int diffSheets = (int) bookCompareInfo.childSheetNamePairs().stream()
                 .filter(Pair::isPaired)
                 .map(sheetResults::get)
                 .map(Optional::get)
                 .filter(SheetResult::hasDiff)
                 .count();
-        int gapSheets = (int) bookCompareInfo.childPairs().stream()
+        int gapSheets = (int) bookCompareInfo.childSheetNamePairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
                 .count();
         
@@ -158,8 +158,8 @@ public record BookResult(
     private String getDiffText(Function<SheetResult, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+        for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
             Optional<SheetResult> sResult = sheetResults.get(sheetNamePair);
             
             if (!sheetNamePair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
@@ -190,8 +190,8 @@ public record BookResult(
                     .append(bookCompareInfo.parentBookInfoPair().b().bookPath()).append(BR);
         }
         
-        for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+        for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
             str.append(formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
         }
         

@@ -100,8 +100,12 @@ public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void
         return bookInfoPair;
     }
     
-    @Override
-    public List<Pair<String>> childPairs() {
+    /**
+     * 子シート名を返します。<br>
+     * 
+     * @return 子シート名
+     */
+    public List<Pair<String>> childSheetNamePairs() {
         return sheetNamePairs;
     }
     

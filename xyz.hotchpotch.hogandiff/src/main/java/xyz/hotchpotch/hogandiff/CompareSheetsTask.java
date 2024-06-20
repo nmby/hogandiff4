@@ -82,7 +82,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
             Pair<Path> bookPathPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath);
-            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(0);
+            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(0);
             
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
@@ -112,7 +112,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = bookCompareInfo.parentBookInfoPair();
-            Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(0);
+            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(0);
             
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
@@ -137,7 +137,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return new BookResult(
                     BookCompareInfo.of(
                             bookCompareInfo.parentBookInfoPair(),
-                            bookCompareInfo.childPairs()),
+                            bookCompareInfo.childSheetNamePairs()),
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {

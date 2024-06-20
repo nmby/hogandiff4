@@ -87,8 +87,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("%s%n[A] %s%n[B] %s%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
             
-            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
-                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+            for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
                 str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
             
@@ -122,10 +122,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             SheetComparator sheetComparator = Factory.sheetComparator(settings);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
-            double progressDelta = (progressAfter - progressBefore) / (double) bookCompareInfo.childPairs().size();
+            double progressDelta = (progressAfter - progressBefore)
+                    / (double) bookCompareInfo.childSheetNamePairs().size();
             
-            for (int i = 0; i < bookCompareInfo.childPairs().size(); i++) {
-                Pair<String> sheetNamePair = bookCompareInfo.childPairs().get(i);
+            for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
                 SheetResult result = null;
                 
                 try {

@@ -93,7 +93,7 @@ public record DirResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return dirCompareInfo.childPairs().stream()
+        return dirCompareInfo.childBookPathPairs().stream()
                 .map(bookResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -113,10 +113,10 @@ public record DirResult(
                 .map(Optional::get)
                 .filter(BookResult::hasDiff)
                 .count();
-        int gapBooks = (int) dirCompareInfo.childPairs().stream()
+        int gapBooks = (int) dirCompareInfo.childBookPathPairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
                 .count();
-        int failed = (int) dirCompareInfo.childPairs().stream()
+        int failed = (int) dirCompareInfo.childBookPathPairs().stream()
                 .filter(Pair::isPaired)
                 .filter(p -> !bookResults.containsKey(p) || bookResults.get(p).isEmpty())
                 .count();
@@ -179,8 +179,8 @@ public record DirResult(
             return str.toString();
         }
         
-        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
-            Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
+        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
+            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
             Optional<BookResult> bResult = bookResults.get(bookPathPair);
             
             str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair));
@@ -209,8 +209,8 @@ public record DirResult(
                 .append(dirCompareInfo.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
-        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
-            Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
+        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
+            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
             str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair)).append(BR);
         }
         

@@ -180,7 +180,7 @@ public class MainController extends VBox {
                             }
                             if (prevValue != null
                                     && bookInfoPair.equals(prevValue.parentBookInfoPair())
-                                    && sheetNamePair.equals(prevValue.childPairs().get(0))) {
+                                    && sheetNamePair.equals(prevValue.childSheetNamePairs().get(0))) {
                                 return prevValue;
                             } else {
                                 return BookCompareInfo.of(bookInfoPair, List.of(sheetNamePair));
@@ -385,7 +385,7 @@ public class MainController extends VBox {
     }
     
     private Stream<Path> bookPathStream(DirCompareInfo dirCompareInfo) {
-        return dirCompareInfo.childPairs().stream()
+        return dirCompareInfo.childBookPathPairs().stream()
                 .flatMap(bookPathPair -> Stream.of(bookPathPair.a(), bookPathPair.b())
                         .filter(bookPath -> bookPath != null));
     }

@@ -163,11 +163,11 @@ public class TreeResultBookCreator {
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブックパスペアごとの処理
-                for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
+                for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<Path> bookPathPair = dirCompareInfo.childPairs().get(i);
+                    Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
                     Optional<BookResult> bookResult = dirResult
                             .map(DirResult::bookResults)
                             .flatMap(br -> br.get(bookPathPair));

@@ -123,7 +123,7 @@ public class EditPairingDialogPane extends VBox {
         parentLabelB.setText("【B】 " + compareInfo.parentBookInfoPair().b().toString());
         
         parentPair = compareInfo.parentBookInfoPair();
-        currentChildPairs = new ArrayList<>(compareInfo.childPairs());
+        currentChildPairs = new ArrayList<>(compareInfo.childSheetNamePairs());
         
         drawGrid();
     }
