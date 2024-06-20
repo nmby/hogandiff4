@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public final class DirCompareInfo implements CompareInfo<DirInfo, Path, BookCompareInfo> {
+public final class DirCompareInfo {
     
     // [static members] ********************************************************
     
