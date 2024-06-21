@@ -20,14 +20,14 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditPairingDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditCompareInfoDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class EditPairingPane extends AnchorPane implements ChildController {
+public class EditCompareInfoPane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -37,7 +37,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button editPairingButton;
+    private Button editCompareInfoButton;
     
     private MainController parent;
     
@@ -46,8 +46,8 @@ public class EditPairingPane extends AnchorPane implements ChildController {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditPairingPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditPairingPane.fxml"), rb);
+    public EditCompareInfoPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -60,12 +60,12 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editPairingButton.disableProperty().bind(Bindings.createBooleanBinding(
+        editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> parent.menuProp.getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
-        editPairingButton.setOnAction(event -> editPairing());
+        editCompareInfoButton.setOnAction(event -> editCompareInfo());
         
         // 3.初期値の設定
         // nop
@@ -74,7 +74,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         // nop
     }
     
-    private void editPairing() {
+    private void editCompareInfo() {
         try {
             AppMenu menu = parent.menuProp.getValue();
             if (!menu.isValidTargets(ar.settings())) {
@@ -89,7 +89,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
             switch (menu) {
                 case COMPARE_BOOKS:
                     BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditPairingDialog dialog = new EditPairingDialog(compareInfo);
+                    EditCompareInfoDialog dialog = new EditCompareInfoDialog(compareInfo);
                     Optional<BookCompareInfo> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookCompareInfoProp.unbind();

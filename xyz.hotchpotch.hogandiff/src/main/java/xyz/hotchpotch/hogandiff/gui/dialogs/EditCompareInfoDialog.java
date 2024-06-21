@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
  * 
  * @author nmby
  */
-public class EditPairingDialog extends Dialog<BookCompareInfo> {
+public class EditCompareInfoDialog extends Dialog<BookCompareInfo> {
     
     // static members **********************************************************
     
@@ -30,23 +30,23 @@ public class EditPairingDialog extends Dialog<BookCompareInfo> {
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditPairingDialog(BookCompareInfo compareInfo) throws IOException {
+    public EditCompareInfoDialog(BookCompareInfo compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
-        EditPairingDialogPane editPairingDialogPane = new EditPairingDialogPane();
-        editPairingDialogPane.init(this, compareInfo);
-        editPairingDialogPane.getStylesheets().add(getClass().getResource("editPairingDialog.css").toExternalForm());
+        EditBookCompareInfoDialogPane editCompareInfoDialogPane = new EditBookCompareInfoDialogPane();
+        editCompareInfoDialogPane.init(this, compareInfo);
+        editCompareInfoDialogPane.getStylesheets().add(getClass().getResource("editCompareInfoDialog.css").toExternalForm());
         
         DialogPane me = getDialogPane();
-        me.setContent(editPairingDialogPane);
+        me.setContent(editCompareInfoDialogPane);
         me.getButtonTypes().setAll(
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        this.setTitle(rb.getString("fx.EditPairingPane.010"));
+        this.setTitle(rb.getString("fx.EditCompareInfoPane.010"));
         this.setResizable(true);
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? editPairingDialogPane.getResult()
+                ? editCompareInfoDialogPane.getResult()
                 : null);
     }
 }

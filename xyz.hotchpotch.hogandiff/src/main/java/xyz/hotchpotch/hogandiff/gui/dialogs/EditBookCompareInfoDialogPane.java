@@ -31,7 +31,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class EditPairingDialogPane extends VBox {
+public class EditBookCompareInfoDialogPane extends VBox {
     
     // static members **********************************************************
     
@@ -82,8 +82,8 @@ public class EditPairingDialogPane extends VBox {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditPairingDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditPairingDialogPane.fxml"), rb);
+    public EditBookCompareInfoDialogPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoDialogPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -97,7 +97,7 @@ public class EditPairingDialogPane extends VBox {
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      */
     /*package*/ void init(
-            EditPairingDialog parent,
+            EditCompareInfoDialog parent,
             BookCompareInfo compareInfo)
             throws IOException {
         
