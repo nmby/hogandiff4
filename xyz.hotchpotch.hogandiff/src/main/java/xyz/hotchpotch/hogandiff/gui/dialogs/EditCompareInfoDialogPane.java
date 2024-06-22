@@ -1,6 +1,8 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
@@ -21,9 +23,10 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
-/*package*/ abstract class EditCompareInfoDialogPane extends VBox {
+/*package*/ abstract class EditCompareInfoDialogPane<P, C> extends VBox {
     
     // [static members] ********************************************************
     
@@ -86,6 +89,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     protected GridPane childGridPane;
     
     protected ItemType parentType;
+    protected Pair<P> parentPair;
+    protected List<Pair<C>> childPairs;
+    protected final List<Pair<?>> currentChildPairs = new ArrayList<>();
     
     /**
      * コンストラクタ<br>
@@ -102,16 +108,20 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parent 親要素
+     * @param dialog 親要素
      * @param bookPath 開こうとしているExcelブックのパス
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      */
     /*package*/ void init(
+            EditCompareInfoDialog dialog,
             ItemType parentType,
-            EditCompareInfoDialog parent)
+            Pair<P> parentPair,
+            List<Pair<C>> childPairs)
             throws IOException {
         
         this.parentType = parentType;
+        this.parentPair = parentPair;
+        this.childPairs = childPairs;
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
@@ -129,6 +139,37 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         
         parentLabelA.setGraphic(parentType.createImageView(24));
         parentLabelB.setGraphic(parentType.createImageView(24));
+        parentLabelA.setText("【A】 " + parentPair.a().toString());
+        parentLabelB.setText("【B】 " + parentPair.b().toString());
+    }
+    
+    protected void drawGrid() {
+        childGridPane.getChildren().clear();
+        
+        for (int i = 0; i < currentChildPairs.size(); i++) {
+            Pair<?> pair = currentChildPairs.get(i);
+            
+            if (pair.isPaired()) {
+                ItemType itemType = ItemType.of(pair.a());
+                childGridPane.add(new PairedNameLabel(itemType, pair.a().toString()), 0, i);
+                childGridPane.add(new UnpairButton(i), 1, i);
+                childGridPane.add(new PairedNameLabel(itemType, pair.b().toString()), 2, i);
+                
+            } else if (pair.hasA()) {
+                ItemType itemType = ItemType.of(pair.a());
+                childGridPane.add(new BlankLabel(), 2, i);
+                childGridPane.add(new UnpairedPane(i, Side.B), 0, i, 3, 1);
+                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.A, pair.a().toString()), 0, i);
+                
+            } else if (pair.hasB()) {
+                ItemType itemType = ItemType.of(pair.b());
+                childGridPane.add(new BlankLabel(), 0, i);
+                childGridPane.add(new UnpairedPane(i, Side.A), 0, i, 3, 1);
+                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.B, pair.b().toString()), 2, i);
+            } else {
+                // nop
+            }
+        }
     }
     
     protected abstract void unpair(int i);
@@ -139,7 +180,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         
         // static members ------------------------------------------------------
         
-        private static Image linkOffImage = new Image(UnpairButton.class.getResourceAsStream("link-off.png"));
+        private static Image linkOffImage = new Image(
+                EditCompareInfoDialogPane.class.getResourceAsStream("link-off.png"));
         
         // instance members ----------------------------------------------------
         
@@ -160,8 +202,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         
         // instance members ----------------------------------------------------
         
-        protected PairedNameLabel(ItemType type, String name) {
-            setGraphic(type.createImageView(18));
+        protected PairedNameLabel(ItemType itemType, String name) {
+            setGraphic(itemType.createImageView(18));
             setGraphicTextGap(5);
             setText(name);
             setMaxWidth(Double.MAX_VALUE);
@@ -179,10 +221,10 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         private final int idx;
         private final Side side;
         
-        protected UnpairedNameLabel(ItemType type, int idx, Side side, String name) {
+        protected UnpairedNameLabel(ItemType itemType, int idx, Side side, String name) {
             this.idx = idx;
             this.side = side;
-            setGraphic(type.createImageView(18));
+            setGraphic(itemType.createImageView(18));
             setGraphicTextGap(5);
             setText(name);
             setMaxWidth(Double.MAX_VALUE);

@@ -6,5 +6,4 @@ public sealed interface CompareInfo<P, C, I>
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
-    
 }

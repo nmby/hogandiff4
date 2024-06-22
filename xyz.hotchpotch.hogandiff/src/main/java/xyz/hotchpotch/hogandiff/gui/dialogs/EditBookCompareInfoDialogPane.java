@@ -1,27 +1,22 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * ユーザーにパスワード入力を求めるダイアログボックスの要素です。<br>
  * 
  * @author nmby
  */
-public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane {
+public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<BookInfo, String> {
     
     // static members **********************************************************
     
     // instance members ********************************************************
-    
-    private Pair<BookInfo> parentPair;
-    private List<Pair<String>> currentChildPairs;
     
     /**
      * コンストラクタ<br>
@@ -35,55 +30,31 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane {
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parent 親要素
+     * @param dialog 親要素
      * @param bookPath 開こうとしているExcelブックのパス
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      */
     /*package*/ void init(
-            EditCompareInfoDialog parent,
+            EditCompareInfoDialog dialog,
             BookCompareInfo compareInfo)
             throws IOException {
         
-        super.init(ItemType.BOOK, parent);
+        super.init(
+                dialog,
+                ItemType.BOOK,
+                compareInfo.parentBookInfoPair(),
+                compareInfo.childSheetNamePairs());
         
-        parentLabelA.setText("【A】 " + compareInfo.parentBookInfoPair().a().toString());
-        parentLabelB.setText("【B】 " + compareInfo.parentBookInfoPair().b().toString());
-        
-        parentPair = compareInfo.parentBookInfoPair();
-        currentChildPairs = new ArrayList<>(compareInfo.childSheetNamePairs());
-        
+        currentChildPairs.addAll(childPairs);
         drawGrid();
-    }
-    
-    private void drawGrid() {
-        childGridPane.getChildren().clear();
-        
-        for (int i = 0; i < currentChildPairs.size(); i++) {
-            Pair<String> pair = currentChildPairs.get(i);
-            
-            if (pair.isPaired()) {
-                childGridPane.add(new PairedNameLabel(ItemType.SHEET, pair.a().toString()), 0, i);
-                childGridPane.add(new UnpairButton(i), 1, i);
-                childGridPane.add(new PairedNameLabel(ItemType.SHEET, pair.b().toString()), 2, i);
-                
-            } else if (pair.hasA()) {
-                childGridPane.add(new BlankLabel(), 2, i);
-                childGridPane.add(new UnpairedPane(i, Side.B), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.A, pair.a().toString()), 0, i);
-                
-            } else if (pair.hasB()) {
-                childGridPane.add(new BlankLabel(), 0, i);
-                childGridPane.add(new UnpairedPane(i, Side.A), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.B, pair.b().toString()), 2, i);
-            } else {
-                // nop
-            }
-        }
     }
     
     @Override
     protected void unpair(int i) {
-        Pair<String> paired = currentChildPairs.get(i);
+        @SuppressWarnings("unchecked")
+        Pair<String> paired = (Pair<String>) currentChildPairs.get(i);
+        assert paired.isPaired();
+        
         Pair<String> unpairedA = Pair.of(paired.a(), null);
         Pair<String> unpairedB = Pair.of(null, paired.b());
         
@@ -100,8 +71,10 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane {
         assert 0 <= src && src < currentChildPairs.size();
         assert 0 <= dst && dst < currentChildPairs.size();
         
-        Pair<String> srcPair = currentChildPairs.get(src);
-        Pair<String> dstPair = currentChildPairs.get(dst);
+        @SuppressWarnings("unchecked")
+        Pair<String> srcPair = (Pair<String>) currentChildPairs.get(src);
+        @SuppressWarnings("unchecked")
+        Pair<String> dstPair = (Pair<String>) currentChildPairs.get(dst);
         assert !srcPair.isPaired();
         assert !dstPair.isPaired();
         assert srcPair.hasA() != srcPair.hasB();
@@ -126,6 +99,11 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane {
      * @return ユーザーによる編集を反映したExcelブック比較情報
      */
     public BookCompareInfo getResult() {
-        return BookCompareInfo.of(parentPair, currentChildPairs);
+        // わざわざこんなことせにゃならんのか？？
+        @SuppressWarnings("unchecked")
+        List<Pair<String>> casted = currentChildPairs.stream()
+                .map(p -> (Pair<String>) p)
+                .toList();
+        return BookCompareInfo.of(parentPair, casted);
     }
 }
