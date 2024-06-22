@@ -10,17 +10,17 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfoLoader;
+import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
 /**
- * {@link DirInfoLoader} の標準的な実装です。<br>
+ * {@link DirLoader} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class StandardDirInfoLoader implements DirInfoLoader {
+public class StandardDirLoader implements DirLoader {
     
     // [static members] ********************************************************
     
@@ -43,7 +43,7 @@ public class StandardDirInfoLoader implements DirInfoLoader {
      * 
      * @param recursively 子フォルダの情報も再帰的にロードするか
      */
-    public StandardDirInfoLoader(boolean recursively) {
+    public StandardDirLoader(boolean recursively) {
         this.recursively = recursively;
     }
     
@@ -64,7 +64,7 @@ public class StandardDirInfoLoader implements DirInfoLoader {
         try {
             List<Path> childBookPaths = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(StandardDirInfoLoader::isHandleableExcelBook)
+                    .filter(StandardDirLoader::isHandleableExcelBook)
                     .sorted()
                     .toList();
             

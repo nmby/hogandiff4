@@ -80,11 +80,11 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirInfoLoader dirInfoLoader(Settings settings) {
+    public static DirLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return DirInfoLoader.of(recursively);
+        return DirLoader.of(recursively);
     }
     
     /**

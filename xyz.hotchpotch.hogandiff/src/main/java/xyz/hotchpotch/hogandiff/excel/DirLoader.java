@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.nio.file.Path;
 
-import xyz.hotchpotch.hogandiff.excel.common.StandardDirInfoLoader;
+import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
 
 /**
  * フォルダ情報を抽出するローダーを表します。<br>
@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.excel.common.StandardDirInfoLoader;
  * @author nmby
  */
 @FunctionalInterface
-public interface DirInfoLoader {
+public interface DirLoader {
     
     // [static members] ********************************************************
     
@@ -21,8 +21,8 @@ public interface DirInfoLoader {
      * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダ情報を抽出するローダー
      */
-    public static DirInfoLoader of(boolean recursively) {
-        return new StandardDirInfoLoader(recursively);
+    public static DirLoader of(boolean recursively) {
+        return new StandardDirLoader(recursively);
     }
     
     // [instance members] ******************************************************
