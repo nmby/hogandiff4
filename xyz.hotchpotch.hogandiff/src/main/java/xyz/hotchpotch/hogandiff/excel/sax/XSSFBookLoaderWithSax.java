@@ -90,7 +90,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
+            return BookInfo.ofLoadFailed(bookPath);
         }
     }
 }

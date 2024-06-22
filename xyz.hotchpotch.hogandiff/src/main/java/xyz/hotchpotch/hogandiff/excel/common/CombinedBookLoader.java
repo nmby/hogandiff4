@@ -1,16 +1,15 @@
 package xyz.hotchpotch.hogandiff.excel.common;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -81,30 +80,23 @@ public class CombinedBookLoader implements BookLoader {
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        List<Exception> suppressed = new ArrayList<>();
         Iterator<UnsafeSupplier<BookLoader, ExcelHandlingException>> itr = suppliers.iterator();
         boolean passwordIssue = false;
         
         while (itr.hasNext()) {
-            try {
-                BookLoader loader = itr.next().get();
-                return loader.loadBookInfo(bookPath, readPassword);
+            BookLoader loader = itr.next().get();
+            BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
+            
+            if (bookInfo.status() == Status.LOAD_COMPLETED) {
+                return bookInfo;
                 
-            } catch (PasswordHandlingException e) {
+            } else if (bookInfo.status() == Status.PASSWORD_LOCKED) {
                 passwordIssue = true;
-                e.printStackTrace();
-                suppressed.add(e);
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                suppressed.add(e);
             }
         }
         
-        ExcelHandlingException failed = passwordIssue
-                ? new PasswordHandlingException("processing failed : %s".formatted(bookPath))
-                : new ExcelHandlingException("processing failed : %s".formatted(bookPath));
-        suppressed.forEach(failed::addSuppressed);
-        throw failed;
+        return passwordIssue
+                ? BookInfo.ofPasswordLocked(bookPath)
+                : BookInfo.ofLoadFailed(bookPath);
     }
 }

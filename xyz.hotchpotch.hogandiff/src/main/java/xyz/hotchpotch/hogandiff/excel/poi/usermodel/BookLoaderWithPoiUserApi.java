@@ -17,7 +17,6 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -114,25 +113,14 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             //
             // 暫定対処として、LeftoverDataException はその他の場合にも発生するかもしれないが
             // 書き込みpw付きxlsファイルであると見なしてしまい、
-            // 本当は読み取り専用で読み込めてほしいが
-            // サポート対象外であるとユーザーに案内することにする。
-            throw new PasswordHandlingException(
-                    (readPassword == null
-                            ? "book is encrypted : %s"
-                            : "password is incorrect : %s")
-                                    .formatted(bookPath),
-                    e);
+            // 読み取りパスワードが設定されている場合と同様に処理することとする。
+            return BookInfo.ofPasswordLocked(bookPath);
             
         } catch (EncryptedDocumentException e) {
-            throw new PasswordHandlingException(
-                    (readPassword == null
-                            ? "book is encrypted : %s"
-                            : "password is incorrect : %s")
-                                    .formatted(bookPath),
-                    e);
+            return BookInfo.ofPasswordLocked(bookPath);
             
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
+            return BookInfo.ofLoadFailed(bookPath);
         }
     }
 }
