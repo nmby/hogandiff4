@@ -67,14 +67,16 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane {
                 childGridPane.add(new PairedNameLabel(ItemType.SHEET, pair.b().toString()), 2, i);
                 
             } else if (pair.hasA()) {
-                childGridPane.add(new DummyLabel(), 2, i);
+                childGridPane.add(new BlankLabel(), 2, i);
                 childGridPane.add(new UnpairedPane(i, Side.B), 0, i, 3, 1);
                 childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.A, pair.a().toString()), 0, i);
                 
-            } else {
-                childGridPane.add(new DummyLabel(), 0, i);
+            } else if (pair.hasB()) {
+                childGridPane.add(new BlankLabel(), 0, i);
                 childGridPane.add(new UnpairedPane(i, Side.A), 0, i, 3, 1);
                 childGridPane.add(new UnpairedNameLabel(ItemType.SHEET, i, Side.B, pair.b().toString()), 2, i);
+            } else {
+                // nop
             }
         }
     }

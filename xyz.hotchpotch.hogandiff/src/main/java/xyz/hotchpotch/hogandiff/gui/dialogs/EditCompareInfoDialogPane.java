@@ -19,6 +19,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /*package*/ abstract class EditCompareInfoDialogPane extends VBox {
@@ -29,13 +31,33 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         
         // static members ------------------------------------------------------
         
-        DIR("icon-folder.png"), BOOK("icon-book.png"), SHEET("icon-sheet.png");
+        /** フォルダ */
+        DIR("icon-folder.png"),
+        
+        /** Excelブック */
+        BOOK("icon-book.png"),
+        
+        /** シート */
+        SHEET("icon-sheet.png");
+        
+        public static ItemType of(Object item) {
+            if (item instanceof DirInfo) {
+                return DIR;
+                
+            } else if (item instanceof BookInfo) {
+                return BOOK;
+                
+            } else if (item instanceof String) {
+                return SHEET;
+            }
+            throw new IllegalArgumentException();
+        }
         
         // instance members ----------------------------------------------------
         
         private final Image image;
         
-        ItemType(String imagePath) {
+        private ItemType(String imagePath) {
             this.image = new Image(ItemType.class.getResourceAsStream(imagePath));
         }
         
@@ -112,6 +134,90 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     protected abstract void unpair(int i);
     
     protected abstract void makePair(int src, int dst);
+    
+    protected class UnpairButton extends Button {
+        
+        // static members ------------------------------------------------------
+        
+        private static Image linkOffImage = new Image(UnpairButton.class.getResourceAsStream("link-off.png"));
+        
+        // instance members ----------------------------------------------------
+        
+        protected UnpairButton(int idx) {
+            ImageView linkOffImageView = new ImageView(linkOffImage);
+            linkOffImageView.setPreserveRatio(true);
+            linkOffImageView.setFitWidth(16);
+            setGraphic(linkOffImageView);
+            getStyleClass().add("unpairButton");
+            
+            setOnAction(event -> unpair(idx));
+        }
+    }
+    
+    protected class PairedNameLabel extends Label {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        protected PairedNameLabel(ItemType type, String name) {
+            setGraphic(type.createImageView(18));
+            setGraphicTextGap(5);
+            setText(name);
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("childLabel");
+            getStyleClass().add("pairedNameLabel");
+        }
+    }
+    
+    protected class UnpairedNameLabel extends Label {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        private final int idx;
+        private final Side side;
+        
+        protected UnpairedNameLabel(ItemType type, int idx, Side side, String name) {
+            this.idx = idx;
+            this.side = side;
+            setGraphic(type.createImageView(18));
+            setGraphicTextGap(5);
+            setText(name);
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("childLabel");
+            getStyleClass().add("unpairedNameLabel");
+            setOnDragDetected(this::onDragDetected);
+        }
+        
+        private void onDragDetected(MouseEvent event) {
+            try {
+                event.consume();
+                Dragboard board = startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString("%s%d".formatted(side, idx));
+                board.setContent(content);
+                
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
+    }
+    
+    protected class BlankLabel extends Label {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        protected BlankLabel() {
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("childLabel");
+            getStyleClass().add("dummyLabel");
+        }
+    }
     
     protected class UnpairedPane extends Pane {
         
@@ -237,90 +343,6 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
                 event.setDropCompleted(false);
                 // nop
             }
-        }
-    }
-    
-    protected class PairedNameLabel extends Label {
-        
-        // static members ------------------------------------------------------
-        
-        // instance members ----------------------------------------------------
-        
-        protected PairedNameLabel(ItemType type, String name) {
-            setGraphic(type.createImageView(18));
-            setGraphicTextGap(5);
-            setText(name);
-            setMaxWidth(Double.MAX_VALUE);
-            getStyleClass().add("childLabel");
-            getStyleClass().add("pairedNameLabel");
-        }
-    }
-    
-    protected class UnpairedNameLabel extends Label {
-        
-        // static members ------------------------------------------------------
-        
-        // instance members ----------------------------------------------------
-        
-        private final int idx;
-        private final Side side;
-        
-        protected UnpairedNameLabel(ItemType type, int idx, Side side, String name) {
-            this.idx = idx;
-            this.side = side;
-            setGraphic(type.createImageView(18));
-            setGraphicTextGap(5);
-            setText(name);
-            setMaxWidth(Double.MAX_VALUE);
-            getStyleClass().add("childLabel");
-            getStyleClass().add("unpairedNameLabel");
-            setOnDragDetected(this::onDragDetected);
-        }
-        
-        private void onDragDetected(MouseEvent event) {
-            try {
-                event.consume();
-                Dragboard board = startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString("%s%d".formatted(side, idx));
-                board.setContent(content);
-                
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                // nop
-            }
-        }
-    }
-    
-    protected class DummyLabel extends Label {
-        
-        // static members ------------------------------------------------------
-        
-        // instance members ----------------------------------------------------
-        
-        protected DummyLabel() {
-            setMaxWidth(Double.MAX_VALUE);
-            getStyleClass().add("childLabel");
-            getStyleClass().add("dummyLabel");
-        }
-    }
-    
-    protected class UnpairButton extends Button {
-        
-        // static members ------------------------------------------------------
-        
-        private static Image linkOffImage = new Image(UnpairButton.class.getResourceAsStream("link-off.png"));
-        
-        // instance members ----------------------------------------------------
-        
-        protected UnpairButton(int idx) {
-            ImageView linkOffImageView = new ImageView(linkOffImage);
-            linkOffImageView.setPreserveRatio(true);
-            linkOffImageView.setFitWidth(16);
-            setGraphic(linkOffImageView);
-            getStyleClass().add("unpairButton");
-            
-            setOnAction(event -> unpair(idx));
         }
     }
 }
