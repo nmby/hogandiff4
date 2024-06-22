@@ -4,48 +4,41 @@ import java.io.IOException;
 import java.util.List;
 
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * ユーザーにパスワード入力を求めるダイアログボックスの要素です。<br>
+ * シート同士の組み合わせ編集ダイアログボックスの要素です。<br>
  * 
  * @author nmby
  */
-public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<BookInfo, String> {
+public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<BookCompareInfo> {
     
     // static members **********************************************************
     
     // instance members ********************************************************
     
+    private final BookCompareInfo bookCompareInfo;
+    
     /**
      * コンストラクタ<br>
      * 
+     * @param bookCompareInfo Excelブック比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditBookCompareInfoDialogPane() throws IOException {
+    public EditBookCompareInfoDialogPane(BookCompareInfo bookCompareInfo) throws IOException {
         super();
+        this.bookCompareInfo = bookCompareInfo;
     }
     
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param dialog 親要素
-     * @param bookPath 開こうとしているExcelブックのパス
-     * @param readPassword 開こうとしているExcelブックの読み取りパスワード
+     * @param compareInfo 編集前の比較情報
      */
-    /*package*/ void init(
-            EditCompareInfoDialog dialog,
-            BookCompareInfo compareInfo)
-            throws IOException {
+    /*package*/ void init() throws IOException {
+        super.init(bookCompareInfo.parentBookInfoPair());
         
-        super.init(
-                dialog,
-                ItemType.BOOK,
-                compareInfo.parentBookInfoPair(),
-                compareInfo.childSheetNamePairs());
-        
-        currentChildPairs.addAll(childPairs);
+        currentChildPairs.addAll(bookCompareInfo.childSheetNamePairs());
         drawGrid();
     }
     
@@ -93,17 +86,13 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
         drawGrid();
     }
     
-    /**
-     * ユーザーによる編集を反映したExcelブック比較情報を返します。<br>
-     * 
-     * @return ユーザーによる編集を反映したExcelブック比較情報
-     */
+    @Override
     public BookCompareInfo getResult() {
         // わざわざこんなことせにゃならんのか？？
         @SuppressWarnings("unchecked")
         List<Pair<String>> casted = currentChildPairs.stream()
                 .map(p -> (Pair<String>) p)
                 .toList();
-        return BookCompareInfo.of(parentPair, casted);
+        return BookCompareInfo.of(bookCompareInfo.parentBookInfoPair(), casted);
     }
 }

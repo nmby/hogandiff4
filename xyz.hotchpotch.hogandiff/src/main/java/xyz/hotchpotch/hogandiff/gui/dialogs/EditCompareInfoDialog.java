@@ -9,13 +9,15 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.CompareInfo;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
  * 
+ * @param <T> 比較情報の型
  * @author nmby
  */
-public class EditCompareInfoDialog extends Dialog<BookCompareInfo> {
+public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
     
     // static members **********************************************************
     
@@ -33,19 +35,27 @@ public class EditCompareInfoDialog extends Dialog<BookCompareInfo> {
     public EditCompareInfoDialog(BookCompareInfo compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
-        EditBookCompareInfoDialogPane editCompareInfoDialogPane = new EditBookCompareInfoDialogPane();
-        editCompareInfoDialogPane.init(this, compareInfo);
-        editCompareInfoDialogPane.getStylesheets().add(getClass().getResource("editCompareInfoDialog.css").toExternalForm());
+        @SuppressWarnings("unchecked")
+        EditCompareInfoDialogPane<T> editCompareInfoDialogPane = (EditCompareInfoDialogPane<T>) switch (compareInfo) {
+            case BookCompareInfo bookCompareInfo -> {
+                EditBookCompareInfoDialogPane pane = new EditBookCompareInfoDialogPane(bookCompareInfo);
+                pane.init();
+                yield pane;
+            }
+        };
         
-        DialogPane me = getDialogPane();
-        me.setContent(editCompareInfoDialogPane);
-        me.getButtonTypes().setAll(
+        editCompareInfoDialogPane.getStylesheets().add(
+                getClass().getResource("editCompareInfoDialog.css").toExternalForm());
+        
+        DialogPane dialogPane = getDialogPane();
+        dialogPane.setContent(editCompareInfoDialogPane);
+        dialogPane.getButtonTypes().setAll(
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        this.setTitle(rb.getString("fx.EditCompareInfoPane.010"));
-        this.setResizable(true);
-        this.setResultConverter(buttonType -> buttonType == ButtonType.OK
+        setTitle(rb.getString("fx.EditCompareInfoPane.010"));
+        setResizable(true);
+        setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editCompareInfoDialogPane.getResult()
                 : null);
     }

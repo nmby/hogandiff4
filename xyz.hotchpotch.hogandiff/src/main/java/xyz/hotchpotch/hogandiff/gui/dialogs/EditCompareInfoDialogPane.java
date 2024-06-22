@@ -22,11 +22,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.CompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
-/*package*/ abstract class EditCompareInfoDialogPane<P, C> extends VBox {
+/*package*/ abstract class EditCompareInfoDialogPane<T extends CompareInfo> extends VBox {
     
     // [static members] ********************************************************
     
@@ -88,9 +89,6 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     @FXML
     protected GridPane childGridPane;
     
-    protected ItemType parentType;
-    protected Pair<P> parentPair;
-    protected List<Pair<C>> childPairs;
     protected final List<Pair<?>> currentChildPairs = new ArrayList<>();
     
     /**
@@ -108,20 +106,11 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param dialog 親要素
-     * @param bookPath 開こうとしているExcelブックのパス
-     * @param readPassword 開こうとしているExcelブックの読み取りパスワード
+     * @param parentType 比較対象親要素の型
+     * @param parentPair 比較対象親要素
+     * @param childPairs 比較対象子要素
      */
-    /*package*/ void init(
-            EditCompareInfoDialog dialog,
-            ItemType parentType,
-            Pair<P> parentPair,
-            List<Pair<C>> childPairs)
-            throws IOException {
-        
-        this.parentType = parentType;
-        this.parentPair = parentPair;
-        this.childPairs = childPairs;
+    /*package*/ void init(Pair<?> parentPair) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
@@ -137,8 +126,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
                 () -> (childGridPane.getWidth() - 50) / 2,
                 childGridPane.widthProperty()));
         
-        parentLabelA.setGraphic(parentType.createImageView(24));
-        parentLabelB.setGraphic(parentType.createImageView(24));
+        ItemType itemType = ItemType.of(parentPair.a());
+        parentLabelA.setGraphic(itemType.createImageView(24));
+        parentLabelB.setGraphic(itemType.createImageView(24));
         parentLabelA.setText("【A】 " + parentPair.a().toString());
         parentLabelB.setText("【B】 " + parentPair.b().toString());
     }
@@ -175,6 +165,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     protected abstract void unpair(int i);
     
     protected abstract void makePair(int src, int dst);
+    
+    public abstract T getResult();
     
     protected class UnpairButton extends Button {
         

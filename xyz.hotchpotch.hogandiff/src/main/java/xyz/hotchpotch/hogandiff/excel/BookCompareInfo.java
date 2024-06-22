@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public final class BookCompareInfo implements CompareInfo<BookInfo, String, Void> {
+public final class BookCompareInfo implements CompareInfo {
     
     // [static members] ********************************************************
     

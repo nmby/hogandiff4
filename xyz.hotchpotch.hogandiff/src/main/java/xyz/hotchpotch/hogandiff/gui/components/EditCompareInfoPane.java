@@ -89,7 +89,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             switch (menu) {
                 case COMPARE_BOOKS:
                     BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditCompareInfoDialog dialog = new EditCompareInfoDialog(compareInfo);
+                    EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
                     Optional<BookCompareInfo> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookCompareInfoProp.unbind();
