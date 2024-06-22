@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.components.EditCompareInfoPane;
+import xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane;
 import xyz.hotchpotch.hogandiff.gui.components.ExecutePane;
 import xyz.hotchpotch.hogandiff.gui.components.TargetsPane;
 
@@ -34,7 +34,7 @@ public class Row2Pane extends HBox implements ChildController {
     private TargetsPane targetsPane;
     
     @FXML
-    private EditCompareInfoPane editCompareInfoPane;
+    private EditComparisonPane editComparisonPane;
     
     @FXML
     private ExecutePane executePane;
@@ -60,7 +60,7 @@ public class Row2Pane extends HBox implements ChildController {
         
         // 2.項目ごとの各種設定
         targetsPane.init(parent);
-        editCompareInfoPane.init(parent);
+        editComparisonPane.init(parent);
         executePane.init(parent);
         
         // 3.初期値の設定

@@ -99,7 +99,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

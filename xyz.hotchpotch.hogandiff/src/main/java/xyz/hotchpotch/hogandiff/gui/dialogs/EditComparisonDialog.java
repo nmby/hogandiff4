@@ -29,15 +29,15 @@ public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param compareInfo 比較情報
+     * @param comparison 比較情報
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditComparisonDialog(T compareInfo) throws IOException {
-        Objects.requireNonNull(compareInfo);
+    public EditComparisonDialog(T comparison) throws IOException {
+        Objects.requireNonNull(comparison);
         
         @SuppressWarnings("unchecked")
-        EditComparisonDialogPane<T> editCompareInfoDialogPane = (EditComparisonDialogPane<T>) switch (compareInfo) {
+        EditComparisonDialogPane<T> editComparisonDialogPane = (EditComparisonDialogPane<T>) switch (comparison) {
             case BookInfoComparison bookInfoComparison -> {
                 EditBookInfoComparisonDialogPane pane = new EditBookInfoComparisonDialogPane(bookInfoComparison);
                 pane.init();
@@ -50,19 +50,19 @@ public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
             }
         };
         
-        editCompareInfoDialogPane.getStylesheets().add(
-                getClass().getResource("editCompareInfoDialog.css").toExternalForm());
+        editComparisonDialogPane.getStylesheets().add(
+                getClass().getResource("editComparisonDialog.css").toExternalForm());
         
         DialogPane dialogPane = getDialogPane();
-        dialogPane.setContent(editCompareInfoDialogPane);
+        dialogPane.setContent(editComparisonDialogPane);
         dialogPane.getButtonTypes().setAll(
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        setTitle(rb.getString("fx.EditCompareInfoPane.010"));
+        setTitle(rb.getString("fx.EditComparisonPane.010"));
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? editCompareInfoDialogPane.getResult()
+                ? editComparisonDialogPane.getResult()
                 : null);
     }
 }

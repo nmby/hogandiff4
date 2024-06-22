@@ -11,8 +11,8 @@
 			fx:id="targetsPane" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-		<xyz.hotchpotch.hogandiff.gui.components.EditCompareInfoPane
-			fx:id="editCompareInfoPane" maxHeight="1.7976931348623157E308"
+		<xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane
+			fx:id="editComparisonPane" maxHeight="1.7976931348623157E308"
 			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
 			HBox.hgrow="NEVER" />
 		<xyz.hotchpotch.hogandiff.gui.components.ExecutePane

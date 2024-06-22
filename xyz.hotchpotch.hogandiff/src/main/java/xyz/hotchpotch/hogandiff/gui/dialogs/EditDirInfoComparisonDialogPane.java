@@ -68,7 +68,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
         drawGrid();
     }
     
-    private Optional<DirInfoComparison> createDirCompareInfo(Pair<DirInfo> dirInfoPair) {
+    private Optional<DirInfoComparison> createDirInfoComparison(Pair<DirInfo> dirInfoPair) {
         return Optional.of(
                 DirInfoComparison.calculate(
                         dirInfoPair,
@@ -78,7 +78,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
     }
     
-    private Optional<BookInfoComparison> createBookCompareInfo(Pair<Path> bookPathPair) {
+    private Optional<BookInfoComparison> createBookInfoComparison(Pair<Path> bookPathPair) {
         Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
         
         Pair<BookInfo> bookInfoPair = Side.map(
@@ -117,8 +117,8 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildDirInfoPairs.remove(i);
             
             currChildDirInfoComparisons.remove(paired);
-            currChildDirInfoComparisons.put(unpairedA, createDirCompareInfo(unpairedA));
-            currChildDirInfoComparisons.put(unpairedB, createDirCompareInfo(unpairedB));
+            currChildDirInfoComparisons.put(unpairedA, createDirInfoComparison(unpairedA));
+            currChildDirInfoComparisons.put(unpairedB, createDirInfoComparison(unpairedB));
             
         } else if (childDirs <= i && i < childDirs + childBooks) {
             int j = i - childDirs;
@@ -134,8 +134,8 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildBookPathPairs.remove(j);
             
             currChildBookInfoComparisons.remove(paired);
-            currChildBookInfoComparisons.put(unpairedA, createBookCompareInfo(unpairedA));
-            currChildBookInfoComparisons.put(unpairedB, createBookCompareInfo(unpairedB));
+            currChildBookInfoComparisons.put(unpairedA, createBookInfoComparison(unpairedA));
+            currChildBookInfoComparisons.put(unpairedB, createBookInfoComparison(unpairedB));
             
         } else {
             throw new AssertionError();
@@ -173,7 +173,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             
             currChildDirInfoComparisons.remove(srcPair);
             currChildDirInfoComparisons.remove(dstPair);
-            currChildDirInfoComparisons.put(paired, createDirCompareInfo(paired));
+            currChildDirInfoComparisons.put(paired, createDirInfoComparison(paired));
             
         } else if (childDirs <= src && src < childDirs + childBooks) {
             assert childDirs <= dst && dst < childDirs + childBooks;
@@ -200,7 +200,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             
             currChildBookInfoComparisons.remove(srcPair);
             currChildBookInfoComparisons.remove(dstPair);
-            currChildBookInfoComparisons.put(paired, createBookCompareInfo(paired));
+            currChildBookInfoComparisons.put(paired, createBookInfoComparison(paired));
             
         } else {
             throw new AssertionError();
@@ -219,8 +219,8 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                 Pair<DirInfo> paired = currChildDirInfoPairs.get(i);
                 assert paired.isPaired();
                 
-                DirInfoComparison compareInfo = currChildDirInfoComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
+                DirInfoComparison comparison = currChildDirInfoComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
                 Optional<DirInfoComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildDirInfoComparisons.put(paired, modified);
@@ -232,8 +232,8 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                 Pair<Path> paired = currChildBookPathPairs.get(j);
                 assert paired.isPaired();
                 
-                BookInfoComparison compareInfo = currChildBookInfoComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
+                BookInfoComparison comparison = currChildBookInfoComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(comparison);
                 Optional<BookInfoComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildBookInfoComparisons.put(paired, modified);

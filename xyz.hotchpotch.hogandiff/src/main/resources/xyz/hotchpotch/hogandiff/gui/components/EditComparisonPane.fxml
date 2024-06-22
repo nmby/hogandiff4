@@ -7,13 +7,13 @@
 
 <fx:root maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
 	minHeight="-Infinity" minWidth="-Infinity"
-	styleClass="editCompareInfoPane" type="AnchorPane"
+	styleClass="editComparisonPane" type="AnchorPane"
 	xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<Button fx:id="editCompareInfoButton" alignment="CENTER"
+		<Button fx:id="editComparisonButton" alignment="CENTER"
 			contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
 			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-			styleClass="editCompareInfoButton" textAlignment="CENTER"
+			styleClass="editComparisonButton" textAlignment="CENTER"
 			textOverrun="CLIP" wrapText="true" AnchorPane.bottomAnchor="10.0"
 			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
 			AnchorPane.topAnchor="10.0">

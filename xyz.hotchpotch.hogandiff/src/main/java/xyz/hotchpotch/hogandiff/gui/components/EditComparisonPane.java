@@ -28,7 +28,7 @@ import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
  * 
  * @author nmby
  */
-public class EditCompareInfoPane extends AnchorPane implements ChildController {
+public class EditComparisonPane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -38,7 +38,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button editCompareInfoButton;
+    private Button editComparisonButton;
     
     private MainController parent;
     
@@ -47,8 +47,8 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditCompareInfoPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoPane.fxml"), rb);
+    public EditComparisonPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -61,12 +61,12 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
+        editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
-        editCompareInfoButton.setOnAction(event -> editCompareInfo());
+        editComparisonButton.setOnAction(event -> editComparison());
         
         // 3.初期値の設定
         // nop
@@ -75,7 +75,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         // nop
     }
     
-    private void editCompareInfo() {
+    private void editComparison() {
         try {
             AppMenu menu = parent.menuProp.getValue();
             if (!menu.isValidTargets(ar.settings())) {
@@ -89,8 +89,8 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             
             switch (menu) {
                 case COMPARE_BOOKS: {
-                    BookInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
+                    BookInfoComparison comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<BookInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookInfoComparisonProp.unbind();
@@ -100,8 +100,8 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
                     return;
                 }
                 case COMPARE_DIRS: {
-                    DirInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
+                    DirInfoComparison comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.dirInfoComparisonProp.unbind();
@@ -111,8 +111,8 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
                     return;
                 }
                 case COMPARE_TREES: {
-                    DirInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
+                    DirInfoComparison comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.treeComparisonProp.unbind();
