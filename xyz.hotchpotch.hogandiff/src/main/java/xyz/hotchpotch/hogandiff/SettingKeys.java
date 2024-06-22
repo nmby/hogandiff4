@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -151,7 +151,7 @@ public class SettingKeys {
     
     /** 今回の実行におけるシート比較情報 */
     public static final Key<BookInfoComparison> CURR_SHEET_COMPARE_INFO = new Key<>(
-            "current.sheetCompareInfo",
+            "current.sheetComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
@@ -159,7 +159,7 @@ public class SettingKeys {
     
     /** 今回の実行におけるExcelブック比較情報 */
     public static final Key<BookInfoComparison> CURR_BOOK_COMPARE_INFO = new Key<>(
-            "current.bookCompareInfo",
+            "current.bookComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
@@ -167,7 +167,7 @@ public class SettingKeys {
     
     /** 今回の実行におけるフォルダ比較情報 */
     public static final Key<DirInfoComparison> CURR_DIR_COMPARE_INFO = new Key<>(
-            "current.dirCompareInfo",
+            "current.dirComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
@@ -175,7 +175,7 @@ public class SettingKeys {
     
     /** 今回の実行におけるフォルダツリー比較情報 */
     public static final Key<DirInfoComparison> CURR_TREE_COMPARE_INFO = new Key<>(
-            "current.treeCompareInfo",
+            "current.treeComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),

@@ -28,7 +28,7 @@ public final record DirInfoComparison(
         Map<Pair<DirInfo>, Optional<DirInfoComparison>> childDirInfoComparisons,
         List<Pair<Path>> childBookPathPairs,
         Map<Pair<Path>, Optional<BookInfoComparison>> childBookInfoComparisons)
-        implements CompareInfo {
+        implements Comparison {
     
     // [static members] ********************************************************
     
@@ -104,8 +104,8 @@ public final record DirInfoComparison(
             bookPathPairs = List.of();
         }
         
-        Map<Pair<DirInfo>, Optional<DirInfoComparison>> dirCompareInfos = new HashMap<>();
-        Map<Pair<Path>, Optional<BookInfoComparison>> bookCompareInfos = new HashMap<>();
+        Map<Pair<DirInfo>, Optional<DirInfoComparison>> dirInfoComparisons = new HashMap<>();
+        Map<Pair<Path>, Optional<BookInfoComparison>> bookInfoComparisons = new HashMap<>();
         
         for (Pair<DirInfo> dirInfoPair : dirInfoPairs) {
             DirInfoComparison dirInfoComparison = DirInfoComparison.calculate(
@@ -114,7 +114,7 @@ public final record DirInfoComparison(
                     bookPathsMatcher,
                     sheetNamesMatcher,
                     readPasswords);
-            dirCompareInfos.put(dirInfoPair, Optional.ofNullable(dirInfoComparison));
+            dirInfoComparisons.put(dirInfoPair, Optional.ofNullable(dirInfoComparison));
         }
         
         for (Pair<Path> bookPathPair : bookPathPairs) {
@@ -138,15 +138,15 @@ public final record DirInfoComparison(
             } catch (ExcelHandlingException e) {
                 // nop
             }
-            bookCompareInfos.put(bookPathPair, Optional.ofNullable(bookInfoComparison));
+            bookInfoComparisons.put(bookPathPair, Optional.ofNullable(bookInfoComparison));
         }
         
         return new DirInfoComparison(
                 parentDirInfoPair,
                 dirInfoPairs,
-                dirCompareInfos,
+                dirInfoComparisons,
                 bookPathPairs,
-                bookCompareInfos);
+                bookInfoComparisons);
     }
     
     // [instance members] ******************************************************
@@ -182,29 +182,29 @@ public final record DirInfoComparison(
      */
     public FlattenDirInfoComparison flatten() {
         List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
-        Map<Pair<DirInfo>, Optional<DirInfoComparison>> accDirCompareInfos = new HashMap<>();
+        Map<Pair<DirInfo>, Optional<DirInfoComparison>> accDirInfoComparisons = new HashMap<>();
         
         accDirInfoPairs.add(parentDirInfoPair);
-        accDirCompareInfos.put(parentDirInfoPair, Optional.of(this));
-        gather(this, accDirInfoPairs, accDirCompareInfos);
+        accDirInfoComparisons.put(parentDirInfoPair, Optional.of(this));
+        gather(this, accDirInfoPairs, accDirInfoComparisons);
         
         return new FlattenDirInfoComparison(
                 parentDirInfoPair,
                 accDirInfoPairs,
-                accDirCompareInfos);
+                accDirInfoComparisons);
     }
     
     private void gather(
             DirInfoComparison dirInfoComparison,
             List<Pair<DirInfo>> accDirInfoPairs,
-            Map<Pair<DirInfo>, Optional<DirInfoComparison>> accDirCompareInfos) {
+            Map<Pair<DirInfo>, Optional<DirInfoComparison>> accDirInfoComparisons) {
         
         for (Pair<DirInfo> childDirInfoPair : dirInfoComparison.childDirInfoPairs) {
             Optional<DirInfoComparison> childDirInfoComparison = dirInfoComparison.childDirInfoComparisons
                     .get(childDirInfoPair);
             accDirInfoPairs.add(childDirInfoPair);
-            accDirCompareInfos.put(childDirInfoPair, childDirInfoComparison);
-            childDirInfoComparison.ifPresent(info -> gather(info, accDirInfoPairs, accDirCompareInfos));
+            accDirInfoComparisons.put(childDirInfoPair, childDirInfoComparison);
+            childDirInfoComparison.ifPresent(info -> gather(info, accDirInfoPairs, accDirInfoComparisons));
         }
     }
 }

@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditCompareInfoDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
@@ -90,34 +90,34 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             switch (menu) {
                 case COMPARE_BOOKS: {
                     BookInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditCompareInfoDialog<BookInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
                     Optional<BookInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.bookCompareInfoProp.unbind();
-                        parent.bookCompareInfoProp.setValue(modified.get());
-                        parent.bindBookCompareInfoProp();
+                        parent.bookInfoComparisonProp.unbind();
+                        parent.bookInfoComparisonProp.setValue(modified.get());
+                        parent.bindBookInfoComparisonProp();
                     }
                     return;
                 }
                 case COMPARE_DIRS: {
                     DirInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                    EditCompareInfoDialog<DirInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
                     Optional<DirInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.dirCompareInfoProp.unbind();
-                        parent.dirCompareInfoProp.setValue(modified.get());
-                        parent.bindDirCompareInfoProp();
+                        parent.dirInfoComparisonProp.unbind();
+                        parent.dirInfoComparisonProp.setValue(modified.get());
+                        parent.bindDirInfoComparisonProp();
                     }
                     return;
                 }
                 case COMPARE_TREES: {
                     DirInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                    EditCompareInfoDialog<DirInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
                     Optional<DirInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.treeCompareInfoProp.unbind();
-                        parent.treeCompareInfoProp.setValue(modified.get());
-                        parent.bindTreeCompareInfoProp();
+                        parent.treeComparisonProp.unbind();
+                        parent.treeComparisonProp.setValue(modified.get());
+                        parent.bindTreeComparisonProp();
                     }
                     return;
                 }

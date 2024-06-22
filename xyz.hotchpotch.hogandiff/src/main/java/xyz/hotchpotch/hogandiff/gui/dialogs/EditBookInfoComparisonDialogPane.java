@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<BookInfoComparison> {
+public class EditBookInfoComparisonDialogPane extends EditComparisonDialogPane<BookInfoComparison> {
     
     // static members **********************************************************
     
@@ -25,7 +25,7 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
      * @param bookInfoComparison Excelブック比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditBookCompareInfoDialogPane(BookInfoComparison bookInfoComparison) throws IOException {
+    public EditBookInfoComparisonDialogPane(BookInfoComparison bookInfoComparison) throws IOException {
         super();
         this.bookInfoComparison = bookInfoComparison;
     }

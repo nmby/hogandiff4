@@ -26,7 +26,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirInfoComparison> {
+public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<DirInfoComparison> {
     
     // static members **********************************************************
     
@@ -46,7 +46,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirI
      * @param dirInfoComparison フォルダ比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditDirCompareInfoDialogPane(DirInfoComparison dirInfoComparison) throws IOException {
+    public EditDirInfoComparisonDialogPane(DirInfoComparison dirInfoComparison) throws IOException {
         super();
         this.dirInfoComparison = dirInfoComparison;
         this.currChildDirInfoPairs = new ArrayList<>(dirInfoComparison.childDirInfoPairs());
@@ -220,7 +220,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirI
                 assert paired.isPaired();
                 
                 DirInfoComparison compareInfo = currChildDirInfoComparisons.get(paired).orElseThrow();
-                EditCompareInfoDialog<DirInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
                 Optional<DirInfoComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildDirInfoComparisons.put(paired, modified);
@@ -233,7 +233,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirI
                 assert paired.isPaired();
                 
                 BookInfoComparison compareInfo = currChildBookInfoComparisons.get(paired).orElseThrow();
-                EditCompareInfoDialog<BookInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(compareInfo);
                 Optional<BookInfoComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildBookInfoComparisons.put(paired, modified);

@@ -9,7 +9,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
-import xyz.hotchpotch.hogandiff.excel.CompareInfo;
+import xyz.hotchpotch.hogandiff.excel.Comparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 
 /**
@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
  * @param <T> 比較情報の型
  * @author nmby
  */
-public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
+public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
     
     // static members **********************************************************
     
@@ -33,18 +33,18 @@ public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditCompareInfoDialog(T compareInfo) throws IOException {
+    public EditComparisonDialog(T compareInfo) throws IOException {
         Objects.requireNonNull(compareInfo);
         
         @SuppressWarnings("unchecked")
-        EditCompareInfoDialogPane<T> editCompareInfoDialogPane = (EditCompareInfoDialogPane<T>) switch (compareInfo) {
+        EditComparisonDialogPane<T> editCompareInfoDialogPane = (EditComparisonDialogPane<T>) switch (compareInfo) {
             case BookInfoComparison bookInfoComparison -> {
-                EditBookCompareInfoDialogPane pane = new EditBookCompareInfoDialogPane(bookInfoComparison);
+                EditBookInfoComparisonDialogPane pane = new EditBookInfoComparisonDialogPane(bookInfoComparison);
                 pane.init();
                 yield pane;
             }
             case DirInfoComparison dirInfoComparison -> {
-                EditDirCompareInfoDialogPane pane = new EditDirCompareInfoDialogPane(dirInfoComparison);
+                EditDirInfoComparisonDialogPane pane = new EditDirInfoComparisonDialogPane(dirInfoComparison);
                 pane.init();
                 yield pane;
             }

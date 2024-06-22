@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public final record BookInfoComparison(
         Pair<BookInfo> parentBookInfoPair,
         List<Pair<String>> childSheetNamePairs)
-        implements CompareInfo {
+        implements Comparison {
     
     // [static members] ********************************************************
     

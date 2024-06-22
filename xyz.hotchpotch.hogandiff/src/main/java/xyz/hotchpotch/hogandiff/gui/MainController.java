@@ -82,16 +82,16 @@ public class MainController extends VBox {
     public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
     
     /** シート比較情報 */
-    public final Property<BookInfoComparison> sheetCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<BookInfoComparison> sheetComparisonProp = new SimpleObjectProperty<>();
     
     /** Excelブック比較情報 */
-    public final Property<BookInfoComparison> bookCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<BookInfoComparison> bookInfoComparisonProp = new SimpleObjectProperty<>();
     
     /** フォルダ比較情報 */
-    public final Property<DirInfoComparison> dirCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<DirInfoComparison> dirInfoComparisonProp = new SimpleObjectProperty<>();
     
     /** フォルダツリー比較情報 */
-    public final Property<DirInfoComparison> treeCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<DirInfoComparison> treeComparisonProp = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -139,18 +139,18 @@ public class MainController extends VBox {
             }
         });
         
-        bindSheetCompareInfoProp();
-        bindBookCompareInfoProp();
-        bindDirCompareInfoProp();
-        bindTreeCompareInfoProp();
+        bindSheetComparisonProp();
+        bindBookInfoComparisonProp();
+        bindDirInfoComparisonProp();
+        bindTreeComparisonProp();
         
-        sheetCompareInfoProp.addListener(
+        sheetComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newVal));
-        bookCompareInfoProp.addListener(
+        bookInfoComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newVal));
-        dirCompareInfoProp.addListener(
+        dirInfoComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newVal));
-        treeCompareInfoProp.addListener(
+        treeComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newVal));
         
         // 3.初期値の設定
@@ -161,12 +161,12 @@ public class MainController extends VBox {
     }
     
     /**
-     * sheetCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #sheetComparisonProp} プロパティにデータソースをバインドします。<br>
      */
     // こんなメソッドをpublicにするのはいくらなんでもおかしい。
     // TODO: 処理構成を見直す
-    public void bindSheetCompareInfoProp() {
-        sheetCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindSheetComparisonProp() {
+        sheetComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
@@ -201,10 +201,10 @@ public class MainController extends VBox {
     }
     
     /**
-     * bookCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #bookInfoComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindBookCompareInfoProp() {
-        bookCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindBookInfoComparisonProp() {
+        bookInfoComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
@@ -236,10 +236,10 @@ public class MainController extends VBox {
     }
     
     /**
-     * dirCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #dirInfoComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindDirCompareInfoProp() {
-        dirCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindDirInfoComparisonProp() {
+        dirInfoComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
@@ -274,10 +274,10 @@ public class MainController extends VBox {
     }
     
     /**
-     * treeCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #treeComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindTreeCompareInfoProp() {
-        treeCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindTreeComparisonProp() {
+        treeComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
