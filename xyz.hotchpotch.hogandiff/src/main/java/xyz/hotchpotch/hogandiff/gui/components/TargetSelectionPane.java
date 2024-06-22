@@ -35,12 +35,11 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
@@ -384,13 +383,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             return true;
         }
         
-        try {
-            BookInfo newBookInfo = readBookInfo(newBookPath);
+        BookInfo newBookInfo = readBookInfo(newBookPath);
+        
+        if (newBookInfo.status() == Status.LOAD_COMPLETED) {
             parent.bookInfoPropPair.get(side).setValue(newBookInfo);
             prevSelectedBookPath = newBookPath;
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
             parent.bookInfoPropPair.get(side).setValue(null);
             readPasswords.remove(newBookPath);
             new Alert(
@@ -423,29 +422,35 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         return true;
     }
     
-    private BookInfo readBookInfo(Path newBookPath) throws ExcelHandlingException, IOException {
+    private BookInfo readBookInfo(Path newBookPath) {
         assert newBookPath != null;
         
         String readPassword = readPasswords.get(newBookPath);
         
-        while (true) {
-            // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-            BookLoader loader = Factory.bookLoader(newBookPath, readPassword);
-            
-            try {
+        try {
+            while (true) {
+                // パスワードの有無でローダーを切り替える可能性があるため、ループの内側で取得する。
+                BookLoader loader = Factory.bookLoader(newBookPath, readPassword);
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
-                readPasswords.put(newBookPath, readPassword);
-                return bookInfo;
+                System.out.println(newBookPath);
+                System.out.println(readPassword);
+                System.out.println(bookInfo.status());
                 
-            } catch (PasswordHandlingException e) {
+                if (bookInfo.status() == Status.LOAD_COMPLETED) {
+                    readPasswords.put(newBookPath, readPassword);
+                    return bookInfo;
+                }
+                
                 PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
                 Optional<String> newPassword = dialog.showAndWait();
                 if (newPassword.isPresent()) {
                     readPassword = newPassword.get();
                 } else {
-                    throw e;
+                    return bookInfo;
                 }
             }
+        } catch (Exception e) {
+            return BookInfo.ofLoadFailed(newBookPath);
         }
     }
 }

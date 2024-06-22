@@ -22,8 +22,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -168,8 +166,6 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
      *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
      *              {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException
-     *              処理に失敗した場合
      */
     // FIXME: [No.1 シート識別不正 - usermodel] 上記のバグを改修する。（できるのか？）
     // 
@@ -181,8 +177,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
     @Override
     public BookInfo loadBookInfo(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(bookPath, "bookPath");
         // readPassword may be null.
@@ -203,14 +198,10 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
-            throw new PasswordHandlingException(
-                    (readPassword == null
-                            ? "book is encrypted : %s"
-                            : "password is incorrect : %s")
-                                    .formatted(bookPath),
-                    e);
+            return BookInfo.ofPasswordLocked(bookPath);
+            
         } catch (Exception e) {
-            throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);
+            return BookInfo.ofLoadFailed(bookPath);
             
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
