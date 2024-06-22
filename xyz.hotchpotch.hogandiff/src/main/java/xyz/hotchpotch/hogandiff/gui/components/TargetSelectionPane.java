@@ -36,7 +36,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirLoader;
+import xyz.hotchpotch.hogandiff.excel.DirInfoLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
@@ -357,9 +357,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirLoader dirLoader = Factory.dirLoader(
+            DirInfoLoader dirInfoLoader = Factory.dirInfoLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
-            DirInfo newDirInfo = dirLoader.loadDir(newDirPath);
+            DirInfo newDirInfo = dirInfoLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
             prevSelectedBookPath = newDirPath;
             
