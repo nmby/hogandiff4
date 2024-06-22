@@ -64,7 +64,6 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
     private void updateChildren() {
         currentChildPairs.clear();
         currentChildPairs.addAll(currChildDirInfoPairs);
-        currentChildPairs.add(Pair.empty());
         currentChildPairs.addAll(currChildBookPathPairs);
         drawGrid();
     }
@@ -121,11 +120,8 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
             currChildDirCompareInfos.put(unpairedA, createDirCompareInfo(unpairedA));
             currChildDirCompareInfos.put(unpairedB, createDirCompareInfo(unpairedB));
             
-        } else if (i == childDirs) {
-            throw new AssertionError();
-            
-        } else if (childDirs + 1 <= i && i < childDirs + 1 + childBooks) {
-            int j = i - childDirs - 1;
+        } else if (childDirs <= i && i < childDirs + childBooks) {
+            int j = i - childDirs;
             
             Pair<Path> paired = currChildBookPathPairs.get(j);
             assert paired.isPaired();
@@ -179,14 +175,11 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
             currChildDirCompareInfos.remove(dstPair);
             currChildDirCompareInfos.put(paired, createDirCompareInfo(paired));
             
-        } else if (src == childDirs) {
-            throw new AssertionError();
+        } else if (childDirs <= src && src < childDirs + childBooks) {
+            assert childDirs <= dst && dst < childDirs + childBooks;
             
-        } else if (childDirs + 1 <= src && src < childDirs + 1 + childBooks) {
-            assert childDirs + 1 <= dst && dst < childDirs + 1 + childBooks;
-            
-            int src2 = src - childDirs - 1;
-            int dst2 = dst - childDirs - 1;
+            int src2 = src - childDirs;
+            int dst2 = dst - childDirs;
             
             Pair<Path> srcPair = currChildBookPathPairs.get(src2);
             Pair<Path> dstPair = currChildBookPathPairs.get(dst2);

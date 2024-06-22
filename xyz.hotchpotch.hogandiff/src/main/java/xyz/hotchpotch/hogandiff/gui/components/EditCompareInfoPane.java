@@ -62,9 +62,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
         editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> !parent.isReady().getValue()
-                        || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS
-                        || parent.menuProp.getValue() == AppMenu.COMPARE_TREES,
+                () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
@@ -112,8 +110,18 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
                     }
                     return;
                 }
+                case COMPARE_TREES: {
+                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        parent.treeCompareInfoProp.unbind();
+                        parent.treeCompareInfoProp.setValue(modified.get());
+                        parent.bindTreeCompareInfoProp();
+                    }
+                    return;
+                }
                 case COMPARE_SHEETS:
-                case COMPARE_TREES:
                     throw new UnsupportedOperationException();
             }
             
