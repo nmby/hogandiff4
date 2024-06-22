@@ -15,9 +15,20 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * フォルダ比較情報を表す不変クラスです。<br>
  * 
+ * @param parentDirInfoPair 親フォルダ情報
+ * @param childDirInfoPairs 子フォルダ情報の組み合わせ
+ * @param childDirCompareInfos 子フォルダ比較情報
+ * @param childBookPathPairs 子Excelブックパスの組み合わせ
+ * @param childBookCompareInfos 子Excelブック比較情報
  * @author nmby
  */
-public final class DirCompareInfo implements CompareInfo {
+public final record DirCompareInfo(
+        Pair<DirInfo> parentDirInfoPair,
+        List<Pair<DirInfo>> childDirInfoPairs,
+        Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
+        List<Pair<Path>> childBookPathPairs,
+        Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos)
+        implements CompareInfo {
     
     // [static members] ********************************************************
     
@@ -140,57 +151,27 @@ public final class DirCompareInfo implements CompareInfo {
     
     // [instance members] ******************************************************
     
-    private final Pair<DirInfo> parentDirInfoPair;
-    private final List<Pair<DirInfo>> childDirInfoPairs;
-    private final Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos;
-    private final List<Pair<Path>> childBookPathPairs;
-    private final Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos;
-    
-    private DirCompareInfo(
-            Pair<DirInfo> parentDirInfoPair,
-            List<Pair<DirInfo>> childDirInfoPairs,
-            Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
-            List<Pair<Path>> childBookPathPairs,
-            Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos) {
+    /**
+     * コンストラクタ
+     * 
+     * @param parentDirInfoPair 親フォルダ情報
+     * @param childDirInfoPairs 子フォルダ情報の組み合わせ
+     * @param childDirCompareInfos 子フォルダ比較情報
+     * @param childBookPathPairs 子Excelブックパスの組み合わせ
+     * @param childBookCompareInfos 子Excelブック比較情報
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
+    public DirCompareInfo {
+        Objects.requireNonNull(parentDirInfoPair);
+        Objects.requireNonNull(childDirInfoPairs);
+        Objects.requireNonNull(childDirCompareInfos);
+        Objects.requireNonNull(childBookPathPairs);
+        Objects.requireNonNull(childBookCompareInfos);
         
-        assert parentDirInfoPair != null;
-        assert childDirInfoPairs != null;
-        assert childDirCompareInfos != null;
-        assert childBookPathPairs != null;
-        assert childBookCompareInfos != null;
-        
-        this.parentDirInfoPair = parentDirInfoPair;
-        this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
-        this.childDirCompareInfos = Map.copyOf(childDirCompareInfos);
-        this.childBookPathPairs = List.copyOf(childBookPathPairs);
-        this.childBookCompareInfos = Map.copyOf(childBookCompareInfos);
-    }
-    
-    /**
-     * 比較対象フォルダ情報を返します。<br>
-     * 
-     * @return 比較対象フォルダ情報
-     */
-    public Pair<DirInfo> parentDirInfoPair() {
-        return parentDirInfoPair;
-    }
-    
-    /**
-     * 子Excelブック情報を返します。<br>
-     * 
-     * @return 子Excelブック情報
-     */
-    public List<Pair<Path>> childBookPathPairs() {
-        return childBookPathPairs;
-    }
-    
-    /**
-     * 子Excelブック比較情報を返します。<br>
-     * 
-     * @return 子Excelブック比較情報
-     */
-    public Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos() {
-        return childBookCompareInfos;
+        childDirInfoPairs = List.copyOf(childDirInfoPairs);
+        childDirCompareInfos = Map.copyOf(childDirCompareInfos);
+        childBookPathPairs = List.copyOf(childBookPathPairs);
+        childBookCompareInfos = Map.copyOf(childBookCompareInfos);
     }
     
     /**

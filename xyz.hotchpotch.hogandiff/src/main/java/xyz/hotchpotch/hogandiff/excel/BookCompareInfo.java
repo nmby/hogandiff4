@@ -10,9 +10,14 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excelブック比較情報を表す不変クラスです。<br>
  * 
+ * @param parentBookInfoPair 親Excelブック情報
+ * @param childSheetNamePairs 子シート名の組み合わせ
  * @author nmby
  */
-public final class BookCompareInfo implements CompareInfo {
+public final record BookCompareInfo(
+        Pair<BookInfo> parentBookInfoPair,
+        List<Pair<String>> childSheetNamePairs)
+        implements CompareInfo {
     
     // [static members] ********************************************************
     
@@ -55,55 +60,19 @@ public final class BookCompareInfo implements CompareInfo {
         }
     }
     
+    // [instance members] ******************************************************
+    
     /**
-     * 指定した内容で {@link BookCompareInfo} インスタンスを生成します。<br>
+     * コンストラクタ
      * 
      * @param parentBookInfoPair Excelブック情報
      * @param childSheetNamePairs シート名の組み合わせ
-     * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static BookCompareInfo of(
-            Pair<BookInfo> parentBookInfoPair,
-            List<Pair<String>> childSheetNamePairs) {
-        
+    public BookCompareInfo {
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(childSheetNamePairs);
         
-        return new BookCompareInfo(parentBookInfoPair, childSheetNamePairs);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final Pair<BookInfo> parentBookInfoPair;
-    private final List<Pair<String>> childSheetNamePairs;
-    
-    private BookCompareInfo(
-            Pair<BookInfo> parentBookInfoPair,
-            List<Pair<String>> childSheetNamePairs) {
-        
-        assert parentBookInfoPair != null;
-        assert childSheetNamePairs != null;
-        
-        this.parentBookInfoPair = parentBookInfoPair;
-        this.childSheetNamePairs = List.copyOf(childSheetNamePairs);
-    }
-    
-    /**
-     * 比較対象Excelブック情報を返します。<br>
-     * 
-     * @return 比較対象Excelブック情報
-     */
-    public Pair<BookInfo> parentBookInfoPair() {
-        return parentBookInfoPair;
-    }
-    
-    /**
-     * 子シート名を返します。<br>
-     * 
-     * @return 子シート名
-     */
-    public List<Pair<String>> childSheetNamePairs() {
-        return childSheetNamePairs;
+        childSheetNamePairs = List.copyOf(childSheetNamePairs);
     }
 }

@@ -7,7 +7,7 @@ import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
- * シート同士の組み合わせ編集ダイアログボックスの要素です。<br>
+ * Excelブック比較情報編集ダイアログボックスの要素です。<br>
  * 
  * @author nmby
  */
@@ -44,12 +44,11 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
     
     @Override
     protected void unpair(int i) {
-        @SuppressWarnings("unchecked")
-        Pair<String> paired = (Pair<String>) currentChildPairs.get(i);
+        Pair<?> paired = currentChildPairs.get(i);
         assert paired.isPaired();
         
-        Pair<String> unpairedA = Pair.of(paired.a(), null);
-        Pair<String> unpairedB = Pair.of(null, paired.b());
+        Pair<?> unpairedA = Pair.of(paired.a(), null);
+        Pair<?> unpairedB = Pair.of(null, paired.b());
         
         currentChildPairs.add(i + 1, unpairedA);
         currentChildPairs.add(i + 2, unpairedB);
@@ -64,10 +63,8 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
         assert 0 <= src && src < currentChildPairs.size();
         assert 0 <= dst && dst < currentChildPairs.size();
         
-        @SuppressWarnings("unchecked")
-        Pair<String> srcPair = (Pair<String>) currentChildPairs.get(src);
-        @SuppressWarnings("unchecked")
-        Pair<String> dstPair = (Pair<String>) currentChildPairs.get(dst);
+        Pair<?> srcPair = currentChildPairs.get(src);
+        Pair<?> dstPair = currentChildPairs.get(dst);
         assert !srcPair.isPaired();
         assert !dstPair.isPaired();
         assert srcPair.hasA() != srcPair.hasB();
@@ -75,7 +72,7 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
         assert srcPair.hasA() == dstPair.hasB();
         assert srcPair.hasB() == dstPair.hasA();
         
-        Pair<String> paired = Pair.of(
+        Pair<?> paired = Pair.of(
                 srcPair.hasA() ? srcPair.a() : dstPair.a(),
                 srcPair.hasB() ? srcPair.b() : dstPair.b());
         
@@ -93,6 +90,6 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
         List<Pair<String>> casted = currentChildPairs.stream()
                 .map(p -> (Pair<String>) p)
                 .toList();
-        return BookCompareInfo.of(bookCompareInfo.parentBookInfoPair(), casted);
+        return new BookCompareInfo(bookCompareInfo.parentBookInfoPair(), casted);
     }
 }

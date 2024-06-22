@@ -183,7 +183,7 @@ public class MainController extends VBox {
                                     && sheetNamePair.equals(prevValue.childSheetNamePairs().get(0))) {
                                 return prevValue;
                             } else {
-                                return BookCompareInfo.of(bookInfoPair, List.of(sheetNamePair));
+                                return new BookCompareInfo(bookInfoPair, List.of(sheetNamePair));
                             }
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:

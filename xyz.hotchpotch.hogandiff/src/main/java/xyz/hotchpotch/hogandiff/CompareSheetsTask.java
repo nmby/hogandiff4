@@ -135,9 +135,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
             return new BookResult(
-                    BookCompareInfo.of(
-                            bookCompareInfo.parentBookInfoPair(),
-                            bookCompareInfo.childSheetNamePairs()),
+                    bookCompareInfo,
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
