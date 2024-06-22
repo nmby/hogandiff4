@@ -51,6 +51,10 @@
     -fx-padding: 3.0px 3.0px;
 }
 
+.pairedPane {}
+
+.unpairedPane {}
+
 .unpairButton {
     -fx-pref-width: 50px;
 }

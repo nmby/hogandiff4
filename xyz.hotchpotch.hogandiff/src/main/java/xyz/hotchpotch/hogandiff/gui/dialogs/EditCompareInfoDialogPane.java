@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -48,7 +49,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             if (item instanceof DirInfo) {
                 return DIR;
                 
-            } else if (item instanceof Path) {
+            } else if (item instanceof BookInfo || item instanceof Path) {
+                // TODO: BookInfoに一本化する
                 return BOOK;
                 
             } else if (item instanceof String) {
@@ -149,8 +151,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             if (pair.isPaired()) {
                 ItemType itemType = ItemType.of(pair.a());
                 childGridPane.add(new PairedNameLabel(itemType, getName(pair.a())), 0, i);
-                childGridPane.add(new UnpairButton(i), 1, i);
                 childGridPane.add(new PairedNameLabel(itemType, getName(pair.b())), 2, i);
+                childGridPane.add(new PairedPane(i), 0, i, 3, 1);
+                childGridPane.add(new UnpairButton(i), 1, i);
                 
             } else if (pair.hasA()) {
                 ItemType itemType = ItemType.of(pair.a());
@@ -163,6 +166,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
                 childGridPane.add(new BlankLabel(), 0, i);
                 childGridPane.add(new UnpairedPane(itemType, i, Side.A), 0, i, 3, 1);
                 childGridPane.add(new UnpairedNameLabel(itemType, i, Side.B, getName(pair.b())), 2, i);
+                
             } else {
                 // nop
             }
@@ -172,6 +176,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     protected abstract void unpair(int i);
     
     protected abstract void makePair(int src, int dst);
+    
+    protected void onClickPaired(int i) {
+    }
     
     public abstract T getResult();
     
@@ -270,6 +277,20 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             setMaxWidth(Double.MAX_VALUE);
             getStyleClass().add("childLabel");
             getStyleClass().add("blankLabel");
+        }
+    }
+    
+    protected class PairedPane extends Pane {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        protected PairedPane(int idx) {
+            setMaxHeight(Double.MAX_VALUE);
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("pairedPane");
+            setOnMouseClicked(event -> onClickPaired(idx));
         }
     }
     

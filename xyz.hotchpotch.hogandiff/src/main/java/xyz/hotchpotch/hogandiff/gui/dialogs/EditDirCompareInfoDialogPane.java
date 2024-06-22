@@ -210,6 +210,46 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
     }
     
     @Override
+    protected void onClickPaired(int i) {
+        int childDirs = currChildDirInfoPairs.size();
+        int childBooks = currChildBookPathPairs.size();
+        
+        try {
+            if (0 <= i && i < childDirs) {
+                Pair<DirInfo> paired = currChildDirInfoPairs.get(i);
+                assert paired.isPaired();
+                
+                DirCompareInfo compareInfo = currChildDirCompareInfos.get(paired).orElseThrow();
+                EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                Optional<DirCompareInfo> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    currChildDirCompareInfos.put(paired, modified);
+                }
+                
+            } else if (childDirs <= i && i < childDirs + childBooks) {
+                int j = i - childDirs;
+                
+                Pair<Path> paired = currChildBookPathPairs.get(j);
+                assert paired.isPaired();
+                
+                BookCompareInfo compareInfo = currChildBookCompareInfos.get(paired).orElseThrow();
+                EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                Optional<BookCompareInfo> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    currChildBookCompareInfos.put(paired, modified);
+                }
+                
+            } else {
+                throw new AssertionError();
+            }
+            
+            updateChildren();
+            
+        } catch (Exception e) {
+        }
+    }
+    
+    @Override
     public DirCompareInfo getResult() {
         return new DirCompareInfo(
                 dirCompareInfo.parentDirInfoPair(),
