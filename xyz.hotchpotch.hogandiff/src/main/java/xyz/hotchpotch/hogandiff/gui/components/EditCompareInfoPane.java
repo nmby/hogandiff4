@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -89,9 +89,9 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             
             switch (menu) {
                 case COMPARE_BOOKS: {
-                    BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
-                    Optional<BookCompareInfo> modified = dialog.showAndWait();
+                    BookInfoComparison compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    EditCompareInfoDialog<BookInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    Optional<BookInfoComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookCompareInfoProp.unbind();
                         parent.bookCompareInfoProp.setValue(modified.get());

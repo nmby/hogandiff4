@@ -11,7 +11,7 @@ import java.util.Optional;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
@@ -38,7 +38,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
     private final List<Pair<DirInfo>> currChildDirInfoPairs;
     private final List<Pair<Path>> currChildBookPathPairs;
     private final Map<Pair<DirInfo>, Optional<DirCompareInfo>> currChildDirCompareInfos;
-    private final Map<Pair<Path>, Optional<BookCompareInfo>> currChildBookCompareInfos;
+    private final Map<Pair<Path>, Optional<BookInfoComparison>> currChildBookCompareInfos;
     
     /**
      * コンストラクタ<br>
@@ -78,7 +78,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
     }
     
-    private Optional<BookCompareInfo> createBookCompareInfo(Pair<Path> bookPathPair) {
+    private Optional<BookInfoComparison> createBookCompareInfo(Pair<Path> bookPathPair) {
         Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
         
         Pair<BookInfo> bookInfoPair = Side.map(
@@ -97,7 +97,7 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
                     }
                 });
         
-        return Optional.of(BookCompareInfo.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
+        return Optional.of(BookInfoComparison.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
     }
     
     @Override
@@ -232,9 +232,9 @@ public class EditDirCompareInfoDialogPane extends EditCompareInfoDialogPane<DirC
                 Pair<Path> paired = currChildBookPathPairs.get(j);
                 assert paired.isPaired();
                 
-                BookCompareInfo compareInfo = currChildBookCompareInfos.get(paired).orElseThrow();
-                EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
-                Optional<BookCompareInfo> modified = dialog.showAndWait();
+                BookInfoComparison compareInfo = currChildBookCompareInfos.get(paired).orElseThrow();
+                EditCompareInfoDialog<BookInfoComparison> dialog = new EditCompareInfoDialog<>(compareInfo);
+                Optional<BookInfoComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildBookCompareInfos.put(paired, modified);
                 }

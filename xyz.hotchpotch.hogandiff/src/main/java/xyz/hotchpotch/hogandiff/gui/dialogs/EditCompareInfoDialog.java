@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.CompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 
@@ -38,8 +38,8 @@ public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
         
         @SuppressWarnings("unchecked")
         EditCompareInfoDialogPane<T> editCompareInfoDialogPane = (EditCompareInfoDialogPane<T>) switch (compareInfo) {
-            case BookCompareInfo bookCompareInfo -> {
-                EditBookCompareInfoDialogPane pane = new EditBookCompareInfoDialogPane(bookCompareInfo);
+            case BookInfoComparison bookInfoComparison -> {
+                EditBookCompareInfoDialogPane pane = new EditBookCompareInfoDialogPane(bookInfoComparison);
                 pane.init();
                 yield pane;
             }

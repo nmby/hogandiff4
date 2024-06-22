@@ -27,7 +27,7 @@ public final record DirCompareInfo(
         List<Pair<DirInfo>> childDirInfoPairs,
         Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
         List<Pair<Path>> childBookPathPairs,
-        Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos)
+        Map<Pair<Path>, Optional<BookInfoComparison>> childBookCompareInfos)
         implements CompareInfo {
     
     // [static members] ********************************************************
@@ -105,7 +105,7 @@ public final record DirCompareInfo(
         }
         
         Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos = new HashMap<>();
-        Map<Pair<Path>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
+        Map<Pair<Path>, Optional<BookInfoComparison>> bookCompareInfos = new HashMap<>();
         
         for (Pair<DirInfo> dirInfoPair : dirInfoPairs) {
             DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
@@ -118,7 +118,7 @@ public final record DirCompareInfo(
         }
         
         for (Pair<Path> bookPathPair : bookPathPairs) {
-            BookCompareInfo bookCompareInfo = null;
+            BookInfoComparison bookInfoComparison = null;
             try {
                 Pair<BookInfo> bookInfoPair = Side.unsafeMap(
                         side -> {
@@ -131,14 +131,14 @@ public final record DirCompareInfo(
                                 return null;
                             }
                         });
-                bookCompareInfo = bookInfoPair != null
-                        ? BookCompareInfo.calculate(bookInfoPair, sheetNamesMatcher)
+                bookInfoComparison = bookInfoPair != null
+                        ? BookInfoComparison.calculate(bookInfoPair, sheetNamesMatcher)
                         : null;
                 
             } catch (ExcelHandlingException e) {
                 // nop
             }
-            bookCompareInfos.put(bookPathPair, Optional.ofNullable(bookCompareInfo));
+            bookCompareInfos.put(bookPathPair, Optional.ofNullable(bookInfoComparison));
         }
         
         return new DirCompareInfo(

@@ -1,7 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel;
 
 public sealed interface CompareInfo
-        permits BookCompareInfo, DirCompareInfo {
+        permits BookInfoComparison, DirCompareInfo {
     
     // [static members] ********************************************************
     
