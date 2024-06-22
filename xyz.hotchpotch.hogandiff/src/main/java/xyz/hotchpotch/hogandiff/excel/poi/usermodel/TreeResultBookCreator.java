@@ -23,7 +23,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -112,21 +112,21 @@ public class TreeResultBookCreator {
             
             for (Side side : Side.values()) {
                 outputDirsMaps.get(side).put(
-                        treeResult.flattenDirInfoComparison().parentDirInfoPair().get(side).dirPath().getParent(),
+                        treeResult.flattenDirComparison().parentDirInfoPair().get(side).dirPath().getParent(),
                         dstBookPath.getParent());
             }
             
             BiFunction<Side, Path, String> relPath = (side, p) -> p.subpath(
-                    treeResult.flattenDirInfoComparison().parentDirInfoPair().get(side).dirPath().getNameCount() - 1,
+                    treeResult.flattenDirComparison().parentDirInfoPair().get(side).dirPath().getNameCount() - 1,
                     p.getNameCount())
                     .toString();
             
             int rowNo = ROW_LIST_START - 1;
             
             // 4-2. フォルダペアごとの処理
-            for (int j = 0; j < treeResult.flattenDirInfoComparison().dirInfoPairs().size(); j++) {
-                Pair<DirInfo> dirInfoPair = treeResult.flattenDirInfoComparison().dirInfoPairs().get(j);
-                DirInfoComparison dirInfoComparison = treeResult.flattenDirInfoComparison().dirInfoComparisons()
+            for (int j = 0; j < treeResult.flattenDirComparison().dirInfoPairs().size(); j++) {
+                Pair<DirInfo> dirInfoPair = treeResult.flattenDirComparison().dirInfoPairs().get(j);
+                DirComparison dirComparison = treeResult.flattenDirComparison().dirComparisons()
                         .get(dirInfoPair)
                         .get();
                 String dirId = recursively ? Integer.toString(j + 1) : "";
@@ -164,11 +164,11 @@ public class TreeResultBookCreator {
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブックパスペアごとの処理
-                for (int i = 0; i < dirInfoComparison.childBookPathPairs().size(); i++) {
+                for (int i = 0; i < dirComparison.childBookPathPairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<Path> bookPathPair = dirInfoComparison.childBookPathPairs().get(i);
+                    Pair<Path> bookPathPair = dirComparison.childBookPathPairs().get(i);
                     Optional<BookResult> bookResult = dirResult
                             .map(DirResult::bookResults)
                             .flatMap(br -> br.get(bookPathPair));
@@ -216,12 +216,12 @@ public class TreeResultBookCreator {
         PoiUtil.setCellValue(sheet, 2, 1,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
-        Path topDirA = treeResult.flattenDirInfoComparison().parentDirInfoPair().a().dirPath();
+        Path topDirA = treeResult.flattenDirComparison().parentDirInfoPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
         PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
         
-        Path topDirB = treeResult.flattenDirInfoComparison().parentDirInfoPair().b().dirPath();
+        Path topDirB = treeResult.flattenDirComparison().parentDirInfoPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
         PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);

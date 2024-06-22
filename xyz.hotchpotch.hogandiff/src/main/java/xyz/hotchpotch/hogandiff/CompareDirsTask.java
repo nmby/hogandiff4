@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
@@ -57,10 +57,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
             
             // 7. 比較結果Excelの作成と表示
-            DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirInfoComparison.parentDirInfoPair();
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
-                    dirInfoComparison.flatten(),
+                    dirComparison.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -86,9 +86,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirInfoComparison.parentDirInfoPair();
-            List<Pair<Path>> bookPathPairs = dirInfoComparison.childBookPathPairs();
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
+            List<Pair<Path>> bookPathPairs = dirComparison.childBookPathPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
@@ -115,8 +115,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private Pair<Path> createOutputDirs(Path workDir)
             throws ApplicationException {
         
-        DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirInfoComparison.parentDirInfoPair();
+        DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+        Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
         
         try {
@@ -140,23 +140,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
-            if (0 < dirInfoComparison.childBookPathPairs().size()) {
+            if (0 < dirComparison.childBookPathPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",
                         "",
-                        dirInfoComparison,
+                        dirComparison,
                         outputDirPair,
                         progressBefore,
                         progressAfter);
                 
             } else {
                 return new DirResult(
-                        dirInfoComparison,
-                        dirInfoComparison.childBookPathPairs().stream().collect(Collectors.toMap(
+                        dirComparison,
+                        dirComparison.childBookPathPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

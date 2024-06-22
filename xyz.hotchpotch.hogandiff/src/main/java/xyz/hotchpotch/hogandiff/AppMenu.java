@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -53,10 +53,10 @@ public enum AppMenu {
     COMPARE_DIRS(
             CompareDirsTask::new,
             settings -> {
-                DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                Objects.requireNonNull(dirInfoComparison);
+                DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                Objects.requireNonNull(dirComparison);
                 
-                return !dirInfoComparison.parentDirInfoPair().isIdentical();
+                return !dirComparison.parentDirInfoPair().isIdentical();
             }),
     
     /**
@@ -67,10 +67,10 @@ public enum AppMenu {
     COMPARE_TREES(
             CompareTreesTask::new,
             settings -> {
-                DirInfoComparison dirInfoComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                Objects.requireNonNull(dirInfoComparison);
+                DirComparison dirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                Objects.requireNonNull(dirComparison);
                 
-                return !dirInfoComparison.parentDirInfoPair().isIdentical();
+                return !dirComparison.parentDirInfoPair().isIdentical();
             });
     
     // [instance members] ******************************************************

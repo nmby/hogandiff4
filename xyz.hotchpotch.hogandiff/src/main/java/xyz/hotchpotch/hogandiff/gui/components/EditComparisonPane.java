@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
@@ -100,20 +100,20 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     return;
                 }
                 case COMPARE_DIRS: {
-                    DirInfoComparison comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
-                    Optional<DirInfoComparison> modified = dialog.showAndWait();
+                    DirComparison comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.dirInfoComparisonProp.unbind();
-                        parent.dirInfoComparisonProp.setValue(modified.get());
-                        parent.bindDirInfoComparisonProp();
+                        parent.dirComparisonProp.unbind();
+                        parent.dirComparisonProp.setValue(modified.get());
+                        parent.bindDirComparisonProp();
                     }
                     return;
                 }
                 case COMPARE_TREES: {
-                    DirInfoComparison comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                    EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
-                    Optional<DirInfoComparison> modified = dialog.showAndWait();
+                    DirComparison comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.treeComparisonProp.unbind();
                         parent.treeComparisonProp.setValue(modified.get());

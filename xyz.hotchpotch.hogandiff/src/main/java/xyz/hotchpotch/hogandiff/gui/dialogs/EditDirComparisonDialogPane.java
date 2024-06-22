@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -26,7 +26,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<DirInfoComparison> {
+public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirComparison> {
     
     // static members **********************************************************
     
@@ -34,29 +34,29 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
     
     private final AppResource ar = AppMain.appResource;
     
-    private final DirInfoComparison dirInfoComparison;
+    private final DirComparison dirComparison;
     private final List<Pair<DirInfo>> currChildDirInfoPairs;
     private final List<Pair<Path>> currChildBookPathPairs;
-    private final Map<Pair<DirInfo>, Optional<DirInfoComparison>> currChildDirInfoComparisons;
+    private final Map<Pair<DirInfo>, Optional<DirComparison>> currChildDirComparisons;
     private final Map<Pair<Path>, Optional<BookComparison>> currChildBookComparisons;
     
     /**
      * コンストラクタ<br>
      * 
-     * @param dirInfoComparison フォルダ比較情報
+     * @param dirComparison フォルダ比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditDirInfoComparisonDialogPane(DirInfoComparison dirInfoComparison) throws IOException {
+    public EditDirComparisonDialogPane(DirComparison dirComparison) throws IOException {
         super();
-        this.dirInfoComparison = dirInfoComparison;
-        this.currChildDirInfoPairs = new ArrayList<>(dirInfoComparison.childDirInfoPairs());
-        this.currChildBookPathPairs = new ArrayList<>(dirInfoComparison.childBookPathPairs());
-        this.currChildDirInfoComparisons = new HashMap<>(dirInfoComparison.childDirInfoComparisons());
-        this.currChildBookComparisons = new HashMap<>(dirInfoComparison.childBookComparisons());
+        this.dirComparison = dirComparison;
+        this.currChildDirInfoPairs = new ArrayList<>(dirComparison.childDirInfoPairs());
+        this.currChildBookPathPairs = new ArrayList<>(dirComparison.childBookPathPairs());
+        this.currChildDirComparisons = new HashMap<>(dirComparison.childDirComparisons());
+        this.currChildBookComparisons = new HashMap<>(dirComparison.childBookComparisons());
     }
     
     /*package*/ void init() throws IOException {
-        super.init(dirInfoComparison.parentDirInfoPair());
+        super.init(dirComparison.parentDirInfoPair());
         
         updateChildren();
     }
@@ -68,9 +68,9 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
         drawGrid();
     }
     
-    private Optional<DirInfoComparison> createDirInfoComparison(Pair<DirInfo> dirInfoPair) {
+    private Optional<DirComparison> createDirComparison(Pair<DirInfo> dirInfoPair) {
         return Optional.of(
-                DirInfoComparison.calculate(
+                DirComparison.calculate(
                         dirInfoPair,
                         Factory.dirInfosMatcher(ar.settings()),
                         Factory.bookPathsMatcher(ar.settings()),
@@ -116,9 +116,9 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildDirInfoPairs.add(i + 2, unpairedB);
             currChildDirInfoPairs.remove(i);
             
-            currChildDirInfoComparisons.remove(paired);
-            currChildDirInfoComparisons.put(unpairedA, createDirInfoComparison(unpairedA));
-            currChildDirInfoComparisons.put(unpairedB, createDirInfoComparison(unpairedB));
+            currChildDirComparisons.remove(paired);
+            currChildDirComparisons.put(unpairedA, createDirComparison(unpairedA));
+            currChildDirComparisons.put(unpairedB, createDirComparison(unpairedB));
             
         } else if (childDirs <= i && i < childDirs + childBooks) {
             int j = i - childDirs;
@@ -171,9 +171,9 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildDirInfoPairs.add(dst, paired);
             currChildDirInfoPairs.remove(src);
             
-            currChildDirInfoComparisons.remove(srcPair);
-            currChildDirInfoComparisons.remove(dstPair);
-            currChildDirInfoComparisons.put(paired, createDirInfoComparison(paired));
+            currChildDirComparisons.remove(srcPair);
+            currChildDirComparisons.remove(dstPair);
+            currChildDirComparisons.put(paired, createDirComparison(paired));
             
         } else if (childDirs <= src && src < childDirs + childBooks) {
             assert childDirs <= dst && dst < childDirs + childBooks;
@@ -219,11 +219,11 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                 Pair<DirInfo> paired = currChildDirInfoPairs.get(i);
                 assert paired.isPaired();
                 
-                DirInfoComparison comparison = currChildDirInfoComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<DirInfoComparison> dialog = new EditComparisonDialog<>(comparison);
-                Optional<DirInfoComparison> modified = dialog.showAndWait();
+                DirComparison comparison = currChildDirComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
+                Optional<DirComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
-                    currChildDirInfoComparisons.put(paired, modified);
+                    currChildDirComparisons.put(paired, modified);
                 }
                 
             } else if (childDirs <= i && i < childDirs + childBooks) {
@@ -250,11 +250,11 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
     }
     
     @Override
-    public DirInfoComparison getResult() {
-        return new DirInfoComparison(
-                dirInfoComparison.parentDirInfoPair(),
+    public DirComparison getResult() {
+        return new DirComparison(
+                dirComparison.parentDirInfoPair(),
                 currChildDirInfoPairs,
-                currChildDirInfoComparisons,
+                currChildDirComparisons,
                 currChildBookPathPairs,
                 currChildBookComparisons);
     }
