@@ -11,9 +11,7 @@ import java.util.stream.Collectors;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -60,13 +58,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 7. 比較結果Excelの作成と表示
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
-                    TreeCompareInfo.ofSingle(
-                            dirInfoPair,
-                            Factory.bookNamesMatcher(settings),
-                            Factory.sheetNamesMatcher(settings),
-                            settings.get(SettingKeys.CURR_READ_PASSWORDS)),
+                    dirCompareInfo.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -93,20 +87,20 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
-            List<Pair<String>> bookNamePairs = dirCompareInfo.childPairs();
+            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
+            List<Pair<Path>> bookPathPairs = dirCompareInfo.childBookPathPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
                     dirInfoPair.a().dirPath(),
                     dirInfoPair.b().dirPath()));
             
-            if (bookNamePairs.size() == 0) {
+            if (bookPathPairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
             }
-            for (int i = 0; i < bookNamePairs.size(); i++) {
-                Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
+            for (int i = 0; i < bookPathPairs.size(); i++) {
+                Pair<Path> bookPathPair = bookPathPairs.get(i);
+                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookPathPair)).append(BR);
             }
             
             updateMessage(str.toString());
@@ -122,7 +116,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
         
         try {
@@ -148,7 +142,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
-            if (0 < dirCompareInfo.childPairs().size()) {
+            if (0 < dirCompareInfo.childBookPathPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
@@ -162,7 +156,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             } else {
                 return new DirResult(
                         dirCompareInfo,
-                        dirCompareInfo.childPairs().stream().collect(Collectors.toMap(
+                        dirCompareInfo.childBookPathPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

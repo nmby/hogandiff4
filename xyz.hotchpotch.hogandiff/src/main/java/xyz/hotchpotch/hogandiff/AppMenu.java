@@ -7,8 +7,6 @@ import java.util.function.Predicate;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -31,7 +29,7 @@ public enum AppMenu {
                 BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                 Objects.requireNonNull(bookCompareInfo);
                 
-                return !bookCompareInfo.parentPair().isIdentical();
+                return !bookCompareInfo.parentBookInfoPair().isIdentical();
             }),
     
     /**
@@ -40,11 +38,11 @@ public enum AppMenu {
     COMPARE_SHEETS(
             CompareSheetsTask::new,
             settings -> {
-                SheetCompareInfo sheetCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Objects.requireNonNull(sheetCompareInfo);
+                BookCompareInfo bookCompareInfo = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Objects.requireNonNull(bookCompareInfo);
                 
-                return !sheetCompareInfo.parentPair().isIdentical()
-                        || !sheetCompareInfo.childPairs().get(0).isIdentical();
+                return !bookCompareInfo.parentBookInfoPair().isIdentical()
+                        || !bookCompareInfo.childSheetNamePairs().get(0).isIdentical();
             }),
     
     /**
@@ -58,7 +56,7 @@ public enum AppMenu {
                 DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
                 Objects.requireNonNull(dirCompareInfo);
                 
-                return !dirCompareInfo.parentPair().isIdentical();
+                return !dirCompareInfo.parentDirInfoPair().isIdentical();
             }),
     
     /**
@@ -69,10 +67,10 @@ public enum AppMenu {
     COMPARE_TREES(
             CompareTreesTask::new,
             settings -> {
-                TreeCompareInfo treeCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                Objects.requireNonNull(treeCompareInfo);
+                DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                Objects.requireNonNull(dirCompareInfo);
                 
-                return !treeCompareInfo.parentPair().isIdentical();
+                return !dirCompareInfo.parentDirInfoPair().isIdentical();
             });
     
     // [instance members] ******************************************************

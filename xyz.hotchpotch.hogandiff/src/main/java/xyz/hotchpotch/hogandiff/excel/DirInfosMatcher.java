@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.common.VerticallyStrictDirsMatcher;
+import xyz.hotchpotch.hogandiff.excel.common.VerticallyStrictDirInfosMatcher;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  */
 @FunctionalInterface
-public interface DirsMatcher {
+public interface DirInfosMatcher {
     
     // [static members] ********************************************************
     
@@ -22,8 +22,8 @@ public interface DirsMatcher {
      * @param matchNamesStrictly フォルダ名と階層のゆらぎを許容する場合は {@code true}
      * @return フォルダ同士の対応関係を決めるマッチャー
      */
-    public static DirsMatcher of(boolean matchNamesStrictly) {
-        return VerticallyStrictDirsMatcher.of(matchNamesStrictly);
+    public static DirInfosMatcher of(boolean matchNamesStrictly) {
+        return VerticallyStrictDirInfosMatcher.of(matchNamesStrictly);
     }
     
     // [instance members] ******************************************************

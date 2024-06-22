@@ -12,24 +12,23 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditSheetPairingDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditCompareInfoDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class EditPairingPane extends AnchorPane implements ChildController {
+public class EditCompareInfoPane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -39,7 +38,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button editPairingButton;
+    private Button editCompareInfoButton;
     
     private MainController parent;
     
@@ -48,8 +47,8 @@ public class EditPairingPane extends AnchorPane implements ChildController {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditPairingPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditPairingPane.fxml"), rb);
+    public EditCompareInfoPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -62,13 +61,12 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editPairingButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menuProp.getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
+        editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
-        editPairingButton.setOnAction(event -> editPairing());
-        editPairingButton.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("tune-vertical.png"))));
+        editCompareInfoButton.setOnAction(event -> editCompareInfo());
         
         // 3.初期値の設定
         // nop
@@ -77,7 +75,7 @@ public class EditPairingPane extends AnchorPane implements ChildController {
         // nop
     }
     
-    private void editPairing() {
+    private void editCompareInfo() {
         try {
             AppMenu menu = parent.menuProp.getValue();
             if (!menu.isValidTargets(ar.settings())) {
@@ -90,9 +88,9 @@ public class EditPairingPane extends AnchorPane implements ChildController {
             }
             
             switch (menu) {
-                case COMPARE_BOOKS:
+                case COMPARE_BOOKS: {
                     BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditSheetPairingDialog dialog = new EditSheetPairingDialog(compareInfo);
+                    EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
                     Optional<BookCompareInfo> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
                         parent.bookCompareInfoProp.unbind();
@@ -100,10 +98,30 @@ public class EditPairingPane extends AnchorPane implements ChildController {
                         parent.bindBookCompareInfoProp();
                     }
                     return;
-                
+                }
+                case COMPARE_DIRS: {
+                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        parent.dirCompareInfoProp.unbind();
+                        parent.dirCompareInfoProp.setValue(modified.get());
+                        parent.bindDirCompareInfoProp();
+                    }
+                    return;
+                }
+                case COMPARE_TREES: {
+                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        parent.treeCompareInfoProp.unbind();
+                        parent.treeCompareInfoProp.setValue(modified.get());
+                        parent.bindTreeCompareInfoProp();
+                    }
+                    return;
+                }
                 case COMPARE_SHEETS:
-                case COMPARE_DIRS:
-                case COMPARE_TREES:
                     throw new UnsupportedOperationException();
             }
             

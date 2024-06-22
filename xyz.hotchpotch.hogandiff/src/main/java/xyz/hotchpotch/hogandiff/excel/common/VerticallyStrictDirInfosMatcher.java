@@ -8,18 +8,18 @@ import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.DirsMatcher;
+import xyz.hotchpotch.hogandiff.excel.DirInfosMatcher;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
- * 同一階層のフォルダ同士をペアリングする {@link DirsMatcher} の実装です。<br>
+ * 同一階層のフォルダ同士をペアリングする {@link DirInfosMatcher} の実装です。<br>
  * 
  * @author nmby
  */
-// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirsMatcher} も実装する
-public class VerticallyStrictDirsMatcher implements DirsMatcher {
+// TODO: フォルダ階層の変更にも対応できる柔軟な {@link DirInfosMatcher} も実装する
+public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
     
     // [static members] ********************************************************
     
@@ -28,27 +28,28 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.children().size() + d.bookNames().size(),
+            d -> d.childDirInfos().size() + d.childBookPaths().size(),
             (d1, d2) -> {
-                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
-                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.bookNames(), d2.bookNames())
-                        .stream().filter(Predicate.not(IntPair::isPaired)).count();
+                int gapBookNames = (int) Matcher.identityMatcherOf()
+                        .makeIdxPairs(d1.childBookPaths(), d2.childBookPaths()).stream()
+                        .filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
             });
     
     /**
-     * {@link DirsMatcher} のインスタンスを返します。<br>
+     * {@link DirInfosMatcher} のインスタンスを返します。<br>
      * 
      * @param matchNamesStrictly フォルダ名の曖昧一致を許さない場合は {@code true}
      * @return マッチャー
      */
-    public static DirsMatcher of(boolean matchNamesStrictly) {
-        return new VerticallyStrictDirsMatcher(matchNamesStrictly
+    public static DirInfosMatcher of(boolean matchNamesStrictly) {
+        return new VerticallyStrictDirInfosMatcher(matchNamesStrictly
                 ? strictDirNamesMatcher
                 : Matcher.combinedMatcherOf(List.of(
                         strictDirNamesMatcher,
@@ -59,7 +60,7 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
     
     private final Matcher<DirInfo> coreMatcher;
     
-    private VerticallyStrictDirsMatcher(Matcher<DirInfo> coreMatcher) {
+    private VerticallyStrictDirInfosMatcher(Matcher<DirInfo> coreMatcher) {
         assert coreMatcher != null;
         this.coreMatcher = coreMatcher;
     }
@@ -85,8 +86,8 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
         assert dirInfos != null;
         
         List<Pair<DirInfo>> dirPairs = coreMatcher.makeItemPairs(
-                dirInfos.a().children(),
-                dirInfos.b().children());
+                dirInfos.a().childDirInfos(),
+                dirInfos.b().childDirInfos());
         
         for (Pair<DirInfo> dirPair : dirPairs) {
             if (dirPair.isPaired()) {
@@ -109,6 +110,6 @@ public class VerticallyStrictDirsMatcher implements DirsMatcher {
         
         pairs.add(Pair.ofOnly(side, dirInfo));
         
-        dirInfo.children().forEach(d -> setAloneDirs(pairs, d, side));
+        dirInfo.childDirInfos().forEach(d -> setAloneDirs(pairs, d, side));
     }
 }
