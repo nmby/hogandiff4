@@ -40,7 +40,7 @@ import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.excel.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
@@ -430,10 +430,10 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         while (true) {
             // パスワードの有無でローダーを切り替える可能性があるため、この位置で取得する。
-            SheetNamesLoader loader = Factory.sheetNamesLoader(newBookPath, readPassword);
+            BookInfoLoader loader = Factory.bookInfoLoader(newBookPath, readPassword);
             
             try {
-                BookInfo bookInfo = loader.loadSheetNames(newBookPath, readPassword);
+                BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
                 readPasswords.put(newBookPath, readPassword);
                 return bookInfo;
                 

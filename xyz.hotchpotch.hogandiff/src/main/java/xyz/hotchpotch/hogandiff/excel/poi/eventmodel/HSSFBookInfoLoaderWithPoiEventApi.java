@@ -23,7 +23,7 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.excel.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -31,12 +31,12 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 /**
  * Apache POI イベントモデル API を利用して
  * .xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link BookInfoLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
-public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
+public class HSSFBookInfoLoaderWithPoiEventApi implements BookInfoLoader {
     
     // [static members] ********************************************************
     
@@ -138,20 +138,20 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
+    public static BookInfoLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new HSSFSheetNamesLoaderWithPoiEventApi(targetTypes);
+        return new HSSFBookInfoLoaderWithPoiEventApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private HSSFSheetNamesLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
+    private HSSFBookInfoLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
@@ -179,7 +179,7 @@ public class HSSFSheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public BookInfo loadSheetNames(
+    public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {

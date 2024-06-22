@@ -125,8 +125,8 @@ public final record DirCompareInfo(
                             if (bookPathPair.has(side)) {
                                 Path bookPath = bookPathPair.get(side);
                                 String readPassword = readPasswords.get(bookPath);
-                                SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
-                                return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+                                BookInfoLoader sheetNamesLoader = Factory.bookInfoLoader(bookPath, readPassword);
+                                return sheetNamesLoader.loadBookInfo(bookPath, readPassword);
                             } else {
                                 return null;
                             }
