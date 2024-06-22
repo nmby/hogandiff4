@@ -8,14 +8,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 
 class CombinedBookLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final BookLoader successLoader = (bookPath, readPassword) -> new BookInfo(
+    private static final BookLoader successLoader = (bookPath, readPassword) -> BookInfo.ofLoadCompleted(
             bookPath, List.of("success"));
     
     private static final BookLoader failLoader = (bookPath, readPassword) -> {
@@ -83,7 +83,7 @@ class CombinedBookLoaderTest {
         // 成功１つ
         Path path1 = Path.of("dummy.xlsx");
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         path1,
                         List.of("success")),
                 testeeS.loadBookInfo(path1, null));
@@ -91,7 +91,7 @@ class CombinedBookLoaderTest {
         // いくつかの失敗ののちに成功
         Path path2 = Path.of("dummy.xlsx");
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         path2,
                         List.of("success")),
                 testeeFFSF.loadBookInfo(path2, null));

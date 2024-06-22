@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 
 class HSSFBookLoaderWithPoiEventApiTest {
@@ -103,7 +103,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         BookLoader testee = HSSFBookLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test1_xls,
                         List.of("A1_ワークシート", "A2_グラフ", "A3_ダイアログ", "A4_マクロ",
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
@@ -117,7 +117,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test1_xls,
                         List.of("A1_ワークシート", "A3_ダイアログ",
                                 "B1_ワークシート", "B3_ダイアログ")),
@@ -129,7 +129,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         BookLoader testee = HSSFBookLoaderWithPoiEventApi.of(EnumSet.of(SheetType.CHART_SHEET));
         
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test1_xls,
                         List.of("A2_グラフ",
                                 "B2_グラフ")),
@@ -143,7 +143,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test1_xls,
                         List.of()),
                 testee.loadBookInfo(test1_xls, null));
@@ -154,7 +154,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         BookLoader testee = HSSFBookLoaderWithPoiEventApi.of(EnumSet.of(SheetType.MACRO_SHEET));
         
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test1_xls,
                         List.of("A4_マクロ",
                                 "B4_マクロ")),
@@ -166,7 +166,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         BookLoader testee = HSSFBookLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
-                new BookInfo(
+                BookInfo.ofLoadCompleted(
                         test4_xls,
                         List.of("A1_ワークシート",
                                 "A2_ワークシート")),

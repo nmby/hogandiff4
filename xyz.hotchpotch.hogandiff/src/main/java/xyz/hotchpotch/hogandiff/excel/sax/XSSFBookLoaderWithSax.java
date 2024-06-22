@@ -7,9 +7,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -87,7 +87,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
                     .map(SheetInfo::name)
                     .toList();
             
-            return new BookInfo(bookPath, sheetNames);
+            return BookInfo.ofLoadCompleted(bookPath, sheetNames);
             
         } catch (Exception e) {
             throw new ExcelHandlingException("processing failed : %s".formatted(bookPath), e);

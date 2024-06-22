@@ -74,8 +74,8 @@ public class AppArgsParser {
             // 比較メニューと比較対象Excelブックパスのパース
             Settings.Builder builder = Settings.builder()
                     .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_INFO1, new BookInfo(Path.of(args[0]), List.of()))
-                    .set(SettingKeys.CURR_BOOK_INFO2, new BookInfo(Path.of(args[1]), List.of()));
+                    .set(SettingKeys.CURR_BOOK_INFO1, BookInfo.ofNotYet(Path.of(args[0])))
+                    .set(SettingKeys.CURR_BOOK_INFO2, BookInfo.ofNotYet(Path.of(args[1])));
             
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
             remainingParams.remove();
