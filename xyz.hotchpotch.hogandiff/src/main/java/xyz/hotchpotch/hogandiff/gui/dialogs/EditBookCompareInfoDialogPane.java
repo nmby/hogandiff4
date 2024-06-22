@@ -30,11 +30,6 @@ public class EditBookCompareInfoDialogPane extends EditCompareInfoDialogPane<Boo
         this.bookCompareInfo = bookCompareInfo;
     }
     
-    /**
-     * このダイアログボックス要素を初期化します。<br>
-     * 
-     * @param compareInfo 編集前の比較情報
-     */
     /*package*/ void init() throws IOException {
         super.init(bookCompareInfo.parentBookInfoPair());
         

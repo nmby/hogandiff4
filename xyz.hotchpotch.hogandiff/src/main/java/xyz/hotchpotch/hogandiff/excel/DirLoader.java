@@ -22,7 +22,7 @@ public interface DirLoader {
      * @return フォルダ情報を抽出するローダー
      */
     public static DirLoader of(boolean recursively) {
-        return StandardDirLoader.of(recursively);
+        return new StandardDirLoader(recursively);
     }
     
     // [instance members] ******************************************************

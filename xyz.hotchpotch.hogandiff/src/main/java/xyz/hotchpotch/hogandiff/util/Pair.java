@@ -117,6 +117,16 @@ public record Pair<T>(T a, T b) {
         return side == Side.A ? new Pair<>(value, null) : new Pair<>(null, value);
     }
     
+    /**
+     * 空のペアを返します。<br>
+     * 
+     * @param <T> 要素の型
+     * @return 空のペア
+     */
+    public static <T> Pair<T> empty() {
+        return new Pair<>(null, null);
+    }
+    
     // [instance members] ******************************************************
     
     @Override

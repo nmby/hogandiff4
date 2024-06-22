@@ -18,6 +18,7 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditCompareInfoDialog;
@@ -61,7 +62,9 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
         editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.menuProp.getValue() != AppMenu.COMPARE_BOOKS || !parent.isReady().getValue(),
+                () -> !parent.isReady().getValue()
+                        || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS
+                        || parent.menuProp.getValue() == AppMenu.COMPARE_TREES,
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
@@ -87,7 +90,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             }
             
             switch (menu) {
-                case COMPARE_BOOKS:
+                case COMPARE_BOOKS: {
                     BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                     EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
                     Optional<BookCompareInfo> modified = dialog.showAndWait();
@@ -97,9 +100,19 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
                         parent.bindBookCompareInfoProp();
                     }
                     return;
-                
+                }
+                case COMPARE_DIRS: {
+                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
+                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        parent.dirCompareInfoProp.unbind();
+                        parent.dirCompareInfoProp.setValue(modified.get());
+                        parent.bindDirCompareInfoProp();
+                    }
+                    return;
+                }
                 case COMPARE_SHEETS:
-                case COMPARE_DIRS:
                 case COMPARE_TREES:
                     throw new UnsupportedOperationException();
             }

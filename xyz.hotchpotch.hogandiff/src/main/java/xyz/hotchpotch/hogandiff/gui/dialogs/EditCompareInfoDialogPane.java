@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -21,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.CompareInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -48,7 +48,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             if (item instanceof DirInfo) {
                 return DIR;
                 
-            } else if (item instanceof BookInfo) {
+            } else if (item instanceof Path) {
                 return BOOK;
                 
             } else if (item instanceof String) {
@@ -133,6 +133,13 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         parentLabelB.setText("【B】 " + parentPair.b().toString());
     }
     
+    // TODO: あまりに不細工なので構成を見直す
+    private String getName(Object item) {
+        return (item instanceof Path path)
+                ? path.getFileName().toString()
+                : item.toString();
+    }
+    
     protected void drawGrid() {
         childGridPane.getChildren().clear();
         
@@ -141,21 +148,21 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             
             if (pair.isPaired()) {
                 ItemType itemType = ItemType.of(pair.a());
-                childGridPane.add(new PairedNameLabel(itemType, pair.a().toString()), 0, i);
+                childGridPane.add(new PairedNameLabel(itemType, getName(pair.a())), 0, i);
                 childGridPane.add(new UnpairButton(i), 1, i);
-                childGridPane.add(new PairedNameLabel(itemType, pair.b().toString()), 2, i);
+                childGridPane.add(new PairedNameLabel(itemType, getName(pair.b())), 2, i);
                 
             } else if (pair.hasA()) {
                 ItemType itemType = ItemType.of(pair.a());
                 childGridPane.add(new BlankLabel(), 2, i);
                 childGridPane.add(new UnpairedPane(itemType, i, Side.B), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.A, pair.a().toString()), 0, i);
+                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.A, getName(pair.a())), 0, i);
                 
             } else if (pair.hasB()) {
                 ItemType itemType = ItemType.of(pair.b());
                 childGridPane.add(new BlankLabel(), 0, i);
                 childGridPane.add(new UnpairedPane(itemType, i, Side.A), 0, i, 3, 1);
-                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.B, pair.b().toString()), 2, i);
+                childGridPane.add(new UnpairedNameLabel(itemType, i, Side.B, getName(pair.b())), 2, i);
             } else {
                 // nop
             }
