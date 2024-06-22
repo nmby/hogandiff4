@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -166,7 +166,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行におけるフォルダ比較情報 */
-    public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
+    public static final Key<DirInfoComparison> CURR_DIR_COMPARE_INFO = new Key<>(
             "current.dirCompareInfo",
             () -> null,
             encodeNotSupported("cannot encode."),
@@ -174,7 +174,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行におけるフォルダツリー比較情報 */
-    public static final Key<DirCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
+    public static final Key<DirInfoComparison> CURR_TREE_COMPARE_INFO = new Key<>(
             "current.treeCompareInfo",
             () -> null,
             encodeNotSupported("cannot encode."),

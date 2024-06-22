@@ -147,10 +147,10 @@ public abstract sealed class Report
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> throw new AssertionError();
                 case DirResult dResult -> {
-                    int paired = (int) dResult.dirCompareInfo().childBookPathPairs().stream()
+                    int paired = (int) dResult.dirInfoComparison().childBookPathPairs().stream()
                             .filter(Pair::isPaired)
                             .count();
-                    yield IntPair.of(paired, dResult.dirCompareInfo().childBookPathPairs().size() - paired);
+                    yield IntPair.of(paired, dResult.dirInfoComparison().childBookPathPairs().size() - paired);
                 }
                 case TreeResult tResult -> tResult.dirResults().values().stream()
                         .filter(Optional::isPresent)

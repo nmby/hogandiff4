@@ -18,12 +18,12 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param dirCompareInfo フォルダ比較情報
+ * @param dirInfoComparison フォルダ比較情報
  * @param bookResults Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
  * @param dirId フォルダの識別番号
  */
 public record DirResult(
-        DirCompareInfo dirCompareInfo,
+        DirInfoComparison dirInfoComparison,
         Map<Pair<Path>, Optional<BookResult>> bookResults,
         String dirId)
         implements Result {
@@ -68,21 +68,21 @@ public record DirResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param dirCompareInfo フォルダ比較情報
+     * @param dirInfoComparison フォルダ比較情報
      * @param bookResults Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
      * @param dirId フォルダの識別番号
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public DirResult(
-            DirCompareInfo dirCompareInfo,
+            DirInfoComparison dirInfoComparison,
             Map<Pair<Path>, Optional<BookResult>> bookResults,
             String dirId) {
         
-        Objects.requireNonNull(dirCompareInfo);
+        Objects.requireNonNull(dirInfoComparison);
         Objects.requireNonNull(bookResults);
         Objects.requireNonNull(dirId);
         
-        this.dirCompareInfo = dirCompareInfo;
+        this.dirInfoComparison = dirInfoComparison;
         this.bookResults = Map.copyOf(bookResults);
         this.dirId = dirId;
     }
@@ -93,7 +93,7 @@ public record DirResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return dirCompareInfo.childBookPathPairs().stream()
+        return dirInfoComparison.childBookPathPairs().stream()
                 .map(bookResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -113,10 +113,10 @@ public record DirResult(
                 .map(Optional::get)
                 .filter(BookResult::hasDiff)
                 .count();
-        int gapBooks = (int) dirCompareInfo.childBookPathPairs().stream()
+        int gapBooks = (int) dirInfoComparison.childBookPathPairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
                 .count();
-        int failed = (int) dirCompareInfo.childBookPathPairs().stream()
+        int failed = (int) dirInfoComparison.childBookPathPairs().stream()
                 .filter(Pair::isPaired)
                 .filter(p -> !bookResults.containsKey(p) || bookResults.get(p).isEmpty())
                 .count();
@@ -179,8 +179,8 @@ public record DirResult(
             return str.toString();
         }
         
-        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
-            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
+        for (int i = 0; i < dirInfoComparison.childBookPathPairs().size(); i++) {
+            Pair<Path> bookPathPair = dirInfoComparison.childBookPathPairs().get(i);
             Optional<BookResult> bResult = bookResults.get(bookPathPair);
             
             str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair));
@@ -203,14 +203,14 @@ public record DirResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirCompareInfo.parentDirInfoPair().a().dirPath())
+                .append(dirInfoComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirCompareInfo.parentDirInfoPair().b().dirPath())
+                .append(dirInfoComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
-        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
-            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
+        for (int i = 0; i < dirInfoComparison.childBookPathPairs().size(); i++) {
+            Pair<Path> bookPathPair = dirInfoComparison.childBookPathPairs().get(i);
             str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair)).append(BR);
         }
         

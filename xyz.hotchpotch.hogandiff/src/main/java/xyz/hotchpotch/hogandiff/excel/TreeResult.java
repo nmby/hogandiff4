@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo.FlattenDirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfoComparison.FlattenDirInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -17,11 +17,11 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param flattenDirCompareInfo フォルダツリー比較情報
+ * @param flattenDirInfoComparison フォルダツリー比較情報
  * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(
-        FlattenDirCompareInfo flattenDirCompareInfo,
+        FlattenDirInfoComparison flattenDirInfoComparison,
         Map<Pair<DirInfo>, Optional<DirResult>> dirResults)
         implements Result {
     
@@ -38,7 +38,7 @@ public record TreeResult(
      * @return フォルダペアの整形済み文字列
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static String formatDirsInfoPair(
+    public static String formatDirInfoPair(
             String id,
             Pair<DirInfo> dirInfoPair) {
         
@@ -59,18 +59,18 @@ public record TreeResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param flattenDirCompareInfo フォルダツリー比較情報
+     * @param flattenDirInfoComparison フォルダツリー比較情報
      * @param dirResults 比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public TreeResult(
-            FlattenDirCompareInfo flattenDirCompareInfo,
+            FlattenDirInfoComparison flattenDirInfoComparison,
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults) {
         
-        Objects.requireNonNull(flattenDirCompareInfo);
+        Objects.requireNonNull(flattenDirInfoComparison);
         Objects.requireNonNull(dirResults);
         
-        this.flattenDirCompareInfo = flattenDirCompareInfo;
+        this.flattenDirInfoComparison = flattenDirInfoComparison;
         this.dirResults = Map.copyOf(dirResults);
     }
     
@@ -80,7 +80,7 @@ public record TreeResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return flattenDirCompareInfo.dirInfoPairs().stream()
+        return flattenDirInfoComparison.dirInfoPairs().stream()
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -100,14 +100,14 @@ public record TreeResult(
     private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
         
-        for (int i = 0; i < flattenDirCompareInfo.dirInfoPairs().size(); i++) {
-            Pair<DirInfo> dirInfoPair = flattenDirCompareInfo.dirInfoPairs().get(i);
-            DirCompareInfo dirCompareInfo = flattenDirCompareInfo.dirCompareInfos().get(dirInfoPair).get();
+        for (int i = 0; i < flattenDirInfoComparison.dirInfoPairs().size(); i++) {
+            Pair<DirInfo> dirInfoPair = flattenDirInfoComparison.dirInfoPairs().get(i);
+            DirInfoComparison dirInfoComparison = flattenDirInfoComparison.dirInfoComparisons().get(dirInfoPair).get();
             Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
             
-            str.append(formatDirsInfoPair(Integer.toString(i + 1), dirCompareInfo.parentDirInfoPair()));
+            str.append(formatDirInfoPair(Integer.toString(i + 1), dirInfoComparison.parentDirInfoPair()));
             
-            if (dirCompareInfo.parentDirInfoPair().isPaired()) {
+            if (dirInfoComparison.parentDirInfoPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
             } else {
                 str.append(BR);
@@ -122,10 +122,10 @@ public record TreeResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
-                .append(flattenDirCompareInfo.parentDirInfoPair().a().dirPath())
+                .append(flattenDirInfoComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
-                .append(flattenDirCompareInfo.parentDirInfoPair().b().dirPath())
+                .append(flattenDirInfoComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);

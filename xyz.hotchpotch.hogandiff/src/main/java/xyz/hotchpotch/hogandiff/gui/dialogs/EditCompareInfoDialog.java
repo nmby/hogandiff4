@@ -10,7 +10,7 @@ import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.CompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
@@ -43,8 +43,8 @@ public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
                 pane.init();
                 yield pane;
             }
-            case DirCompareInfo dirCompareInfo -> {
-                EditDirCompareInfoDialogPane pane = new EditDirCompareInfoDialogPane(dirCompareInfo);
+            case DirInfoComparison dirInfoComparison -> {
+                EditDirCompareInfoDialogPane pane = new EditDirCompareInfoDialogPane(dirInfoComparison);
                 pane.init();
                 yield pane;
             }
