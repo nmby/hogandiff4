@@ -124,10 +124,10 @@ public abstract sealed class Report
             return switch (result) {
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> {
-                    int paired = (int) bResult.bookInfoComparison().childSheetNamePairs().stream()
+                    int paired = (int) bResult.bookComparison().childSheetNamePairs().stream()
                             .filter(Pair::isPaired)
                             .count();
-                    yield IntPair.of(paired, bResult.bookInfoComparison().childSheetNamePairs().size() - paired);
+                    yield IntPair.of(paired, bResult.bookComparison().childSheetNamePairs().size() - paired);
                 }
                 case DirResult dResult -> dResult.bookResults().values().stream()
                         .filter(Optional::isPresent)

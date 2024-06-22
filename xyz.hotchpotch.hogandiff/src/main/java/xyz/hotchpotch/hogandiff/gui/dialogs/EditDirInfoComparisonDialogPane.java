@@ -11,7 +11,7 @@ import java.util.Optional;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
@@ -38,7 +38,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
     private final List<Pair<DirInfo>> currChildDirInfoPairs;
     private final List<Pair<Path>> currChildBookPathPairs;
     private final Map<Pair<DirInfo>, Optional<DirInfoComparison>> currChildDirInfoComparisons;
-    private final Map<Pair<Path>, Optional<BookInfoComparison>> currChildBookInfoComparisons;
+    private final Map<Pair<Path>, Optional<BookComparison>> currChildBookComparisons;
     
     /**
      * コンストラクタ<br>
@@ -52,7 +52,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
         this.currChildDirInfoPairs = new ArrayList<>(dirInfoComparison.childDirInfoPairs());
         this.currChildBookPathPairs = new ArrayList<>(dirInfoComparison.childBookPathPairs());
         this.currChildDirInfoComparisons = new HashMap<>(dirInfoComparison.childDirInfoComparisons());
-        this.currChildBookInfoComparisons = new HashMap<>(dirInfoComparison.childBookInfoComparisons());
+        this.currChildBookComparisons = new HashMap<>(dirInfoComparison.childBookComparisons());
     }
     
     /*package*/ void init() throws IOException {
@@ -78,7 +78,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
     }
     
-    private Optional<BookInfoComparison> createBookInfoComparison(Pair<Path> bookPathPair) {
+    private Optional<BookComparison> createBookComparison(Pair<Path> bookPathPair) {
         Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
         
         Pair<BookInfo> bookInfoPair = Side.map(
@@ -97,7 +97,7 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                     }
                 });
         
-        return Optional.of(BookInfoComparison.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
+        return Optional.of(BookComparison.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
     }
     
     @Override
@@ -133,9 +133,9 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildBookPathPairs.add(j + 2, unpairedB);
             currChildBookPathPairs.remove(j);
             
-            currChildBookInfoComparisons.remove(paired);
-            currChildBookInfoComparisons.put(unpairedA, createBookInfoComparison(unpairedA));
-            currChildBookInfoComparisons.put(unpairedB, createBookInfoComparison(unpairedB));
+            currChildBookComparisons.remove(paired);
+            currChildBookComparisons.put(unpairedA, createBookComparison(unpairedA));
+            currChildBookComparisons.put(unpairedB, createBookComparison(unpairedB));
             
         } else {
             throw new AssertionError();
@@ -198,9 +198,9 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
             currChildBookPathPairs.add(dst2, paired);
             currChildBookPathPairs.remove(src2);
             
-            currChildBookInfoComparisons.remove(srcPair);
-            currChildBookInfoComparisons.remove(dstPair);
-            currChildBookInfoComparisons.put(paired, createBookInfoComparison(paired));
+            currChildBookComparisons.remove(srcPair);
+            currChildBookComparisons.remove(dstPair);
+            currChildBookComparisons.put(paired, createBookComparison(paired));
             
         } else {
             throw new AssertionError();
@@ -232,11 +232,11 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                 Pair<Path> paired = currChildBookPathPairs.get(j);
                 assert paired.isPaired();
                 
-                BookInfoComparison comparison = currChildBookInfoComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<BookInfoComparison> dialog = new EditComparisonDialog<>(comparison);
-                Optional<BookInfoComparison> modified = dialog.showAndWait();
+                BookComparison comparison = currChildBookComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<BookComparison> dialog = new EditComparisonDialog<>(comparison);
+                Optional<BookComparison> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
-                    currChildBookInfoComparisons.put(paired, modified);
+                    currChildBookComparisons.put(paired, modified);
                 }
                 
             } else {
@@ -256,6 +256,6 @@ public class EditDirInfoComparisonDialogPane extends EditComparisonDialogPane<Di
                 currChildDirInfoPairs,
                 currChildDirInfoComparisons,
                 currChildBookPathPairs,
-                currChildBookInfoComparisons);
+                currChildBookComparisons);
     }
 }

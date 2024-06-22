@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -26,10 +26,10 @@ public enum AppMenu {
     COMPARE_BOOKS(
             CompareBooksTask::new,
             settings -> {
-                BookInfoComparison bookInfoComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Objects.requireNonNull(bookInfoComparison);
+                BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Objects.requireNonNull(bookComparison);
                 
-                return !bookInfoComparison.parentBookInfoPair().isIdentical();
+                return !bookComparison.parentBookInfoPair().isIdentical();
             }),
     
     /**
@@ -38,11 +38,11 @@ public enum AppMenu {
     COMPARE_SHEETS(
             CompareSheetsTask::new,
             settings -> {
-                BookInfoComparison bookInfoComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Objects.requireNonNull(bookInfoComparison);
+                BookComparison bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Objects.requireNonNull(bookComparison);
                 
-                return !bookInfoComparison.parentBookInfoPair().isIdentical()
-                        || !bookInfoComparison.childSheetNamePairs().get(0).isIdentical();
+                return !bookComparison.parentBookInfoPair().isIdentical()
+                        || !bookComparison.childSheetNamePairs().get(0).isIdentical();
             }),
     
     /**

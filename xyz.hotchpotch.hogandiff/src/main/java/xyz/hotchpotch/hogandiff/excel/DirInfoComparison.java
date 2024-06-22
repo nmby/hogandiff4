@@ -19,7 +19,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @param childDirInfoPairs 子フォルダ情報の組み合わせ
  * @param childDirInfoComparisons 子フォルダ比較情報
  * @param childBookPathPairs 子Excelブックパスの組み合わせ
- * @param childBookInfoComparisons 子Excelブック比較情報
+ * @param childBookComparisons 子Excelブック比較情報
  * @author nmby
  */
 public final record DirInfoComparison(
@@ -27,7 +27,7 @@ public final record DirInfoComparison(
         List<Pair<DirInfo>> childDirInfoPairs,
         Map<Pair<DirInfo>, Optional<DirInfoComparison>> childDirInfoComparisons,
         List<Pair<Path>> childBookPathPairs,
-        Map<Pair<Path>, Optional<BookInfoComparison>> childBookInfoComparisons)
+        Map<Pair<Path>, Optional<BookComparison>> childBookComparisons)
         implements Comparison {
     
     // [static members] ********************************************************
@@ -105,7 +105,7 @@ public final record DirInfoComparison(
         }
         
         Map<Pair<DirInfo>, Optional<DirInfoComparison>> dirInfoComparisons = new HashMap<>();
-        Map<Pair<Path>, Optional<BookInfoComparison>> bookInfoComparisons = new HashMap<>();
+        Map<Pair<Path>, Optional<BookComparison>> bookComparisons = new HashMap<>();
         
         for (Pair<DirInfo> dirInfoPair : dirInfoPairs) {
             DirInfoComparison dirInfoComparison = DirInfoComparison.calculate(
@@ -118,7 +118,7 @@ public final record DirInfoComparison(
         }
         
         for (Pair<Path> bookPathPair : bookPathPairs) {
-            BookInfoComparison bookInfoComparison = null;
+            BookComparison bookComparison = null;
             try {
                 Pair<BookInfo> bookInfoPair = Side.unsafeMap(
                         side -> {
@@ -131,14 +131,14 @@ public final record DirInfoComparison(
                                 return null;
                             }
                         });
-                bookInfoComparison = bookInfoPair != null
-                        ? BookInfoComparison.calculate(bookInfoPair, sheetNamesMatcher)
+                bookComparison = bookInfoPair != null
+                        ? BookComparison.calculate(bookInfoPair, sheetNamesMatcher)
                         : null;
                 
             } catch (ExcelHandlingException e) {
                 // nop
             }
-            bookInfoComparisons.put(bookPathPair, Optional.ofNullable(bookInfoComparison));
+            bookComparisons.put(bookPathPair, Optional.ofNullable(bookComparison));
         }
         
         return new DirInfoComparison(
@@ -146,7 +146,7 @@ public final record DirInfoComparison(
                 dirInfoPairs,
                 dirInfoComparisons,
                 bookPathPairs,
-                bookInfoComparisons);
+                bookComparisons);
     }
     
     // [instance members] ******************************************************
@@ -158,7 +158,7 @@ public final record DirInfoComparison(
      * @param childDirInfoPairs 子フォルダ情報の組み合わせ
      * @param childDirInfoComparisons 子フォルダ比較情報
      * @param childBookPathPairs 子Excelブックパスの組み合わせ
-     * @param childBookInfoComparisons 子Excelブック比較情報
+     * @param childBookComparisons 子Excelブック比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public DirInfoComparison {
@@ -166,12 +166,12 @@ public final record DirInfoComparison(
         Objects.requireNonNull(childDirInfoPairs);
         Objects.requireNonNull(childDirInfoComparisons);
         Objects.requireNonNull(childBookPathPairs);
-        Objects.requireNonNull(childBookInfoComparisons);
+        Objects.requireNonNull(childBookComparisons);
         
         childDirInfoPairs = List.copyOf(childDirInfoPairs);
         childDirInfoComparisons = Map.copyOf(childDirInfoComparisons);
         childBookPathPairs = List.copyOf(childBookPathPairs);
-        childBookInfoComparisons = Map.copyOf(childBookInfoComparisons);
+        childBookComparisons = Map.copyOf(childBookComparisons);
     }
     
     /**

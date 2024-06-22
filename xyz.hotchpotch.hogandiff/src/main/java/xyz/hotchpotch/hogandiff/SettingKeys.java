@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfoComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -150,7 +150,7 @@ public class SettingKeys {
             CURR_BOOK_INFO2);
     
     /** 今回の実行におけるシート比較情報 */
-    public static final Key<BookInfoComparison> CURR_SHEET_COMPARE_INFO = new Key<>(
+    public static final Key<BookComparison> CURR_SHEET_COMPARE_INFO = new Key<>(
             "current.sheetComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
@@ -158,7 +158,7 @@ public class SettingKeys {
             false);
     
     /** 今回の実行におけるExcelブック比較情報 */
-    public static final Key<BookInfoComparison> CURR_BOOK_COMPARE_INFO = new Key<>(
+    public static final Key<BookComparison> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookComparison",
             () -> null,
             encodeNotSupported("cannot encode."),

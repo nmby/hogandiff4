@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.io.IOException;
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfoComparison;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -11,29 +11,29 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  */
-public class EditBookInfoComparisonDialogPane extends EditComparisonDialogPane<BookInfoComparison> {
+public class EditBookComparisonDialogPane extends EditComparisonDialogPane<BookComparison> {
     
     // static members **********************************************************
     
     // instance members ********************************************************
     
-    private final BookInfoComparison bookInfoComparison;
+    private final BookComparison bookComparison;
     
     /**
      * コンストラクタ<br>
      * 
-     * @param bookInfoComparison Excelブック比較情報
+     * @param bookComparison Excelブック比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditBookInfoComparisonDialogPane(BookInfoComparison bookInfoComparison) throws IOException {
+    public EditBookComparisonDialogPane(BookComparison bookComparison) throws IOException {
         super();
-        this.bookInfoComparison = bookInfoComparison;
+        this.bookComparison = bookComparison;
     }
     
     /*package*/ void init() throws IOException {
-        super.init(bookInfoComparison.parentBookInfoPair());
+        super.init(bookComparison.parentBookInfoPair());
         
-        currentChildPairs.addAll(bookInfoComparison.childSheetNamePairs());
+        currentChildPairs.addAll(bookComparison.childSheetNamePairs());
         drawGrid();
     }
     
@@ -79,12 +79,12 @@ public class EditBookInfoComparisonDialogPane extends EditComparisonDialogPane<B
     }
     
     @Override
-    public BookInfoComparison getResult() {
+    public BookComparison getResult() {
         // わざわざこんなことせにゃならんのか？？
         @SuppressWarnings("unchecked")
         List<Pair<String>> casted = currentChildPairs.stream()
                 .map(p -> (Pair<String>) p)
                 .toList();
-        return new BookInfoComparison(bookInfoComparison.parentBookInfoPair(), casted);
+        return new BookComparison(bookComparison.parentBookInfoPair(), casted);
     }
 }
