@@ -10,16 +10,16 @@ import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.BookInfoLoader;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
- * 処理が成功するまで複数のローダーで順に処理を行う {@link BookInfoLoader} の実装です。<br>
+ * 処理が成功するまで複数のローダーで順に処理を行う {@link BookLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler
-public class CombinedBookInfoLoader implements BookInfoLoader {
+public class CombinedBookLoader implements BookLoader {
     
     // [static members] ********************************************************
     
@@ -31,20 +31,20 @@ public class CombinedBookInfoLoader implements BookInfoLoader {
      * @throws NullPointerException {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static BookInfoLoader of(List<UnsafeSupplier<BookInfoLoader, ExcelHandlingException>> suppliers) {
+    public static BookLoader of(List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
         
-        return new CombinedBookInfoLoader(suppliers);
+        return new CombinedBookLoader(suppliers);
     }
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<BookInfoLoader, ExcelHandlingException>> suppliers;
+    private final List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers;
     
-    private CombinedBookInfoLoader(List<UnsafeSupplier<BookInfoLoader, ExcelHandlingException>> suppliers) {
+    private CombinedBookLoader(List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -82,12 +82,12 @@ public class CombinedBookInfoLoader implements BookInfoLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         List<Exception> suppressed = new ArrayList<>();
-        Iterator<UnsafeSupplier<BookInfoLoader, ExcelHandlingException>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<BookLoader, ExcelHandlingException>> itr = suppliers.iterator();
         boolean passwordIssue = false;
         
         while (itr.hasNext()) {
             try {
-                BookInfoLoader loader = itr.next().get();
+                BookLoader loader = itr.next().get();
                 return loader.loadBookInfo(bookPath, readPassword);
                 
             } catch (PasswordHandlingException e) {

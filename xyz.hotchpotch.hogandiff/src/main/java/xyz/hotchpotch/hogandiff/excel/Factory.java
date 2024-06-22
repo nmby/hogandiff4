@@ -32,7 +32,7 @@ public class Factory {
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookInfoLoader bookInfoLoader(
+    public static BookLoader bookLoader(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
@@ -40,7 +40,7 @@ public class Factory {
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
-        return BookInfoLoader.of(bookPath, readPassword);
+        return BookLoader.of(bookPath, readPassword);
     }
     
     /**

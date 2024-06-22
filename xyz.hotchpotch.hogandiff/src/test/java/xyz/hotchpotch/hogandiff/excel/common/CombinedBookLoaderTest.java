@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.BookInfoLoader;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 
-class CombinedBookInfoLoaderTest {
+class CombinedBookLoaderTest {
     
     // [static members] ********************************************************
     
-    private static final BookInfoLoader successLoader = (bookPath, readPassword) -> new BookInfo(
+    private static final BookLoader successLoader = (bookPath, readPassword) -> new BookInfo(
             bookPath, List.of("success"));
     
-    private static final BookInfoLoader failLoader = (bookPath, readPassword) -> {
+    private static final BookLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
     };
     
@@ -29,24 +29,24 @@ class CombinedBookInfoLoaderTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> CombinedBookInfoLoader.of(null));
+                () -> CombinedBookLoader.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> CombinedBookInfoLoader.of(List.of()));
+                () -> CombinedBookLoader.of(List.of()));
         
         // 正常系
         assertTrue(
-                CombinedBookInfoLoader.of(List.of(
-                        () -> successLoader)) instanceof CombinedBookInfoLoader);
+                CombinedBookLoader.of(List.of(
+                        () -> successLoader)) instanceof CombinedBookLoader);
         assertTrue(
-                CombinedBookInfoLoader.of(List.of(
+                CombinedBookLoader.of(List.of(
                         () -> successLoader,
-                        () -> failLoader)) instanceof CombinedBookInfoLoader);
+                        () -> failLoader)) instanceof CombinedBookLoader);
     }
     
     @Test
     void testLoadSheetNames_パラメータチェック() {
-        BookInfoLoader testee = CombinedBookInfoLoader.of(List.of(() -> successLoader));
+        BookLoader testee = CombinedBookLoader.of(List.of(() -> successLoader));
         
         // null パラメータ
         assertThrows(
@@ -56,8 +56,8 @@ class CombinedBookInfoLoaderTest {
     
     @Test
     void testLoadSheetNames_失敗系() {
-        BookInfoLoader testeeF = CombinedBookInfoLoader.of(List.of(() -> failLoader));
-        BookInfoLoader testeeFFF = CombinedBookInfoLoader.of(List.of(
+        BookLoader testeeF = CombinedBookLoader.of(List.of(() -> failLoader));
+        BookLoader testeeFFF = CombinedBookLoader.of(List.of(
                 () -> failLoader, () -> failLoader, () -> failLoader));
         
         // 失敗１つ
@@ -73,8 +73,8 @@ class CombinedBookInfoLoaderTest {
     
     @Test
     void testLoadSheetNames_成功系() throws ExcelHandlingException {
-        BookInfoLoader testeeS = CombinedBookInfoLoader.of(List.of(() -> successLoader));
-        BookInfoLoader testeeFFSF = CombinedBookInfoLoader.of(List.of(
+        BookLoader testeeS = CombinedBookLoader.of(List.of(() -> successLoader));
+        BookLoader testeeFFSF = CombinedBookLoader.of(List.of(
                 () -> failLoader,
                 () -> failLoader,
                 () -> successLoader,

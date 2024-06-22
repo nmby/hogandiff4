@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.BookInfoLoader;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -87,8 +87,8 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
                         if (bookPathPair.has(side)) {
                             Path bookPath = bookPathPair.get(side);
                             String readPassword = readPasswords.get(bookPath);
-                            BookInfoLoader sheetNamesLoader = Factory.bookInfoLoader(bookPath, readPassword);
-                            return sheetNamesLoader.loadBookInfo(bookPath, readPassword);
+                            BookLoader bookLoader = Factory.bookLoader(bookPath, readPassword);
+                            return bookLoader.loadBookInfo(bookPath, readPassword);
                         } else {
                             return null;
                         }
