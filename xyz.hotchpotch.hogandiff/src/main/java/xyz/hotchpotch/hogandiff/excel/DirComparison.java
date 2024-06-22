@@ -161,17 +161,24 @@ public final record DirComparison(
      * @param childBookComparisons 子Excelブック比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirComparison {
+    public DirComparison(
+            Pair<DirInfo> parentDirInfoPair,
+            List<Pair<DirInfo>> childDirInfoPairs,
+            Map<Pair<DirInfo>, Optional<DirComparison>> childDirComparisons,
+            List<Pair<Path>> childBookPathPairs,
+            Map<Pair<Path>, Optional<BookComparison>> childBookComparisons) {
+        
         Objects.requireNonNull(parentDirInfoPair);
         Objects.requireNonNull(childDirInfoPairs);
         Objects.requireNonNull(childDirComparisons);
         Objects.requireNonNull(childBookPathPairs);
         Objects.requireNonNull(childBookComparisons);
         
-        childDirInfoPairs = List.copyOf(childDirInfoPairs);
-        childDirComparisons = Map.copyOf(childDirComparisons);
-        childBookPathPairs = List.copyOf(childBookPathPairs);
-        childBookComparisons = Map.copyOf(childBookComparisons);
+        this.parentDirInfoPair = parentDirInfoPair;
+        this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
+        this.childDirComparisons = Map.copyOf(childDirComparisons);
+        this.childBookPathPairs = List.copyOf(childBookPathPairs);
+        this.childBookComparisons = Map.copyOf(childBookComparisons);
     }
     
     /**

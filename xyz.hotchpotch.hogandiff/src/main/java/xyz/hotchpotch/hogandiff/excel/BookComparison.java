@@ -69,10 +69,14 @@ public final record BookComparison(
      * @param childSheetNamePairs シート名の組み合わせ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BookComparison {
+    public BookComparison(
+            Pair<BookInfo> parentBookInfoPair,
+            List<Pair<String>> childSheetNamePairs) {
+        
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(childSheetNamePairs);
         
-        childSheetNamePairs = List.copyOf(childSheetNamePairs);
+        this.parentBookInfoPair = parentBookInfoPair;
+        this.childSheetNamePairs = List.copyOf(childSheetNamePairs);
     }
 }
