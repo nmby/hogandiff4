@@ -48,7 +48,7 @@ public class StandardDirLoader implements DirLoader {
     }
     
     @Override
-    public DirInfo loadDir(Path path) throws ExcelHandlingException {
+    public DirInfo loadDirInfo(Path path) throws ExcelHandlingException {
         Objects.requireNonNull(path, "path");
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);

@@ -14,10 +14,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -25,12 +25,12 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
-public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
+public class BookLoaderWithPoiUserApi implements BookLoader {
     
     // [static members] ********************************************************
     
@@ -42,20 +42,20 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
      * @throws NullPointerException {@code targetTypes} が {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
+    public static BookLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes, "targetTypes");
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new SheetNamesLoaderWithPoiUserApi(targetTypes);
+        return new BookLoaderWithPoiUserApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private SheetNamesLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
+    private BookLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);
@@ -83,7 +83,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
     //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
-    public BookInfo loadSheetNames(
+    public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
@@ -102,7 +102,7 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
                     .map(Sheet::getSheetName)
                     .toList();
             
-            return new BookInfo(bookPath, sheetNames);
+            return BookInfo.ofLoadCompleted(bookPath, sheetNames);
             
         } catch (LeftoverDataException e) {
             // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない

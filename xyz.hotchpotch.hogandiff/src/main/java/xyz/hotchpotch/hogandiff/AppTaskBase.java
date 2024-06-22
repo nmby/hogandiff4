@@ -14,13 +14,13 @@ import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsLoader;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
@@ -423,7 +423,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#compareDirs
     private BookResult compareBooks(
-            BookCompareInfo bookCompareInfo,
+            BookComparison bookComparison,
             int progressBefore,
             int progressAfter)
             throws ExcelHandlingException {
@@ -431,19 +431,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         updateProgress(progressBefore, PROGRESS_MAX);
         
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-        Pair<CellsLoader> cellsLoaderPair = bookCompareInfo.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
+        Pair<CellsLoader> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
         
         SheetComparator sheetComparator = Factory.sheetComparator(settings);
         Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
         
-        for (int i = 0; i < bookCompareInfo.childSheetNamePairs().size(); i++) {
-            Pair<String> sheetNamePair = bookCompareInfo.childSheetNamePairs().get(i);
+        for (int i = 0; i < bookComparison.childSheetNamePairs().size(); i++) {
+            Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
             
             if (sheetNamePair.isPaired()) {
                 
-                Path bookPathA = bookCompareInfo.parentBookInfoPair().a().bookPath();
-                Path bookPathB = bookCompareInfo.parentBookInfoPair().b().bookPath();
+                Path bookPathA = bookComparison.parentBookInfoPair().a().bookPath();
+                Path bookPathB = bookComparison.parentBookInfoPair().b().bookPath();
                 Set<CellData> cellsSetA = cellsLoaderPair.a().loadCells(
                         bookPathA, readPasswords.get(bookPathA), sheetNamePair.a());
                 Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
@@ -458,11 +458,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             updateProgress(
                     progressBefore
-                            + (progressAfter - progressBefore) * (i + 1) / bookCompareInfo.childSheetNamePairs().size(),
+                            + (progressAfter - progressBefore) * (i + 1) / bookComparison.childSheetNamePairs().size(),
                     PROGRESS_MAX);
         }
         
-        return new BookResult(bookCompareInfo, results);
+        return new BookResult(bookComparison, results);
     }
     
     /**
@@ -490,7 +490,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param dirId フォルダ識別子
      * @param indent インデント
-     * @param dirCompareInfo 比較対象フォルダの情報
+     * @param dirComparison 比較対象フォルダの情報
      * @param outputDirPair 出力先フォルダ
      * @param progressBefore 処理開始時の進捗度
      * @param progressAfter 処理終了時の進捗度
@@ -500,38 +500,38 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected DirResult compareDirs(
             String dirId,
             String indent,
-            DirCompareInfo dirCompareInfo,
+            DirComparison dirComparison,
             Pair<Path> outputDirPair,
             int progressBefore,
             int progressAfter) {
         
         Map<Pair<Path>, Optional<BookResult>> bookResults = new HashMap<>();
         IntUnaryOperator getProgress = n -> progressBefore
-                + (progressAfter - progressBefore) * n / dirCompareInfo.childBookPathPairs().size();
+                + (progressAfter - progressBefore) * n / dirComparison.childBookPathPairs().size();
         
-        if (dirCompareInfo.childBookPathPairs().size() == 0) {
+        if (dirComparison.childBookPathPairs().size() == 0) {
             str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
             updateMessage(str.toString());
         }
         
-        for (int i = 0; i < dirCompareInfo.childBookPathPairs().size(); i++) {
+        for (int i = 0; i < dirComparison.childBookPathPairs().size(); i++) {
             int ii = i;
             
-            Pair<Path> bookPathPair = dirCompareInfo.childBookPathPairs().get(i);
+            Pair<Path> bookPathPair = dirComparison.childBookPathPairs().get(i);
             
             str.append(indent
                     + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookPathPair));
             updateMessage(str.toString());
             
             if (bookPathPair.isPaired()
-                    && dirCompareInfo.childBookCompareInfos().get(bookPathPair).isPresent()) {
+                    && dirComparison.childBookComparisons().get(bookPathPair).isPresent()) {
                 
                 Pair<Path> srcPathPair = Side.map(side -> bookPathPair.get(side));
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookPathPair.get(side).getFileName().toString())));
                 
                 BookResult bookResult = compareBooks(
-                        dirCompareInfo.childBookCompareInfos().get(bookPathPair).get(),
+                        dirComparison.childBookComparisons().get(bookPathPair).get(),
                         srcPathPair,
                         dstPathPair,
                         getProgress.applyAsInt(i),
@@ -572,11 +572,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
         
-        return new DirResult(dirCompareInfo, bookResults, dirId);
+        return new DirResult(dirComparison, bookResults, dirId);
     }
     
     private BookResult compareBooks(
-            BookCompareInfo bookCompareInfo,
+            BookComparison bookComparison,
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
             int progressBefore,
@@ -584,7 +584,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             return compareBooks(
-                    bookCompareInfo,
+                    bookComparison,
                     progressBefore,
                     progressAfter);
             

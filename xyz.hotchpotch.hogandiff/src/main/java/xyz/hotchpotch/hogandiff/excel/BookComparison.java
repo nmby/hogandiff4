@@ -14,15 +14,15 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @param childSheetNamePairs 子シート名の組み合わせ
  * @author nmby
  */
-public final record BookCompareInfo(
+public final record BookComparison(
         Pair<BookInfo> parentBookInfoPair,
         List<Pair<String>> childSheetNamePairs)
-        implements CompareInfo {
+        implements Comparison {
     
     // [static members] ********************************************************
     
     /**
-     * 与えられたマッチャーを使用して新たな {@link BookCompareInfo} インスタンスを生成します。<br>
+     * 与えられたマッチャーを使用して新たな {@link BookComparison} インスタンスを生成します。<br>
      * 
      * @param parentBookInfoPair 比較対象Excelブックの情報
      * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
@@ -30,7 +30,7 @@ public final record BookCompareInfo(
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static BookCompareInfo calculate(
+    public static BookComparison calculate(
             Pair<BookInfo> parentBookInfoPair,
             Matcher<String> sheetNamesMatcher) {
         
@@ -41,22 +41,22 @@ public final record BookCompareInfo(
             List<Pair<String>> sheetNamePairs = sheetNamesMatcher.makeItemPairs(
                     parentBookInfoPair.a().sheetNames(),
                     parentBookInfoPair.b().sheetNames());
-            return new BookCompareInfo(parentBookInfoPair, sheetNamePairs);
+            return new BookComparison(parentBookInfoPair, sheetNamePairs);
             
         } else if (parentBookInfoPair.hasA()) {
             List<Pair<String>> sheetNamePairs = parentBookInfoPair.a().sheetNames().stream()
                     .map(sheetName -> Pair.ofOnly(Side.A, sheetName))
                     .toList();
-            return new BookCompareInfo(parentBookInfoPair, sheetNamePairs);
+            return new BookComparison(parentBookInfoPair, sheetNamePairs);
             
         } else if (parentBookInfoPair.hasB()) {
             List<Pair<String>> sheetNamePairs = parentBookInfoPair.b().sheetNames().stream()
                     .map(sheetName -> Pair.ofOnly(Side.B, sheetName))
                     .toList();
-            return new BookCompareInfo(parentBookInfoPair, sheetNamePairs);
+            return new BookComparison(parentBookInfoPair, sheetNamePairs);
             
         } else {
-            return new BookCompareInfo(parentBookInfoPair, List.of());
+            return new BookComparison(parentBookInfoPair, List.of());
         }
     }
     
@@ -69,10 +69,14 @@ public final record BookCompareInfo(
      * @param childSheetNamePairs シート名の組み合わせ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BookCompareInfo {
+    public BookComparison(
+            Pair<BookInfo> parentBookInfoPair,
+            List<Pair<String>> childSheetNamePairs) {
+        
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(childSheetNamePairs);
         
-        childSheetNamePairs = List.copyOf(childSheetNamePairs);
+        this.parentBookInfoPair = parentBookInfoPair;
+        this.childSheetNamePairs = List.copyOf(childSheetNamePairs);
     }
 }

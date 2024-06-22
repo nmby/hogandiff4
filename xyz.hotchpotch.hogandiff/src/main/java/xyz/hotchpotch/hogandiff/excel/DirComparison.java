@@ -17,32 +17,32 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @param parentDirInfoPair 親フォルダ情報
  * @param childDirInfoPairs 子フォルダ情報の組み合わせ
- * @param childDirCompareInfos 子フォルダ比較情報
+ * @param childDirComparisons 子フォルダ比較情報
  * @param childBookPathPairs 子Excelブックパスの組み合わせ
- * @param childBookCompareInfos 子Excelブック比較情報
+ * @param childBookComparisons 子Excelブック比較情報
  * @author nmby
  */
-public final record DirCompareInfo(
+public final record DirComparison(
         Pair<DirInfo> parentDirInfoPair,
         List<Pair<DirInfo>> childDirInfoPairs,
-        Map<Pair<DirInfo>, Optional<DirCompareInfo>> childDirCompareInfos,
+        Map<Pair<DirInfo>, Optional<DirComparison>> childDirComparisons,
         List<Pair<Path>> childBookPathPairs,
-        Map<Pair<Path>, Optional<BookCompareInfo>> childBookCompareInfos)
-        implements CompareInfo {
+        Map<Pair<Path>, Optional<BookComparison>> childBookComparisons)
+        implements Comparison {
     
     // [static members] ********************************************************
     
     /**
-     * 階層状の {@link DirCompareInfo} の内容を一層に平坦化した情報を保持するレコードです。<br>
+     * 階層状の {@link DirComparison} の内容を一層に平坦化した情報を保持するレコードです。<br>
      * 
      * @param parentDirInfoPair 比較対象フォルダ情報
      * @param dirInfoPairs 子フォルダ情報
-     * @param dirCompareInfos 子フォルダ比較情報
+     * @param dirComparisons 子フォルダ比較情報
      */
-    public static record FlattenDirCompareInfo(
+    public static record FlattenDirComparison(
             Pair<DirInfo> parentDirInfoPair,
             List<Pair<DirInfo>> dirInfoPairs,
-            Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos) {
+            Map<Pair<DirInfo>, Optional<DirComparison>> dirComparisons) {
         
         // [static members] ----------------------------------------------------
         
@@ -50,7 +50,7 @@ public final record DirCompareInfo(
     }
     
     /**
-     * 与えられたマッチャーを使用して新たな {@link DirCompareInfo} インスタンスを生成します。<br>
+     * 与えられたマッチャーを使用して新たな {@link DirComparison} インスタンスを生成します。<br>
      * 
      * @param parentDirInfoPair 比較対象フォルダ情報
      * @param dirInfosMatcher フォルダ情報の組み合わせを決めるマッチャー
@@ -60,7 +60,7 @@ public final record DirCompareInfo(
      * @return 新たなインスタンス
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirCompareInfo calculate(
+    public static DirComparison calculate(
             Pair<DirInfo> parentDirInfoPair,
             Matcher<DirInfo> dirInfosMatcher,
             Matcher<Path> bookPathsMatcher,
@@ -104,49 +104,49 @@ public final record DirCompareInfo(
             bookPathPairs = List.of();
         }
         
-        Map<Pair<DirInfo>, Optional<DirCompareInfo>> dirCompareInfos = new HashMap<>();
-        Map<Pair<Path>, Optional<BookCompareInfo>> bookCompareInfos = new HashMap<>();
+        Map<Pair<DirInfo>, Optional<DirComparison>> dirComparisons = new HashMap<>();
+        Map<Pair<Path>, Optional<BookComparison>> bookComparisons = new HashMap<>();
         
         for (Pair<DirInfo> dirInfoPair : dirInfoPairs) {
-            DirCompareInfo dirCompareInfo = DirCompareInfo.calculate(
+            DirComparison dirComparison = DirComparison.calculate(
                     dirInfoPair,
                     dirInfosMatcher,
                     bookPathsMatcher,
                     sheetNamesMatcher,
                     readPasswords);
-            dirCompareInfos.put(dirInfoPair, Optional.ofNullable(dirCompareInfo));
+            dirComparisons.put(dirInfoPair, Optional.ofNullable(dirComparison));
         }
         
         for (Pair<Path> bookPathPair : bookPathPairs) {
-            BookCompareInfo bookCompareInfo = null;
+            BookComparison bookComparison = null;
             try {
                 Pair<BookInfo> bookInfoPair = Side.unsafeMap(
                         side -> {
                             if (bookPathPair.has(side)) {
                                 Path bookPath = bookPathPair.get(side);
                                 String readPassword = readPasswords.get(bookPath);
-                                SheetNamesLoader sheetNamesLoader = Factory.sheetNamesLoader(bookPath, readPassword);
-                                return sheetNamesLoader.loadSheetNames(bookPath, readPassword);
+                                BookLoader bookLoader = Factory.bookLoader(bookPath, readPassword);
+                                return bookLoader.loadBookInfo(bookPath, readPassword);
                             } else {
                                 return null;
                             }
                         });
-                bookCompareInfo = bookInfoPair != null
-                        ? BookCompareInfo.calculate(bookInfoPair, sheetNamesMatcher)
+                bookComparison = bookInfoPair != null
+                        ? BookComparison.calculate(bookInfoPair, sheetNamesMatcher)
                         : null;
                 
             } catch (ExcelHandlingException e) {
                 // nop
             }
-            bookCompareInfos.put(bookPathPair, Optional.ofNullable(bookCompareInfo));
+            bookComparisons.put(bookPathPair, Optional.ofNullable(bookComparison));
         }
         
-        return new DirCompareInfo(
+        return new DirComparison(
                 parentDirInfoPair,
                 dirInfoPairs,
-                dirCompareInfos,
+                dirComparisons,
                 bookPathPairs,
-                bookCompareInfos);
+                bookComparisons);
     }
     
     // [instance members] ******************************************************
@@ -156,54 +156,62 @@ public final record DirCompareInfo(
      * 
      * @param parentDirInfoPair 親フォルダ情報
      * @param childDirInfoPairs 子フォルダ情報の組み合わせ
-     * @param childDirCompareInfos 子フォルダ比較情報
+     * @param childDirComparisons 子フォルダ比較情報
      * @param childBookPathPairs 子Excelブックパスの組み合わせ
-     * @param childBookCompareInfos 子Excelブック比較情報
+     * @param childBookComparisons 子Excelブック比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirCompareInfo {
+    public DirComparison(
+            Pair<DirInfo> parentDirInfoPair,
+            List<Pair<DirInfo>> childDirInfoPairs,
+            Map<Pair<DirInfo>, Optional<DirComparison>> childDirComparisons,
+            List<Pair<Path>> childBookPathPairs,
+            Map<Pair<Path>, Optional<BookComparison>> childBookComparisons) {
+        
         Objects.requireNonNull(parentDirInfoPair);
         Objects.requireNonNull(childDirInfoPairs);
-        Objects.requireNonNull(childDirCompareInfos);
+        Objects.requireNonNull(childDirComparisons);
         Objects.requireNonNull(childBookPathPairs);
-        Objects.requireNonNull(childBookCompareInfos);
+        Objects.requireNonNull(childBookComparisons);
         
-        childDirInfoPairs = List.copyOf(childDirInfoPairs);
-        childDirCompareInfos = Map.copyOf(childDirCompareInfos);
-        childBookPathPairs = List.copyOf(childBookPathPairs);
-        childBookCompareInfos = Map.copyOf(childBookCompareInfos);
+        this.parentDirInfoPair = parentDirInfoPair;
+        this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
+        this.childDirComparisons = Map.copyOf(childDirComparisons);
+        this.childBookPathPairs = List.copyOf(childBookPathPairs);
+        this.childBookComparisons = Map.copyOf(childBookComparisons);
     }
     
     /**
      * ツリー状の本オフジェクトの内容を一層に並べた
-     * {@link FlattenDirCompareInfo} オブジェクトに変換して返します。<br>
+     * {@link FlattenDirComparison} オブジェクトに変換して返します。<br>
      * 
      * @return 平坦化されたフォルダ比較情報
      */
-    public FlattenDirCompareInfo flatten() {
+    public FlattenDirComparison flatten() {
         List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
-        Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos = new HashMap<>();
+        Map<Pair<DirInfo>, Optional<DirComparison>> accDirComparisons = new HashMap<>();
         
         accDirInfoPairs.add(parentDirInfoPair);
-        accDirCompareInfos.put(parentDirInfoPair, Optional.of(this));
-        gather(this, accDirInfoPairs, accDirCompareInfos);
+        accDirComparisons.put(parentDirInfoPair, Optional.of(this));
+        gather(this, accDirInfoPairs, accDirComparisons);
         
-        return new FlattenDirCompareInfo(
+        return new FlattenDirComparison(
                 parentDirInfoPair,
                 accDirInfoPairs,
-                accDirCompareInfos);
+                accDirComparisons);
     }
     
     private void gather(
-            DirCompareInfo dirCompareInfo,
+            DirComparison dirComparison,
             List<Pair<DirInfo>> accDirInfoPairs,
-            Map<Pair<DirInfo>, Optional<DirCompareInfo>> accDirCompareInfos) {
+            Map<Pair<DirInfo>, Optional<DirComparison>> accDirComparisons) {
         
-        for (Pair<DirInfo> childDirInfoPair : dirCompareInfo.childDirInfoPairs) {
-            Optional<DirCompareInfo> childDirCompareInfo = dirCompareInfo.childDirCompareInfos.get(childDirInfoPair);
+        for (Pair<DirInfo> childDirInfoPair : dirComparison.childDirInfoPairs) {
+            Optional<DirComparison> childDirComparison = dirComparison.childDirComparisons
+                    .get(childDirInfoPair);
             accDirInfoPairs.add(childDirInfoPair);
-            accDirCompareInfos.put(childDirInfoPair, childDirCompareInfo);
-            childDirCompareInfo.ifPresent(info -> gather(info, accDirInfoPairs, accDirCompareInfos));
+            accDirComparisons.put(childDirInfoPair, childDirComparison);
+            childDirComparison.ifPresent(info -> gather(info, accDirInfoPairs, accDirComparisons));
         }
     }
 }

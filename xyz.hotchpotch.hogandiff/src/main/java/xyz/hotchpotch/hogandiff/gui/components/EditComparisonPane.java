@@ -17,18 +17,18 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.EditCompareInfoDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
  * 
  * @author nmby
  */
-public class EditCompareInfoPane extends AnchorPane implements ChildController {
+public class EditComparisonPane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -38,7 +38,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
-    private Button editCompareInfoButton;
+    private Button editComparisonButton;
     
     private MainController parent;
     
@@ -47,8 +47,8 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditCompareInfoPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoPane.fxml"), rb);
+    public EditComparisonPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -61,12 +61,12 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());
-        editCompareInfoButton.disableProperty().bind(Bindings.createBooleanBinding(
+        editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
-        editCompareInfoButton.setOnAction(event -> editCompareInfo());
+        editComparisonButton.setOnAction(event -> editComparison());
         
         // 3.初期値の設定
         // nop
@@ -75,7 +75,7 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
         // nop
     }
     
-    private void editCompareInfo() {
+    private void editComparison() {
         try {
             AppMenu menu = parent.menuProp.getValue();
             if (!menu.isValidTargets(ar.settings())) {
@@ -89,35 +89,35 @@ public class EditCompareInfoPane extends AnchorPane implements ChildController {
             
             switch (menu) {
                 case COMPARE_BOOKS: {
-                    BookCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    EditCompareInfoDialog<BookCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
-                    Optional<BookCompareInfo> modified = dialog.showAndWait();
+                    BookComparison comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    EditComparisonDialog<BookComparison> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<BookComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.bookCompareInfoProp.unbind();
-                        parent.bookCompareInfoProp.setValue(modified.get());
-                        parent.bindBookCompareInfoProp();
+                        parent.bookComparisonProp.unbind();
+                        parent.bookComparisonProp.setValue(modified.get());
+                        parent.bindBookComparisonProp();
                     }
                     return;
                 }
                 case COMPARE_DIRS: {
-                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
-                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    DirComparison comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.dirCompareInfoProp.unbind();
-                        parent.dirCompareInfoProp.setValue(modified.get());
-                        parent.bindDirCompareInfoProp();
+                        parent.dirComparisonProp.unbind();
+                        parent.dirComparisonProp.setValue(modified.get());
+                        parent.bindDirComparisonProp();
                     }
                     return;
                 }
                 case COMPARE_TREES: {
-                    DirCompareInfo compareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                    EditCompareInfoDialog<DirCompareInfo> dialog = new EditCompareInfoDialog<>(compareInfo);
-                    Optional<DirCompareInfo> modified = dialog.showAndWait();
+                    DirComparison comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.treeCompareInfoProp.unbind();
-                        parent.treeCompareInfoProp.setValue(modified.get());
-                        parent.bindTreeCompareInfoProp();
+                        parent.treeComparisonProp.unbind();
+                        parent.treeComparisonProp.setValue(modified.get());
+                        parent.bindTreeComparisonProp();
                     }
                     return;
                 }

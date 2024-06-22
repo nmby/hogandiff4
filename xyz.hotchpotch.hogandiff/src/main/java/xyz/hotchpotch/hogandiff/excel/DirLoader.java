@@ -5,8 +5,8 @@ import java.nio.file.Path;
 import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
 
 /**
- * フォルダの情報を抽出するローダーを表します。<br>
- * これは、{@link #loadDir(Path)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * フォルダ情報を抽出するローダーを表します。<br>
+ * これは、{@link #loadDirInfo(Path)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
@@ -28,11 +28,11 @@ public interface DirLoader {
     // [instance members] ******************************************************
     
     /**
-     * 指定されたフォルダの情報を返します。<br>
+     * 指定されたパスのフォルダ情報を返します。<br>
      * 
      * @param path フォルダのパス
-     * @return フォルダの情報
+     * @return フォルダ情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    DirInfo loadDir(Path path) throws ExcelHandlingException;
+    DirInfo loadDirInfo(Path path) throws ExcelHandlingException;
 }

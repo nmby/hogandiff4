@@ -8,9 +8,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.CompareInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
+import xyz.hotchpotch.hogandiff.excel.Comparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
  * @param <T> 比較情報の型
  * @author nmby
  */
-public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
+public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
     
     // static members **********************************************************
     
@@ -29,40 +29,40 @@ public class EditCompareInfoDialog<T extends CompareInfo> extends Dialog<T> {
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param compareInfo 比較情報
+     * @param comparison 比較情報
      * @throws IOException ダイアログの構成に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public EditCompareInfoDialog(T compareInfo) throws IOException {
-        Objects.requireNonNull(compareInfo);
+    public EditComparisonDialog(T comparison) throws IOException {
+        Objects.requireNonNull(comparison);
         
         @SuppressWarnings("unchecked")
-        EditCompareInfoDialogPane<T> editCompareInfoDialogPane = (EditCompareInfoDialogPane<T>) switch (compareInfo) {
-            case BookCompareInfo bookCompareInfo -> {
-                EditBookCompareInfoDialogPane pane = new EditBookCompareInfoDialogPane(bookCompareInfo);
+        EditComparisonDialogPane<T> editComparisonDialogPane = (EditComparisonDialogPane<T>) switch (comparison) {
+            case BookComparison bookComparison -> {
+                EditBookComparisonDialogPane pane = new EditBookComparisonDialogPane(bookComparison);
                 pane.init();
                 yield pane;
             }
-            case DirCompareInfo dirCompareInfo -> {
-                EditDirCompareInfoDialogPane pane = new EditDirCompareInfoDialogPane(dirCompareInfo);
+            case DirComparison dirComparison -> {
+                EditDirComparisonDialogPane pane = new EditDirComparisonDialogPane(dirComparison);
                 pane.init();
                 yield pane;
             }
         };
         
-        editCompareInfoDialogPane.getStylesheets().add(
-                getClass().getResource("editCompareInfoDialog.css").toExternalForm());
+        editComparisonDialogPane.getStylesheets().add(
+                getClass().getResource("editComparisonDialog.css").toExternalForm());
         
         DialogPane dialogPane = getDialogPane();
-        dialogPane.setContent(editCompareInfoDialogPane);
+        dialogPane.setContent(editComparisonDialogPane);
         dialogPane.getButtonTypes().setAll(
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        setTitle(rb.getString("fx.EditCompareInfoPane.010"));
+        setTitle(rb.getString("fx.EditComparisonPane.010"));
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? editCompareInfoDialogPane.getResult()
+                ? editComparisonDialogPane.getResult()
                 : null);
     }
 }

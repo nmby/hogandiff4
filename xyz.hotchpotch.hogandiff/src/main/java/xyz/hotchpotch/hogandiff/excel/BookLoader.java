@@ -6,24 +6,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.excel.common.CombinedSheetNamesLoader;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFSheetNamesLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.SheetNamesLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFSheetNamesLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
 
 /**
- * Excelブックからシート名の一覧を抽出するローダーを表します。<br>
- * これは、{@link #loadSheetNames(Path, String)} を関数メソッドに持つ関数型インタフェースです。<br>
+ * Excelブック情報を抽出するローダーを表します。<br>
+ * これは、{@link #loadBookInfo(Path, String)} を関数メソッドに持つ関数型インタフェースです。<br>
  *
  * @author nmby
  */
 @FunctionalInterface
-public interface SheetNamesLoader {
+public interface BookLoader {
     
     // [static members] ********************************************************
     
     /**
-     * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
+     * Excelブック情報を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
@@ -31,7 +31,7 @@ public interface SheetNamesLoader {
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static SheetNamesLoader of(
+    public static BookLoader of(
             Path bookPath,
             String readPassword) {
         
@@ -41,13 +41,13 @@ public interface SheetNamesLoader {
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         
         return switch (BookType.of(bookPath)) {
-            case XLS -> CombinedSheetNamesLoader.of(List.of(
-                    () -> HSSFSheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
-                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            case XLS -> CombinedBookLoader.of(List.of(
+                    () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
+                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
         
-            case XLSX, XLSM -> CombinedSheetNamesLoader.of(List.of(
-                    () -> XSSFSheetNamesLoaderWithSax.of(targetSheetTypes),
-                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
+            case XLSX, XLSM -> CombinedBookLoader.of(List.of(
+                    () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
+                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
         
             // FIXME: [No.2 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
@@ -58,14 +58,14 @@ public interface SheetNamesLoader {
     // [instance members] ******************************************************
     
     /**
-     * 指定されたExcelブックに含まれるシート名の一覧を返します。<br>
+     * 指定されたパスのExcelブック情報を抽出して返します。<br>
      * 
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブック情報
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    BookInfo loadSheetNames(
+    BookInfo loadBookInfo(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException;

@@ -23,12 +23,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.CompareInfo;
+import xyz.hotchpotch.hogandiff.excel.Comparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
-/*package*/ abstract class EditCompareInfoDialogPane<T extends CompareInfo> extends VBox {
+/*package*/ abstract class EditComparisonDialogPane<T extends Comparison> extends VBox {
     
     // [static members] ********************************************************
     
@@ -98,8 +98,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      * 
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditCompareInfoDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditCompareInfoDialogPane.fxml"), rb);
+    public EditComparisonDialogPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), rb);
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -187,7 +187,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         // static members ------------------------------------------------------
         
         private static Image linkOffImage = new Image(
-                EditCompareInfoDialogPane.class.getResourceAsStream("link-off.png"));
+                EditComparisonDialogPane.class.getResourceAsStream("link-off.png"));
         
         // instance members ----------------------------------------------------
         
