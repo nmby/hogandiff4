@@ -34,7 +34,7 @@ public record BookInfo(
         NOT_YET,
         
         /** パスワードロックのためにExcelブック情報のロードに成功していないことを表します。 */
-        UNKNOWN_PASSWORD,
+        PASSWORD_LOCKED,
         
         /** パスワード以外の何らかの原因でExcelブック情報のロードに失敗したことを表します。 */
         LOAD_FAILED;
@@ -67,6 +67,30 @@ public record BookInfo(
         Objects.requireNonNull(bookPath);
         
         return new BookInfo(bookPath, List.of(), Status.NOT_YET);
+    }
+    
+    /**
+     * パスワードロックのためロード未成功とマークされたExcelブック情報を返します。<br>
+     * 
+     * @param bookPath Excelブックのパス
+     * @return パスワードロックのためロード未成功とマークされたExcelブック情報
+     */
+    public static BookInfo ofPasswordLocked(Path bookPath) {
+        Objects.requireNonNull(bookPath);
+        
+        return new BookInfo(bookPath, List.of(), Status.PASSWORD_LOCKED);
+    }
+    
+    /**
+     * パスワード以外の何らかの減でロード失敗とマークされたExcelブック情報を返します。<br>
+     * 
+     * @param bookPath Excelブックのパス
+     * @return パスワード以外の何らかの減でロード失敗とマークされたExcelブック情報
+     */
+    public static BookInfo ofLoadFailed(Path bookPath) {
+        Objects.requireNonNull(bookPath);
+        
+        return new BookInfo(bookPath, List.of(), Status.LOAD_FAILED);
     }
     
     // [instance members] ******************************************************
