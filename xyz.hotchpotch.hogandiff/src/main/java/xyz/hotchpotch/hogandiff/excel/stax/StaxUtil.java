@@ -240,11 +240,11 @@ public class StaxUtil {
      * @param event XMLイベント
      * @param qName QNAME
      * @return 指定されたイベントが指定されたQNAMEの開始要素である場合は {@code true}
-     * @throws NullPointerException {@code event}, {@code qName} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static boolean isStart(XMLEvent event, QName qName) {
-        Objects.requireNonNull(event, "event");
-        Objects.requireNonNull(qName, "qName");
+        Objects.requireNonNull(event);
+        Objects.requireNonNull(qName);
         
         return event.isStartElement() && qName.equals(event.asStartElement().getName());
     }
@@ -255,11 +255,11 @@ public class StaxUtil {
      * @param event XMLイベント
      * @param qName QNAME
      * @return 指定されたイベントが指定されたQNAMEの終了要素である場合は {@code true}
-     * @throws NullPointerException {@code event}, {@code qName} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static boolean isEnd(XMLEvent event, QName qName) {
-        Objects.requireNonNull(event, "event");
-        Objects.requireNonNull(qName, "qName");
+        Objects.requireNonNull(event);
+        Objects.requireNonNull(qName);
         
         return event.isEndElement() && qName.equals(event.asEndElement().getName());
     }

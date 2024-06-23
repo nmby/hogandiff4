@@ -56,7 +56,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         this.parent = parent;
         
         // 1.disableプロパティのバインディング

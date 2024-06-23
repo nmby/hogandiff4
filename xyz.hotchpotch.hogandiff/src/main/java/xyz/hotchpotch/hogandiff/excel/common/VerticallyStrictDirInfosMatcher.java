@@ -67,7 +67,7 @@ public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
     
     @Override
     public List<Pair<DirInfo>> pairingDirs(Pair<DirInfo> topDirInfos) {
-        Objects.requireNonNull(topDirInfos, "topDirInfos");
+        Objects.requireNonNull(topDirInfos);
         
         List<Pair<DirInfo>> resultPairs = new ArrayList<>();
         

@@ -51,15 +51,13 @@ public class Settings {
          * @param encoder 設定値を文字列に変換するエンコーダー
          * @param decoder 文字列を設定値に変換するエンコーダー
          * @param storable この設定項目の値がプロパティファイルへの保存対象の場合は {@code true}
-         * @throws NullPointerException
-         *          {@code name}, {@code ifNotSetSupplier}, {@code encoder}, {@code decoder}
-         *          のいずれかが {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Key {
-            Objects.requireNonNull(name, "name");
-            Objects.requireNonNull(ifNotSetSupplier, "ifNotSetSupplier");
-            Objects.requireNonNull(encoder, "encoder");
-            Objects.requireNonNull(decoder, "decoder");
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(ifNotSetSupplier);
+            Objects.requireNonNull(encoder);
+            Objects.requireNonNull(decoder);
         }
     }
     
@@ -91,7 +89,7 @@ public class Settings {
          * @throws NullPointerException {@code key} が {@code null} の場合
          */
         public <T> Builder set(Key<T> key, T value) {
-            Objects.requireNonNull(key, "key");
+            Objects.requireNonNull(key);
             
             map.put(key, Optional.ofNullable(value));
             return this;
@@ -103,10 +101,10 @@ public class Settings {
          * 
          * @param other 設定
          * @return このビルダー
-         * @throws NullPointerException {@code other} が {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Builder setAll(Settings other) {
-            Objects.requireNonNull(other, "other");
+            Objects.requireNonNull(other);
             
             map.putAll(other.map);
             return this;
@@ -141,14 +139,13 @@ public class Settings {
      * @param properties プロパティセット
      * @param keys 設定項目セット
      * @return 新しいビルダー
-     * @throws NullPointerException
-     *              {@code properties}, {@code keys} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *              {@code keys} に同じ名前の設定項目が含まれる場合
      */
     public static Builder builder(Properties properties, Set<Key<?>> keys) {
-        Objects.requireNonNull(properties, "properties");
-        Objects.requireNonNull(keys, "keys");
+        Objects.requireNonNull(properties);
+        Objects.requireNonNull(keys);
         ifDuplicatedThenThrow(keys, IllegalArgumentException::new);
         
         Map<Key<?>, Optional<?>> map = keys.stream()
@@ -212,11 +209,11 @@ public class Settings {
      * @param <T> 設定値の型
      * @param key 設定項目
      * @return 設定値。{@code key} が設定されていない場合は {@code ifNotSetSupplier} による値
-     * @throws NullPointerException {@code key} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     @SuppressWarnings("unchecked")
     public <T> T get(Key<T> key) {
-        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(key);
         
         return map.containsKey(key)
                 ? (T) map.get(key).orElse(null)
@@ -228,10 +225,10 @@ public class Settings {
      * 
      * @param key 設定項目
      * @return この設定に指定された設定項目が含まれている場合は {@code true}
-     * @throws NullPointerException {@code key} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean containsKey(Key<?> key) {
-        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(key);
         
         return map.containsKey(key);
     }
@@ -299,10 +296,10 @@ public class Settings {
      * @param key 設定項目
      * @param value 設定値
      * @return 新たな設定
-     * @throws NullPointerException {@code key} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public <T> Settings getAltered(Key<T> key, T value) {
-        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(key);
         
         return Settings.builder().setAll(this).set(key, value).build();
     }

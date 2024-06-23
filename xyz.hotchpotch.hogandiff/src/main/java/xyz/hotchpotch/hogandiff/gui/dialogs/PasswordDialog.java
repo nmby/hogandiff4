@@ -35,7 +35,7 @@ public class PasswordDialog extends Dialog<String> {
             String readPassword)
             throws IOException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         PasswordDialogPane passwordDialogPane = new PasswordDialogPane();

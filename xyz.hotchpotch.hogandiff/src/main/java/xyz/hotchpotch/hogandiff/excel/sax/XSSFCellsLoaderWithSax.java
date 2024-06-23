@@ -267,7 +267,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(
                 XSSFCellsLoaderWithSax.class,
@@ -328,9 +328,9 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
-        Objects.requireNonNull(sheetName, "sheetName");
+        Objects.requireNonNull(sheetName);
         if (!Objects.equals(this.bookPath, bookPath)) {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."

@@ -49,10 +49,10 @@ public interface Matcher<T> {
      * @param <T> リストの要素の型
      * @param idExtractor 要素の等価性を判断するためのid抽出器
      * @return 新しいマッチャー
-     * @throws NullPointerException {@code idExtractor} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> identityMatcherOf(Function<? super T, ?> idExtractor) {
-        Objects.requireNonNull(idExtractor, "idExtractor");
+        Objects.requireNonNull(idExtractor);
         return new IdentityMatcher<>(idExtractor);
     }
     
@@ -64,15 +64,14 @@ public interface Matcher<T> {
      * @param gapEvaluator 余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> greedyMatcherOf(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluator, "gapEvaluator");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluator);
+        Objects.requireNonNull(diffEvaluator);
         
         return new GreedyMatcher<>(gapEvaluator, diffEvaluator);
     }
@@ -86,17 +85,16 @@ public interface Matcher<T> {
      * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluatorA}, {@code gapEvaluatorB}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> greedyMatcherOf(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
-        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluatorA);
+        Objects.requireNonNull(gapEvaluatorB);
+        Objects.requireNonNull(diffEvaluator);
         
         return new GreedyMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
     }
@@ -108,15 +106,14 @@ public interface Matcher<T> {
      * @param gapEvaluator 余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> minimumEditDistanceMatcherOf(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluator, "gapEvaluator");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluator);
+        Objects.requireNonNull(diffEvaluator);
         
         return new MinimumEditDistanceMatcher<>(gapEvaluator, diffEvaluator);
     }
@@ -129,17 +126,16 @@ public interface Matcher<T> {
      * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluatorA}, {@code gapEvaluatorB}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> minimumEditDistanceMatcherOf(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
-        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluatorA);
+        Objects.requireNonNull(gapEvaluatorB);
+        Objects.requireNonNull(diffEvaluator);
         
         return new MinimumEditDistanceMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
     }
@@ -152,15 +148,14 @@ public interface Matcher<T> {
      * @param gapEvaluator 余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> minimumCostFlowMatcherOf(
             ToIntFunction<? super T> gapEvaluator,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluator, "gapEvaluator");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluator);
+        Objects.requireNonNull(diffEvaluator);
         
         return new MinimumCostFlowMatcher<>(gapEvaluator, diffEvaluator);
     }
@@ -174,17 +169,16 @@ public interface Matcher<T> {
      * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
      * @param diffEvaluator 差分コスト評価関数
      * @return 新しいマッチャー
-     * @throws NullPointerException
-     *              {@code gapEvaluator}, {@code diffEvaluator} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> minimumCostFlowMatcherOf(
             ToIntFunction<? super T> gapEvaluatorA,
             ToIntFunction<? super T> gapEvaluatorB,
             ToIntBiFunction<? super T, ? super T> diffEvaluator) {
         
-        Objects.requireNonNull(gapEvaluatorA, "gapEvaluatorA");
-        Objects.requireNonNull(gapEvaluatorB, "gapEvaluatorB");
-        Objects.requireNonNull(diffEvaluator, "diffEvaluator");
+        Objects.requireNonNull(gapEvaluatorA);
+        Objects.requireNonNull(gapEvaluatorB);
+        Objects.requireNonNull(diffEvaluator);
         
         return new MinimumCostFlowMatcher<>(gapEvaluatorA, gapEvaluatorB, diffEvaluator);
     }
@@ -195,10 +189,10 @@ public interface Matcher<T> {
      * @param <T> リストの要素の型
      * @param matchers マッチャーのリスト
      * @return 新しいマッチャー
-     * @throws NullPointerException {@code matchers} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T> Matcher<T> combinedMatcherOf(List<Matcher<? super T>> matchers) {
-        Objects.requireNonNull(matchers, "matchers");
+        Objects.requireNonNull(matchers);
         return new CombinedMatcher<>(matchers);
     }
     
@@ -223,14 +217,14 @@ public interface Matcher<T> {
      * @param listA リストA
      * @param listB リストB
      * @return リストA, Bの要素同士の最適な組み合わせを表す、要素のペアのリスト
-     * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default List<Pair<T>> makeItemPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
-        Objects.requireNonNull(listA, "listA");
-        Objects.requireNonNull(listA, "listB");
+        Objects.requireNonNull(listA);
+        Objects.requireNonNull(listA);
         
         List<IntPair> pairs = makeIdxPairs(listA, listB);
         

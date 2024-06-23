@@ -49,10 +49,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
      * @param diffSheetColor 差分シートの見出しに着ける色
      * @param sameSheetColor 差分が無いシートの見出しに着ける色
      * @return 新たなペインター
-     * @throws NullPointerException
-     *          {@code redundantCommentColor}, {@code diffCommentColor},
-     *          {@code redundantSheetColor}, {@code diffSheetColor}, {@code sameSheetColor}
-     *          のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static BookPainter of(
             short redundantColor,
@@ -63,11 +60,11 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             Color diffSheetColor,
             Color sameSheetColor) {
         
-        Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
-        Objects.requireNonNull(diffCommentColor, "diffCommentColor");
-        Objects.requireNonNull(redundantSheetColor, "redundantSheetColor");
-        Objects.requireNonNull(diffSheetColor, "diffSheetColor");
-        Objects.requireNonNull(sameSheetColor, "sameSheetColor");
+        Objects.requireNonNull(redundantCommentColor);
+        Objects.requireNonNull(diffCommentColor);
+        Objects.requireNonNull(redundantSheetColor);
+        Objects.requireNonNull(diffSheetColor);
+        Objects.requireNonNull(sameSheetColor);
         
         return new BookPainterWithPoiUserApi(
                 redundantColor,
@@ -139,10 +136,10 @@ public class BookPainterWithPoiUserApi implements BookPainter {
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookPath, "srcBookPath");
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
+        Objects.requireNonNull(srcBookPath);
+        Objects.requireNonNull(dstBookPath);
         // readPassword may be null.
-        Objects.requireNonNull(diffs, "diffs");
+        Objects.requireNonNull(diffs);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
         if (Objects.equals(srcBookPath, dstBookPath)) {
             throw new IllegalArgumentException(

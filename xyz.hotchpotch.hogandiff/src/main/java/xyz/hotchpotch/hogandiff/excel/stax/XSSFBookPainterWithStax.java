@@ -82,10 +82,11 @@ public class XSSFBookPainterWithStax implements BookPainter {
          * 
          * @param styles xl/styles.xml エントリから生成した {@link Document}
          * @return 新しい {@link StylesManager} オブジェクト
-         * @throws NullPointerException {@code styles} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
          */
         public static StylesManager of(Document styles) {
-            Objects.requireNonNull(styles, "styles");
+            Objects.requireNonNull(styles);
+            
             return new StylesManager(styles);
         }
         
@@ -197,6 +198,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param diffSheetColor 差分シートの見出しにつける色
      * @param sameSheetColor 差分の無いシートの見出しにつける色
      * @return 新たなペインター
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static BookPainter of(
             short redundantColor,
@@ -207,11 +209,11 @@ public class XSSFBookPainterWithStax implements BookPainter {
             Color diffSheetColor,
             Color sameSheetColor) {
         
-        Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
-        Objects.requireNonNull(diffCommentColor, "diffCommentColor");
-        Objects.requireNonNull(redundantSheetColor, "redundantSheetColor");
-        Objects.requireNonNull(diffSheetColor, "diffSheetColor");
-        Objects.requireNonNull(sameSheetColor, "sameSheetColor");
+        Objects.requireNonNull(redundantCommentColor);
+        Objects.requireNonNull(diffCommentColor);
+        Objects.requireNonNull(redundantSheetColor);
+        Objects.requireNonNull(diffSheetColor);
+        Objects.requireNonNull(sameSheetColor);
         
         return new XSSFBookPainterWithStax(
                 redundantColor,
@@ -270,9 +272,10 @@ public class XSSFBookPainterWithStax implements BookPainter {
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookPath, "srcBookPath");
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
-        Objects.requireNonNull(diffs, "diffs");
+        Objects.requireNonNull(srcBookPath);
+        Objects.requireNonNull(dstBookPath);
+        // readPassword may be null
+        Objects.requireNonNull(diffs);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
         if (Objects.equals(srcBookPath, dstBookPath)) {
             throw new IllegalArgumentException(

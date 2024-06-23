@@ -461,9 +461,9 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
-        Objects.requireNonNull(sheetName, "sheetName");
+        Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         Biff8EncryptionKey.setCurrentUserPassword(readPassword);

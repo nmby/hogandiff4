@@ -51,24 +51,19 @@ public final class SheetResult implements Result {
          * @param diffCellContents セル内容に差分のあるセルのリスト
          * @param diffCellComments セルコメントに差分のあるセルのリスト
          * @param redundantCellComments セルコメントが余剰であるセルのリスト
-         * @throws NullPointerException いずれかのパラメータが {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
         // 本来はコンストラクタを公開する必要がない。ぐぬぬ
         // recordを使う欲の方が上回ったのでコンストラクタを公開しちゃう。ぐぬぬ
         public Piece {
-            Objects.requireNonNull(redundantRows, "redundantRows");
-            Objects.requireNonNull(redundantColumns, "redundantColumns");
-            Objects.requireNonNull(diffCellContents, "diffCellContents");
-            Objects.requireNonNull(diffCellComments, "diffCellComments");
-            Objects.requireNonNull(redundantCellComments, "redundantCellComments");
+            Objects.requireNonNull(redundantRows);
+            Objects.requireNonNull(redundantColumns);
+            Objects.requireNonNull(diffCellContents);
+            Objects.requireNonNull(diffCellComments);
+            Objects.requireNonNull(redundantCellComments);
             
             // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
-            //redundantRows = Arrays.copyOf(redundantRows, redundantRows.length);
-            //redundantColumns = Arrays.copyOf(redundantColumns, redundantColumns.length);
-            //diffCellContents = List.copyOf(diffCellContents);
-            //diffCellComments = List.copyOf(diffCellComments);
-            //redundantCellComments = List.copyOf(redundantCellComments);
         }
         
         /**
@@ -116,13 +111,14 @@ public final class SheetResult implements Result {
          * @param redundantRows 各比較対象シートの余剰行数
          * @param redundantColumns 各比較対象シートの余剰列数
          * @param diffCells 差分セル数
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Stats {
-            Objects.requireNonNull(rows, "rows");
-            Objects.requireNonNull(columns, "columns");
-            Objects.requireNonNull(cells, "cells");
-            Objects.requireNonNull(redundantRows, "redundantRows");
-            Objects.requireNonNull(redundantColumns, "redundantColumns");
+            Objects.requireNonNull(rows);
+            Objects.requireNonNull(columns);
+            Objects.requireNonNull(cells);
+            Objects.requireNonNull(redundantRows);
+            Objects.requireNonNull(redundantColumns);
         }
     }
     
@@ -140,9 +136,7 @@ public final class SheetResult implements Result {
      * @param redundantRows 各シートにおける余剰行
      * @param redundantColumns 各シートにおける余剰列
      * @param diffCells 差分セル
-     * @throws NullPointerException
-     *              {@code cellsSetPair}, {@code redundantRows}, {@code redundantColumns}, {@code diffCells}
-     *              のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *              余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
@@ -152,10 +146,10 @@ public final class SheetResult implements Result {
             Pair<int[]> redundantColumns,
             List<Pair<CellData>> diffCells) {
         
-        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
-        Objects.requireNonNull(redundantRows, "redundantRows");
-        Objects.requireNonNull(redundantColumns, "redundantColumns");
-        Objects.requireNonNull(diffCells, "diffCells");
+        Objects.requireNonNull(cellsSetPair);
+        Objects.requireNonNull(redundantRows);
+        Objects.requireNonNull(redundantColumns);
+        Objects.requireNonNull(diffCells);
         
         if (!redundantRows.isPaired() || !redundantColumns.isPaired()) {
             throw new IllegalArgumentException("illegal result");
@@ -189,10 +183,10 @@ public final class SheetResult implements Result {
      * 
      * @param side シートの側
      * @return 指定された側のシートに関する差分内容
-     * @throws NullPointerException {@code side} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public Piece getPiece(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         
         List<CellData> diffCellContents = diffCells.stream()
                 .filter(p -> !p.a().contentEquals(p.b()))

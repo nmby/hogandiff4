@@ -36,13 +36,14 @@ public class PaintSheetTabReader extends BufferingReader {
      * @param source ソースリーダー
      * @param color 着色する色
      * @return 新しいリーダー
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
             Color color) {
         
-        Objects.requireNonNull(source, "source");
-        Objects.requireNonNull(color, "color");
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(color);
         
         return new PaintSheetTabReader(source, color);
     }

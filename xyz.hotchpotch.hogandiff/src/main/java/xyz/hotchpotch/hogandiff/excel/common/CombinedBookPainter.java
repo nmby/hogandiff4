@@ -87,10 +87,10 @@ public class CombinedBookPainter implements BookPainter {
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(srcBookPath, "srcBookPath");
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
+        Objects.requireNonNull(srcBookPath);
+        Objects.requireNonNull(dstBookPath);
         // readPassword may be null.
-        Objects.requireNonNull(diffs, "diffs");
+        Objects.requireNonNull(diffs);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(srcBookPath));
         if (Objects.equals(srcBookPath, dstBookPath)) {
             throw new IllegalArgumentException(

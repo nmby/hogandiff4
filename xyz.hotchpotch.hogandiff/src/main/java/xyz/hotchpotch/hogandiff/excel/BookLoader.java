@@ -35,7 +35,7 @@ public interface BookLoader {
             Path bookPath,
             String readPassword) {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);

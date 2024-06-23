@@ -45,7 +45,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
             Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
+        Objects.requireNonNull(cellsSetPair);
         
         int min1 = cellsSetPair.a().parallelStream().mapToInt(vertical).min().orElse(0);
         int max1 = cellsSetPair.a().parallelStream().mapToInt(vertical).max().orElse(0);

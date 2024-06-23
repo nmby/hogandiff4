@@ -27,7 +27,7 @@ public class CombinedBookLoader implements BookLoader {
      * 
      * @param suppliers このローダーを構成するローダーたちのサプライヤ
      * @return 新しいローダー
-     * @throws NullPointerException {@code suppliers} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
     public static BookLoader of(List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers) {
@@ -76,7 +76,7 @@ public class CombinedBookLoader implements BookLoader {
             String readPassword)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         

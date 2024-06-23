@@ -34,11 +34,11 @@ public class StringDiffUtil {
      * @param str1 文字列1
      * @param str2 文字列2
      * @return 2つの文字列間のレーベンシュタイン距離
-     * @throws NullPointerException {@code str1}, {@code str2} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static int levenshteinDistance(String str1, String str2) {
-        Objects.requireNonNull(str1, "str1");
-        Objects.requireNonNull(str2, "str2");
+        Objects.requireNonNull(str1);
+        Objects.requireNonNull(str2);
         
         // 特殊ケースのためのショートカットたち
         if (str1 == str2 || str1.equals(str2)) {

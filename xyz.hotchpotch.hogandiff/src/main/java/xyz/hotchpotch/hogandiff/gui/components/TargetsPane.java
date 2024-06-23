@@ -50,7 +50,7 @@ public class TargetsPane extends VBox implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
         

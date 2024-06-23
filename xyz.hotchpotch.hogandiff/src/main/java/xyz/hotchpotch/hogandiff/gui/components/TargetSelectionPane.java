@@ -114,7 +114,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     @Override
     public void init(MainController parent, Object... params) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         this.parent = parent;
         this.side = (Side) params[0];

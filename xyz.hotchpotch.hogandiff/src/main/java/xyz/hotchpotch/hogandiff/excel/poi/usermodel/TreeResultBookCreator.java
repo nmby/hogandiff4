@@ -22,8 +22,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -69,7 +69,7 @@ public class TreeResultBookCreator {
      * @param treeResult フォルダツリー同士の比較結果
      * @param recursively 「子フォルダも含める」の場合は {@code true}
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
@@ -77,8 +77,8 @@ public class TreeResultBookCreator {
             boolean recursively)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
-        Objects.requireNonNull(treeResult, "treeResult");
+        Objects.requireNonNull(dstBookPath);
+        Objects.requireNonNull(treeResult);
         
         // 1. テンプレートブックをコピーする。
         try (InputStream srcIs = ClassLoader.getSystemResourceAsStream(templateBookName)) {
