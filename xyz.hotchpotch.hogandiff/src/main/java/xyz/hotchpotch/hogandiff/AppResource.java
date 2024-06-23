@@ -203,7 +203,7 @@ public class AppResource {
     }
     
     private BookInfo loadBookInfo(Path bookPath) {
-        BookLoader loader = Factory.bookLoader(bookPath, null);
+        BookLoader loader = Factory.bookLoader(bookPath);
         return loader.loadBookInfo(bookPath, null);
     }
 }

@@ -172,8 +172,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
     //      例えば null パラメータとか、サポート対象外のブック形式とか。
-    // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
-    //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
+    // ・抽出処理中に発生したあらゆる例外は catch し、呼出元には必ず {@link BookInfo} オブジェクトを返却する。
     @Override
     public BookInfo loadBookInfo(
             Path bookPath,

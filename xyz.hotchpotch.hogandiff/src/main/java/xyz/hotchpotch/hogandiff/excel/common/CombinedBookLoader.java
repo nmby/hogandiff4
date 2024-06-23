@@ -65,8 +65,7 @@ public class CombinedBookLoader implements BookLoader {
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
     //      例えば null パラメータとか、サポート対象外のブック形式とか。
-    // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
-    //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
+    // ・抽出処理中に発生したあらゆる例外は catch し、呼出元には必ず {@link BookInfo} オブジェクトを返却する。
     @Override
     public BookInfo loadBookInfo(
             Path bookPath,
@@ -76,23 +75,28 @@ public class CombinedBookLoader implements BookLoader {
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Iterator<Supplier<BookLoader>> itr = suppliers.iterator();
-        boolean passwordIssue = false;
-        
-        while (itr.hasNext()) {
-            BookLoader loader = itr.next().get();
-            BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
+        try {
+            Iterator<Supplier<BookLoader>> itr = suppliers.iterator();
+            boolean passwordIssue = false;
             
-            if (bookInfo.status() == Status.LOAD_COMPLETED) {
-                return bookInfo;
+            while (itr.hasNext()) {
+                BookLoader loader = itr.next().get();
+                BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
                 
-            } else if (bookInfo.status() == Status.PASSWORD_LOCKED) {
-                passwordIssue = true;
+                if (bookInfo.status() == Status.LOAD_COMPLETED) {
+                    return bookInfo;
+                    
+                } else if (bookInfo.status() == Status.PASSWORD_LOCKED) {
+                    passwordIssue = true;
+                }
             }
+            
+            return passwordIssue
+                    ? BookInfo.ofPasswordLocked(bookPath)
+                    : BookInfo.ofLoadFailed(bookPath);
+            
+        } catch (Exception e) {
+            return BookInfo.ofLoadFailed(bookPath);
         }
-        
-        return passwordIssue
-                ? BookInfo.ofPasswordLocked(bookPath)
-                : BookInfo.ofLoadFailed(bookPath);
     }
 }

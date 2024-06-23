@@ -80,7 +80,7 @@ public class StandardDirLoader implements DirLoader {
                     .filter(StandardDirLoader::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
-                        BookLoader bookLoader = Factory.bookLoader(bookPath, null);
+                        BookLoader bookLoader = Factory.bookLoader(bookPath);
                         return bookLoader.loadBookInfo(bookPath, null);
                     })
                     .toList();

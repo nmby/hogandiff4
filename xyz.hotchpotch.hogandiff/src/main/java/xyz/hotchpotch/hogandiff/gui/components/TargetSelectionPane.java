@@ -425,12 +425,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private BookInfo readBookInfo(Path newBookPath) {
         assert newBookPath != null;
         
-        String readPassword = readPasswords.get(newBookPath);
-        
         try {
+            String readPassword = readPasswords.get(newBookPath);
+            BookLoader loader = Factory.bookLoader(newBookPath);
+            
             while (true) {
-                // パスワードの有無でローダーを切り替える可能性があるため、ループの内側で取得する。
-                BookLoader loader = Factory.bookLoader(newBookPath, readPassword);
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
                 System.out.println(newBookPath);
                 System.out.println(readPassword);
