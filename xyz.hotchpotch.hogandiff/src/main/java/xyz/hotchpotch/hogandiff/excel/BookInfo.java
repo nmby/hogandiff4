@@ -23,9 +23,6 @@ public class BookInfo {
         /** Excelブック情報をロード済みであることを表します。 */
         LOAD_COMPLETED,
         
-        /** 未だExcelブック情報のロードを試みていないことを表します。 */
-        NOT_YET,
-        
         /** パスワードロックのためにExcelブック情報のロードに成功していないことを表します。 */
         PASSWORD_LOCKED,
         
@@ -48,18 +45,6 @@ public class BookInfo {
         Objects.requireNonNull(sheetNames);
         
         return new BookInfo(bookPath, sheetNames, Status.LOAD_COMPLETED);
-    }
-    
-    /**
-     * ロード未試行とマークされたExcelブック情報を返します。<br>
-     * 
-     * @param bookPath Excelブックのパス
-     * @return ロード未試行とマークされたExcelブック情報
-     */
-    public static BookInfo ofNotYet(Path bookPath) {
-        Objects.requireNonNull(bookPath);
-        
-        return new BookInfo(bookPath, List.of(), Status.NOT_YET);
     }
     
     /**
