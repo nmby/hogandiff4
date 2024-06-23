@@ -114,12 +114,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = bookComparison.parentBookInfoPair();
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
-                    .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+                    .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
             
             SheetComparator sheetComparator = Factory.sheetComparator(settings);
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
             
             double progressDelta = (progressAfter - progressBefore)

@@ -38,27 +38,18 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
     
     // [static members] ********************************************************
     
-    /**
-     * 新しいローダーを構成します。<br>
-     * 
-     * @param converter セル変換関数
-     * @return 新しいローダー
-     * @throws NullPointerException パラメータが {@code null} の場合
-     * @throw IllegalArgumentException {@code extractContents} が {@code false}
-     *                               かつ {@code converter} が {@code null} 以外の場合
-     */
-    public static CellsLoader of(Function<Cell, CellData> converter) {
-        Objects.requireNonNull(converter);
-        
-        return new CellsLoaderWithPoiUserApi(converter);
-    }
-    
     // [instance members] ******************************************************
     
     private final Function<Cell, CellData> converter;
     
-    private CellsLoaderWithPoiUserApi(Function<Cell, CellData> converter) {
-        assert converter != null;
+    /**
+     * コンストラクタ
+     * 
+     * @param converter セル変換関数
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
+    public CellsLoaderWithPoiUserApi(Function<Cell, CellData> converter) {
+        Objects.requireNonNull(converter);
         
         this.converter = converter;
     }

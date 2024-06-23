@@ -26,19 +26,14 @@ public class Factory {
      * Excelブック情報を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookLoader bookLoader(
-            Path bookPath,
-            String readPassword) {
-        
+    public static BookLoader bookLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
-        // readPassword may be null.
         
-        return BookLoader.of(bookPath, readPassword);
+        return BookLoader.of(bookPath);
     }
     
     /**
@@ -46,21 +41,13 @@ public class Factory {
      * 
      * @param settings 設定
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelシートからセルデータを抽出するローダー
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static CellsLoader cellsLoader(
-            Settings settings,
-            Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
-        
+    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
-        // readPassword may be null.
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -68,7 +55,7 @@ public class Factory {
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        return CellsLoader.of(bookPath, readPassword, useCachedValue);
+        return CellsLoader.of(bookPath, useCachedValue);
     }
     
     /**
@@ -192,15 +179,13 @@ public class Factory {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックの差分個所に色を付けて保存するペインター
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookPainter painter(
             Settings settings,
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);

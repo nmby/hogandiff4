@@ -114,13 +114,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<BookInfo> bookInfoPair = bookComparison.parentBookInfoPair();
             Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(0);
             
-            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
-                    bookPath -> Factory.cellsLoader(settings, bookPath, readPasswords.get(bookPath)));
+                    bookPath -> Factory.cellsLoader(settings, bookPath));
             
             str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
             
+            Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                     side -> loaderPair.get(side).loadCells(
                             bookInfoPair.get(side).bookPath(),

@@ -26,17 +26,12 @@ public interface BookLoader {
      * Excelブック情報を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブックからシート名の一覧を抽出するローダー
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookLoader of(
-            Path bookPath,
-            String readPassword) {
-        
+    public static BookLoader of(Path bookPath) {
         Objects.requireNonNull(bookPath);
-        // readPassword may be null.
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
         

@@ -45,14 +45,14 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     @Test
     void testOf() {
         assertTrue(
-                HSSFCellsLoaderWithPoiEventApi.of(true) instanceof HSSFCellsLoaderWithPoiEventApi);
+                new HSSFCellsLoaderWithPoiEventApi(true) instanceof HSSFCellsLoaderWithPoiEventApi);
         assertTrue(
-                HSSFCellsLoaderWithPoiEventApi.of(false) instanceof HSSFCellsLoaderWithPoiEventApi);
+                new HSSFCellsLoaderWithPoiEventApi(false) instanceof HSSFCellsLoaderWithPoiEventApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(true);
         
         // 対照群
         assertDoesNotThrow(
@@ -88,7 +88,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外1() {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(true);
         
         // 存在しないファイル
         assertThrows(
@@ -122,7 +122,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外2() {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(false);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(false);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -136,7 +136,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(true);
         
         assertEquals(
                 Set.of(
@@ -152,7 +152,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(true);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xls, null, "A_バリエーション"));
@@ -257,7 +257,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系3_バリエーション_数式抽出() throws ExcelHandlingException {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(false);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(false);
         
         // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
@@ -267,7 +267,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        CellsLoader testee = HSSFCellsLoaderWithPoiEventApi.of(true);
+        CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(true);
         
         assertEquals(
                 Set.of(

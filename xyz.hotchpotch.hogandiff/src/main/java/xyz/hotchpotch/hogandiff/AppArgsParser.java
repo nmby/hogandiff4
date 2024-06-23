@@ -85,14 +85,14 @@ public class AppArgsParser {
             return Optional.empty();
         }
         try {
-            BookLoader bookLoaderA = Factory.bookLoader(bookPathA, null);
+            BookLoader bookLoaderA = Factory.bookLoader(bookPathA);
             bookInfoA = bookLoaderA.loadBookInfo(bookPathA, null);
         } catch (Exception e) {
             e.printStackTrace();
             // nop. Excelブックのロードに失敗した場合は、処理継続とする。
         }
         try {
-            BookLoader bookLoaderB = Factory.bookLoader(bookPathB, null);
+            BookLoader bookLoaderB = Factory.bookLoader(bookPathB);
             bookInfoB = bookLoaderB.loadBookInfo(bookPathB, null);
         } catch (Exception e) {
             e.printStackTrace();
