@@ -8,15 +8,8 @@ import java.util.Objects;
  * Excelブック情報を表す不変クラスです。<br>
  * 
  * @author nmby
- * 
- * @param bookPath Excelブックのパス
- * @param sheetNames Excelブックに含まれるシート名
- * @param status このExcelブック情報の状態
  */
-public record BookInfo(
-        Path bookPath,
-        List<String> sheetNames,
-        Status status) {
+public class BookInfo {
     
     // [static members] ********************************************************
     
@@ -95,22 +88,18 @@ public record BookInfo(
     
     // [instance members] ******************************************************
     
-    /**
-     * コンストラクタ<br>
-     * 
-     * @param bookPath Excelブックのパス
-     * @param sheetNames Excelブックに含まれるシート名
-     * @param status このExcelブック情報の状態
-     * @throws NullPointerException パラメータが {@code null} の場合
-     */
-    public BookInfo(
+    private final Path bookPath;
+    private final List<String> sheetNames;
+    private final Status status;
+    
+    private BookInfo(
             Path bookPath,
             List<String> sheetNames,
             Status status) {
         
-        Objects.requireNonNull(bookPath);
-        Objects.requireNonNull(sheetNames);
-        Objects.requireNonNull(status);
+        assert bookPath != null;
+        assert sheetNames != null;
+        assert status != null;
         
         this.bookPath = bookPath;
         this.sheetNames = List.copyOf(sheetNames);
@@ -133,5 +122,20 @@ public record BookInfo(
     @Override
     public String toString() {
         return bookPath.getFileName().toString();
+    }
+    
+    /** @return Excelブックのパス */
+    public Path bookPath() {
+        return bookPath;
+    }
+    
+    /** @return Excelブックに含まれるシート名 */
+    public List<String> sheetNames() {
+        return sheetNames;
+    }
+    
+    /** @return このExcelブック情報の状態 */
+    public Status status() {
+        return status;
     }
 }
