@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
@@ -62,12 +65,6 @@ public class StandardDirLoader implements DirLoader {
         assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
         
         try {
-            List<Path> childBookPaths = Files.list(path)
-                    .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(StandardDirLoader::isHandleableExcelBook)
-                    .sorted()
-                    .toList();
-            
             List<DirInfo> childDirInfos = recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
@@ -78,7 +75,17 @@ public class StandardDirLoader implements DirLoader {
                             .toList()
                     : List.of();
             
-            return new DirInfo(path, childBookPaths, childDirInfos);
+            List<BookInfo> childBookPaths = Files.list(path)
+                    .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
+                    .filter(StandardDirLoader::isHandleableExcelBook)
+                    .sorted()
+                    .map(bookPath -> {
+                        BookLoader bookLoader = Factory.bookLoader(bookPath, null);
+                        return bookLoader.loadBookInfo(bookPath, null);
+                    })
+                    .toList();
+            
+            return new DirInfo(path, childDirInfos, childBookPaths);
             
         } catch (IOException e) {
             throw new ExcelHandlingException(

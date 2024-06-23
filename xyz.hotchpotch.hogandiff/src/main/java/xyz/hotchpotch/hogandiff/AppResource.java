@@ -16,7 +16,6 @@ import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -204,11 +203,7 @@ public class AppResource {
     }
     
     private BookInfo loadBookInfo(Path bookPath) {
-        try {
-            BookLoader loader = Factory.bookLoader(bookPath, null);
-            return loader.loadBookInfo(bookPath, null);
-        } catch (ExcelHandlingException e) {
-            return BookInfo.ofLoadFailed(bookPath);
-        }
+        BookLoader loader = Factory.bookLoader(bookPath, null);
+        return loader.loadBookInfo(bookPath, null);
     }
 }

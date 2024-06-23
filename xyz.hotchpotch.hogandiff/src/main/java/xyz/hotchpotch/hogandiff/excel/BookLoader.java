@@ -63,10 +63,8 @@ public interface BookLoader {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブック情報
-     * @throws ExcelHandlingException 処理に失敗した場合
      */
     BookInfo loadBookInfo(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException;
+            String readPassword);
 }

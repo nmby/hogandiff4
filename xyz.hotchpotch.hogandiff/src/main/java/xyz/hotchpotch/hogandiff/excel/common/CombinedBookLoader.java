@@ -4,13 +4,12 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
  * 処理が成功するまで複数のローダーで順に処理を行う {@link BookLoader} の実装です。<br>
@@ -30,7 +29,7 @@ public class CombinedBookLoader implements BookLoader {
      * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static BookLoader of(List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers) {
+    public static BookLoader of(List<Supplier<BookLoader>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
@@ -41,9 +40,9 @@ public class CombinedBookLoader implements BookLoader {
     
     // [instance members] ******************************************************
     
-    private final List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers;
+    private final List<Supplier<BookLoader>> suppliers;
     
-    private CombinedBookLoader(List<UnsafeSupplier<BookLoader, ExcelHandlingException>> suppliers) {
+    private CombinedBookLoader(List<Supplier<BookLoader>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -62,8 +61,6 @@ public class CombinedBookLoader implements BookLoader {
      *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
      *              {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException
-     *              処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
@@ -73,14 +70,13 @@ public class CombinedBookLoader implements BookLoader {
     @Override
     public BookInfo loadBookInfo(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
-        Iterator<UnsafeSupplier<BookLoader, ExcelHandlingException>> itr = suppliers.iterator();
+        Iterator<Supplier<BookLoader>> itr = suppliers.iterator();
         boolean passwordIssue = false;
         
         while (itr.hasNext()) {

@@ -9,7 +9,6 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -61,8 +60,6 @@ public class XSSFBookLoaderWithSax implements BookLoader {
      *              {@code bookPath} が {@code null} の場合
      * @throws IllegalArgumentException
      *              {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException
-     *              処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
@@ -72,8 +69,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
     @Override
     public BookInfo loadBookInfo(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(bookPath);
         // readPassword may be null.

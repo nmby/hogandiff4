@@ -36,11 +36,11 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirComparison.FlattenDirComparison;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
@@ -256,7 +256,7 @@ public class MainController extends VBox {
                                 return DirComparison.calculate(
                                         dirInfoPair,
                                         Factory.dirInfosMatcher(ar.settings()),
-                                        Factory.bookPathsMatcher(ar.settings()),
+                                        Factory.bookInfosMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }
@@ -294,7 +294,7 @@ public class MainController extends VBox {
                                 return DirComparison.calculate(
                                         dirInfoPair,
                                         Factory.dirInfosMatcher(ar.settings()),
-                                        Factory.bookPathsMatcher(ar.settings()),
+                                        Factory.bookInfosMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }
@@ -386,9 +386,10 @@ public class MainController extends VBox {
     }
     
     private Stream<Path> bookPathStream(DirComparison dirComparison) {
-        return dirComparison.childBookPathPairs().stream()
-                .flatMap(bookPathPair -> Stream.of(bookPathPair.a(), bookPathPair.b())
-                        .filter(bookPath -> bookPath != null));
+        return dirComparison.childBookInfoPairs().stream()
+                .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
+                .filter(bookInfo -> bookInfo != null)
+                .map(BookInfo::bookPath);
     }
     
     /**
