@@ -85,15 +85,15 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     /**
      * {@inheritDoc}
      * <br>
-     * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     @Override
     public List<IntPair> makeIdxPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
-        Objects.requireNonNull(listA, "listA");
-        Objects.requireNonNull(listB, "listB");
+        Objects.requireNonNull(listA);
+        Objects.requireNonNull(listB);
         
         makeIdxPairsPrecheck(listA, listB);
         

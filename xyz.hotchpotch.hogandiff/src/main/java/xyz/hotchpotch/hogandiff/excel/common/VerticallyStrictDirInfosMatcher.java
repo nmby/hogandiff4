@@ -28,7 +28,7 @@ public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
     private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.childDirInfos().size() + d.childBookPaths().size(),
+            d -> d.childDirInfos().size() + d.childBookInfos().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
@@ -36,7 +36,7 @@ public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 int gapBookNames = (int) Matcher.identityMatcherOf()
-                        .makeIdxPairs(d1.childBookPaths(), d2.childBookPaths()).stream()
+                        .makeIdxPairs(d1.childBookInfos(), d2.childBookInfos()).stream()
                         .filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
@@ -67,7 +67,7 @@ public class VerticallyStrictDirInfosMatcher implements DirInfosMatcher {
     
     @Override
     public List<Pair<DirInfo>> pairingDirs(Pair<DirInfo> topDirInfos) {
-        Objects.requireNonNull(topDirInfos, "topDirInfos");
+        Objects.requireNonNull(topDirInfos);
         
         List<Pair<DirInfo>> resultPairs = new ArrayList<>();
         

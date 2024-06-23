@@ -35,7 +35,7 @@ public interface BookLoader {
             Path bookPath,
             String readPassword) {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
         
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
@@ -63,10 +63,8 @@ public interface BookLoader {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード
      * @return Excelブック情報
-     * @throws ExcelHandlingException 処理に失敗した場合
      */
     BookInfo loadBookInfo(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException;
+            String readPassword);
 }

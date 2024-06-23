@@ -28,14 +28,12 @@ public class Factory {
      * @param bookPath Excelブックのパス
      * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックからシート名の一覧を抽出するローダー
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookLoader bookLoader(
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
@@ -108,14 +106,14 @@ public class Factory {
     }
     
     /**
-     * 2つのフォルダに含まれるExcelブックパス同士の対応関係を決めるマッチャーを返します。<br>
+     * 2つのフォルダに含まれるExcelブック情報同士の対応関係を決めるマッチャーを返します。<br>
      * Excelブックパスの末尾のファイル名に基づいて対応関係を求めます。<br>
      * 
      * @param settings 設定
      * @return Excelブックパス同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<Path> bookPathsMatcher(Settings settings) {
+    public static Matcher<BookInfo> bookInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -124,10 +122,10 @@ public class Factory {
                 : Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
-                                bookPath -> bookPath.getFileName().toString().length(),
-                                (bookPath1, bookPath2) -> {
-                                    String bookName1 = bookPath1.getFileName().toString();
-                                    String bookName2 = bookPath2.getFileName().toString();
+                                bookInfo -> bookInfo.toString().length(),
+                                (bookInfo1, bookInfo2) -> {
+                                    String bookName1 = bookInfo1.toString();
+                                    String bookName2 = bookInfo2.toString();
                                     return StringDiffUtil.levenshteinDistance(bookName1, bookName2) + 1;
                                 })));
     }
@@ -155,7 +153,7 @@ public class Factory {
     private static final Matcher<DirInfo> strictDirInfosMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
     private static final Matcher<DirInfo> fuzzyButSimpleDirInfosMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.childDirInfos().size() + d.childBookPaths().size(),
+            d -> d.childDirInfos().size() + d.childBookInfos().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
@@ -163,7 +161,7 @@ public class Factory {
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 int gapBookNames = (int) Matcher.identityMatcherOf()
-                        .makeIdxPairs(d1.childBookPaths(), d2.childBookPaths())
+                        .makeIdxPairs(d1.childBookInfos(), d2.childBookInfos())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;

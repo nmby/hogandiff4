@@ -36,7 +36,7 @@ public interface CellsLoader {
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static CellsLoader of(Path bookPath, String readPassword, boolean useCachedValue) {
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may by null.
         
         Function<Cell, CellData> converter = cell -> {

@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @param parentDirInfoPair 親フォルダ情報
  * @param childDirInfoPairs 子フォルダ情報の組み合わせ
  * @param childDirComparisons 子フォルダ比較情報
- * @param childBookPathPairs 子Excelブックパスの組み合わせ
+ * @param childBookInfoPairs 子Excelブックパスの組み合わせ
  * @param childBookComparisons 子Excelブック比較情報
  * @author nmby
  */
@@ -26,8 +26,8 @@ public final record DirComparison(
         Pair<DirInfo> parentDirInfoPair,
         List<Pair<DirInfo>> childDirInfoPairs,
         Map<Pair<DirInfo>, Optional<DirComparison>> childDirComparisons,
-        List<Pair<Path>> childBookPathPairs,
-        Map<Pair<Path>, Optional<BookComparison>> childBookComparisons)
+        List<Pair<BookInfo>> childBookInfoPairs,
+        Map<Pair<BookInfo>, Optional<BookComparison>> childBookComparisons)
         implements Comparison {
     
     // [static members] ********************************************************
@@ -63,7 +63,7 @@ public final record DirComparison(
     public static DirComparison calculate(
             Pair<DirInfo> parentDirInfoPair,
             Matcher<DirInfo> dirInfosMatcher,
-            Matcher<Path> bookPathsMatcher,
+            Matcher<BookInfo> bookPathsMatcher,
             Matcher<String> sheetNamesMatcher,
             Map<Path, String> readPasswords) {
         
@@ -73,21 +73,21 @@ public final record DirComparison(
         Objects.requireNonNull(readPasswords);
         
         List<Pair<DirInfo>> dirInfoPairs;
-        List<Pair<Path>> bookPathPairs;
+        List<Pair<BookInfo>> bookInfoPairs;
         
         if (parentDirInfoPair.isPaired()) {
             dirInfoPairs = dirInfosMatcher.makeItemPairs(
                     parentDirInfoPair.a().childDirInfos(),
                     parentDirInfoPair.b().childDirInfos());
-            bookPathPairs = bookPathsMatcher.makeItemPairs(
-                    parentDirInfoPair.a().childBookPaths(),
-                    parentDirInfoPair.b().childBookPaths());
+            bookInfoPairs = bookPathsMatcher.makeItemPairs(
+                    parentDirInfoPair.a().childBookInfos(),
+                    parentDirInfoPair.b().childBookInfos());
             
         } else if (parentDirInfoPair.hasA()) {
             dirInfoPairs = parentDirInfoPair.a().childDirInfos().stream()
                     .map(dirInfo -> Pair.ofOnly(Side.A, dirInfo))
                     .toList();
-            bookPathPairs = parentDirInfoPair.a().childBookPaths().stream()
+            bookInfoPairs = parentDirInfoPair.a().childBookInfos().stream()
                     .map(bookName -> Pair.ofOnly(Side.A, bookName))
                     .toList();
             
@@ -95,17 +95,17 @@ public final record DirComparison(
             dirInfoPairs = parentDirInfoPair.b().childDirInfos().stream()
                     .map(dirInfo -> Pair.ofOnly(Side.B, dirInfo))
                     .toList();
-            bookPathPairs = parentDirInfoPair.b().childBookPaths().stream()
+            bookInfoPairs = parentDirInfoPair.b().childBookInfos().stream()
                     .map(bookName -> Pair.ofOnly(Side.B, bookName))
                     .toList();
             
         } else {
             dirInfoPairs = List.of();
-            bookPathPairs = List.of();
+            bookInfoPairs = List.of();
         }
         
         Map<Pair<DirInfo>, Optional<DirComparison>> dirComparisons = new HashMap<>();
-        Map<Pair<Path>, Optional<BookComparison>> bookComparisons = new HashMap<>();
+        Map<Pair<BookInfo>, Optional<BookComparison>> bookComparisons = new HashMap<>();
         
         for (Pair<DirInfo> dirInfoPair : dirInfoPairs) {
             DirComparison dirComparison = DirComparison.calculate(
@@ -117,35 +117,16 @@ public final record DirComparison(
             dirComparisons.put(dirInfoPair, Optional.ofNullable(dirComparison));
         }
         
-        for (Pair<Path> bookPathPair : bookPathPairs) {
-            BookComparison bookComparison = null;
-            try {
-                Pair<BookInfo> bookInfoPair = Side.unsafeMap(
-                        side -> {
-                            if (bookPathPair.has(side)) {
-                                Path bookPath = bookPathPair.get(side);
-                                String readPassword = readPasswords.get(bookPath);
-                                BookLoader bookLoader = Factory.bookLoader(bookPath, readPassword);
-                                return bookLoader.loadBookInfo(bookPath, readPassword);
-                            } else {
-                                return null;
-                            }
-                        });
-                bookComparison = bookInfoPair != null
-                        ? BookComparison.calculate(bookInfoPair, sheetNamesMatcher)
-                        : null;
-                
-            } catch (ExcelHandlingException e) {
-                // nop
-            }
-            bookComparisons.put(bookPathPair, Optional.ofNullable(bookComparison));
+        for (Pair<BookInfo> bookInfoPair : bookInfoPairs) {
+            BookComparison bookComparison = BookComparison.calculate(bookInfoPair, sheetNamesMatcher);
+            bookComparisons.put(bookInfoPair, Optional.ofNullable(bookComparison));
         }
         
         return new DirComparison(
                 parentDirInfoPair,
                 dirInfoPairs,
                 dirComparisons,
-                bookPathPairs,
+                bookInfoPairs,
                 bookComparisons);
     }
     
@@ -157,7 +138,7 @@ public final record DirComparison(
      * @param parentDirInfoPair 親フォルダ情報
      * @param childDirInfoPairs 子フォルダ情報の組み合わせ
      * @param childDirComparisons 子フォルダ比較情報
-     * @param childBookPathPairs 子Excelブックパスの組み合わせ
+     * @param childBookInfoPairs 子Excelブックパスの組み合わせ
      * @param childBookComparisons 子Excelブック比較情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
@@ -165,19 +146,19 @@ public final record DirComparison(
             Pair<DirInfo> parentDirInfoPair,
             List<Pair<DirInfo>> childDirInfoPairs,
             Map<Pair<DirInfo>, Optional<DirComparison>> childDirComparisons,
-            List<Pair<Path>> childBookPathPairs,
-            Map<Pair<Path>, Optional<BookComparison>> childBookComparisons) {
+            List<Pair<BookInfo>> childBookInfoPairs,
+            Map<Pair<BookInfo>, Optional<BookComparison>> childBookComparisons) {
         
         Objects.requireNonNull(parentDirInfoPair);
         Objects.requireNonNull(childDirInfoPairs);
         Objects.requireNonNull(childDirComparisons);
-        Objects.requireNonNull(childBookPathPairs);
+        Objects.requireNonNull(childBookInfoPairs);
         Objects.requireNonNull(childBookComparisons);
         
         this.parentDirInfoPair = parentDirInfoPair;
         this.childDirInfoPairs = List.copyOf(childDirInfoPairs);
         this.childDirComparisons = Map.copyOf(childDirComparisons);
-        this.childBookPathPairs = List.copyOf(childBookPathPairs);
+        this.childBookInfoPairs = List.copyOf(childBookInfoPairs);
         this.childBookComparisons = Map.copyOf(childBookComparisons);
     }
     

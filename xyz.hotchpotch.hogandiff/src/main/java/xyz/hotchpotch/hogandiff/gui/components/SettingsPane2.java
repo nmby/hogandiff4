@@ -53,7 +53,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                 Locale.SIMPLIFIED_CHINESE, "cn.png");
         
         public static LocaleItem of(Locale locale) {
-            Objects.requireNonNull(locale, "locale");
+            Objects.requireNonNull(locale);
             
             return Stream.of(values())
                     .filter(item -> item.locale == locale)
@@ -105,7 +105,7 @@ public class SettingsPane2 extends VBox implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());

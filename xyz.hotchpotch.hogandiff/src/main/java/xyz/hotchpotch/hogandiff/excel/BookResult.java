@@ -81,9 +81,10 @@ public record BookResult(
      * 
      * @param side Excelブックの側
      * @return 片側のExcelブックについての差分内容（シート名とそのシート上の差分個所のマップ）
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public Map<String, Optional<Piece>> getPiece(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         
         return sheetResults.entrySet().stream()
                 .filter(entry -> entry.getKey().has(side))

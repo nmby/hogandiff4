@@ -58,7 +58,7 @@ public interface BookPainter {
             Color diffSheetColor,
             Color sameSheetColor) {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         
         return switch (BookType.of(bookPath)) {
             case XLS -> CombinedBookPainter.of(List.of(

@@ -42,7 +42,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         @Override
         public int compareTo(Cost other) {
-            Objects.requireNonNull(other, "other");
+            Objects.requireNonNull(other);
             
             if (cost != other.cost) {
                 // コストそのものが異なる場合は、それに基づいて比較する。

@@ -47,9 +47,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
      * @param redundantColumns 余剰列インデックス（0 開始）
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
-     * @throws NullPointerException
-     *      {@code source}, {@code stylesManager}, {@code redundantRows}, {@code redundantColumns}
-     *      のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *      {@code redundantRows}, {@code redundantColumns} の長さがいずれも 0 の場合
      */
@@ -60,10 +58,10 @@ public class PaintRedundantCellsReader extends BufferingReader {
             int[] redundantColumns,
             short colorIdx) {
         
-        Objects.requireNonNull(source, "source");
-        Objects.requireNonNull(stylesManager, "stylesManager");
-        Objects.requireNonNull(redundantRows, "redundantRows");
-        Objects.requireNonNull(redundantColumns, "redundantColumns");
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(stylesManager);
+        Objects.requireNonNull(redundantRows);
+        Objects.requireNonNull(redundantColumns);
         if (redundantRows.length == 0 && redundantColumns.length == 0) {
             throw new IllegalArgumentException("no target cells");
         }

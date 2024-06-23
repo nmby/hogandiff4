@@ -68,7 +68,7 @@ public class RCSheetComparator implements SheetComparator {
      */
     @Override
     public SheetResult compare(Pair<Set<CellData>> cellsSetPair) {
-        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
+        Objects.requireNonNull(cellsSetPair);
         
         if (cellsSetPair.a() == cellsSetPair.b()) {
             if (cellsSetPair.a().isEmpty()) {

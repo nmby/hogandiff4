@@ -37,10 +37,10 @@ public class CellsUtil {
      * 
      * @param address セルアドレス（{@code "A1"} 形式）
      * @return 行・列のインデックスのペア
-     * @throws NullPointerException {@code address} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static IntPair addressToIdx(String address) {
-        Objects.requireNonNull(address, "address");
+        Objects.requireNonNull(address);
         
         int i = 0;
         for (; i < address.length(); i++) {
@@ -80,10 +80,10 @@ public class CellsUtil {
      * 
      * @param columnStr 列の記号（{@code "A"} など）
      * @return 列インデックス（0 開始）
-     * @throws NullPointerException {@code columnStr} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static int columnStrToIdx(String columnStr) {
-        Objects.requireNonNull(columnStr, "columnStr");
+        Objects.requireNonNull(columnStr);
         
         return CellReference.convertColStringToIndex(columnStr);
     }

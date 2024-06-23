@@ -26,10 +26,10 @@ public interface UnsafeConsumer<T, E extends Exception> {
      * @param <E> スローしうるチェック例外の型
      * @param safer コンシューマ
      * @return 型だけが変換されたコンシューマ
-     * @throws NullPointerException {@code safer} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T, E extends Exception> UnsafeConsumer<T, E> from(Consumer<T> safer) {
-        Objects.requireNonNull(safer, "safer");
+        Objects.requireNonNull(safer);
         
         return safer::accept;
     }
@@ -63,12 +63,12 @@ public interface UnsafeConsumer<T, E extends Exception> {
      * 
      * @param wrapper チェック例外を非チェック例外に変換するラッパー
      * @return スローする例外が変換されたコンシューマ
-     * @throws NullPointerException {@code wrapper} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default Consumer<T> toConsumer(
             Function<? super Exception, ? extends RuntimeException> wrapper) {
         
-        Objects.requireNonNull(wrapper, "wrapper");
+        Objects.requireNonNull(wrapper);
         
         return t -> {
             try {

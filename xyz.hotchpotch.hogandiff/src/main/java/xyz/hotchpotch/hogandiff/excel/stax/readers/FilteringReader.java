@@ -82,10 +82,10 @@ public class FilteringReader extends BufferingReader {
          * 
          * @param filter フィルダー
          * @return このビルダー
-         * @throws NullPointerException {@code filter} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Builder addFilter(Predicate<? super StartElement> filter) {
-            Objects.requireNonNull(filter, "filter");
+            Objects.requireNonNull(filter);
             
             filters.add((currTree, start) -> filter.test(start));
             return this;
@@ -96,10 +96,10 @@ public class FilteringReader extends BufferingReader {
          * 
          * @param filter フィルダー
          * @return このビルダー
-         * @throws NullPointerException {@code filter} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Builder addFilter(BiPredicate<? super Deque<QName>, ? super StartElement> filter) {
-            Objects.requireNonNull(filter, "filter");
+            Objects.requireNonNull(filter);
             
             return this;
         }
@@ -119,10 +119,10 @@ public class FilteringReader extends BufferingReader {
      * 
      * @param source ソースリーダー
      * @return このクラスのビルダー
-     * @throws NullPointerException {@code source} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static Builder builder(XMLEventReader source) {
-        Objects.requireNonNull(source, "source");
+        Objects.requireNonNull(source);
         
         return new Builder(source);
     }

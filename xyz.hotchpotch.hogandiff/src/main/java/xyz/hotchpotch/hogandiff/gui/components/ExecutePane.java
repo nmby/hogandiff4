@@ -44,7 +44,7 @@ public class ExecutePane extends AnchorPane implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
         disableProperty().bind(parent.isRunning());

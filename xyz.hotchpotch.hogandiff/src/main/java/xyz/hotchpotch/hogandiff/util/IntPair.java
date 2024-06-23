@@ -47,7 +47,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         
         @Override
         public IntPair map(IntUnaryOperator mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return new Same(mapper.applyAsInt(x));
         }
@@ -94,7 +94,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         
         @Override
         public IntPair map(IntUnaryOperator mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             int aa = mapper.applyAsInt(a);
             int bb = mapper.applyAsInt(b);
@@ -132,7 +132,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         
         @Override
         public IntPair map(IntUnaryOperator mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return new OnlyA(mapper.applyAsInt(a));
         }
@@ -165,7 +165,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         
         @Override
         public IntPair map(IntUnaryOperator mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return new OnlyB(mapper.applyAsInt(b));
         }
@@ -183,7 +183,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
         
         @Override
         public IntPair map(IntUnaryOperator mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return this;
         }
@@ -280,9 +280,10 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
      * @param side 値を取得する側
      * @return 指定した側の値
      * @throws NoSuchElementException 指定した側の値が無い場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public int get(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         return side == Side.A ? a() : b();
     }
     
@@ -336,10 +337,10 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
      * 
      * @param side 検査する側
      * @return 指定された側の値だけが存在する場合は {@code true}
-     * @throws NullPointerException {@code side} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public final boolean isOnly(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         
         return side == Side.A ? isOnlyA() : isOnlyB();
     }
@@ -376,7 +377,7 @@ public abstract sealed class IntPair implements Comparable<IntPair> {
     
     @Override
     public int compareTo(IntPair o) {
-        Objects.requireNonNull(o, "o");
+        Objects.requireNonNull(o);
         
         ToIntFunction<IntPair> pairScore = p -> p.isPaired() ? 0 : p.isOnlyA() ? 1 : p.isOnlyB() ? 2 : 3;
         int myScore = pairScore.applyAsInt(this);

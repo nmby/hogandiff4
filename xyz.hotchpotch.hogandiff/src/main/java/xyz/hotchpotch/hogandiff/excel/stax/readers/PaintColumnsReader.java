@@ -49,8 +49,7 @@ public class PaintColumnsReader extends BufferingReader {
      * @param targetColumns 着色対象の列インデックス（0 開始）
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
-     * @throws NullPointerException
-     *      {@code source}, {@code stylesManager}, {@code targetColumns} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetColumns} の長さが 0 の場合
      */
     public static XMLEventReader of(
@@ -59,9 +58,9 @@ public class PaintColumnsReader extends BufferingReader {
             int[] targetColumns,
             short colorIdx) {
         
-        Objects.requireNonNull(source, "source");
-        Objects.requireNonNull(stylesManager, "stylesManager");
-        Objects.requireNonNull(targetColumns, "targetColumns");
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(stylesManager);
+        Objects.requireNonNull(targetColumns);
         if (targetColumns.length == 0) {
             throw new IllegalArgumentException("no target columns");
         }

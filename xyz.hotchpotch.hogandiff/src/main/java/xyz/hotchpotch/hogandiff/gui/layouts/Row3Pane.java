@@ -51,7 +51,7 @@ public class Row3Pane extends StackPane implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
         // nop
@@ -71,9 +71,10 @@ public class Row3Pane extends StackPane implements ChildController {
      * このコンポーネントとタスクをバインドします。<br>
      * 
      * @param task タスク
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void bind(Task<Report> task) {
-        Objects.requireNonNull(task, "task");
+        Objects.requireNonNull(task);
         
         reportingPane.bind(task);
     }

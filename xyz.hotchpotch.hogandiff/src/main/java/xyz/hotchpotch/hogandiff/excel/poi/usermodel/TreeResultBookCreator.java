@@ -21,9 +21,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -69,7 +70,7 @@ public class TreeResultBookCreator {
      * @param treeResult フォルダツリー同士の比較結果
      * @param recursively 「子フォルダも含める」の場合は {@code true}
      * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException {@code dstBookPath}, {@code treeResult} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
@@ -77,8 +78,8 @@ public class TreeResultBookCreator {
             boolean recursively)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(dstBookPath, "dstBookPath");
-        Objects.requireNonNull(treeResult, "treeResult");
+        Objects.requireNonNull(dstBookPath);
+        Objects.requireNonNull(treeResult);
         
         // 1. テンプレートブックをコピーする。
         try (InputStream srcIs = ClassLoader.getSystemResourceAsStream(templateBookName)) {
@@ -164,14 +165,14 @@ public class TreeResultBookCreator {
                 copyCellStyles(sheet, rowNo, templateRow);
                 
                 // 4-5. Excelブックパスペアごとの処理
-                for (int i = 0; i < dirComparison.childBookPathPairs().size(); i++) {
+                for (int i = 0; i < dirComparison.childBookInfoPairs().size(); i++) {
                     rowNo++;
                     
                     // 4-6. Excelブック名と差分シンボルの出力
-                    Pair<Path> bookPathPair = dirComparison.childBookPathPairs().get(i);
+                    Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
                     Optional<BookResult> bookResult = dirResult
                             .map(DirResult::bookResults)
-                            .flatMap(br -> br.get(bookPathPair));
+                            .flatMap(br -> br.get(bookInfoPair));
                     
                     outputFileLine(
                             ch,
@@ -181,7 +182,7 @@ public class TreeResultBookCreator {
                             i + 1,
                             outputDirPair,
                             dirRelNamePair,
-                            bookPathPair,
+                            bookInfoPair,
                             bookResult);
                     
                     // 4-7. セル書式を整える
@@ -263,12 +264,12 @@ public class TreeResultBookCreator {
             int bookNo,
             Pair<Path> outputDirPair,
             Pair<String> dirRelNamePair,
-            Pair<Path> bookPathPair,
+            Pair<BookInfo> bookInfoPair,
             Optional<BookResult> bookResult) {
         
         for (Side side : Side.values()) {
-            if (bookPathPair.has(side)) {
-                String bookName = bookPathPair.get(side).getFileName().toString();
+            if (bookInfoPair.has(side)) {
+                String bookName = bookInfoPair.get(side).toString();
                 
                 // フォルダ名とファイル名の出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));
@@ -290,9 +291,9 @@ public class TreeResultBookCreator {
         }
         
         // 差分記号の出力
-        if (bookPathPair.isOnlyA()) {
+        if (bookInfoPair.isOnlyA()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_A);
-        } else if (bookPathPair.isOnlyB()) {
+        } else if (bookInfoPair.isOnlyB()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_ONLY_B);
         } else if (bookResult.isEmpty()) {
             PoiUtil.setCellValue(sheet, rowNo, COL_DIFF, DIFF_FAILED);

@@ -32,7 +32,7 @@ public class CombinedCellsLoader implements CellsLoader {
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
     public static CellsLoader of(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
-        Objects.requireNonNull(suppliers, "suppliers");
+        Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
@@ -78,9 +78,9 @@ public class CombinedCellsLoader implements CellsLoader {
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
-        Objects.requireNonNull(sheetName, "sheetName");
+        Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         ExcelHandlingException failed = new ExcelHandlingException(

@@ -43,13 +43,12 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
      * 
      * @param converter セル変換関数
      * @return 新しいローダー
-     * @throws NullPointerException {@code extractContents} が {@code true}
-     *                               かつ {@code converter} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throw IllegalArgumentException {@code extractContents} が {@code false}
      *                               かつ {@code converter} が {@code null} 以外の場合
      */
     public static CellsLoader of(Function<Cell, CellData> converter) {
-        Objects.requireNonNull(converter, "converter");
+        Objects.requireNonNull(converter);
         
         return new CellsLoaderWithPoiUserApi(converter);
     }
@@ -86,9 +85,9 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
             String sheetName)
             throws ExcelHandlingException {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         // readPassword may be null.
-        Objects.requireNonNull(sheetName, "sheetName");
+        Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try (Workbook wb = WorkbookFactory.create(

@@ -23,8 +23,7 @@ public class CommonUtil {
      * @param clazz 検査対象のクラス
      * @param bookType 処理対象のExcelブックの形式
      * @return 指定されたクラスが指定されたExcelブックの形式を扱える場合は {@code true}
-     * @throws NullPointerException
-     *              {@code clazz}, {@code bookType} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *              指定されたクラスに {@link BookHandler} アノテーションが付与されていない場合
      */
@@ -32,8 +31,8 @@ public class CommonUtil {
             Class<?> clazz,
             BookType bookType) {
         
-        Objects.requireNonNull(clazz, "clazz");
-        Objects.requireNonNull(bookType, "bookType");
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(bookType);
         
         BookHandler bookHandler = clazz.getAnnotation(BookHandler.class);
         if (bookHandler == null) {
@@ -75,8 +74,7 @@ public class CommonUtil {
      * @param clazz 検査対象のクラス
      * @param possibleTypes 処理対象のExcelシートのありうる種類
      * @return 指定されたクラスが指定されたExcelシートの種類を扱えそうな場合は {@code true}
-     * @throws NullPointerException
-     *              {@code clazz}, {@code possibleTypes} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *              指定されたクラスに {@link SheetHandler} アノテーションが付与されていない場合
      */
@@ -85,8 +83,8 @@ public class CommonUtil {
             Class<?> clazz,
             Set<SheetType> possibleTypes) {
         
-        Objects.requireNonNull(clazz, "clazz");
-        Objects.requireNonNull(possibleTypes, "possibleTypes");
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(possibleTypes);
         
         SheetHandler sheetHandler = clazz.getAnnotation(SheetHandler.class);
         if (sheetHandler == null) {

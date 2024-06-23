@@ -30,11 +30,11 @@ public enum BookType {
      * 
      * @param bookPath Excelブックのパス
      * @return Excelブックの形式
-     * @throws NullPointerException {@code bookPath} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code bookPath} がどの形式にも該当しない場合
      */
     public static BookType of(Path bookPath) {
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         
         return Stream.of(values())
                 .filter(type -> bookPath.toString().endsWith(type.extension))

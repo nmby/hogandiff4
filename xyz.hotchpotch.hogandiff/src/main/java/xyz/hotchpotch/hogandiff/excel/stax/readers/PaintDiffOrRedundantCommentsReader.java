@@ -45,9 +45,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
      * @param diffCommentColor 差分セルコメントに適用する色
      * @param redundantCommentColor 余剰セルコメントに適用する色
      * @return 新しいリーダー
-     * @throws NullPointerException
-     *      {@code source}, {@code diffCommentAddrs}, {@code redundantCommentAddrs},
-     *      {@code diffCommentColor}, {@code redundantCommentColor} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      *@throws IllegalArgumentException
      *      {@code diffCommentAddrs}, {@code redundantCommentAddrs} がいずれも空の場合
      */
@@ -58,11 +56,11 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             String diffCommentColor,
             String redundantCommentColor) {
         
-        Objects.requireNonNull(source, "source");
-        Objects.requireNonNull(diffCommentAddrs, "diffCommentAddrs");
-        Objects.requireNonNull(redundantCommentAddrs, "redundantCommentAddrs");
-        Objects.requireNonNull(diffCommentColor, "diffCommentColor");
-        Objects.requireNonNull(redundantCommentColor, "redundantCommentColor");
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(diffCommentAddrs);
+        Objects.requireNonNull(redundantCommentAddrs);
+        Objects.requireNonNull(diffCommentColor);
+        Objects.requireNonNull(redundantCommentColor);
         if (diffCommentAddrs.isEmpty() && redundantCommentAddrs.isEmpty()) {
             throw new IllegalArgumentException("no target comments");
         }
