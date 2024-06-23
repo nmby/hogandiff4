@@ -56,22 +56,18 @@ class XSSFCellsLoaderWithSaxTest {
                 IllegalArgumentException.class,
                 () -> new XSSFCellsLoaderWithSax(true, test1_xlsb));
         
-        // ■チェック例外
-        // 存在しないファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> new XSSFCellsLoaderWithSax(true, Path.of("dummy\\dummy.xlsx")));
-        
-        // 暗号化ファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> new XSSFCellsLoaderWithSax(true, test2_xlsm));
-        
         // ■正常系
         assertTrue(
                 new XSSFCellsLoaderWithSax(true, test1_xlsx) instanceof XSSFCellsLoaderWithSax);
         assertTrue(
                 new XSSFCellsLoaderWithSax(false, test1_xlsm) instanceof XSSFCellsLoaderWithSax);
+        
+        // 存在しないファイル
+        assertTrue(
+                new XSSFCellsLoaderWithSax(true, Path.of("dummy\\dummy.xlsx")) instanceof XSSFCellsLoaderWithSax);
+        // 暗号化ファイル
+        assertTrue(
+                new XSSFCellsLoaderWithSax(true, test2_xlsm) instanceof XSSFCellsLoaderWithSax);
     }
     
     @Test

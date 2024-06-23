@@ -88,14 +88,14 @@ class HSSFBookLoaderWithPoiEventApiTest {
         BookLoader testee = HSSFBookLoaderWithPoiEventApi.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xls"), null));
+        assertEquals(
+                BookInfo.ofLoadFailed(Path.of("X:\\dummy\\dummy.xls")),
+                testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xls"), null));
         
         // 暗号化ファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(test2_xls, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(test2_xls),
+                testee.loadBookInfo(test2_xls, null));
     }
     
     @Test

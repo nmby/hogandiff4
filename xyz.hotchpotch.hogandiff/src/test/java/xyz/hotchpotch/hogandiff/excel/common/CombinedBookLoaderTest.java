@@ -61,14 +61,14 @@ class CombinedBookLoaderTest {
                 () -> failLoader, () -> failLoader, () -> failLoader));
         
         // 失敗１つ
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testeeF.loadBookInfo(Path.of("dummy.xlsx"), null));
+        assertEquals(
+                BookInfo.ofLoadFailed(Path.of("dummy.xlsx")),
+                testeeF.loadBookInfo(Path.of("dummy.xlsx"), null));
         
         // 全て失敗
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testeeFFF.loadBookInfo(Path.of("dummy.xlsx"), null));
+        assertEquals(
+                BookInfo.ofLoadFailed(Path.of("dummy.xlsx")),
+                testeeFFF.loadBookInfo(Path.of("dummy.xlsx"), null));
     }
     
     @Test

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 
 class BookLoaderWithPoiUserApiTest {
@@ -96,17 +95,17 @@ class BookLoaderWithPoiUserApiTest {
         BookLoader testee = BookLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xlsx"), null));
+        assertEquals(
+                BookInfo.ofLoadFailed(Path.of("X:\\dummy\\dummy.xlsx")),
+                testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xlsx"), null));
         
         // 暗号化ファイル - 読み取りPW指定なし
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(test2_xls, null));
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(test2_xlsx, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(test2_xls),
+                testee.loadBookInfo(test2_xls, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(test2_xlsx),
+                testee.loadBookInfo(test2_xlsx, null));
     }
     
     @Test
@@ -280,23 +279,22 @@ class BookLoaderWithPoiUserApiTest {
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw無しのxlsファイルは開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest3_xls, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest3_xls),
+                testee.loadBookInfo(bookPwTest3_xls, null));
         
-        // 開けずにPasswordHandlingExceptionをスロー
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest2_xls, null));
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest2_xlsx, null));
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest4_xls, null));
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest4_xlsx, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest2_xls),
+                testee.loadBookInfo(bookPwTest2_xls, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest2_xlsx),
+                testee.loadBookInfo(bookPwTest2_xlsx, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest4_xls),
+                testee.loadBookInfo(bookPwTest4_xls, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest4_xlsx),
+                testee.loadBookInfo(bookPwTest4_xlsx, null));
     }
     
     @Test
@@ -316,9 +314,9 @@ class BookLoaderWithPoiUserApiTest {
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest3_xls, "123"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest3_xls),
+                testee.loadBookInfo(bookPwTest3_xls, "123"));
         
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest3_xlsx, "123"));
@@ -327,9 +325,9 @@ class BookLoaderWithPoiUserApiTest {
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest4_xls, "123"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest4_xls),
+                testee.loadBookInfo(bookPwTest4_xls, "123"));
         
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest4_xlsx, "123"));
@@ -344,29 +342,29 @@ class BookLoaderWithPoiUserApiTest {
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest1_xlsx, "456"));
         
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest2_xls, "456"));
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest2_xlsx, "456"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest2_xls),
+                testee.loadBookInfo(bookPwTest2_xls, "456"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest2_xlsx),
+                testee.loadBookInfo(bookPwTest2_xlsx, "456"));
         
         // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest3_xls, "456"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest3_xls),
+                testee.loadBookInfo(bookPwTest3_xls, "456"));
         
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest3_xlsx, "456"));
         
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest4_xls, "456"));
-        assertThrows(
-                PasswordHandlingException.class,
-                () -> testee.loadBookInfo(bookPwTest4_xlsx, "456"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest4_xls),
+                testee.loadBookInfo(bookPwTest4_xls, "456"));
+        assertEquals(
+                BookInfo.ofPasswordLocked(bookPwTest4_xlsx),
+                testee.loadBookInfo(bookPwTest4_xlsx, "456"));
     }
 }

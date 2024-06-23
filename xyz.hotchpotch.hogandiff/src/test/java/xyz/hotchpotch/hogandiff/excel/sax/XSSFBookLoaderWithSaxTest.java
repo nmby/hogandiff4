@@ -81,14 +81,14 @@ class XSSFBookLoaderWithSaxTest {
         BookLoader testee = XSSFBookLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xlsx"), null));
+        assertEquals(
+                BookInfo.ofLoadFailed(Path.of("X:\\dummy\\dummy.xlsx")),
+                testee.loadBookInfo(Path.of("X:\\dummy\\dummy.xlsx"), null));
         
         // 暗号化ファイル
-        assertThrows(
-                ExcelHandlingException.class,
-                () -> testee.loadBookInfo(test2_xlsx, null));
+        assertEquals(
+                BookInfo.ofPasswordLocked(test2_xlsx),
+                testee.loadBookInfo(test2_xlsx, null));
     }
     
     @Test
