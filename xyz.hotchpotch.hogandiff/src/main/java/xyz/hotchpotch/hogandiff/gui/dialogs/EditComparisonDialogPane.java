@@ -19,18 +19,26 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.Comparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
+import xyz.hotchpotch.hogandiff.excel.ItemInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /*package*/ abstract class EditComparisonDialogPane<T extends Comparison> extends VBox {
     
     // [static members] ********************************************************
+    
+    private static Image passwordLockedImage = new Image(
+            EditComparisonDialogPane.class.getResourceAsStream("status-locked.png"));
+    
+    private static Image loadFailedImage = new Image(
+            EditComparisonDialogPane.class.getResourceAsStream("status-failed.png"));
     
     protected enum ItemType {
         
@@ -112,7 +120,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      * @param parentPair 比較対象親要素
      * @param childPairs 比較対象子要素
      */
-    /*package*/ void init(Pair<?> parentPair) throws IOException {
+    /*package*/ void init(Pair<? extends ItemInfo> parentPair) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
@@ -149,9 +157,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             Pair<?> pair = currentChildPairs.get(i);
             
             if (pair.isPaired()) {
-                ItemType itemType = ItemType.of(pair.a());
-                childGridPane.add(new PairedNameLabel(itemType, getName(pair.a())), 0, i);
-                childGridPane.add(new PairedNameLabel(itemType, getName(pair.b())), 2, i);
+                childGridPane.add(new PairedNameLabel().init(pair.a()), 0, i);
+                childGridPane.add(new PairedNameLabel().init(pair.b()), 2, i);
                 childGridPane.add(new PairedPane(i), 0, i, 3, 1);
                 childGridPane.add(new UnpairButton(i), 1, i);
                 
@@ -201,19 +208,73 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         }
     }
     
-    protected class PairedNameLabel extends Label {
+    protected class NameItem extends HBox {
         
         // static members ------------------------------------------------------
         
         // instance members ----------------------------------------------------
         
-        protected PairedNameLabel(ItemType itemType, String name) {
-            setGraphic(itemType.createImageView(18));
-            setGraphicTextGap(5);
-            setText(name);
-            setMaxWidth(Double.MAX_VALUE);
-            getStyleClass().add("childLabel");
-            getStyleClass().add("pairedNameLabel");
+        @FXML
+        protected ImageView itemTypeImageView;
+        
+        @FXML
+        protected Label nameLabel;
+        
+        @FXML
+        protected ImageView statusImageView;
+        
+        protected NameItem() {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("NameItem.fxml"), rb);
+                loader.setRoot(this);
+                loader.setController(this);
+                loader.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
+    }
+    
+    protected class PairedNameLabel extends NameItem {
+        
+        // static members ------------------------------------------------------
+        
+        // instance members ----------------------------------------------------
+        
+        private PairedNameLabel init(Object item) {
+            ItemType itemType = ItemType.of(item);
+            itemTypeImageView.setImage(itemType.image);
+            nameLabel.setText(item.toString());
+            
+            switch (itemType) {
+                case SHEET:
+                case DIR:
+                    getStyleClass().add("loadCompleted");
+                    break;
+                
+                case BOOK:
+                    BookInfo bookInfo = (BookInfo) item;
+                    
+                    switch (bookInfo.status()) {
+                        case LOAD_COMPLETED:
+                            getStyleClass().add("loadCompleted");
+                            break;
+                        
+                        case PASSWORD_LOCKED:
+                            getStyleClass().add("passwordLocked");
+                            statusImageView.setImage(EditComparisonDialogPane.passwordLockedImage);
+                            break;
+                        
+                        case LOAD_FAILED:
+                            getStyleClass().add("loadFailed");
+                            statusImageView.setImage(EditComparisonDialogPane.loadFailedImage);
+                            break;
+                    }
+                    break;
+            }
+            
+            return this;
         }
     }
     

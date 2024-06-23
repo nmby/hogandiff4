@@ -10,6 +10,24 @@
     -fx-text-fill: white;
 */
 
+.nameItemPane {
+    -fx-padding: 0.0px 7.0px;
+    -fx-background-insets: 2.0px 3.0px;
+    -fx-border-insets: 2.0px 3.0px;
+}
+
+.loadCompleted {
+    -fx-background-color: rgb(219.0, 244.0, 231.0);
+}
+
+.passwordLocked {
+    -fx-background-color: rgb(255.0, 242.0, 204.0);
+}
+
+.loadFailed {
+    -fx-background-color: rgb(252.0, 228.0, 214.0);
+}
+
 .parentPane {
     -fx-pref-width: 100;
 }
