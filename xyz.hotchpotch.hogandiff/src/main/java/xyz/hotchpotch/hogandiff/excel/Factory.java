@@ -179,15 +179,13 @@ public class Factory {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックの差分個所に色を付けて保存するペインター
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookPainter painter(
             Settings settings,
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);

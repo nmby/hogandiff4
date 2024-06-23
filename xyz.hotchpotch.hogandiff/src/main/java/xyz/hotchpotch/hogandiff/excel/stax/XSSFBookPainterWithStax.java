@@ -82,7 +82,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
          * 
          * @param styles xl/styles.xml エントリから生成した {@link Document}
          * @return 新しい {@link StylesManager} オブジェクト
-     * @throws NullPointerException パラメータが {@code null} の場合
+        * @throws NullPointerException パラメータが {@code null} の場合
          */
         public static StylesManager of(Document styles) {
             Objects.requireNonNull(styles);
@@ -187,8 +187,18 @@ public class XSSFBookPainterWithStax implements BookPainter {
     private static final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
     
+    // [instance members] ******************************************************
+    
+    private final short redundantColor;
+    private final short diffColor;
+    private final String redundantCommentColor;
+    private final String diffCommentColor;
+    private final Color redundantSheetColor;
+    private final Color diffSheetColor;
+    private final Color sameSheetColor;
+    
     /**
-     * 新しいペインターを構成します。<br>
+     * コンストラクタ
      * 
      * @param redundantColor 余剰行・余剰列に着ける色のインデックス値
      * @param diffColor 差分セルに着ける色のインデックス値
@@ -197,10 +207,8 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param redundantSheetColor 余剰シートの見出しにつける色
      * @param diffSheetColor 差分シートの見出しにつける色
      * @param sameSheetColor 差分の無いシートの見出しにつける色
-     * @return 新たなペインター
-     * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static BookPainter of(
+    public XSSFBookPainterWithStax(
             short redundantColor,
             short diffColor,
             String redundantCommentColor,
@@ -214,41 +222,6 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Objects.requireNonNull(redundantSheetColor);
         Objects.requireNonNull(diffSheetColor);
         Objects.requireNonNull(sameSheetColor);
-        
-        return new XSSFBookPainterWithStax(
-                redundantColor,
-                diffColor,
-                redundantCommentColor,
-                diffCommentColor,
-                redundantSheetColor,
-                diffSheetColor,
-                sameSheetColor);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final short redundantColor;
-    private final short diffColor;
-    private final String redundantCommentColor;
-    private final String diffCommentColor;
-    private final Color redundantSheetColor;
-    private final Color diffSheetColor;
-    private final Color sameSheetColor;
-    
-    private XSSFBookPainterWithStax(
-            short redundantColor,
-            short diffColor,
-            String redundantCommentColor,
-            String diffCommentColor,
-            Color redundantSheetColor,
-            Color diffSheetColor,
-            Color sameSheetColor) {
-        
-        assert redundantCommentColor != null;
-        assert diffCommentColor != null;
-        assert redundantSheetColor != null;
-        assert diffSheetColor != null;
-        assert sameSheetColor != null;
         
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
