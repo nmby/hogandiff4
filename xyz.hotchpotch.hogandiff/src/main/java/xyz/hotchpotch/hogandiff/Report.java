@@ -48,6 +48,7 @@ public abstract sealed class Report
          * @param start 実行開始時刻
          * @param end 実行終了時刻
          * @param result 比較結果
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Succeeded(
                 Settings settings,
@@ -56,11 +57,11 @@ public abstract sealed class Report
                 Result result) {
             
             super(
-                    Objects.requireNonNull(settings, "settings"),
-                    Objects.requireNonNull(start, "start"),
-                    Objects.requireNonNull(end, "end"));
+                    Objects.requireNonNull(settings),
+                    Objects.requireNonNull(start),
+                    Objects.requireNonNull(end));
             
-            this.result = Objects.requireNonNull(result, "result");
+            this.result = Objects.requireNonNull(result);
         }
         
         @Override
@@ -124,10 +125,10 @@ public abstract sealed class Report
             return switch (result) {
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> {
-                    int paired = (int) bResult.bookCompareInfo().childPairs().stream()
+                    int paired = (int) bResult.bookComparison().childSheetNamePairs().stream()
                             .filter(Pair::isPaired)
                             .count();
-                    yield IntPair.of(paired, bResult.bookCompareInfo().childPairs().size() - paired);
+                    yield IntPair.of(paired, bResult.bookComparison().childSheetNamePairs().size() - paired);
                 }
                 case DirResult dResult -> dResult.bookResults().values().stream()
                         .filter(Optional::isPresent)
@@ -147,10 +148,10 @@ public abstract sealed class Report
                 case SheetResult sResult -> throw new AssertionError();
                 case BookResult bResult -> throw new AssertionError();
                 case DirResult dResult -> {
-                    int paired = (int) dResult.dirCompareInfo().childPairs().stream()
+                    int paired = (int) dResult.dirComparison().childBookInfoPairs().stream()
                             .filter(Pair::isPaired)
                             .count();
-                    yield IntPair.of(paired, dResult.dirCompareInfo().childPairs().size() - paired);
+                    yield IntPair.of(paired, dResult.dirComparison().childBookInfoPairs().size() - paired);
                 }
                 case TreeResult tResult -> tResult.dirResults().values().stream()
                         .filter(Optional::isPresent)
@@ -191,6 +192,7 @@ public abstract sealed class Report
          * @param start 実行開始時刻
          * @param end 実行終了時刻
          * @param thrown スローされた例外
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public Failed(
                 Settings settings,
@@ -199,11 +201,11 @@ public abstract sealed class Report
                 Throwable thrown) {
             
             super(
-                    Objects.requireNonNull(settings, "settings"),
-                    Objects.requireNonNull(start, "start"),
-                    Objects.requireNonNull(end, "end"));
+                    Objects.requireNonNull(settings),
+                    Objects.requireNonNull(start),
+                    Objects.requireNonNull(end));
             
-            this.thrown = Objects.requireNonNull(thrown, "thrown");
+            this.thrown = Objects.requireNonNull(thrown);
         }
         
         @Override

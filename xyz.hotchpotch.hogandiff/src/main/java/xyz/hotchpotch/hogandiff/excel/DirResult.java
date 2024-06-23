@@ -17,13 +17,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param dirCompareInfo フォルダ比較情報
- * @param bookResults Excelブック名のペアに対応するExcelブック同士の比較結果のマップ
+ * @param dirComparison フォルダ比較情報
+ * @param bookResults Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
  * @param dirId フォルダの識別番号
  */
 public record DirResult(
-        DirCompareInfo dirCompareInfo,
-        Map<Pair<String>, Optional<BookResult>> bookResults,
+        DirComparison dirComparison,
+        Map<Pair<BookInfo>, Optional<BookResult>> bookResults,
         String dirId)
         implements Result {
     
@@ -33,26 +33,33 @@ public record DirResult(
     private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
-     * Excelブック名ペアをユーザー表示用に整形して返します。<br>
+     * Excelブックパスペアをユーザー表示用に整形して返します。<br>
      * 
      * @param dirId 親フォルダのペアを示す識別子。
-     * @param bookId このExcelブック名ペアを示す識別子。
-     * @param pair Excelブック名ペア
-     * @return Excelブック名ペアの整形済み文字列
-     * @throws NullPointerException {@code dirId}, {@code bookId}, {@code pair} のいずれかが {@code null} の場合
+     * @param bookId このExcelブックパスペアを示す識別子。
+     * @param bookInfoPair Excelブックパスペア
+     * @return Excelブックパスペアの整形済み文字列
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static String formatBookNamesPair(
             String dirId,
             String bookId,
-            Pair<String> pair) {
+            Pair<BookInfo> bookInfoPair) {
         
-        Objects.requireNonNull(dirId, "dirId");
-        Objects.requireNonNull(bookId, "bookId");
-        Objects.requireNonNull(pair, "pair");
+        Objects.requireNonNull(dirId);
+        Objects.requireNonNull(bookId);
+        Objects.requireNonNull(bookInfoPair);
+        
+        String bookNameA = bookInfoPair.hasA() ? bookInfoPair.a().toString() : null;
+        String bookNameB = bookInfoPair.hasB() ? bookInfoPair.b().toString() : null;
         
         return "    %s  vs  %s".formatted(
-                pair.hasA() ? "【A%s-%s】%s".formatted(dirId, bookId, pair.a()) : rb.getString("excel.DResult.010"),
-                pair.hasB() ? "【B%s-%s】%s".formatted(dirId, bookId, pair.b()) : rb.getString("excel.DResult.010"));
+                bookInfoPair.hasA()
+                        ? "【A%s-%s】%s".formatted(dirId, bookId, bookNameA)
+                        : rb.getString("excel.DResult.010"),
+                bookInfoPair.hasB()
+                        ? "【B%s-%s】%s".formatted(dirId, bookId, bookNameB)
+                        : rb.getString("excel.DResult.010"));
     }
     
     // [instance members] ******************************************************
@@ -60,21 +67,21 @@ public record DirResult(
     /**
      * コンストラクタ<br>
      * 
-     * @param dirCompareInfo フォルダ比較情報
-     * @param bookResults Excelブック名のペアに対応するExcelブック同士の比較結果のマップ
+     * @param dirComparison フォルダ比較情報
+     * @param bookResults Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
      * @param dirId フォルダの識別番号
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public DirResult(
-            DirCompareInfo dirCompareInfo,
-            Map<Pair<String>, Optional<BookResult>> bookResults,
+            DirComparison dirComparison,
+            Map<Pair<BookInfo>, Optional<BookResult>> bookResults,
             String dirId) {
         
-        Objects.requireNonNull(dirCompareInfo);
+        Objects.requireNonNull(dirComparison);
         Objects.requireNonNull(bookResults);
         Objects.requireNonNull(dirId);
         
-        this.dirCompareInfo = dirCompareInfo;
+        this.dirComparison = dirComparison;
         this.bookResults = Map.copyOf(bookResults);
         this.dirId = dirId;
     }
@@ -85,7 +92,7 @@ public record DirResult(
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return dirCompareInfo.childPairs().stream()
+        return dirComparison.childBookInfoPairs().stream()
                 .map(bookResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
@@ -105,10 +112,10 @@ public record DirResult(
                 .map(Optional::get)
                 .filter(BookResult::hasDiff)
                 .count();
-        int gapBooks = (int) dirCompareInfo.childPairs().stream()
+        int gapBooks = (int) dirComparison.childBookInfoPairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
                 .count();
-        int failed = (int) dirCompareInfo.childPairs().stream()
+        int failed = (int) dirComparison.childBookInfoPairs().stream()
                 .filter(Pair::isPaired)
                 .filter(p -> !bookResults.containsKey(p) || bookResults.get(p).isEmpty())
                 .count();
@@ -171,13 +178,13 @@ public record DirResult(
             return str.toString();
         }
         
-        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
-            Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
-            Optional<BookResult> bResult = bookResults.get(bookNamePair);
+        for (int i = 0; i < dirComparison.childBookInfoPairs().size(); i++) {
+            Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
+            Optional<BookResult> bResult = bookResults.get(bookInfoPair);
             
-            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair));
+            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
             
-            if (bookNamePair.isPaired()) {
+            if (bookInfoPair.isPaired()) {
                 str.append(diffDescriptor.apply(bResult));
             } else {
                 str.append(BR);
@@ -195,15 +202,15 @@ public record DirResult(
         StringBuilder str = new StringBuilder();
         
         str.append(rb.getString("excel.DResult.020").formatted("A"))
-                .append(dirCompareInfo.parentPair().a().dirPath())
+                .append(dirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.DResult.020").formatted("B"))
-                .append(dirCompareInfo.parentPair().b().dirPath())
+                .append(dirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
-        for (int i = 0; i < dirCompareInfo.childPairs().size(); i++) {
-            Pair<String> bookNamePair = dirCompareInfo.childPairs().get(i);
-            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookNamePair)).append(BR);
+        for (int i = 0; i < dirComparison.childBookInfoPairs().size(); i++) {
+            Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
+            str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair)).append(BR);
         }
         
         str.append(BR);

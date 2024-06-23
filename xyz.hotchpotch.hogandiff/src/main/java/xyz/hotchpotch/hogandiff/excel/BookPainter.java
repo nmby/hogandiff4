@@ -58,12 +58,12 @@ public interface BookPainter {
             Color diffSheetColor,
             Color sameSheetColor) {
         
-        Objects.requireNonNull(bookPath, "bookPath");
+        Objects.requireNonNull(bookPath);
         
         return switch (BookType.of(bookPath)) {
             case XLS -> CombinedBookPainter.of(List.of(
                     // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
-                    () -> BookPainterWithPoiUserApi.of(
+                    () -> new BookPainterWithPoiUserApi(
                             redundantColor,
                             diffColor,
                             redundantCommentColor,
@@ -73,7 +73,7 @@ public interface BookPainter {
                             sameSheetColor)));
         
             case XLSX, XLSM -> CombinedBookPainter.of(List.of(
-                    () -> XSSFBookPainterWithStax.of(
+                    () -> new XSSFBookPainterWithStax(
                             redundantColor,
                             diffColor,
                             redundantCommentHex,
@@ -81,7 +81,7 @@ public interface BookPainter {
                             redundantSheetColor,
                             diffSheetColor,
                             sameSheetColor),
-                    () -> BookPainterWithPoiUserApi.of(
+                    () -> new BookPainterWithPoiUserApi(
                             redundantColor,
                             diffColor,
                             redundantCommentColor,

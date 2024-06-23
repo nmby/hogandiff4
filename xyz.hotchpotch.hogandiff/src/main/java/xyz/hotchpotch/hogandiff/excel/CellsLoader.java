@@ -29,15 +29,13 @@ public interface CellsLoader {
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
      * @param useCachedValue 数式ではなく値で比較する場合は {@code true}
      * @return Excelシートからセルデータを抽出するローダー
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static CellsLoader of(Path bookPath, String readPassword, boolean useCachedValue) {
-        Objects.requireNonNull(bookPath, "bookPath");
-        // readPassword may by null.
+    public static CellsLoader of(Path bookPath, boolean useCachedValue) {
+        Objects.requireNonNull(bookPath);
         
         Function<Cell, CellData> converter = cell -> {
             String content = PoiUtil.getCellContentAsString(cell, useCachedValue);
@@ -53,15 +51,15 @@ public interface CellsLoader {
         return switch (BookType.of(bookPath)) {
             case XLS -> useCachedValue
                     ? CombinedCellsLoader.of(List.of(
-                            () -> HSSFCellsLoaderWithPoiEventApi.of(useCachedValue),
-                            () -> CellsLoaderWithPoiUserApi.of(converter)))
-                    : CellsLoaderWithPoiUserApi.of(converter);
+                            () -> new HSSFCellsLoaderWithPoiEventApi(useCachedValue),
+                            () -> new CellsLoaderWithPoiUserApi(converter)))
+                    : new CellsLoaderWithPoiUserApi(converter);
         
             case XLSX, XLSM -> useCachedValue
                     ? CombinedCellsLoader.of(List.of(
-                            () -> XSSFCellsLoaderWithSax.of(useCachedValue, bookPath, readPassword),
-                            () -> CellsLoaderWithPoiUserApi.of(converter)))
-                    : CellsLoaderWithPoiUserApi.of(converter);
+                            () -> new XSSFCellsLoaderWithSax(useCachedValue, bookPath),
+                            () -> new CellsLoaderWithPoiUserApi(converter)))
+                    : new CellsLoaderWithPoiUserApi(converter);
         
             // FIXME: [No.2 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);

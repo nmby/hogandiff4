@@ -89,10 +89,10 @@ public class PoiUtil {
      * @param useCachedValue 対象のセルの形式が数式の場合に、
      *              数式ではなくキャッシュされた算出値を返す場合は {@code true}
      * @return セルの格納値を表す文字列
-     * @throws NullPointerException {@code cell} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static String getCellContentAsString(Cell cell, boolean useCachedValue) {
-        Objects.requireNonNull(cell, "cell");
+        Objects.requireNonNull(cell);
         
         CellType type = useCachedValue && cell.getCellType() == CellType.FORMULA
                 ? cell.getCachedFormulaResultType()
@@ -133,12 +133,12 @@ public class PoiUtil {
      * 
      * @param sheet Excelシート
      * @return 可能性のある種類
-     * @throws NullPointerException {@code sheet} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     // このロジックで合ってるのかはさっぱり分からん
     // FIXME: [No.1 シート識別不正 - usermodel] 識別精度を上げたい...
     public static Set<SheetType> possibleTypes(Sheet sheet) {
-        Objects.requireNonNull(sheet, "sheet");
+        Objects.requireNonNull(sheet);
         
         return switch (sheet) {
             case XSSFChartSheet xcs -> EnumSet.of(SheetType.CHART_SHEET);
@@ -171,10 +171,10 @@ public class PoiUtil {
      * セルコメントを非表示にします。<br>
      * 
      * @param book Excelブック
-     * @throws NullPointerException {@code book} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void clearAllColors(Workbook book) {
-        Objects.requireNonNull(book, "book");
+        Objects.requireNonNull(book);
         
         switch (book) {
             case XSSFWorkbook xBook -> clearAllColors(xBook);
@@ -300,12 +300,11 @@ public class PoiUtil {
      * @param sheet Excelシート
      * @param rowIdxs 色を付ける行のインデックス値
      * @param color 着色する色のインデックス値
-     * @throws NullPointerException
-     *              {@code sheet}, {@code rowIdxs} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintRows(Sheet sheet, int[] rowIdxs, short color) {
-        Objects.requireNonNull(sheet, "sheet");
-        Objects.requireNonNull(rowIdxs, "rowIdxs");
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(rowIdxs);
         
         if (rowIdxs.length == 0) {
             return;
@@ -356,12 +355,11 @@ public class PoiUtil {
      * @param sheet Excelシート
      * @param columnIdxs 色を付ける行のインデックス値
      * @param color 着色する色のインデックス値
-     * @throws NullPointerException
-     *              {@code sheet}, {@code columnIdxs} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintColumns(Sheet sheet, int[] columnIdxs, short color) {
-        Objects.requireNonNull(sheet, "sheet");
-        Objects.requireNonNull(columnIdxs, "columnIdxs");
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(columnIdxs);
         
         if (columnIdxs.length == 0) {
             return;
@@ -407,16 +405,15 @@ public class PoiUtil {
      * @param sheet Excelシート
      * @param addresses 色を付けるセルの位置
      * @param color 着色する色のインデックス値
-     * @throws NullPointerException
-     *              {@code sheet}, {@code addresses} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintCells(
             Sheet sheet,
             Set<CellAddress> addresses,
             short color) {
         
-        Objects.requireNonNull(sheet, "sheet");
-        Objects.requireNonNull(addresses, "addresses");
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(addresses);
         
         // まず、存在しないセルを作成する。
         Set<Cell> cells = new HashSet<>();
@@ -472,17 +469,16 @@ public class PoiUtil {
      * @param sheet Excelシート
      * @param addresses 色を付けるセルコメントの位置
      * @param color 着色する色
-     * @throws NullPointerException
-     *              {@code sheet}, {@code addresses}, {@code color} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintComments(
             Sheet sheet,
             Set<CellAddress> addresses,
             Color color) {
         
-        Objects.requireNonNull(sheet, "sheet");
-        Objects.requireNonNull(addresses, "addresses");
-        Objects.requireNonNull(color, "color");
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(addresses);
+        Objects.requireNonNull(color);
         
         Map<CellAddress, ? extends Comment> comments = sheet.getCellComments();
         
@@ -512,15 +508,14 @@ public class PoiUtil {
      * 
      * @param sheet Excelシート
      * @param color 着色する色
-     * @throws NullPointerException
-     *              {@code sheet}, {@code color} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintSheetTab(
             Sheet sheet,
             Color color) {
         
-        Objects.requireNonNull(sheet, "sheet");
-        Objects.requireNonNull(color, "color");
+        Objects.requireNonNull(sheet);
+        Objects.requireNonNull(color);
         
         switch (sheet) {
             case XSSFSheet xSheet:
@@ -546,7 +541,7 @@ public class PoiUtil {
      * @param r 行インデックス（0開始）
      * @param c 列インデックス（0開始）
      * @return セルオブジェクト
-     * @throws NullPointerException {@code sheet} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code r}, {@code c} のいずれかが負数の場合
      */
     public static Cell getCell(
@@ -554,7 +549,7 @@ public class PoiUtil {
             int r,
             int c) {
         
-        Objects.requireNonNull(sheet, "sheet");
+        Objects.requireNonNull(sheet);
         if (r < 0 || c < 0) {
             throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
         }
@@ -571,13 +566,14 @@ public class PoiUtil {
      * @param r 行インデックス（0開始）
      * @param c 列インデックス（0開始）
      * @return セルオブジェクト（存在しない場合は {@link Optional#empty}）
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static Optional<Cell> getCellIfPresent(
             Sheet sheet,
             int r,
             int c) {
         
-        Objects.requireNonNull(sheet, "sheet");
+        Objects.requireNonNull(sheet);
         if (r < 0 || c < 0) {
             throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
         }

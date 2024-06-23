@@ -8,12 +8,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.excel.Result;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -59,14 +58,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             saveAndShowResultText(workDir, dResult.toString(), 93, 95);
             
             // 7. 比較結果Excelの作成と表示
-            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
-                    TreeCompareInfo.ofSingle(
-                            dirInfoPair,
-                            Factory.bookNamesMatcher(settings),
-                            Factory.sheetNamesMatcher(settings),
-                            settings.get(SettingKeys.CURR_READ_PASSWORDS)),
+                    dirComparison.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
             
             createSaveAndShowResultBook(workDir, tResult, 95, 99);
@@ -92,21 +87,21 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
-            List<Pair<String>> bookNamePairs = dirCompareInfo.childPairs();
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
+            List<Pair<BookInfo>> bookInfoPairs = dirComparison.childBookInfoPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
                     dirInfoPair.a().dirPath(),
                     dirInfoPair.b().dirPath()));
             
-            if (bookNamePairs.size() == 0) {
+            if (bookInfoPairs.size() == 0) {
                 str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
             }
-            for (int i = 0; i < bookNamePairs.size(); i++) {
-                Pair<String> bookNamePair = bookNamePairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookNamePair)).append(BR);
+            for (int i = 0; i < bookInfoPairs.size(); i++) {
+                Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);
+                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookInfoPair)).append(BR);
             }
             
             updateMessage(str.toString());
@@ -121,8 +116,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private Pair<Path> createOutputDirs(Path workDir)
             throws ApplicationException {
         
-        DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirCompareInfo.parentPair();
+        DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+        Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
         
         try {
@@ -146,23 +141,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            DirCompareInfo dirCompareInfo = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
-            if (0 < dirCompareInfo.childPairs().size()) {
+            if (0 < dirComparison.childBookInfoPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",
                         "",
-                        dirCompareInfo,
+                        dirComparison,
                         outputDirPair,
                         progressBefore,
                         progressAfter);
                 
             } else {
                 return new DirResult(
-                        dirCompareInfo,
-                        dirCompareInfo.childPairs().stream().collect(Collectors.toMap(
+                        dirComparison,
+                        dirComparison.childBookInfoPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

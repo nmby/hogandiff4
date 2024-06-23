@@ -51,10 +51,10 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * @param <E> スローしうるチェック例外の型
      * @param safer 関数
      * @return 型だけが変換された関数
-     * @throws NullPointerException {@code safer} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T, R, E extends Exception> UnsafeFunction<T, R, E> from(Function<T, R> safer) {
-        Objects.requireNonNull(safer, "safer");
+        Objects.requireNonNull(safer);
         
         return safer::apply;
     }
@@ -76,12 +76,12 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * @param <V> {@code before} 関数および合成関数の入力の型
      * @param before この関数を適用する前に適用する関数
      * @return まず {@code before} を適用し、次にこの関数を適用する合成関数
-     * @throws NullPointerException {@code before} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default <V> UnsafeFunction<V, R, E> compose(
             UnsafeFunction<? super V, ? extends T, ? extends E> before) {
         
-        Objects.requireNonNull(before, "before");
+        Objects.requireNonNull(before);
         
         return v -> apply(before.apply(v));
     }
@@ -92,10 +92,10 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * @param <V> {@code before} 関数および合成関数の入力の型
      * @param before この関数を適用する前に適用する関数
      * @return まず {@code before} を適用し、次にこの関数を適用する合成関数
-     * @throws NullPointerException {@code before} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default <V> UnsafeFunction<V, R, E> compose(Function<? super V, ? extends T> before) {
-        Objects.requireNonNull(before, "before");
+        Objects.requireNonNull(before);
         
         return v -> apply(before.apply(v));
     }
@@ -106,12 +106,12 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * @param <V> {@code after} 関数および合成関数の出力の型
      * @param after この関数を適用した後に適用する関数
      * @return まずこの関数を適用し、次に {@code after} 関数を適用する合成関数
-     * @throws NullPointerException {@code after} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default <V> UnsafeFunction<T, V, E> andThen(
             UnsafeFunction<? super R, ? extends V, ? extends E> after) {
         
-        Objects.requireNonNull(after, "after");
+        Objects.requireNonNull(after);
         
         return t -> after.apply(apply(t));
     }
@@ -122,10 +122,10 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * @param <V> {@code after} 関数および合成関数の出力の型
      * @param after この関数を適用した後に適用する関数
      * @return まずこの関数を適用し、次に {@code after} 関数を適用する合成関数
-     * @throws NullPointerException {@code after} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default <V> UnsafeFunction<T, V, E> andThen(Function<? super R, ? extends V> after) {
-        Objects.requireNonNull(after, "after");
+        Objects.requireNonNull(after);
         
         return t -> after.apply(apply(t));
     }
@@ -148,12 +148,12 @@ public interface UnsafeFunction<T, R, E extends Exception> {
      * 
      * @param wrapper チェック例外を非チェック例外に変換するラッパー
      * @return スローする例外が変換された関数
-     * @throws NullPointerException {@code wrapper} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default Function<T, R> toFunction(
             Function<? super Exception, ? extends RuntimeException> wrapper) {
         
-        Objects.requireNonNull(wrapper, "wrapper");
+        Objects.requireNonNull(wrapper);
         
         return t -> {
             try {

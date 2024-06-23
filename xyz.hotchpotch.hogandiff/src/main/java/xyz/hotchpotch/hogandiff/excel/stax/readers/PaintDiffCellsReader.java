@@ -60,8 +60,7 @@ public class PaintDiffCellsReader extends BufferingReader {
      * @param diffCellContents 差分セル
      * @param colorIdx 着色する色のインデックス
      * @return 新しいリーダー
-     * @throws NullPointerException
-     *      {@code source}, {@code stylesManager}, {@code diffCellContents} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code diffCellContents} が空の場合
      */
     public static XMLEventReader of(
@@ -70,9 +69,9 @@ public class PaintDiffCellsReader extends BufferingReader {
             List<CellData> diffCellContents,
             short colorIdx) {
         
-        Objects.requireNonNull(source, "source");
-        Objects.requireNonNull(stylesManager, "stylesManager");
-        Objects.requireNonNull(diffCellContents, "diffCellContents");
+        Objects.requireNonNull(source);
+        Objects.requireNonNull(stylesManager);
+        Objects.requireNonNull(diffCellContents);
         if (diffCellContents.isEmpty()) {
             throw new IllegalArgumentException("no target cells");
         }

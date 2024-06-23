@@ -8,14 +8,14 @@ import java.util.Objects;
  * フォルダ情報を表す不変クラスです。<br>
  *
  * @param dirPath このフォルダのパス
- * @param bookNames このフォルダに含まれるExcelブック名
- * @param children このフォルダに含まれる子フォルダ情報
+ * @param childDirInfos このフォルダに含まれる子フォルダ情報
+ * @param childBookInfos このフォルダに含まれるExcelブック名
  * @author nmby
  */
 public record DirInfo(
         Path dirPath,
-        List<String> bookNames,
-        List<DirInfo> children) {
+        List<DirInfo> childDirInfos,
+        List<BookInfo> childBookInfos) {
     
     // [static members] ********************************************************
     
@@ -25,22 +25,22 @@ public record DirInfo(
      * コンストラクタ
      * 
      * @param dirPath このフォルダのパス
-     * @param bookNames このフォルダに含まれるExcelブック名
-     * @param children このフォルダに含まれる子フォルダ情報
+     * @param childDirInfos このフォルダに含まれる子フォルダ情報
+     * @param childBookInfos このフォルダに含まれるExcelブック名
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public DirInfo(
             Path dirPath,
-            List<String> bookNames,
-            List<DirInfo> children) {
+            List<DirInfo> childDirInfos,
+            List<BookInfo> childBookInfos) {
         
         Objects.requireNonNull(dirPath);
-        Objects.requireNonNull(bookNames);
-        Objects.requireNonNull(children);
+        Objects.requireNonNull(childDirInfos);
+        Objects.requireNonNull(childBookInfos);
         
         this.dirPath = dirPath;
-        this.bookNames = List.copyOf(bookNames);
-        this.children = List.copyOf(children);
+        this.childDirInfos = List.copyOf(childDirInfos);
+        this.childBookInfos = List.copyOf(childBookInfos);
     }
     
     @Override

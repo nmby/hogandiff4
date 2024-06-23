@@ -122,7 +122,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
             Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
         
-        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
+        Objects.requireNonNull(cellsSetPair);
         
         Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
                 ? new Pair<>(Set.of(), Set.of())

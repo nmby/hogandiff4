@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
@@ -34,63 +37,55 @@ public class StandardDirLoader implements DirLoader {
         return handleableExtensions.stream().anyMatch(x -> fileName.endsWith(x));
     }
     
-    /**
-     * {@link DirLoader} のインスタンスを返します。<br>
-     * 
-     * @param recursively 子フォルダの情報も再帰的にロードするか
-     * @return ローダー
-     */
-    public static DirLoader of(boolean recursively) {
-        return new StandardDirLoader(recursively);
-    }
-    
     // [instance members] ******************************************************
     
     private final boolean recursively;
     
-    private StandardDirLoader(boolean recursively) {
+    /**
+     * コンストラクタ
+     * 
+     * @param recursively 子フォルダの情報も再帰的にロードするか
+     */
+    public StandardDirLoader(boolean recursively) {
         this.recursively = recursively;
     }
     
     @Override
-    public DirInfo loadDir(Path path) throws ExcelHandlingException {
-        Objects.requireNonNull(path, "path");
+    public DirInfo loadDirInfo(Path path) throws ExcelHandlingException {
+        Objects.requireNonNull(path);
         if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
             throw new IllegalArgumentException("not directory. path: " + path);
         }
         
-        return loadDir2(path, recursively);
+        return loadDir2(path);
     }
     
-    private DirInfo loadDir2(
-            Path path,
-            boolean recursively)
-            throws ExcelHandlingException {
-        
+    private DirInfo loadDir2(Path path) throws ExcelHandlingException {
         assert path != null;
         assert Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS);
         
         try {
-            List<String> bookNames = Files.list(path)
-                    .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(StandardDirLoader::isHandleableExcelBook)
-                    .map(Path::getFileName)
-                    .map(Path::toString)
-                    .sorted()
-                    .toList();
-            
-            List<DirInfo> children = recursively
+            List<DirInfo> childDirInfos = recursively
                     ? Files.list(path)
                             .filter(f -> Files.isDirectory(f, LinkOption.NOFOLLOW_LINKS))
-                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (p -> loadDir2(p, true)))
-                                    .convert())
+                            .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (this::loadDir2)).convert())
                             .filter(r -> r.result() != null)
                             .map(ResultOrThrown::result)
                             .sorted()
                             .toList()
                     : List.of();
             
-            return new DirInfo(path, bookNames, children);
+            List<BookInfo> childBookPaths = Files.list(path)
+                    .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
+                    .filter(StandardDirLoader::isHandleableExcelBook)
+                    .sorted()
+                    .map(bookPath -> {
+                        BookLoader bookLoader = Factory.bookLoader(bookPath);
+                        return bookLoader.loadBookInfo(bookPath, null);
+                    })
+                    .toList();
+            
+            return new DirInfo(path, childDirInfos, childBookPaths);
             
         } catch (IOException e) {
             throw new ExcelHandlingException(

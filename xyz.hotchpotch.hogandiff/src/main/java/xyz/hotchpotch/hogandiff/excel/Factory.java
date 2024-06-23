@@ -23,24 +23,17 @@ public class Factory {
     // [static members] ********************************************************
     
     /**
-     * Excelブックからシート名の一覧を抽出するローダーを返します。<br>
+     * Excelブック情報を抽出するローダーを返します。<br>
      * 
      * @param bookPath Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックからシート名の一覧を抽出するローダー
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static SheetNamesLoader sheetNamesLoader(
-            Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
-        
+    public static BookLoader bookLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
-        // readPassword may be null.
         
-        return SheetNamesLoader.of(bookPath, readPassword);
+        return BookLoader.of(bookPath);
     }
     
     /**
@@ -48,21 +41,13 @@ public class Factory {
      * 
      * @param settings 設定
      * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelシートからセルデータを抽出するローダー
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static CellsLoader cellsLoader(
-            Settings settings,
-            Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
-        
+    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
-        // readPassword may be null.
         
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -70,7 +55,7 @@ public class Factory {
         
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
         
-        return CellsLoader.of(bookPath, readPassword, useCachedValue);
+        return CellsLoader.of(bookPath, useCachedValue);
     }
     
     /**
@@ -108,13 +93,14 @@ public class Factory {
     }
     
     /**
-     * 2つのフォルダに含まれるExcelブック名同士の対応関係を決めるマッチャーを返します。<br>
+     * 2つのフォルダに含まれるExcelブック情報同士の対応関係を決めるマッチャーを返します。<br>
+     * Excelブックパスの末尾のファイル名に基づいて対応関係を求めます。<br>
      * 
      * @param settings 設定
-     * @return Excelブック名同士の対応関係を決めるマッチャー
+     * @return Excelブックパス同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<String> bookNamesMatcher(Settings settings) {
+    public static Matcher<BookInfo> bookInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
@@ -123,8 +109,12 @@ public class Factory {
                 : Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
-                                String::length,
-                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
+                                bookInfo -> bookInfo.toString().length(),
+                                (bookInfo1, bookInfo2) -> {
+                                    String bookName1 = bookInfo1.toString();
+                                    String bookName2 = bookInfo2.toString();
+                                    return StringDiffUtil.levenshteinDistance(bookName1, bookName2) + 1;
+                                })));
     }
     
     /**
@@ -134,30 +124,31 @@ public class Factory {
      * @return フォルダ同士の対応関係を決めるマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static Matcher<DirInfo> dirsMatcher(Settings settings) {
+    public static Matcher<DirInfo> dirInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
-                ? strictDirNamesMatcher
+                ? strictDirInfosMatcher
                 : Matcher.combinedMatcherOf(List.of(
-                        strictDirNamesMatcher,
-                        fuzzyButSimpleDirsMatcher));
+                        strictDirInfosMatcher,
+                        fuzzyButSimpleDirInfosMatcher));
     }
     
     private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
     
-    private static final Matcher<DirInfo> strictDirNamesMatcher = Matcher.identityMatcherOf(dirNameExtractor);
+    private static final Matcher<DirInfo> strictDirInfosMatcher = Matcher.identityMatcherOf(dirNameExtractor);
     
-    private static final Matcher<DirInfo> fuzzyButSimpleDirsMatcher = Matcher.minimumCostFlowMatcherOf(
-            d -> d.children().size() + d.bookNames().size(),
+    private static final Matcher<DirInfo> fuzzyButSimpleDirInfosMatcher = Matcher.minimumCostFlowMatcherOf(
+            d -> d.childDirInfos().size() + d.childBookInfos().size(),
             (d1, d2) -> {
-                List<String> childrenNames1 = d1.children().stream().map(dirNameExtractor).toList();
-                List<String> childrenNames2 = d2.children().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
+                List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
                 
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-                int gapBookNames = (int) Matcher.identityMatcherOf().makeIdxPairs(d1.bookNames(), d2.bookNames())
+                int gapBookNames = (int) Matcher.identityMatcherOf()
+                        .makeIdxPairs(d1.childBookInfos(), d2.childBookInfos())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 
                 return gapChildren + gapBookNames;
@@ -188,15 +179,13 @@ public class Factory {
      * @param bookPath Excepブックのパス
      * @param readPassword Excelブックの読み取りパスワード（{@code null} 許容）
      * @return Excelブックの差分個所に色を付けて保存するペインター
-     * @throws ExcelHandlingException 処理に失敗した場合
      * @throws NullPointerException {@code settings}, {@code bookPath} のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
     public static BookPainter painter(
             Settings settings,
             Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            String readPassword) {
         
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);

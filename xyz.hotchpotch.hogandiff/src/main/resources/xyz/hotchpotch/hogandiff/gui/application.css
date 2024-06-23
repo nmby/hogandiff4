@@ -36,12 +36,12 @@
     -fx-padding: 0.0px 3.0px 0.0px 0.0px;
 }
 
-.editPairingPane {
+.editComparisonPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
     -fx-padding: 12.0px 10.0px 12.0px 4.0px;
 }
 
-.editPairingButton {
+.editComparisonButton {
     -fx-pref-width: 28.0px;
 }
 

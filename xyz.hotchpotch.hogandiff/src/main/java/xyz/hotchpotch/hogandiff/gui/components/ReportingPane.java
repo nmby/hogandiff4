@@ -62,7 +62,7 @@ public class ReportingPane extends VBox implements ChildController {
     
     @Override
     public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent, "parent");
+        Objects.requireNonNull(parent);
         
         this.parent = parent;
         
@@ -93,9 +93,10 @@ public class ReportingPane extends VBox implements ChildController {
      * このコンポーネントとタスクをバインドします。<br>
      * 
      * @param task タスク
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void bind(Task<Report> task) {
-        Objects.requireNonNull(task, "task");
+        Objects.requireNonNull(task);
         
         reportingProgressBar.progressProperty().bind(task.progressProperty());
         reportingTextArea.textProperty().bind(task.messageProperty());

@@ -68,7 +68,7 @@ public class RCSheetComparator implements SheetComparator {
      */
     @Override
     public SheetResult compare(Pair<Set<CellData>> cellsSetPair) {
-        Objects.requireNonNull(cellsSetPair, "cellsSetPair");
+        Objects.requireNonNull(cellsSetPair);
         
         if (cellsSetPair.a() == cellsSetPair.b()) {
             if (cellsSetPair.a().isEmpty()) {
@@ -125,15 +125,15 @@ public class RCSheetComparator implements SheetComparator {
         
         return rowPairs.parallelStream().filter(IntPair::isPaired).flatMap(
                 rows -> columnPairsFiltered.stream().map(columns -> {
-                    Pair<String> addresses = Side.map(
+                    Pair<String> addressPair = Side.map(
                             side -> CellsUtil.idxToAddress(rows.get(side), columns.get(side)));
-                    Pair<CellData> cells = Side.map(side -> maps.get(side).get(addresses.get(side)));
+                    Pair<CellData> cellPair = Side.map(side -> maps.get(side).get(addressPair.get(side)));
                     
-                    return (cells.a() != null && cells.b() != null && cells.a().dataEquals(cells.b())
-                            || cells.a() == null && cells.b() == null)
+                    return (cellPair.a() != null && cellPair.b() != null && cellPair.a().dataEquals(cellPair.b())
+                            || cellPair.a() == null && cellPair.b() == null)
                                     ? null
-                                    : Side.map(side -> cells.get(side) != null
-                                            ? cells.get(side)
+                                    : Side.map(side -> cellPair.get(side) != null
+                                            ? cellPair.get(side)
                                             : CellData.empty(rows.get(side), columns.get(side)));
                 }).filter(Objects::nonNull)).toList();
     }

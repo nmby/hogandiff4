@@ -28,15 +28,15 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
      * この実装は、要素の値に関わりなく
      * 2つのリストの要素同士をリストの先頭から組み合わせていきます。<br>
      * 
-     * @throws NullPointerException {@code listA}, {@code listB} のいずれかが {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     @Override
     public List<IntPair> makeIdxPairs(
             List<? extends T> listA,
             List<? extends T> listB) {
         
-        Objects.requireNonNull(listA, "listA");
-        Objects.requireNonNull(listB, "listB");
+        Objects.requireNonNull(listA);
+        Objects.requireNonNull(listB);
         
         return IntStream.range(0, Math.max(listA.size(), listB.size()))
                 .mapToObj(n -> listA.size() <= n ? IntPair.onlyB(n)

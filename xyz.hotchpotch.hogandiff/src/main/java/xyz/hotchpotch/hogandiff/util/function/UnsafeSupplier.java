@@ -26,10 +26,10 @@ public interface UnsafeSupplier<T, E extends Exception> {
      * @param <E> スローしうるチェック例外の型
      * @param safer サプライヤ
      * @return 型だけが変換されたサプライヤ
-     * @throws NullPointerException {@code safer} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static <T, E extends Exception> UnsafeSupplier<T, E> from(Supplier<T> safer) {
-        Objects.requireNonNull(safer, "safer");
+        Objects.requireNonNull(safer);
         
         return safer::get;
     }
@@ -63,12 +63,12 @@ public interface UnsafeSupplier<T, E extends Exception> {
      * 
      * @param wrapper チェック例外を非チェック例外に変換するラッパー
      * @return スローする例外が変換されたサプライヤ
-     * @throws NullPointerException {@code wrapper} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     default Supplier<T> toSupplier(
             Function<? super Exception, ? extends RuntimeException> wrapper) {
         
-        Objects.requireNonNull(wrapper, "wrapper");
+        Objects.requireNonNull(wrapper);
         
         return () -> {
             try {

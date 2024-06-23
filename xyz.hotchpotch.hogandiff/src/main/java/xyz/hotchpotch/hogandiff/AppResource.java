@@ -13,6 +13,11 @@ import java.util.ResourceBundle;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -184,6 +189,21 @@ public class AppResource {
             settings = Settings.builder().setAll(settings).setAll(fromArgs.get()).build();
             properties = settings.toProperties();
             storeProperties();
+            
+            // コンソールから起動した際は CURR_BOOK_COMPARE_INFO が未設定のため、
+            // ここで処理を行うこととする。
+            // TODO: より適した位置を見つけて整理する。
+            BookInfo bookInfoA = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath());
+            BookInfo bookInfoB = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
+            BookComparison bookComparison = BookComparison.calculate(
+                    Pair.of(bookInfoA, bookInfoB),
+                    Factory.sheetNamesMatcher(settings));
+            settings = settings.getAltered(SettingKeys.CURR_BOOK_COMPARE_INFO, bookComparison);
         }
+    }
+    
+    private BookInfo loadBookInfo(Path bookPath) {
+        BookLoader loader = Factory.bookLoader(bookPath);
+        return loader.loadBookInfo(bookPath, null);
     }
 }

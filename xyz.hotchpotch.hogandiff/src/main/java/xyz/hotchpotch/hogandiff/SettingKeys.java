@@ -13,11 +13,9 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -152,32 +150,32 @@ public class SettingKeys {
             CURR_BOOK_INFO2);
     
     /** 今回の実行におけるシート比較情報 */
-    public static final Key<SheetCompareInfo> CURR_SHEET_COMPARE_INFO = new Key<>(
-            "current.sheetCompareInfo",
+    public static final Key<BookComparison> CURR_SHEET_COMPARE_INFO = new Key<>(
+            "current.sheetComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるExcelブック比較情報 */
-    public static final Key<BookCompareInfo> CURR_BOOK_COMPARE_INFO = new Key<>(
-            "current.bookCompareInfo",
+    public static final Key<BookComparison> CURR_BOOK_COMPARE_INFO = new Key<>(
+            "current.bookComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダ比較情報 */
-    public static final Key<DirCompareInfo> CURR_DIR_COMPARE_INFO = new Key<>(
-            "current.dirCompareInfo",
+    public static final Key<DirComparison> CURR_DIR_COMPARE_INFO = new Key<>(
+            "current.dirComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダツリー比較情報 */
-    public static final Key<TreeCompareInfo> CURR_TREE_COMPARE_INFO = new Key<>(
-            "current.treeCompareInfo",
+    public static final Key<DirComparison> CURR_TREE_COMPARE_INFO = new Key<>(
+            "current.treeComparison",
             () -> null,
             encodeNotSupported("cannot encode."),
             decodeNotSupported("cannnot decode."),

@@ -40,10 +40,10 @@ public record Pair<T>(T a, T b) {
          * @param <T> 新たな要素の型
          * @param mapper 各側に適用する関数
          * @return 新たなペア
-         * @throws NullPointerException {@code mapper} が {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public static <T> Pair<T> map(Function<Side, ? extends T> mapper) {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return new Pair<>(
                     mapper.apply(A),
@@ -57,10 +57,10 @@ public record Pair<T>(T a, T b) {
          * @param <E> {@code mapper} がスローしうるチェック例外の型
          * @param mapper 各側に適用する関数
          * @return 新たなペア
-         * @throws NullPointerException {@code mapper} が {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public static <T, E extends Exception> Pair<T> unsafeMap(UnsafeFunction<Side, ? extends T, E> mapper) throws E {
-            Objects.requireNonNull(mapper, "mapper");
+            Objects.requireNonNull(mapper);
             
             return new Pair<>(
                     mapper.apply(A),
@@ -71,10 +71,10 @@ public record Pair<T>(T a, T b) {
          * 各側に指定されたオペレーションを適用します。<br>
          * 
          * @param operation 各側に適用するオペレーション
-         * @throws NullPointerException {@code operation} が {@code null} の場合
+         * @throws NullPointerException パラメータが {@code null} の場合
          */
         public static void forEach(Consumer<Side> operation) {
-            Objects.requireNonNull(operation, "operation");
+            Objects.requireNonNull(operation);
             
             operation.accept(A);
             operation.accept(B);
@@ -111,10 +111,21 @@ public record Pair<T>(T a, T b) {
      * @param side 要素の側
      * @param value 指定された側の要素
      * @return 新しいペア
+     * @throws NullPointerException {@code side} が {@code null} の場合
      */
     public static <T> Pair<T> ofOnly(Side side, T value) {
         Objects.requireNonNull(side);
         return side == Side.A ? new Pair<>(value, null) : new Pair<>(null, value);
+    }
+    
+    /**
+     * 空のペアを返します。<br>
+     * 
+     * @param <T> 要素の型
+     * @return 空のペア
+     */
+    public static <T> Pair<T> empty() {
+        return new Pair<>(null, null);
     }
     
     // [instance members] ******************************************************
@@ -129,11 +140,11 @@ public record Pair<T>(T a, T b) {
      * 
      * @param side 要素の側
      * @return 指定された側の要素
-     * @throws NullPointerException {@code side} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws NoSuchElementException 指定された側の要素が無い場合
      */
     public T get(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         
         return side == Side.A ? a : b;
     }
@@ -161,10 +172,10 @@ public record Pair<T>(T a, T b) {
      * 
      * @param side 要素の側
      * @return 指定された側の要素が存在する場合は {@code true}
-     * @throws NullPointerException {@code side} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean has(Side side) {
-        Objects.requireNonNull(side, "side");
+        Objects.requireNonNull(side);
         
         return (side == Side.A ? a : b) != null;
     }
@@ -220,10 +231,10 @@ public record Pair<T>(T a, T b) {
      * @param <U> 新たな要素の型
      * @param mapper 各要素に適用する関数
      * @return 新たなペア
-     * @throws NullPointerException {@code mapper} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public <U> Pair<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper");
+        Objects.requireNonNull(mapper);
         
         return new Pair<>(
                 a == null ? null : mapper.apply(a),
@@ -237,11 +248,11 @@ public record Pair<T>(T a, T b) {
      * @param <E> {@code mapper} がスローしうるチェック例外の型
      * @param mapper 各要素に適用する関数
      * @return 新たなペア
-     * @throws NullPointerException {@code mapper} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws E {@code mapper.apply} が失敗した場合
      */
     public <U, E extends Exception> Pair<U> unsafeMap(UnsafeFunction<? super T, ? extends U, E> mapper) throws E {
-        Objects.requireNonNull(mapper, "mapper");
+        Objects.requireNonNull(mapper);
         
         return new Pair<>(
                 a == null ? null : mapper.apply(a),
@@ -253,10 +264,10 @@ public record Pair<T>(T a, T b) {
      * 要素が存在しない場合はオペレーションを適用しません。<br>
      * 
      * @param operation 各要素に適用するオペレーション
-     * @throws NullPointerException {@code operation} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void forEach(Consumer<? super T> operation) {
-        Objects.requireNonNull(operation, "operation");
+        Objects.requireNonNull(operation);
         
         if (a != null) {
             operation.accept(a);

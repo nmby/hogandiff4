@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -35,13 +36,12 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Report;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirCompareInfo;
+import xyz.hotchpotch.hogandiff.excel.DirComparison;
+import xyz.hotchpotch.hogandiff.excel.DirComparison.FlattenDirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.Factory;
-import xyz.hotchpotch.hogandiff.excel.SheetCompareInfo;
-import xyz.hotchpotch.hogandiff.excel.TreeCompareInfo;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
@@ -82,16 +82,16 @@ public class MainController extends VBox {
     public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
     
     /** シート比較情報 */
-    public final Property<SheetCompareInfo> sheetCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<BookComparison> sheetComparisonProp = new SimpleObjectProperty<>();
     
     /** Excelブック比較情報 */
-    public final Property<BookCompareInfo> bookCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<BookComparison> bookComparisonProp = new SimpleObjectProperty<>();
     
     /** フォルダ比較情報 */
-    public final Property<DirCompareInfo> dirCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<DirComparison> dirComparisonProp = new SimpleObjectProperty<>();
     
     /** フォルダツリー比較情報 */
-    public final Property<TreeCompareInfo> treeCompareInfoProp = new SimpleObjectProperty<>();
+    public final Property<DirComparison> treeComparisonProp = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -139,18 +139,18 @@ public class MainController extends VBox {
             }
         });
         
-        bindSheetCompareInfoProp();
-        bindBookCompareInfoProp();
-        bindDirCompareInfoProp();
-        bindTreeCompareInfoProp();
+        bindSheetComparisonProp();
+        bindBookComparisonProp();
+        bindDirComparisonProp();
+        bindTreeComparisonProp();
         
-        sheetCompareInfoProp.addListener(
+        sheetComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newVal));
-        bookCompareInfoProp.addListener(
+        bookComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newVal));
-        dirCompareInfoProp.addListener(
+        dirComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newVal));
-        treeCompareInfoProp.addListener(
+        treeComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newVal));
         
         // 3.初期値の設定
@@ -161,17 +161,17 @@ public class MainController extends VBox {
     }
     
     /**
-     * sheetCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #sheetComparisonProp} プロパティにデータソースをバインドします。<br>
      */
     // こんなメソッドをpublicにするのはいくらなんでもおかしい。
     // TODO: 処理構成を見直す
-    public void bindSheetCompareInfoProp() {
-        sheetCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindSheetComparisonProp() {
+        sheetComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
                     Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
-                    SheetCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    BookComparison prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_SHEETS:
@@ -179,11 +179,11 @@ public class MainController extends VBox {
                                 return null;
                             }
                             if (prevValue != null
-                                    && bookInfoPair.equals(prevValue.parentPair())
-                                    && sheetNamePair.equals(prevValue.childPairs().get(0))) {
+                                    && bookInfoPair.equals(prevValue.parentBookInfoPair())
+                                    && sheetNamePair.equals(prevValue.childSheetNamePairs().get(0))) {
                                 return prevValue;
                             } else {
-                                return SheetCompareInfo.of(bookInfoPair, sheetNamePair);
+                                return new BookComparison(bookInfoPair, List.of(sheetNamePair));
                             }
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
@@ -201,24 +201,24 @@ public class MainController extends VBox {
     }
     
     /**
-     * bookCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #bookComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindBookCompareInfoProp() {
-        bookCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindBookComparisonProp() {
+        bookComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-                    BookCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_BOOKS:
                             if (!bookInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && bookInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && bookInfoPair.equals(prevValue.parentBookInfoPair())) {
                                 return prevValue;
                             } else {
-                                return BookCompareInfo.calculate(
+                                return BookComparison.calculate(
                                         bookInfoPair,
                                         Factory.sheetNamesMatcher(ar.settings()));
                             }
@@ -236,26 +236,27 @@ public class MainController extends VBox {
     }
     
     /**
-     * dirCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #dirComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindDirCompareInfoProp() {
-        dirCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindDirComparisonProp() {
+        dirComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                    DirCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_DIRS:
                             if (!dirInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
                                 return prevValue;
                             } else {
-                                return DirCompareInfo.calculate(
+                                return DirComparison.calculate(
                                         dirInfoPair,
-                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.dirInfosMatcher(ar.settings()),
+                                        Factory.bookInfosMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }
@@ -273,27 +274,27 @@ public class MainController extends VBox {
     }
     
     /**
-     * treeCompareInfoPropプロパティにデータソースをバインドします。<br>
+     * {@link #treeComparisonProp} プロパティにデータソースをバインドします。<br>
      */
-    public void bindTreeCompareInfoProp() {
-        treeCompareInfoProp.bind(Bindings.createObjectBinding(
+    public void bindTreeComparisonProp() {
+        treeComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                    TreeCompareInfo prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_TREES:
                             if (!dirInfoPair.isPaired()) {
                                 return null;
                             }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentPair())) {
+                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
                                 return prevValue;
                             } else {
-                                return TreeCompareInfo.calculate(
+                                return DirComparison.calculate(
                                         dirInfoPair,
-                                        Factory.dirsMatcher(ar.settings()),
-                                        Factory.bookNamesMatcher(ar.settings()),
+                                        Factory.dirInfosMatcher(ar.settings()),
+                                        Factory.bookInfosMatcher(ar.settings()),
                                         Factory.sheetNamesMatcher(ar.settings()),
                                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
                             }
@@ -354,22 +355,26 @@ public class MainController extends VBox {
         
         Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
-                SheetCompareInfo sheetCompareInfo = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> pair = sheetCompareInfo.parentPair().map(BookInfo::bookPath);
-                yield pair.isIdentical() ? Stream.of(pair.a()) : Stream.of(pair.a(), pair.b());
+                BookComparison bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield bookPathPair.isIdentical()
+                        ? Stream.of(bookPathPair.a())
+                        : Stream.of(bookPathPair.a(), bookPathPair.b());
             }
             case COMPARE_BOOKS -> {
-                BookCompareInfo bookCompareInfo = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> pair = bookCompareInfo.parentPair().map(BookInfo::bookPath);
-                yield Stream.of(pair.a(), pair.b()).filter(bookPath -> bookPath != null);
+                BookComparison bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
             }
             case COMPARE_DIRS -> {
-                DirCompareInfo dirCompareInfo = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                yield bookPathStream(dirCompareInfo);
+                DirComparison dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                yield bookPathStream(dirComparison);
             }
             case COMPARE_TREES -> {
-                TreeCompareInfo treeCompareInfo = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                yield treeCompareInfo.childCompareInfos().values().stream()
+                FlattenDirComparison flattenDirComparison = ar.settings()
+                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                        .flatten();
+                yield flattenDirComparison.dirComparisons().values().stream()
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .flatMap(this::bookPathStream);
@@ -380,14 +385,11 @@ public class MainController extends VBox {
         return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
     }
     
-    private Stream<Path> bookPathStream(DirCompareInfo dirCompareInfo) {
-        return dirCompareInfo.childPairs().stream()
-                .flatMap(bookNamePair -> {
-                    Pair<Path> dirPathPair = dirCompareInfo.parentPair().map(DirInfo::dirPath);
-                    Path bookPathA = bookNamePair.hasA() ? dirPathPair.a().resolve(bookNamePair.a()) : null;
-                    Path bookPathB = bookNamePair.hasB() ? dirPathPair.b().resolve(bookNamePair.b()) : null;
-                    return Stream.of(bookPathA, bookPathB).filter(bookPath -> bookPath != null);
-                });
+    private Stream<Path> bookPathStream(DirComparison dirComparison) {
+        return dirComparison.childBookInfoPairs().stream()
+                .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
+                .filter(bookInfo -> bookInfo != null)
+                .map(BookInfo::bookPath);
     }
     
     /**

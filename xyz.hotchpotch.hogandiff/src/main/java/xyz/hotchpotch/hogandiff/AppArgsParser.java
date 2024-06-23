@@ -10,6 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.excel.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -70,14 +72,47 @@ public class AppArgsParser {
             return Optional.empty();
         }
         
+        // まず、第一・第二引数で指定されたExcelブックのロードを試みる。
+        Path bookPathA = null;
+        Path bookPathB = null;
+        BookInfo bookInfoA = null;
+        BookInfo bookInfoB = null;
         try {
-            // 比較メニューと比較対象Excelブックパスのパース
+            bookPathA = Path.of(args[0]);
+            bookPathB = Path.of(args[1]);
+        } catch (Exception e) {
+            // パスの評価に失敗した場合は解析失敗とする。
+            return Optional.empty();
+        }
+        try {
+            BookLoader bookLoaderA = Factory.bookLoader(bookPathA);
+            bookInfoA = bookLoaderA.loadBookInfo(bookPathA, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // nop. Excelブックのロードに失敗した場合は、処理継続とする。
+        }
+        try {
+            BookLoader bookLoaderB = Factory.bookLoader(bookPathB);
+            bookInfoB = bookLoaderB.loadBookInfo(bookPathB, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // nop. Excelブックのロードに失敗した場合は、処理継続とする。
+        }
+        
+        // 次に、第三以降の引数を解析する。
+        try {
             Settings.Builder builder = Settings.builder()
-                    .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS)
-                    .set(SettingKeys.CURR_BOOK_INFO1, new BookInfo(Path.of(args[0]), List.of()))
-                    .set(SettingKeys.CURR_BOOK_INFO2, new BookInfo(Path.of(args[1]), List.of()));
+                    .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS);
+            
+            if (bookInfoA != null) {
+                builder.set(SettingKeys.CURR_BOOK_INFO1, bookInfoA);
+            }
+            if (bookInfoB != null) {
+                builder.set(SettingKeys.CURR_BOOK_INFO2, bookInfoB);
+            }
             
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
+            // 第一・第二引数はパース済みのため読み飛ばす
             remainingParams.remove();
             remainingParams.remove();
             
@@ -86,7 +121,6 @@ public class AppArgsParser {
             
             Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
             
-            // オプションのパース
             while (!remainingParams.isEmpty() && !remainingOptions.isEmpty()) {
                 String[] keyValue = remainingParams.removeFirst().split("=", 2);
                 if (!remainingOptions.containsKey(keyValue[0])) {

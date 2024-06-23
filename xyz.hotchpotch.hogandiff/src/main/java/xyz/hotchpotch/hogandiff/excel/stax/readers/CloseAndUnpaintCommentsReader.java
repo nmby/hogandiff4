@@ -36,9 +36,10 @@ public class CloseAndUnpaintCommentsReader extends BufferingReader {
      * 
      * @param source ソースリーダー
      * @return 新しいリーダー
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static XMLEventReader of(XMLEventReader source) {
-        Objects.requireNonNull(source, "source");
+        Objects.requireNonNull(source);
         
         return new CloseAndUnpaintCommentsReader(source);
     }

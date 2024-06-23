@@ -33,7 +33,8 @@ public record CellData(
      * @throws NullPointerException {@code address}, {@code content} のいずれかが {@code null} の場合
      */
     public static CellData of(String address, String content, String comment) {
-        Objects.requireNonNull(address, "address");
+        Objects.requireNonNull(address);
+        Objects.requireNonNull(content);
         
         IntPair idx = CellsUtil.addressToIdx(address);
         return new CellData(idx.a(), idx.b(), content, comment);
@@ -64,7 +65,7 @@ public record CellData(
      * @throws IndexOutOfBoundsException {@code row}, {@code column} のいずれかが負数の場合
      */
     public CellData {
-        Objects.requireNonNull(content, "content");
+        Objects.requireNonNull(content);
         if (row < 0 || column < 0) {
             throw new IndexOutOfBoundsException("(%d, %d)".formatted(row, column));
         }
@@ -93,11 +94,11 @@ public record CellData(
      * 
      * @param comment セルコメント
      * @return 新たなセルデータ
-     * @throws NullPointerException {@code comment} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalStateException このセルデータが既にセルコメントを保持する場合
      */
     public CellData withComment(String comment) {
-        Objects.requireNonNull(comment, "comment");
+        Objects.requireNonNull(comment);
         if (this.comment != null) {
             throw new IllegalStateException();
         }
@@ -110,10 +111,10 @@ public record CellData(
      * 
      * @param cell 比較対象のセルデータ
      * @return セル内容が等価な場合は {@code true}
-     * @throws NullPointerException {@code cell} が {@code null} の場合
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean contentEquals(CellData cell) {
-        Objects.requireNonNull(cell, "cell");
+        Objects.requireNonNull(cell);
         
         return content.equals(cell.content);
     }
