@@ -244,64 +244,36 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         }
     }
     
-    /**
-     * 新しいローダーを構成します。<br>
-     * 
-     * @param extractCachedValue
-     *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
-     *              数式文字列を抽出する場合は {@code false}
-     * @param bookPath Excepブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
-     * @return 新しいローダー
-     * @throws NullPointerException
-     *              {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException
-     *              ローダーの構成に失敗した場合。
-     *              具体的には、Excelブックから共通情報の取得に失敗した場合
-     */
-    public static CellsLoader of(
-            boolean extractCachedValue,
-            Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
-        
-        Objects.requireNonNull(bookPath);
-        // readPassword may be null.
-        CommonUtil.ifNotSupportedBookTypeThenThrow(
-                XSSFCellsLoaderWithSax.class,
-                BookType.of(bookPath));
-        
-        return new XSSFCellsLoaderWithSax(extractCachedValue, bookPath, readPassword);
-    }
-    
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
     private final Path bookPath;
     //private final String readPassword;
-    private final Map<String, SheetInfo> nameToInfo;
-    private final List<String> sst;
     
-    private XSSFCellsLoaderWithSax(
+    private Map<String, SheetInfo> nameToInfo;
+    private List<String> sst;
+    
+    /**
+     * コンストラクタ
+     * 
+     * @param extractCachedValue
+     *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
+     *              数式文字列を抽出する場合は {@code false}
+     * @param bookPath Excepブックのパス
+     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
+     */
+    public XSSFCellsLoaderWithSax(
             boolean extractCachedValue,
-            Path bookPath,
-            String readPassword)
-            throws ExcelHandlingException {
+            Path bookPath) {
         
-        assert bookPath != null;
-        // readPassword may be null.
-        assert CommonUtil.isSupportedBookType(getClass(), BookType.of(bookPath));
+        Objects.requireNonNull(bookPath);
+        CommonUtil.ifNotSupportedBookTypeThenThrow(
+                XSSFCellsLoaderWithSax.class,
+                BookType.of(bookPath));
         
         this.extractCachedValue = extractCachedValue;
         this.bookPath = bookPath;
-        //this.readPassword = readPassword;
-        this.nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
-                .collect(Collectors.toMap(
-                        SheetInfo::name,
-                        Function.identity()));
-        this.sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
     }
     
     /**
@@ -335,6 +307,16 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
             throw new IllegalArgumentException(
                     "This loader is configured for %s. Not available for another book (%s)."
                             .formatted(this.bookPath, bookPath));
+        }
+        
+        if (nameToInfo == null) {
+            nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
+                    .collect(Collectors.toMap(
+                            SheetInfo::name,
+                            Function.identity()));
+        }
+        if (sst == null) {
+            sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
         }
         
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {

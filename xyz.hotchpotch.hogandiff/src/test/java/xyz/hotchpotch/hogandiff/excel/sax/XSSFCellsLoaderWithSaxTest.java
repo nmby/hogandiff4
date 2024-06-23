@@ -46,37 +46,37 @@ class XSSFCellsLoaderWithSaxTest {
         // null パラメータ
         assertThrows(
                 NullPointerException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, null, null));
+                () -> new XSSFCellsLoaderWithSax(true, null));
         
         // サポート対象外のブック形式
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test1_xls, null));
+                () -> new XSSFCellsLoaderWithSax(true, test1_xls));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test1_xlsb, null));
+                () -> new XSSFCellsLoaderWithSax(true, test1_xlsb));
         
         // ■チェック例外
         // 存在しないファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, Path.of("dummy\\dummy.xlsx"), null));
+                () -> new XSSFCellsLoaderWithSax(true, Path.of("dummy\\dummy.xlsx")));
         
         // 暗号化ファイル
         assertThrows(
                 ExcelHandlingException.class,
-                () -> XSSFCellsLoaderWithSax.of(true, test2_xlsm, null));
+                () -> new XSSFCellsLoaderWithSax(true, test2_xlsm));
         
         // ■正常系
         assertTrue(
-                XSSFCellsLoaderWithSax.of(true, test1_xlsx, null) instanceof XSSFCellsLoaderWithSax);
+                new XSSFCellsLoaderWithSax(true, test1_xlsx) instanceof XSSFCellsLoaderWithSax);
         assertTrue(
-                XSSFCellsLoaderWithSax.of(false, test1_xlsm, null) instanceof XSSFCellsLoaderWithSax);
+                new XSSFCellsLoaderWithSax(false, test1_xlsm) instanceof XSSFCellsLoaderWithSax);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
         
         // 対照
         assertDoesNotThrow(
@@ -101,7 +101,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsm, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
         
         // 存在しないシート
         assertThrows(
@@ -122,7 +122,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系1() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test1_xlsx, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsx);
         
         assertEquals(
                 Set.of(
@@ -138,7 +138,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test3_xlsx, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(true, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -248,7 +248,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test3_xlsx, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(false, test3_xlsx);
         
         List<CellData> actual = new ArrayList<>(
                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -353,7 +353,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(true, test4_xlsx, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(true, test4_xlsx);
         
         assertEquals(
                 Set.of(
@@ -369,7 +369,7 @@ class XSSFCellsLoaderWithSaxTest {
     
     @Test
     void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-        CellsLoader testee = XSSFCellsLoaderWithSax.of(false, test4_xlsx, null);
+        CellsLoader testee = new XSSFCellsLoaderWithSax(false, test4_xlsx);
         
         assertEquals(
                 Set.of(

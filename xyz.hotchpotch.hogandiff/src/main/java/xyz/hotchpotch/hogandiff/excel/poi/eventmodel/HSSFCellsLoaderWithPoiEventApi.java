@@ -419,23 +419,18 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
         }
     }
     
-    /**
-     * 新しいローダーを構成します。<br>
-     * 
-     * @param extractCachedValue
-     *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
-     *              数式文字列を抽出する場合は {@code false}
-     * @return 新しいローダー
-     */
-    public static CellsLoader of(boolean extractCachedValue) {
-        return new HSSFCellsLoaderWithPoiEventApi(extractCachedValue);
-    }
-    
     // [instance members] ******************************************************
     
     private final boolean extractCachedValue;
     
-    private HSSFCellsLoaderWithPoiEventApi(boolean extractCachedValue) {
+    /**
+     * コンストラクタ
+     * 
+     * @param extractCachedValue
+     *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
+     *              数式文字列を抽出する場合は {@code false}
+     */
+    public HSSFCellsLoaderWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
     }
     

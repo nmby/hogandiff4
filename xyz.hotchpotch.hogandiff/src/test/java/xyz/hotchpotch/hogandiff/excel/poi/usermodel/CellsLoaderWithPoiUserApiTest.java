@@ -52,15 +52,15 @@ class CellsLoaderWithPoiUserApiTest {
     void testOf() {
         assertThrows(
                 NullPointerException.class,
-                () -> CellsLoaderWithPoiUserApi.of(null));
+                () -> new CellsLoaderWithPoiUserApi(null));
         
         assertTrue(
-                CellsLoaderWithPoiUserApi.of(converter) instanceof CellsLoaderWithPoiUserApi);
+                new CellsLoaderWithPoiUserApi(converter) instanceof CellsLoaderWithPoiUserApi);
     }
     
     @Test
     void testLoadCells_例外系_非チェック例外() {
-        CellsLoader testee = CellsLoaderWithPoiUserApi.of(converter);
+        CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
         
         // 対照群
         assertDoesNotThrow(
@@ -89,7 +89,7 @@ class CellsLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_例外系_チェック例外() {
-        CellsLoader testee = CellsLoaderWithPoiUserApi.of(converter);
+        CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
         
         // 存在しないファイル
         assertThrows(
@@ -131,7 +131,7 @@ class CellsLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(converter);
+        CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
         
         assertEquals(
                 Set.of(
@@ -167,7 +167,7 @@ class CellsLoaderWithPoiUserApiTest {
     
     @Test
     void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-        CellsLoader testee1 = CellsLoaderWithPoiUserApi.of(converter);
+        CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
         
         assertEquals(
                 Set.of(
