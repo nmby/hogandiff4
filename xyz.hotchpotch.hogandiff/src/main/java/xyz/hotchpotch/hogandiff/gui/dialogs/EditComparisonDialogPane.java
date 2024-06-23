@@ -26,7 +26,6 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.Comparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.ItemInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -120,7 +119,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      * @param parentPair 比較対象親要素
      * @param childPairs 比較対象子要素
      */
-    /*package*/ void init(Pair<? extends ItemInfo> parentPair) throws IOException {
+    /*package*/ void init(Pair<?> parentPair) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
@@ -208,7 +207,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         }
     }
     
-    protected class NameItem extends HBox {
+    protected class GridItem extends HBox {
         
         // static members ------------------------------------------------------
         
@@ -223,7 +222,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         @FXML
         protected ImageView statusImageView;
         
-        protected NameItem() {
+        protected GridItem() {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("NameItem.fxml"), rb);
                 loader.setRoot(this);
@@ -236,7 +235,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         }
     }
     
-    protected class PairedNameLabel extends NameItem {
+    protected class PairedNameLabel extends GridItem {
         
         // static members ------------------------------------------------------
         
@@ -261,7 +260,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
                             getStyleClass().add("loadCompleted");
                             break;
                         
-                        case PASSWORD_LOCKED:
+                        case NEEDS_PASSWORD:
                             getStyleClass().add("passwordLocked");
                             statusImageView.setImage(EditComparisonDialogPane.passwordLockedImage);
                             break;

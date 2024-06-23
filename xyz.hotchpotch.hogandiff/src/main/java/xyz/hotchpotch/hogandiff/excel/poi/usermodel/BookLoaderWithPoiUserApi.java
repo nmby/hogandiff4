@@ -109,10 +109,10 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             // 暫定対処として、LeftoverDataException はその他の場合にも発生するかもしれないが
             // 書き込みpw付きxlsファイルであると見なしてしまい、
             // 読み取りパスワードが設定されている場合と同様に処理することとする。
-            return BookInfo.ofPasswordLocked(bookPath);
+            return BookInfo.ofNeedsPassword(bookPath);
             
         } catch (EncryptedDocumentException e) {
-            return BookInfo.ofPasswordLocked(bookPath);
+            return BookInfo.ofNeedsPassword(bookPath);
             
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
