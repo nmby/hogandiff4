@@ -94,7 +94,7 @@ class HSSFBookLoaderWithPoiEventApiTest {
         
         // 暗号化ファイル
         assertEquals(
-                BookInfo.ofPasswordLocked(test2_xls),
+                BookInfo.ofNeedsPassword(test2_xls),
                 testee.loadBookInfo(test2_xls, null));
     }
     

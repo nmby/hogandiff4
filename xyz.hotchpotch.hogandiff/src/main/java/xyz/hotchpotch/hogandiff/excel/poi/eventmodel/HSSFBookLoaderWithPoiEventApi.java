@@ -197,7 +197,7 @@ public class HSSFBookLoaderWithPoiEventApi implements BookLoader {
                     listener1.getSheetNames(targetTypes));
             
         } catch (EncryptedDocumentException e) {
-            return BookInfo.ofPasswordLocked(bookPath);
+            return BookInfo.ofNeedsPassword(bookPath);
             
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);

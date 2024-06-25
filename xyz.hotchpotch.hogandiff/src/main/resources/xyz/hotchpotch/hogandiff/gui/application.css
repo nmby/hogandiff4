@@ -38,7 +38,7 @@
 
 .editComparisonPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
-    -fx-padding: 12.0px 10.0px 12.0px 4.0px;
+    -fx-padding: 12.0px 8.0px 12.0px 4.0px;
 }
 
 .editComparisonButton {

@@ -431,9 +431,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
-                System.out.println(newBookPath);
-                System.out.println(readPassword);
-                System.out.println(bookInfo.status());
                 
                 if (bookInfo.status() == Status.LOAD_COMPLETED) {
                     readPasswords.put(newBookPath, readPassword);

@@ -38,6 +38,16 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<BookC
     }
     
     @Override
+    public BookComparison getResult() {
+        // わざわざこんなことせにゃならんのか？？
+        @SuppressWarnings("unchecked")
+        List<Pair<String>> casted = currentChildPairs.stream()
+                .map(p -> (Pair<String>) p)
+                .toList();
+        return new BookComparison(bookComparison.parentBookInfoPair(), casted);
+    }
+    
+    @Override
     protected void unpair(int i) {
         Pair<?> paired = currentChildPairs.get(i);
         assert paired.isPaired();
@@ -76,15 +86,5 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<BookC
         currentChildPairs.remove(src);
         
         drawGrid();
-    }
-    
-    @Override
-    public BookComparison getResult() {
-        // わざわざこんなことせにゃならんのか？？
-        @SuppressWarnings("unchecked")
-        List<Pair<String>> casted = currentChildPairs.stream()
-                .map(p -> (Pair<String>) p)
-                .toList();
-        return new BookComparison(bookComparison.parentBookInfoPair(), casted);
     }
 }
