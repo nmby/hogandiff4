@@ -1,23 +1,80 @@
-/*
-    -fx-alignment: center;
-    -fx-background-color: white;
-    -fx-background-insets: 0.0px 0.0px 0.0px 2.0px;
-    -fx-border-insets: 0.0px 0.0px 0.0px 2.0px;
-    -fx-font-size: 12.0px;
-    -fx-padding: 10.0px 10.0px 7.0px 10.0px;
-    -fx-pref-width: 28.0px;
-    -fx-spacing: 3.0px;
-    -fx-text-fill: white;
-*/
+.parentLabel {
+    -fx-padding: 7.0px 2.0px;
+    -fx-font-size: 15.0px;
+}
 
-.nameItemPane {
+.gridRow {}
+
+.gridRowActivated {
+    -fx-border-width: 1.0px;
+    -fx-border-style: solid;
+    -fx-border-color: red !important;
+}
+
+.gridItem {
+    -fx-alignment: center;
+    -fx-padding: 0.0px 5.0px;
+    -fx-border-width: 1.0px;
+    -fx-border-style: solid;
+}
+
+.gridItemActivated {
+    -fx-border-color: red !important;
+}
+
+.gridItemActivated>* {
+    -fx-text-fill: red !important;
+}
+
+.loadCompletedItem {
+    -fx-background-color: rgb(219.0, 244.0, 231.0);
+    -fx-border-color: rgb(219.0, 244.0, 231.0);
+}
+
+.loadFailedItem {
+    -fx-background-color: rgb(252.0, 228.0, 214.0);
+    -fx-border-color: rgb(252.0, 228.0, 214.0);
+}
+
+.needsPasswordItem {
+    -fx-background-color: rgb(255.0, 242.0, 204.0);
+    -fx-border-color: rgb(255.0, 242.0, 204.0);
+}
+
+.blankItem {
+    -fx-background-color: rgb(230.0, 230.0, 230.0);
+    -fx-border-color: rgb(230.0, 230.0, 230.0);
+}
+
+/*---------------*/
+
+/*
+.gridItemPane {
     -fx-padding: 0.0px 7.0px;
+    -fx-border-width: 1.0px;
+    -fx-border-style: solid;
     -fx-background-insets: 2.0px 3.0px;
     -fx-border-insets: 2.0px 3.0px;
 }
 
-.loadCompleted {
+.blankItem {
+    -fx-background-color: rgb(230.0, 230.0, 230.0);
+    -fx-border-color: rgb(230.0, 230.0, 230.0);
+}
+
+.loadCompletedItem {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
+    -fx-border-color: rgb(219.0, 244.0, 231.0);
+}
+
+.needsPasswordItem {
+    -fx-background-color: rgb(255.0, 242.0, 204.0);
+    -fx-border-color: rgb(255.0, 242.0, 204.0);
+}
+
+.dragging {
+    -fx-text-fill: red;
+    -fx-border-color: red;
 }
 
 .passwordLocked {
@@ -30,11 +87,6 @@
 
 .parentPane {
     -fx-pref-width: 100;
-}
-
-.parentLabel {
-    -fx-padding: 7.0px 2.0px;
-    -fx-font-size: 15.0px;
 }
 
 .childLabel {
@@ -61,14 +113,6 @@
     -fx-background-color: rgb(230.0, 230.0, 230.0);
 }
 
-.dragging {
-    -fx-text-fill: red;
-    -fx-border-width: 1.0px;
-    -fx-border-style: solid;
-    -fx-border-color: red;
-    -fx-padding: 3.0px 3.0px;
-}
-
 .pairedPane {}
 
 .unpairedPane {}
@@ -76,3 +120,4 @@
 .unpairButton {
     -fx-pref-width: 50px;
 }
+*/
