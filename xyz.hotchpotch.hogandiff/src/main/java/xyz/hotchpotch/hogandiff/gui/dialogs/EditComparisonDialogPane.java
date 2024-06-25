@@ -146,6 +146,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         }
     }
     
+    public abstract T getResult();
+    
     protected abstract void unpair(int i);
     
     protected abstract void makePair(int src, int dst);
@@ -153,8 +155,6 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     protected void onClickPaired(int i) {
     }
     
-    public void onPasswordChallenge(int idx, Side side) {
+    protected void onPasswordChallenge(int idx, Side side) {
     }
-    
-    public abstract T getResult();
 }
