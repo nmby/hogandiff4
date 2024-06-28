@@ -64,6 +64,14 @@ public abstract sealed class Report
             this.result = Objects.requireNonNull(result);
         }
         
+        /**
+         * {@code
+         *      dirPairs: [ %d, %d ],
+         *      bookPairs: [ %d, %d ],
+         *      sheetPairs: [ %d, %d ],
+         *      stats: [ %s ]
+         * }
+         */
         @Override
         protected String toJsonString2() {
             StringBuilder str = new StringBuilder();
@@ -100,6 +108,21 @@ public abstract sealed class Report
             return str.toString();
         }
         
+        /**
+         * {@code
+         *      {
+         *          rows: [ %d, %d ],
+         *          columns: [ %d, %d ],
+         *          cells: [ %d, %d ],
+         *          redundantRows: [ %d, %d ],
+         *          redundantColumns: [ %d, %d ],
+         *          diffCells: %d
+         *      }
+         * }
+         * 
+         * @param stats 統計情報
+         * @return 統計情報のJSON形式の文字列表現
+         */
         private String statsToJson(Stats stats) {
             StringBuilder str = new StringBuilder();
             
@@ -208,6 +231,12 @@ public abstract sealed class Report
             this.thrown = Objects.requireNonNull(thrown);
         }
         
+        /**
+         * {@code
+         *      thrown: [ %s ],
+         *      errorMessage: %s
+         * }
+         */
         @Override
         protected String toJsonString2() {
             String chain = getChain().stream()
@@ -256,6 +285,17 @@ public abstract sealed class Report
     /**
      * この統計情報のJSON形式の文字列表現を返します。<br>
      * 
+     * {@code
+     *      {
+     *          uuid: %s,
+     *          settings: %s,
+     *          menu: %s,
+     *          executedAt: %s,
+     *          elapsedMillis: %d,
+     *          %s
+     *      }
+     * }
+     * 
      * @return この統計情報のJSON形式の文字列表現
      */
     public String toJsonString() {
@@ -278,6 +318,21 @@ public abstract sealed class Report
         return str.toString();
     }
     
+    /**
+     * {@code
+     *      appVersion: %s,
+     *      appLocale: %s,
+     *      considerRowGaps: %b,
+     *      considerColumnGaps: %b,
+     *      compareOnFormula: %b,
+     *      showPaintedSheets: %b,
+     *      showResultText: %b,
+     *      exitWhenFinished: %b,
+     *      prioritizeSpeed: %b
+     * }
+     * 
+     * @return
+     */
     private String settingsToJson() {
         StringBuilder str = new StringBuilder();
         
