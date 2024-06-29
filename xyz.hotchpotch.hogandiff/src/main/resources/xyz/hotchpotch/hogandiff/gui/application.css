@@ -95,8 +95,8 @@
     -fx-pref-width: 70.0px;
 }
 
-.consentCheckbox {
+.consentPane {
     -fx-background-color: rgb(255.0, 242.0, 204.0);
     -fx-pref-width: 140.0px;
-    -fx-padding: 1.0px 3.0px 1.0px 7.0px;
+    -fx-padding: 1.0px 0.0px 1.0px 5.0px;
 }
