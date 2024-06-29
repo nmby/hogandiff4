@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -24,7 +22,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -432,10 +429,8 @@ public class MainController extends VBox {
         
         Task<Report> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
-            executor.shutdown();
+        task.setOnSucceeded(event -> {
             row3Pane.unbind();
             
             alertPasswordUnlocked();
@@ -449,10 +444,9 @@ public class MainController extends VBox {
             }
         });
         
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
+        task.setOnFailed(event -> {
             Throwable e = task.getException();
             e.printStackTrace();
-            executor.shutdown();
             row3Pane.unbind();
             
             alertPasswordUnlocked();
@@ -482,7 +476,9 @@ public class MainController extends VBox {
             isRunning.set(false);
         });
         
-        executor.submit(task);
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
     
     private void callApiIfConsented(Task<Report> task) {
