@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -107,18 +106,13 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /*package*/ void init(Pair<?> parentPair) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
-        parentGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
-                () -> (parentGridPane.getWidth() - 50) / 2,
-                parentGridPane.widthProperty()));
-        parentGridPane.getColumnConstraints().get(2).prefWidthProperty().bind(Bindings.createDoubleBinding(
-                () -> (parentGridPane.getWidth() - 50) / 2,
-                parentGridPane.widthProperty()));
-        childGridPane.getColumnConstraints().get(0).prefWidthProperty().bind(Bindings.createDoubleBinding(
-                () -> (childGridPane.getWidth() - 50) / 2,
-                childGridPane.widthProperty()));
-        childGridPane.getColumnConstraints().get(2).prefWidthProperty().bind(Bindings.createDoubleBinding(
-                () -> (childGridPane.getWidth() - 50) / 2,
-                childGridPane.widthProperty()));
+        childGridPane.widthProperty().addListener((target, oldValue, newValue) -> {
+            double colWidth = (newValue.doubleValue() - 50) / 2;
+            parentGridPane.getColumnConstraints().get(0).setPrefWidth(colWidth);
+            parentGridPane.getColumnConstraints().get(2).setPrefWidth(colWidth);
+            childGridPane.getColumnConstraints().get(0).setPrefWidth(colWidth);
+            childGridPane.getColumnConstraints().get(2).setPrefWidth(colWidth);
+        });
         
         ItemType itemType = ItemType.of(parentPair.a());
         parentLabelA.setGraphic(itemType.createImageView(24));
