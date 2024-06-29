@@ -53,6 +53,11 @@ public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
         editComparisonDialogPane.getStylesheets().add(
                 getClass().getResource("editComparisonDialog.css").toExternalForm());
         
+        widthProperty().addListener((target, oldValue, newValue) -> {
+            editComparisonDialogPane.setMaxWidth(newValue.doubleValue() - 20);
+            editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
+        });
+        
         DialogPane dialogPane = getDialogPane();
         dialogPane.setContent(editComparisonDialogPane);
         dialogPane.getButtonTypes().setAll(
