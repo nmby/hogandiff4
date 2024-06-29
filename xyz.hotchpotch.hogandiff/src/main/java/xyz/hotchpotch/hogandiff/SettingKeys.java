@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
+import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -311,6 +311,14 @@ public class SettingKeys {
     // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
     public static final Key<Boolean> PRIORITIZE_SPEED = new Key<>(
             "execution.prioritizeSpeed",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
+    /** 統計情報の収集に同意済みか */
+    public static final Key<Boolean> CONSENTED_STATS_COLLECTION = new Key<>(
+            "consent.statsCollection",
             () -> false,
             String::valueOf,
             Boolean::valueOf,

@@ -21,6 +21,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -91,6 +92,9 @@ public class SettingsPane2 extends VBox implements ChildController {
     @FXML
     private Button deleteWorkDirButton;
     
+    @FXML
+    private CheckBox consentCheckBox;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -122,6 +126,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         // 3.初期値の設定
         Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
         localeComboBox.setValue(LocaleItem.of(locale));
+        consentCheckBox.setSelected(ar.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION));
         
         // 4.値変更時のイベントハンドラの設定
         localeComboBox.setOnAction(event -> {
@@ -136,6 +141,8 @@ public class SettingsPane2 extends VBox implements ChildController {
                                 .showAndWait();
             }
         });
+        consentCheckBox.setOnAction(
+                event -> ar.changeSetting(SettingKeys.CONSENTED_STATS_COLLECTION, consentCheckBox.isSelected()));
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {
