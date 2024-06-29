@@ -87,7 +87,7 @@ class XSSFBookLoaderWithSaxTest {
         
         // 暗号化ファイル
         assertEquals(
-                BookInfo.ofPasswordLocked(test2_xlsx),
+                BookInfo.ofNeedsPassword(test2_xlsx),
                 testee.loadBookInfo(test2_xlsx, null));
     }
     

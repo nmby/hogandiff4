@@ -86,13 +86,13 @@ public class CombinedBookLoader implements BookLoader {
                 if (bookInfo.status() == Status.LOAD_COMPLETED) {
                     return bookInfo;
                     
-                } else if (bookInfo.status() == Status.PASSWORD_LOCKED) {
+                } else if (bookInfo.status() == Status.NEEDS_PASSWORD) {
                     passwordIssue = true;
                 }
             }
             
             return passwordIssue
-                    ? BookInfo.ofPasswordLocked(bookPath)
+                    ? BookInfo.ofNeedsPassword(bookPath)
                     : BookInfo.ofLoadFailed(bookPath);
             
         } catch (Exception e) {

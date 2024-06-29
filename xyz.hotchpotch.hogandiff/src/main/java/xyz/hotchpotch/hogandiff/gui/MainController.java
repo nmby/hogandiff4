@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -23,7 +22,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -46,6 +44,7 @@ import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
+import xyz.hotchpotch.hogandiff.net.ApiClient;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -430,13 +429,13 @@ public class MainController extends VBox {
         
         Task<Report> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, event -> {
-            executor.shutdown();
+        task.setOnSucceeded(event -> {
             row3Pane.unbind();
             
             alertPasswordUnlocked();
+            
+            callApiIfConsented(task);
             
             if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
@@ -445,10 +444,9 @@ public class MainController extends VBox {
             }
         });
         
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_FAILED, event -> {
+        task.setOnFailed(event -> {
             Throwable e = task.getException();
             e.printStackTrace();
-            executor.shutdown();
             row3Pane.unbind();
             
             alertPasswordUnlocked();
@@ -473,10 +471,28 @@ public class MainController extends VBox {
                                 .showAndWait();
             }
             
+            callApiIfConsented(task);
+            
             isRunning.set(false);
         });
         
-        executor.submit(task);
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+    
+    private void callApiIfConsented(Task<Report> task) {
+        if (ar.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION)) {
+            try {
+                Report report = task.get();
+                ApiClient client = new ApiClient();
+                client.sendStatsAsync(report);
+                
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                // nop
+            }
+        }
     }
     
     private Path createWorkDir(Settings settings) {

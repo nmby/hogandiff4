@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -21,7 +22,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -45,12 +48,21 @@ public class SettingsPane2 extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
+    private static final Image consentHelpImage = new Image(
+            SettingsPane2.class.getResourceAsStream("help-circle.png"));
+    
     private static enum LocaleItem {
         
         // [static members] ----------------------------------------------------
         
-        JA("日本語", Locale.JAPANESE, "jp.png"), EN("English", Locale.ENGLISH, "us.png"), ZH("簡体中文",
-                Locale.SIMPLIFIED_CHINESE, "cn.png");
+        /** 日本語 */
+        JA("日本語", Locale.JAPANESE, "jp.png"),
+        
+        /** 英語 */
+        EN("English", Locale.ENGLISH, "us.png"),
+        
+        /** 中国語（簡体字） */
+        ZH("簡体中文", Locale.SIMPLIFIED_CHINESE, "cn.png");
         
         public static LocaleItem of(Locale locale) {
             Objects.requireNonNull(locale);
@@ -91,6 +103,12 @@ public class SettingsPane2 extends VBox implements ChildController {
     @FXML
     private Button deleteWorkDirButton;
     
+    @FXML
+    private CheckBox consentCheckBox;
+    
+    @FXML
+    private Hyperlink consentHelpHyperlink;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -119,9 +137,25 @@ public class SettingsPane2 extends VBox implements ChildController {
         changeWorkDirButton.setOnAction(changeDir);
         deleteWorkDirButton.setOnAction(deleteDir);
         
+        ImageView imageView = new ImageView(consentHelpImage);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(16);
+        consentHelpHyperlink.setGraphic(imageView);
+        consentHelpHyperlink.setOnAction(event -> {
+            try {
+                // 一旦、v0.21.1新機能紹介ページに飛ばすことにしておく。
+                // TODO: 恒久的な説明ページを作成しリンク先を変更する
+                String url = "https://hogandiff.hotchpotch.xyz/releasenotes/v0-21-1/";
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        
         // 3.初期値の設定
         Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
         localeComboBox.setValue(LocaleItem.of(locale));
+        consentCheckBox.setSelected(ar.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION));
         
         // 4.値変更時のイベントハンドラの設定
         localeComboBox.setOnAction(event -> {
@@ -136,6 +170,8 @@ public class SettingsPane2 extends VBox implements ChildController {
                                 .showAndWait();
             }
         });
+        consentCheckBox.setOnAction(
+                event -> ar.changeSetting(SettingKeys.CONSENTED_STATS_COLLECTION, consentCheckBox.isSelected()));
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {

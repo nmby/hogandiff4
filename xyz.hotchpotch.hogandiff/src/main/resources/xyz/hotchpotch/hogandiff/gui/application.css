@@ -38,11 +38,11 @@
 
 .editComparisonPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
-    -fx-padding: 12.0px 10.0px 12.0px 4.0px;
+    -fx-padding: 12.0px 8.0px 12.0px 5.0px;
 }
 
 .editComparisonButton {
-    -fx-pref-width: 28.0px;
+    -fx-pref-width: 27.0px;
 }
 
 .executePane {
@@ -93,4 +93,10 @@
 
 .workDirButton {
     -fx-pref-width: 70.0px;
+}
+
+.consentPane {
+    -fx-background-color: rgb(255.0, 242.0, 204.0);
+    -fx-pref-width: 140.0px;
+    -fx-padding: 1.0px 0.0px 1.0px 5.0px;
 }

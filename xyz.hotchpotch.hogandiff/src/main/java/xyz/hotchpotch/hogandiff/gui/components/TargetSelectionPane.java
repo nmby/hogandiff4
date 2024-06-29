@@ -197,9 +197,10 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
         });
         parent.bookInfoPropPair.get(side).addListener((target, oldValue, newValue) -> {
-            sheetNameChoiceBox.setItems((newValue == null || newValue.sheetNames().isEmpty())
-                    ? FXCollections.emptyObservableList()
-                    : FXCollections.observableList(newValue.sheetNames()));
+            sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
+            if (newValue != null && !newValue.sheetNames().isEmpty()) {
+                sheetNameChoiceBox.setItems(FXCollections.observableList(newValue.sheetNames()));
+            }
         });
         
         // 3.初期値の設定
@@ -431,9 +432,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
-                System.out.println(newBookPath);
-                System.out.println(readPassword);
-                System.out.println(bookInfo.status());
                 
                 if (bookInfo.status() == Status.LOAD_COMPLETED) {
                     readPasswords.put(newBookPath, readPassword);
