@@ -150,6 +150,7 @@ public class AppMain extends Application {
                 // nop
             }
             appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
+            stage.setMinHeight(STAGE_HEIGHT_OPEN);
             
             appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }

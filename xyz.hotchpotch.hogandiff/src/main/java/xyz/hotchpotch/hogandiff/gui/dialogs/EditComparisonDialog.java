@@ -53,16 +53,21 @@ public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
         editComparisonDialogPane.getStylesheets().add(
                 getClass().getResource("editComparisonDialog.css").toExternalForm());
         
-        DialogPane dialogPane = getDialogPane();
-        dialogPane.setContent(editComparisonDialogPane);
-        dialogPane.getButtonTypes().setAll(
-                ButtonType.OK,
-                ButtonType.CANCEL);
+        widthProperty().addListener((target, oldValue, newValue) -> {
+            editComparisonDialogPane.setMaxWidth(newValue.doubleValue() - 20);
+            editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
+        });
         
         setTitle(rb.getString("fx.EditComparisonPane.010"));
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editComparisonDialogPane.getResult()
                 : null);
+        
+        DialogPane dialogPane = getDialogPane();
+        dialogPane.setContent(editComparisonDialogPane);
+        dialogPane.getButtonTypes().setAll(
+                ButtonType.OK,
+                ButtonType.CANCEL);
     }
 }
