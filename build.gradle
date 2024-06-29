@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.21.0'
+final def version = '0.21.1'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 final def baseDir = projectDir.toPath()
