@@ -58,16 +58,16 @@ public class EditComparisonDialog<T extends Comparison> extends Dialog<T> {
             editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
         });
         
-        DialogPane dialogPane = getDialogPane();
-        dialogPane.setContent(editComparisonDialogPane);
-        dialogPane.getButtonTypes().setAll(
-                ButtonType.OK,
-                ButtonType.CANCEL);
-        
         setTitle(rb.getString("fx.EditComparisonPane.010"));
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editComparisonDialogPane.getResult()
                 : null);
+        
+        DialogPane dialogPane = getDialogPane();
+        dialogPane.setContent(editComparisonDialogPane);
+        dialogPane.getButtonTypes().setAll(
+                ButtonType.OK,
+                ButtonType.CANCEL);
     }
 }
