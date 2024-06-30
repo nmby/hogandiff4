@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.Report;
 
@@ -24,8 +25,11 @@ public class ApiClient {
      * 比較実行結果レポートをWeb API向けにPOSTします。<br>
      * 
      * @param report 比較実行結果レポート
+     * @throws NullPointerException パラメータが {@code null} の場合
      */
     public void sendStatsAsync(Report report) {
+        Objects.requireNonNull(report);
+        
         Thread.startVirtualThread(() -> {
             try {
                 URI uri = new URI(endpointUrl);
