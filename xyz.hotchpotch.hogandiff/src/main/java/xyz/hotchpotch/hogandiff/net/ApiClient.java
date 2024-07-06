@@ -17,7 +17,7 @@ public class ApiClient {
     
     // [static members] ********************************************************
     
-    private static final String endpointUrl = "https://asia-northeast1-hogandiff-prod1.cloudfunctions.net/postStats";
+    private static final String endpointUrl = "https://api-hogandiff.hotchpotch.xyz/postStats";
     
     // [instance members] ******************************************************
     
