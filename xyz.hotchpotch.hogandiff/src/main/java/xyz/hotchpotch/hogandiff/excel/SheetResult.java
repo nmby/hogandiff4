@@ -90,7 +90,7 @@ public final class SheetResult implements Result {
      * @param redundantColumns 各比較対象シートの余剰列数
      * @param diffCells 差分セル数
      */
-    public static record Stats(
+    public static record SheetStats(
             IntPair rows,
             IntPair columns,
             IntPair cells,
@@ -113,7 +113,7 @@ public final class SheetResult implements Result {
          * @param diffCells 差分セル数
          * @throws NullPointerException パラメータが {@code null} の場合
          */
-        public Stats {
+        public SheetStats {
             Objects.requireNonNull(rows);
             Objects.requireNonNull(columns);
             Objects.requireNonNull(cells);
@@ -127,7 +127,7 @@ public final class SheetResult implements Result {
     private final Pair<int[]> redundantRows;
     private final Pair<int[]> redundantColumns;
     private final List<Pair<CellData>> diffCells;
-    private final Stats stats;
+    private final SheetStats stats;
     
     /**
      * コンストラクタ<br>
@@ -169,7 +169,7 @@ public final class SheetResult implements Result {
         this.redundantColumns = redundantColumns;
         this.diffCells = diffCells;
         
-        this.stats = new Stats(
+        this.stats = new SheetStats(
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
                 IntPair.from(cellsSetPair.map(Set::size)),
@@ -316,7 +316,7 @@ public final class SheetResult implements Result {
     }
     
     @Override
-    public List<Stats> getSheetStats() {
+    public List<SheetStats> getSheetStats() {
         return List.of(stats);
     }
 }

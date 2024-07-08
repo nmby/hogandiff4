@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -123,7 +123,7 @@ public abstract sealed class Report
          * @param stats 統計情報
          * @return 統計情報のJSON形式の文字列表現
          */
-        private String statsToJson(Stats stats) {
+        private String statsToJson(SheetStats stats) {
             StringBuilder str = new StringBuilder();
             
             str.append("{ ");
