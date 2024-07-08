@@ -13,24 +13,29 @@ import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
-public abstract sealed class Report
-        permits Report.Succeeded, Report.Failed {
+/**
+ * 比較処理結果の統計情報を表す不変クラスです。<br>
+ * 
+ * @author nmby
+ */
+public abstract sealed class Stats
+        permits Stats.Succeeded, Stats.Failed {
     
     // [static members] ********************************************************
     
     private static final String COMMA = ", ";
     
     /**
-     * 比較処理が成功したことを表す {@link Report} の拡張です。<br>
+     * 比較処理が成功したことを表す {@link Stats} の拡張です。<br>
      */
-    public static final class Succeeded extends Report {
+    public static final class Succeeded extends Stats {
         
         // [static members] ----------------------------------------------------
         
@@ -120,24 +125,27 @@ public abstract sealed class Report
          *      }
          * }
          * 
-         * @param stats 統計情報
+         * @param sheetStats 統計情報
          * @return 統計情報のJSON形式の文字列表現
          */
-        private String statsToJson(Stats stats) {
+        private String statsToJson(SheetStats sheetStats) {
             StringBuilder str = new StringBuilder();
             
             str.append("{ ");
             {
-                str.append("\"rows\": [ %d, %d ]".formatted(stats.rows().a(), stats.rows().b())).append(COMMA);
-                str.append("\"columns\": [ %d, %d ]".formatted(stats.columns().a(), stats.columns().b())).append(COMMA);
-                str.append("\"cells\": [ %d, %d ]".formatted(stats.cells().a(), stats.cells().b())).append(COMMA);
+                str.append("\"rows\": [ %d, %d ]".formatted(sheetStats.rows().a(), sheetStats.rows().b()))
+                        .append(COMMA);
+                str.append("\"columns\": [ %d, %d ]".formatted(sheetStats.columns().a(), sheetStats.columns().b()))
+                        .append(COMMA);
+                str.append("\"cells\": [ %d, %d ]".formatted(sheetStats.cells().a(), sheetStats.cells().b()))
+                        .append(COMMA);
                 str.append("\"redundantRows\": [ %d, %d ]"
-                        .formatted(stats.redundantRows().a(), stats.redundantRows().b()))
+                        .formatted(sheetStats.redundantRows().a(), sheetStats.redundantRows().b()))
                         .append(COMMA);
                 str.append("\"redundantColumns\": [ %d, %d ]"
-                        .formatted(stats.redundantColumns().a(), stats.redundantColumns().b()))
+                        .formatted(sheetStats.redundantColumns().a(), sheetStats.redundantColumns().b()))
                         .append(COMMA);
-                str.append("\"diffCells\": %d".formatted(stats.diffCells()));
+                str.append("\"diffCells\": %d".formatted(sheetStats.diffCells()));
             }
             str.append(" }");
             
@@ -198,9 +206,9 @@ public abstract sealed class Report
     }
     
     /**
-     * 比較処理が失敗したことを表す {@link Report} の拡張です。<br>
+     * 比較処理が失敗したことを表す {@link Stats} の拡張です。<br>
      */
-    public static final class Failed extends Report {
+    public static final class Failed extends Stats {
         
         // [static members] ----------------------------------------------------
         
@@ -268,7 +276,7 @@ public abstract sealed class Report
     private final Instant start;
     private final Instant end;
     
-    private Report(
+    private Stats(
             Settings settings,
             Instant start,
             Instant end) {

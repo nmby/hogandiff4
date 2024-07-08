@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -206,7 +206,7 @@ public record BookResult(
     }
     
     @Override
-    public List<Stats> getSheetStats() {
+    public List<SheetStats> getSheetStats() {
         return sheetResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)

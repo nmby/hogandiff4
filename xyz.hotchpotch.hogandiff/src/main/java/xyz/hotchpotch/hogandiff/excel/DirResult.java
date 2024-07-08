@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -223,7 +223,7 @@ public record DirResult(
     }
     
     @Override
-    public List<Stats> getSheetStats() {
+    public List<SheetStats> getSheetStats() {
         return bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)

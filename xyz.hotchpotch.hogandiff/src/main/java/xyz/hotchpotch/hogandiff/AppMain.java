@@ -67,6 +67,8 @@ public class AppMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
         
+        announceNewFeature();
+        
         // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
         // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
         ZipSecureFile.setMinInflateRatio(0.001);
@@ -118,8 +120,6 @@ public class AppMain extends Application {
         });
         
         primaryStage.show();
-        
-        announceNewFeature();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.DirComparison.FlattenDirComparison;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -138,7 +138,7 @@ public record TreeResult(
     }
     
     @Override
-    public List<Stats> getSheetStats() {
+    public List<SheetStats> getSheetStats() {
         return dirResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)

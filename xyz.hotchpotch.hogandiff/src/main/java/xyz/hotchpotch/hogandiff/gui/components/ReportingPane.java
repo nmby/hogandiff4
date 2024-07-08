@@ -15,7 +15,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
-import xyz.hotchpotch.hogandiff.Report;
+import xyz.hotchpotch.hogandiff.Stats;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 
@@ -95,7 +95,7 @@ public class ReportingPane extends VBox implements ChildController {
      * @param task タスク
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public void bind(Task<Report> task) {
+    public void bind(Task<Stats> task) {
         Objects.requireNonNull(task);
         
         reportingProgressBar.progressProperty().bind(task.progressProperty());
