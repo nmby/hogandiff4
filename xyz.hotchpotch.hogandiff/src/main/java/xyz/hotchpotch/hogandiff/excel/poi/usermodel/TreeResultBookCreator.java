@@ -41,7 +41,7 @@ public class TreeResultBookCreator {
     
     // [static members] ********************************************************
     
-    private static final String templateBookName = "result.xlsx";
+    private static final String templateBookName = "result_tree.xlsx";
     private static final String sheetName = "result";
     
     private static final int ROW_LIST_TEMPLATE = 4;
