@@ -38,7 +38,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract sealed class AppTaskBase extends Task<Report>
+/*package*/ abstract sealed class AppTaskBase extends Task<Stats>
         permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
     
     // [static members] ********************************************************
@@ -89,23 +89,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Report call() throws ApplicationException {
+    protected Stats call() throws ApplicationException {
         Instant start = Instant.now();
-        Report report = null;
+        Stats report = null;
         
         try {
             Result result = call2();
             
-            report = new Report.Succeeded(settings, start, Instant.now(), result);
+            report = new Stats.Succeeded(settings, start, Instant.now(), result);
             
             return report;
             
         } catch (OutOfMemoryError e) {
-            report = new Report.Failed(settings, start, Instant.now(), e);
+            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.170", "");
             
         } catch (Exception e) {
-            report = new Report.Failed(settings, start, Instant.now(), e);
+            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
             
         } finally {
@@ -118,7 +118,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param report 統計情報
      */
-    private void writeReport(Report report) {
+    private void writeReport(Stats report) {
         try {
             Path reportPath = workDir.resolve("report.json");
             try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {

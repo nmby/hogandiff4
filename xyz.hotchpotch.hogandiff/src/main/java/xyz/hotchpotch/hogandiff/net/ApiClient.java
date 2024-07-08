@@ -6,7 +6,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.Report;
+import xyz.hotchpotch.hogandiff.Stats;
 
 /**
  * Web API向けの通信を担うクラスです。<br>
@@ -24,11 +24,11 @@ public class ApiClient {
     /**
      * 比較実行結果レポートをWeb API向けにPOSTします。<br>
      * 
-     * @param report 比較実行結果レポート
+     * @param stats 比較実行結果の統計情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public void sendStatsAsync(Report report) {
-        Objects.requireNonNull(report);
+    public void sendStatsAsync(Stats stats) {
+        Objects.requireNonNull(stats);
         
         Thread.startVirtualThread(() -> {
             try {
@@ -39,7 +39,7 @@ public class ApiClient {
                 conn.setDoOutput(true);
                 
                 try (OutputStream os = conn.getOutputStream()) {
-                    byte[] input = report.toJsonString().getBytes(StandardCharsets.UTF_8);
+                    byte[] input = stats.toJsonString().getBytes(StandardCharsets.UTF_8);
                     os.write(input, 0, input.length);
                 }
                 conn.getResponseCode();

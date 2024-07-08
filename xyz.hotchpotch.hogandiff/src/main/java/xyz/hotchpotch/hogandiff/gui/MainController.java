@@ -32,7 +32,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
-import xyz.hotchpotch.hogandiff.Report;
+import xyz.hotchpotch.hogandiff.Stats;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
@@ -427,7 +427,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Report> task = menu.getTask(ar.settings());
+        Task<Stats> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
         
         task.setOnSucceeded(event -> {
@@ -481,10 +481,10 @@ public class MainController extends VBox {
         thread.start();
     }
     
-    private void callApiIfConsented(Task<Report> task) {
+    private void callApiIfConsented(Task<Stats> task) {
         if (ar.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION)) {
             try {
-                Report report = task.get();
+                Stats report = task.get();
                 ApiClient client = new ApiClient();
                 client.sendStatsAsync(report);
                 
