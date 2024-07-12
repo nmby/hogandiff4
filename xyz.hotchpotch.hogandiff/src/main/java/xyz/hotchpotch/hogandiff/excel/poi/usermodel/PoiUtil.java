@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -302,11 +301,11 @@ public class PoiUtil {
      * @param color 着色する色のインデックス値
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static void paintRows(Sheet sheet, int[] rowIdxs, short color) {
+    public static void paintRows(Sheet sheet, List<Integer> rowIdxs, short color) {
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(rowIdxs);
         
-        if (rowIdxs.length == 0) {
+        if (rowIdxs.isEmpty()) {
             return;
         }
         
@@ -357,25 +356,23 @@ public class PoiUtil {
      * @param color 着色する色のインデックス値
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static void paintColumns(Sheet sheet, int[] columnIdxs, short color) {
+    public static void paintColumns(Sheet sheet, List<Integer> columnIdxs, short color) {
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(columnIdxs);
         
-        if (columnIdxs.length == 0) {
+        if (columnIdxs.isEmpty()) {
             return;
         }
         
         // まず、着色前の現行スタイルで列をグルーピングする。
-        Map<CellStyle, Set<Integer>> currStyles = Arrays.stream(columnIdxs)
+        Map<CellStyle, Set<Integer>> currStyles = columnIdxs.stream()
                 .filter(i -> sheet.getColumnStyle(i) != null)
-                .boxed()
                 .collect(Collectors.groupingBy(
                         sheet::getColumnStyle,
                         HashMap::new,
                         Collectors.toSet()));
-        currStyles.put(null, Arrays.stream(columnIdxs)
+        currStyles.put(null, columnIdxs.stream()
                 .filter(i -> sheet.getColumnStyle(i) == null)
-                .boxed()
                 .collect(Collectors.toSet()));
         
         // そして、現行スタイルごとに着色スタイルを用意し、対象列に適用する。
@@ -390,7 +387,7 @@ public class PoiUtil {
         });
         
         // 対象列上のセルのアドレスを集め、着色する。
-        Set<Integer> idxs = Arrays.stream(columnIdxs).boxed().collect(Collectors.toSet());
+        Set<Integer> idxs = Set.copyOf(columnIdxs);
         Set<CellAddress> addresses = StreamSupport.stream(sheet.spliterator(), true)
                 .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
                 .filter(cell -> idxs.contains(cell.getColumnIndex()))

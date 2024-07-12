@@ -104,7 +104,7 @@ public abstract sealed class Stats
             str.append("\"stats\": [ ");
             {
                 str.append(
-                        result.getSheetStats().stream()
+                        result.sheetStats().stream()
                                 .map(this::statsToJson)
                                 .collect(Collectors.joining(", ")));
             }

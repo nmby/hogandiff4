@@ -25,8 +25,7 @@ public class RCSheetComparator implements SheetComparator {
     
     // [static members] ********************************************************
     
-    private static final int[] EMPTY_INT_ARRAY = new int[] {};
-    private static final Pair<int[]> EMPTY_INT_ARRAY_PAIR = new Pair<>(EMPTY_INT_ARRAY, EMPTY_INT_ARRAY);
+    private static final Pair<List<Integer>> EMPTY_PAIR = new Pair<>(List.of(), List.of());
     
     /**
      * 新たなコンパレータを返します。<br>
@@ -74,8 +73,8 @@ public class RCSheetComparator implements SheetComparator {
             if (cellsSetPair.a().isEmpty()) {
                 return new SheetResult(
                         cellsSetPair,
-                        EMPTY_INT_ARRAY_PAIR,
-                        EMPTY_INT_ARRAY_PAIR,
+                        EMPTY_PAIR,
+                        EMPTY_PAIR,
                         List.of());
             } else {
                 throw new IllegalArgumentException("cells1 == cells2");
@@ -87,16 +86,16 @@ public class RCSheetComparator implements SheetComparator {
         List<IntPair> columnPairs = pairs.b();
         
         // 余剰行の収集
-        Pair<int[]> redundantRows = Side.map(side -> rowPairs.stream()
+        Pair<List<Integer>> redundantRows = Side.map(side -> rowPairs.stream()
                 .filter(pair -> pair.isOnly(side))
-                .mapToInt(pair -> pair.get(side))
-                .toArray());
+                .map(pair -> pair.get(side))
+                .toList());
         
         // 余剰列の収集
-        Pair<int[]> redundantColumns = Side.map(side -> columnPairs.stream()
+        Pair<List<Integer>> redundantColumns = Side.map(side -> columnPairs.stream()
                 .filter(pair -> pair.isOnly(side))
-                .mapToInt(pair -> pair.get(side))
-                .toArray());
+                .map(pair -> pair.get(side))
+                .toList());
         
         // 差分セルの収集
         List<Pair<CellData>> diffCells = extractDiffs(cellsSetPair, rowPairs, columnPairs);

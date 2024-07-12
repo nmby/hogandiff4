@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,13 +56,13 @@ public class PaintColumnsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            int[] targetColumns,
+            List<Integer> targetColumns,
             short colorIdx) {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
         Objects.requireNonNull(targetColumns);
-        if (targetColumns.length == 0) {
+        if (targetColumns.isEmpty()) {
             throw new IllegalArgumentException("no target columns");
         }
         
@@ -82,14 +83,14 @@ public class PaintColumnsReader extends BufferingReader {
     private PaintColumnsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            int[] targetColumns,
+            List<Integer> targetColumns,
             short colorIdx) {
         
         super(source);
         
         assert stylesManager != null;
         assert targetColumns != null;
-        assert 0 < targetColumns.length;
+        assert !targetColumns.isEmpty();
         
         this.stylesManager = stylesManager;
         this.colorIdx = colorIdx;
