@@ -62,8 +62,6 @@ public final class SheetResult implements Result {
             Objects.requireNonNull(diffCellContents);
             Objects.requireNonNull(diffCellComments);
             Objects.requireNonNull(redundantCellComments);
-            
-            // レコードの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
         }
         
         /**
@@ -155,20 +153,9 @@ public final class SheetResult implements Result {
             throw new IllegalArgumentException("illegal result");
         }
         
-        // クラスの不変性を崩してしまうが、パフォーマンス優先で防御的コピーはしないことにする。
-        
-        //redundantRows = Pair.of(
-        //        Arrays.copyOf(redundantRows.a(), redundantRows.a().length),
-        //        Arrays.copyOf(redundantRows.b(), redundantRows.b().length));
-        //redundantColumns = Pair.of(
-        //        Arrays.copyOf(redundantColumns.a(), redundantColumns.a().length),
-        //        Arrays.copyOf(redundantColumns.b(), redundantColumns.b().length));
-        //diffCells = List.copyOf(diffCells);
-        
-        this.redundantRows = redundantRows;
-        this.redundantColumns = redundantColumns;
-        this.diffCells = diffCells;
-        
+        this.redundantRows = redundantRows.map(List::copyOf);
+        this.redundantColumns = redundantColumns.map(List::copyOf);
+        this.diffCells = List.copyOf(diffCells);
         this.stats = new SheetStats(
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
@@ -316,7 +303,34 @@ public final class SheetResult implements Result {
     }
     
     @Override
-    public List<SheetStats> getSheetStats() {
+    public List<SheetStats> sheetStats() {
         return List.of(stats);
+    }
+    
+    /**
+     * 余剰行を返します。<br>
+     * 
+     * @return 余剰行
+     */
+    public Pair<List<Integer>> redundantRows() {
+        return redundantRows;
+    }
+    
+    /**
+     * 余剰列を返します。<br>
+     * 
+     * @return 余剰列
+     */
+    public Pair<List<Integer>> redundantColumns() {
+        return redundantColumns;
+    }
+    
+    /**
+     * 差分セルを返します。<br>
+     * 
+     * @return 差分セル
+     */
+    public List<Pair<CellData>> diffCells() {
+        return diffCells;
     }
 }

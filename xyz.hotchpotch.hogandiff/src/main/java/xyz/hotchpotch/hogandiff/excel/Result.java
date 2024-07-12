@@ -22,5 +22,5 @@ public sealed interface Result
      * 
      * @return シートごとの統計情報
      */
-    List<SheetStats> getSheetStats();
+    List<SheetStats> sheetStats();
 }

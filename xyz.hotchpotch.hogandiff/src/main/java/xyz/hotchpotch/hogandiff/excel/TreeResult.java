@@ -138,11 +138,11 @@ public record TreeResult(
     }
     
     @Override
-    public List<SheetStats> getSheetStats() {
+    public List<SheetStats> sheetStats() {
         return dirResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(DirResult::getSheetStats)
+                .map(DirResult::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }
