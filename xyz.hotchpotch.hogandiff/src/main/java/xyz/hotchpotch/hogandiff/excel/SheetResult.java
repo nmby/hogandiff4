@@ -26,15 +26,15 @@ public final class SheetResult implements Result {
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
      * @author nmby
-     * @param redundantRows 余剰行の配列
-     * @param redundantColumns 余剰列の配列
+     * @param redundantRows 余剰行のリスト
+     * @param redundantColumns 余剰列のリスト
      * @param diffCellContents セル内容に差分のあるセルのリスト
      * @param diffCellComments セルコメントに差分のあるセルのリスト
      * @param redundantCellComments セルコメントが余剰であるセルのリスト
      */
     public static record Piece(
-            int[] redundantRows,
-            int[] redundantColumns,
+            List<Integer> redundantRows,
+            List<Integer> redundantColumns,
             List<CellData> diffCellContents,
             List<CellData> diffCellComments,
             List<CellData> redundantCellComments) {
@@ -46,8 +46,8 @@ public final class SheetResult implements Result {
         /**
          * コンストラクタ<br>
          * 
-         * @param redundantRows 余剰行の配列
-         * @param redundantColumns 余剰列の配列
+         * @param redundantRows 余剰行のリスト
+         * @param redundantColumns 余剰列のリスト
          * @param diffCellContents セル内容に差分のあるセルのリスト
          * @param diffCellComments セルコメントに差分のあるセルのリスト
          * @param redundantCellComments セルコメントが余剰であるセルのリスト
@@ -72,8 +72,8 @@ public final class SheetResult implements Result {
          * @return ひとつでも差分がある場合は {@code true}
          */
         public boolean hasDiff() {
-            return 0 < redundantRows.length
-                    || 0 < redundantColumns.length
+            return !redundantRows.isEmpty()
+                    || !redundantColumns.isEmpty()
                     || !diffCellContents.isEmpty()
                     || !diffCellComments.isEmpty()
                     || !redundantCellComments.isEmpty();
@@ -124,8 +124,8 @@ public final class SheetResult implements Result {
     
     // [instance members] ******************************************************
     
-    private final Pair<int[]> redundantRows;
-    private final Pair<int[]> redundantColumns;
+    private final Pair<List<Integer>> redundantRows;
+    private final Pair<List<Integer>> redundantColumns;
     private final List<Pair<CellData>> diffCells;
     private final SheetStats stats;
     
@@ -142,8 +142,8 @@ public final class SheetResult implements Result {
      */
     public SheetResult(
             Pair<Set<CellData>> cellsSetPair,
-            Pair<int[]> redundantRows,
-            Pair<int[]> redundantColumns,
+            Pair<List<Integer>> redundantRows,
+            Pair<List<Integer>> redundantColumns,
             List<Pair<CellData>> diffCells) {
         
         Objects.requireNonNull(cellsSetPair);
@@ -173,8 +173,8 @@ public final class SheetResult implements Result {
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::row).max().orElse(0))),
                 IntPair.from(cellsSetPair.map(cells -> cells.stream().mapToInt(CellData::column).max().orElse(0))),
                 IntPair.from(cellsSetPair.map(Set::size)),
-                IntPair.from(redundantRows.map(rows -> rows.length)),
-                IntPair.from(redundantColumns.map(columns -> columns.length)),
+                IntPair.from(redundantRows.map(List::size)),
+                IntPair.from(redundantColumns.map(List::size)),
                 diffCells.size());
     }
     
@@ -217,10 +217,10 @@ public final class SheetResult implements Result {
      * @return 差分ありの場合は {@code true}
      */
     public boolean hasDiff() {
-        return 0 < redundantRows.a().length
-                || 0 < redundantRows.b().length
-                || 0 < redundantColumns.a().length
-                || 0 < redundantColumns.b().length
+        return !redundantRows.a().isEmpty()
+                || !redundantRows.b().isEmpty()
+                || !redundantColumns.a().isEmpty()
+                || !redundantColumns.b().isEmpty()
                 || !diffCells.isEmpty();
     }
     
@@ -234,8 +234,8 @@ public final class SheetResult implements Result {
             return rb.getString("excel.SResult.010");
         }
         
-        int rows = redundantRows.a().length + redundantRows.b().length;
-        int cols = redundantColumns.a().length + redundantColumns.b().length;
+        int rows = redundantRows.a().size() + redundantRows.b().size();
+        int cols = redundantColumns.a().size() + redundantColumns.b().size();
         int cells = diffCells.size();
         
         StringBuilder str = new StringBuilder();
@@ -270,10 +270,10 @@ public final class SheetResult implements Result {
         
         StringBuilder str = new StringBuilder();
         
-        if (0 < redundantRows.a().length || 0 < redundantRows.b().length) {
+        if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
             for (Side side : Side.values()) {
-                int[] rows = redundantRows.get(side);
-                if (0 < rows.length) {
+                List<Integer> rows = redundantRows.get(side);
+                if (!rows.isEmpty()) {
                     str.append(rb.getString("excel.SResult.050").formatted(side)).append(BR);
                     for (int row : rows) {
                         str.append("    ")
@@ -284,10 +284,10 @@ public final class SheetResult implements Result {
             }
             str.append(BR);
         }
-        if (0 < redundantColumns.a().length || 0 < redundantColumns.b().length) {
+        if (!redundantColumns.a().isEmpty() || !redundantColumns.b().isEmpty()) {
             for (Side side : Side.values()) {
-                int[] cols = redundantColumns.get(side);
-                if (0 < cols.length) {
+                List<Integer> cols = redundantColumns.get(side);
+                if (!cols.isEmpty()) {
                     str.append(rb.getString("excel.SResult.070").formatted(side)).append(BR);
                     for (int col : cols) {
                         str.append("    ")

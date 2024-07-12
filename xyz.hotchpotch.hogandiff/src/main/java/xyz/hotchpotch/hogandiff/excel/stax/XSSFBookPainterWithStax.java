@@ -504,7 +504,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                         reader,
                         p.hasDiff() ? diffSheetColor : sameSheetColor);
                 
-                if (0 < p.redundantColumns().length) {
+                if (!p.redundantColumns().isEmpty()) {
                     // 余剰列にデフォルト色を付けるリーダーを追加
                     reader = PaintColumnsReader.of(
                             reader,
@@ -513,7 +513,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                             redundantColor);
                 }
                 
-                if (0 < p.redundantRows().length) {
+                if (!p.redundantRows().isEmpty()) {
                     // 余剰行にデフォルト色を付けるリーダーを追加
                     reader = PaintRowsReader.of(
                             reader,
@@ -522,7 +522,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                             redundantColor);
                 }
                 
-                if (0 < p.redundantRows().length || 0 < p.redundantColumns().length) {
+                if (!p.redundantRows().isEmpty() || !p.redundantColumns().isEmpty()) {
                     // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
                     reader = PaintRedundantCellsReader.of(
                             reader,
