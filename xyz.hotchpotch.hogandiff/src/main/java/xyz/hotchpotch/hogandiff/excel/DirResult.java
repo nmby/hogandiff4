@@ -223,11 +223,11 @@ public record DirResult(
     }
     
     @Override
-    public List<SheetStats> getSheetStats() {
+    public List<SheetStats> sheetStats() {
         return bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(BookResult::getSheetStats)
+                .map(BookResult::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

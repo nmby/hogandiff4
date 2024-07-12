@@ -206,11 +206,11 @@ public record BookResult(
     }
     
     @Override
-    public List<SheetStats> getSheetStats() {
+    public List<SheetStats> sheetStats() {
         return sheetResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(SheetResult::getSheetStats)
+                .map(SheetResult::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }
