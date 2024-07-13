@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -37,21 +39,23 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class TreeResultBookCreator {
+public class TreeReportCreator {
     
     // [static members] ********************************************************
     
     private static final String templateBookName = "result_tree.xlsx";
     private static final String sheetName = "result";
     
-    private static final int ROW_LIST_TEMPLATE = 4;
-    private static final int ROW_LIST_START = 6;
+    private static final int ROW_LIST_TEMPLATE = 5;
+    private static final int ROW_LIST_START = 7;
     private static final IntPair COL_LEFT = IntPair.of(3, 8);
     private static final int COL_DIFF = 7;
     private static final String DIFF_ONLY_A = "<";
     private static final String DIFF_ONLY_B = ">";
     private static final String DIFF_BOTH = "!";
     private static final String DIFF_FAILED = "?";
+    
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     
     // こんなの絶対標準APIにあるはずだけど見つけられていない・・・
     // TODO: 実装改善（標準APIを利用する）
@@ -211,25 +215,31 @@ public class TreeResultBookCreator {
             TreeResult treeResult) {
         
         PoiUtil.setCellValue(sheet, 0, 4,
-                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.A));
+                rb.getString("excel.poi.usermodel.BookResultBookCreator.010"));
         PoiUtil.setCellValue(sheet, 1, 4,
-                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.B));
-        PoiUtil.setCellValue(sheet, 2, 4,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
+        PoiUtil.setCellValue(sheet, 2, 4,
+                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, 4,
+                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.B));
+        
+        // TODO: フォルダ名から日時取るのはスマートじゃないので改善する
+        LocalDateTime localDateTime = LocalDateTime.parse(workDir.getFileName().toString(), formatter);
+        PoiUtil.setCellValue(sheet, 0, 5, localDateTime);
+        
+        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
+        linkW.setAddress(sanitize(workDir));
+        PoiUtil.setCellValue(sheet, 1, 5, workDir.toString()).setHyperlink(linkW);
         
         Path topDirA = treeResult.flattenDirComparison().parentDirInfoPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
-        PoiUtil.setCellValue(sheet, 0, 5, topDirA.toString()).setHyperlink(linkA);
+        PoiUtil.setCellValue(sheet, 2, 5, topDirA.toString()).setHyperlink(linkA);
         
         Path topDirB = treeResult.flattenDirComparison().parentDirInfoPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
-        PoiUtil.setCellValue(sheet, 1, 5, topDirB.toString()).setHyperlink(linkB);
-        
-        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
-        linkW.setAddress(sanitize(workDir));
-        PoiUtil.setCellValue(sheet, 2, 5, workDir.toString()).setHyperlink(linkW);
+        PoiUtil.setCellValue(sheet, 3, 5, topDirB.toString()).setHyperlink(linkB);
     }
     
     private void outputDirLine(

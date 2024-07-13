@@ -255,19 +255,21 @@ public class SettingsPane2 extends VBox implements ChildController {
                     ? path -> desktop.moveToTrash(path.toFile())
                     : Files::deleteIfExists;
             
-            try (Stream<Path> children = Files.list(workDirBase)) {
-                children.forEach(path -> {
-                    try {
-                        deleteAction.accept(path);
-                    } catch (Exception e) {
-                        // nop
-                        // 使用中などの理由で削除できないファイルがある場合は
-                        // それを飛ばして削除処理を継続する
-                    }
-                });
-            } catch (Exception e) {
-                //nop
-            }
+            Thread.startVirtualThread(() -> {
+                try (Stream<Path> children = Files.list(workDirBase)) {
+                    children.forEach(path -> {
+                        try {
+                            deleteAction.accept(path);
+                        } catch (Exception e) {
+                            // nop
+                            // 使用中などの理由で削除できないファイルがある場合は
+                            // それを飛ばして削除処理を継続する
+                        }
+                    });
+                } catch (Exception e) {
+                    //nop
+                }
+            });
         }
     };
     

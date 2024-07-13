@@ -28,8 +28,8 @@ import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookResultBookCreator;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookReportCreator;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeReportCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -381,7 +381,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
             updateMessage(str.toString());
             
-            TreeResultBookCreator creator = new TreeResultBookCreator();
+            TreeReportCreator creator = new TreeReportCreator();
             creator.createResultBook(
                     resultBookPath,
                     tResult,
@@ -430,7 +430,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareBooksTask.060"), resultBookPath));
             updateMessage(str.toString());
             
-            BookResultBookCreator creator = new BookResultBookCreator();
+            BookReportCreator creator = new BookReportCreator();
             creator.createResultBook(resultBookPath, bResult);
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
