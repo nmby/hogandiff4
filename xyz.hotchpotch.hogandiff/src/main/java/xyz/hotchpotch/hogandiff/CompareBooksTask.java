@@ -53,7 +53,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             BookResult bResult = compareSheets(3, 75);
             
             // 2. 比較結果の表示（テキスト）
-            saveAndShowResultText(workDir, bResult.toString(), 75, 80);
+            saveResultText(workDir, bResult.toString(), 75, 80);
+            createSaveAndShowReportBook(workDir, bResult, 75, 80);
             
             // 3. 比較結果の表示（Excelブック）
             BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);

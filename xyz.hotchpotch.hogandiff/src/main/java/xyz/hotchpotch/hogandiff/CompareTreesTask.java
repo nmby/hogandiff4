@@ -51,7 +51,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             TreeResult tResult = compareTrees(workDir, 5, 93);
             
             // 2. 比較結果テキストの作成と表示
-            saveAndShowResultText(workDir, tResult.toString(), 93, 95);
+            saveResultText(workDir, tResult.toString(), 93, 95);
             
             // 3. 比較結果Excelの作成と表示
             createSaveAndShowResultBook(workDir, tResult, 95, 99);

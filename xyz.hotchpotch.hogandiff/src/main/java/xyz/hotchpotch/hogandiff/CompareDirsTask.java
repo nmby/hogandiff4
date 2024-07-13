@@ -55,7 +55,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             DirResult dResult = compareDirs(outputDirPair, 5, 93);
             
             // 6. 比較結果テキストの作成と表示
-            saveAndShowResultText(workDir, dResult.toString(), 93, 95);
+            saveResultText(workDir, dResult.toString(), 93, 95);
             
             // 7. 比較結果Excelの作成と表示
             DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
