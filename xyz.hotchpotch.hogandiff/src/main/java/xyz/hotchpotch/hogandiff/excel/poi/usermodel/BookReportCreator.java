@@ -19,6 +19,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
@@ -63,7 +65,8 @@ public class BookReportCreator {
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     /**
      * Excelブック同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
@@ -144,8 +147,8 @@ public class BookReportCreator {
         PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.030").formatted(Side.B));
         
-        // TODO: フォルダ名から日時取るのはスマートじゃないので改善する
-        LocalDateTime localDateTime = LocalDateTime.parse(workDir.getFileName().toString(), formatter);
+        String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
         PoiUtil.setCellValue(sheet, 0, COL_LEFT.a() + 1, localDateTime);
         
         Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
