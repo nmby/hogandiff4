@@ -48,26 +48,44 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 0. 処理開始のアナウンス
             announceStart(0, 5);
             
-            // 3. 出力用ディレクトリの作成
+            // 1. 出力用ディレクトリの作成
             Pair<Path> outputDirPair = createOutputDirs(workDir);
             
-            // 5. フォルダ同士の比較
+            // 2. フォルダ同士の比較
             DirResult dResult = compareDirs(outputDirPair, 5, 93);
             
-            // 6. 比較結果テキストの作成と表示
-            saveResultText(workDir, dResult.toString(), 93, 95);
-            
-            // 7. 比較結果Excelの作成と表示
             DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
                     dirComparison.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
             
-            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            Exception failed = null;
             
-            // 8. 処理終了のアナウンス
+            // 3. 比較結果レポート（Excelブック）の保存と表示
+            try {
+                createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            } catch (Exception e) {
+                failed = e;
+            }
+            
+            // 4. 比較結果レポート（テキスト）の保存
+            try {
+                saveResultText(workDir, dResult.toString(), 93, 95);
+            } catch (Exception e) {
+                if (failed == null) {
+                    failed = e;
+                } else {
+                    failed.addSuppressed(e);
+                }
+            }
+            
+            // 5. 処理終了のアナウンス
             announceEnd();
+            
+            if (failed != null) {
+                throw failed;
+            }
             
             return tResult;
             

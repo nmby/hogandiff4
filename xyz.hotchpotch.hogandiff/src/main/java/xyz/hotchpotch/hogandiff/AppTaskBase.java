@@ -386,13 +386,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     resultBookPath,
                     tResult,
                     settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_TREES);
+            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.080", "");
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
                 str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
@@ -431,6 +432,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             BookResultBookCreator creator = new BookResultBookCreator();
             creator.createResultBook(resultBookPath, bResult);
+            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.070", "");
