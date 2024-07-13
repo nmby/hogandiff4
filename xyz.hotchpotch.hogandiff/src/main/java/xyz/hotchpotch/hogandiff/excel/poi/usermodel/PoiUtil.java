@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.awt.Color;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.hssf.record.ExtendedFormatRecord;
 import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -45,6 +47,7 @@ import org.apache.poi.xssf.usermodel.XSSFDialogsheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 
@@ -195,8 +198,9 @@ public class PoiUtil {
             style.setBottomBorderColor(automatic);
             style.setLeftBorderColor(automatic);
             style.setRightBorderColor(automatic);
-            // FIXME: [No.03 着色関連] 斜めの罫線に対する処理が必要
-            // 参考：http://higehige0.blog.fc2.com/blog-entry-65.html
+            style.setBorderColor(BorderSide.DIAGONAL, null);
+            style.setBorderColor(BorderSide.HORIZONTAL, null);
+            style.setBorderColor(BorderSide.VERTICAL, null);
             
             // パターンは残したまま、背景色＝白、前景色＝黒にする
             if (style.getFillPattern() == FillPatternType.SOLID_FOREGROUND) {
@@ -249,8 +253,17 @@ public class PoiUtil {
             style.setBottomBorderColor(automatic);
             style.setLeftBorderColor(automatic);
             style.setRightBorderColor(automatic);
-            // FIXME: [No.03 着色関連] 斜めの罫線に対する処理が必要
+            
+            // 斜めの罫線の色
             // 参考：http://higehige0.blog.fc2.com/blog-entry-65.html
+            try {
+                Field field = style.getClass().getDeclaredField("_format");
+                field.setAccessible(true);
+                ExtendedFormatRecord efRecord = (ExtendedFormatRecord) field.get(style);
+                efRecord.setAdtlDiag(IndexedColors.AUTOMATIC.getIndex());
+            } catch (Exception e) {
+                // nop
+            }
             
             // パターンは残したまま、背景色＝白、前景色＝黒にする
             if (style.getFillPattern() == FillPatternType.SOLID_FOREGROUND) {
