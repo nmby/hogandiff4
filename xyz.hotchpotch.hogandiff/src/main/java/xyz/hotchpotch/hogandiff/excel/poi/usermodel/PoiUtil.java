@@ -226,8 +226,6 @@ public class PoiUtil {
         });
         
         // シート見出し
-        // FIXME: [No.3 着色関連] この実装で正しいのかさっぱり分からない
-        // が事実としてシート見出し色が消えるのできっと良いのだろう・・
         book.forEach(sheet -> ((XSSFSheet) sheet).setTabColor(new XSSFColor(new DefaultIndexedColorMap())));
         
         // セルコメントに対する処理
@@ -281,6 +279,7 @@ public class PoiUtil {
             }
         });
         
+        // シート見出し
         // FIXME: [No.3 着色関連] シート見出しの色の消し方が分からない
         
         // セルコメントに対する処理

@@ -172,7 +172,6 @@ public record DirResult(
         if (bookResults.isEmpty()) {
             str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
             if (isDetailMode) {
-                // TODO: とても不細工なのでどうにかしたい
                 str.append(BR);
             }
             return str.toString();
@@ -189,7 +188,6 @@ public record DirResult(
             } else {
                 str.append(BR);
                 if (isDetailMode) {
-                    // TODO: とても不細工なのでどうにかしたい
                     str.append(BR);
                 }
             }

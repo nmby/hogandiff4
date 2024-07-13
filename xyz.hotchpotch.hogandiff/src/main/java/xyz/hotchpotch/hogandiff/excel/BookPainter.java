@@ -18,9 +18,6 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
  *
  * @author nmby
  */
-// FIXME: [No.92 ドキュメント改善] 要お勉強
-// 副作用があっても「関数型インタフェース」と言って良いのかしら？？
-// Consumer も同じだから、良いのかな？？
 @FunctionalInterface
 public interface BookPainter {
     

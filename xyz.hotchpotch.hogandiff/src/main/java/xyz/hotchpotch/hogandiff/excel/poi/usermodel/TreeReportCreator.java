@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -57,10 +58,14 @@ public class TreeReportCreator {
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     
-    // こんなの絶対標準APIにあるはずだけど見つけられていない・・・
-    // TODO: 実装改善（標準APIを利用する）
     private static String sanitize(Path path) {
-        return path.toString().replace("\\", "/").replace(" ", "%20");
+        try {
+            URI uri = path.toAbsolutePath().toUri();
+            return uri.toString().replaceFirst("file:///", "");
+            
+        } catch (Exception e) {
+            return path.toString().replace("\\", "/").replace(" ", "%20");
+        }
     }
     
     // [instance members] ******************************************************

@@ -179,6 +179,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
                 if (dirInfoPair.isPaired()) {
+                    // FIXME: この辺の見通しが非常に悪いので改善する
                     DirResult dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",

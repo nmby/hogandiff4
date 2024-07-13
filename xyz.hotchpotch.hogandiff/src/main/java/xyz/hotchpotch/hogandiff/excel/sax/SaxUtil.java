@@ -149,12 +149,12 @@ public class SaxUtil {
         
         // [instance members] --------------------------------------------------
         
-        private final List<SheetInfo> sheets = new ArrayList<>();
+        private final List<SheetInfo> sheetInfos = new ArrayList<>();
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if ("sheet".equals(qName)) {
-                sheets.add(new SheetInfo(
+                sheetInfos.add(new SheetInfo(
                         attributes.getValue("name"),
                         attributes.getValue("r:id")));
             }
@@ -340,12 +340,12 @@ public class SaxUtil {
                 parser.parse(is, handler1);
             }
             
-            Handler2 handler2 = new Handler2(handler1.sheets);
+            Handler2 handler2 = new Handler2(handler1.sheetInfos);
             try (InputStream is = Files.newInputStream(fs.getPath(Handler2.targetEntry))) {
                 parser.parse(is, handler2);
             }
             
-            for (SheetInfo info : handler1.sheets) {
+            for (SheetInfo info : handler1.sheetInfos) {
                 Handler4 handler4 = new Handler4(info);
                 if (Files.exists(fs.getPath(handler4.relEntry))) {
                     try (InputStream is = Files.newInputStream(fs.getPath(handler4.relEntry))) {
@@ -354,7 +354,7 @@ public class SaxUtil {
                 }
             }
             
-            return List.copyOf(handler1.sheets);
+            return List.copyOf(handler1.sheetInfos);
             
         } catch (Exception e) {
             throw new ExcelHandlingException(

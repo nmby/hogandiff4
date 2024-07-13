@@ -433,6 +433,9 @@ public class XSSFBookPainterWithStax implements BookPainter {
         Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
                 .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
         
+        // 現在の処理方式では比較対象外のシートは処理対象とならない。
+        // 比較対象外のシートもせめてシートタブの色を消すくらいは実施したい。
+        // TODO: 比較対象外のシートも色クリア処理を実施するように変更する。
         for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {
             String sheetName = diff.getKey();
             Optional<Piece> piece = diff.getValue();

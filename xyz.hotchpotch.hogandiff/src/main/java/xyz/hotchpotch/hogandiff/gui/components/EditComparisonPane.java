@@ -122,12 +122,12 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     return;
                 }
                 case COMPARE_SHEETS:
-                    throw new UnsupportedOperationException();
+                    throw new AssertionError();
             }
             
         } catch (IOException e) {
-            // TODO 自動生成された catch ブロック
             e.printStackTrace();
+            // nop
         }
     }
 }
