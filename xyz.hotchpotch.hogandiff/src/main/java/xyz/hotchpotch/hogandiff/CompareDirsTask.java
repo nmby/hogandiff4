@@ -64,14 +64,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             // 3. 比較結果レポート（Excelブック）の保存と表示
             try {
-                createSaveAndShowResultBook(workDir, tResult, 95, 99);
+                createSaveAndShowResultBook(workDir, tResult, 93, 97);
             } catch (Exception e) {
                 failed = e;
             }
             
             // 4. 比較結果レポート（テキスト）の保存
             try {
-                saveResultText(workDir, dResult.toString(), 93, 95);
+                saveResultText(workDir, dResult.toString(), 97, 99);
             } catch (Exception e) {
                 if (failed == null) {
                     failed = e;

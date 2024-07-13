@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirComparison.FlattenDirComparison;
+import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
@@ -50,14 +50,32 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 1. フォルダツリー同士の比較
             TreeResult tResult = compareTrees(workDir, 5, 93);
             
-            // 2. 比較結果テキストの作成と表示
-            saveResultText(workDir, tResult.toString(), 93, 95);
+            Exception failed = null;
             
-            // 3. 比較結果Excelの作成と表示
-            createSaveAndShowResultBook(workDir, tResult, 95, 99);
+            // 2. 比較結果レポート（Excelブック）の保存と表示
+            try {
+                createSaveAndShowResultBook(workDir, tResult, 93, 97);
+            } catch (Exception e) {
+                failed = e;
+            }
+            
+            // 3. 比較結果レポート（テキスト）の保存
+            try {
+                saveResultText(workDir, tResult.toString(), 97, 99);
+            } catch (Exception e) {
+                if (failed == null) {
+                    failed = e;
+                } else {
+                    failed.addSuppressed(e);
+                }
+            }
             
             // 4. 処理終了のアナウンス
             announceEnd();
+            
+            if (failed != null) {
+                throw failed;
+            }
             
             return tResult;
             
