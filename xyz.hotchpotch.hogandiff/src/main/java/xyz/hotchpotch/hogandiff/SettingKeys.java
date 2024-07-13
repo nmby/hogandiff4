@@ -308,7 +308,6 @@ public class SettingKeys {
             true);
     
     /** 実行オプション：早さ優先か精度優先か */
-    // TODO: ユーザー指定可能オプションで任意の列挙型を取れるようにする
     public static final Key<Boolean> PRIORITIZE_SPEED = new Key<>(
             "execution.prioritizeSpeed",
             () -> false,

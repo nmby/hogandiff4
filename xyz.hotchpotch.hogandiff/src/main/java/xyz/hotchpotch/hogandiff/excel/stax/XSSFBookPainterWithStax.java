@@ -9,12 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -430,32 +429,33 @@ public class XSSFBookPainterWithStax implements BookPainter {
         }
         
         // 次に、比較対象シートに対する着色処理を行う。
-        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
-                .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
-        
-        // 現在の処理方式では比較対象外のシートは処理対象とならない。
-        // 比較対象外のシートもせめてシートタブの色を消すくらいは実施したい。
-        // TODO: 比較対象外のシートも色クリア処理を実施するように変更する。
-        for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {
-            String sheetName = diff.getKey();
-            Optional<Piece> piece = diff.getValue();
-            SheetInfo info = sheetNameToInfo.get(sheetName);
+        List<SheetInfo> sheetInfos = SaxUtil.loadSheetInfo(bookPath, readPassword);
+        for (SheetInfo sheetInfo : sheetInfos) {
+            String sheetName = sheetInfo.name();
             
-            // xl/worksheets/sheet?.xml エントリに対する処理
-            String source = info.source();
-            processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
-            
-            // xl/drawings/vmlDrawing?.vml エントリに対する処理
-            String vmlDrawingSource = info.vmlDrawingSource();
-            if (vmlDrawingSource != null) {
-                processCommentDrawingEntry(
-                        inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
-            }
-            
-            // xl/comments?.xml エントリに対する処理
-            String commentSource = info.commentSource();
-            if (commentSource != null) {
-                processCommentEntry(inFs, outFs, commentSource);
+            if (diffs.containsKey(sheetName)) {
+                // 比較対象シートの場合
+                Optional<Piece> piece = diffs.get(sheetName);
+                
+                // xl/worksheets/sheet?.xml エントリに対する処理
+                processWorksheetEntry(inFs, outFs, stylesManager, sheetInfo.source(), piece);
+                
+                // xl/drawings/vmlDrawing?.vml エントリに対する処理
+                String vmlDrawingSource = sheetInfo.vmlDrawingSource();
+                if (vmlDrawingSource != null) {
+                    processCommentDrawingEntry(
+                            inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
+                }
+                
+                // xl/comments?.xml エントリに対する処理
+                String commentSource = sheetInfo.commentSource();
+                if (commentSource != null) {
+                    processCommentEntry(inFs, outFs, commentSource);
+                }
+                
+            } else {
+                // 比較対象外のシートの場合
+                processWorksheetEntryClearTab(inFs, outFs, sheetInfo.source());
             }
         }
         
@@ -551,6 +551,33 @@ public class XSSFBookPainterWithStax implements BookPainter {
                         reader,
                         redundantSheetColor);
             }
+            
+            writer.add(reader);
+            
+        } catch (Exception e) {
+            throw new ExcelHandlingException("failed to process the entry : " + source, e);
+        }
+    }
+    
+    private void processWorksheetEntryClearTab(
+            FileSystem inFs,
+            FileSystem outFs,
+            String source)
+            throws ExcelHandlingException {
+        
+        try (InputStream is = Files.newInputStream(inFs.getPath(source));
+                OutputStream os = Files.newOutputStream(outFs.getPath(source),
+                        StandardOpenOption.TRUNCATE_EXISTING)) {
+            
+            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+            
+            // 不要な要素を除去するリーダーを追加
+            reader = FilteringReader.builder(reader)
+                    //.addFilter(QNAME.SHEET_PR, QNAME.TAB_COLOR)
+                    .addFilter(QNAME.SHEET_PR)
+                    .addFilter(QNAME.CONDITIONAL_FORMATTING)
+                    .build();
             
             writer.add(reader);
             

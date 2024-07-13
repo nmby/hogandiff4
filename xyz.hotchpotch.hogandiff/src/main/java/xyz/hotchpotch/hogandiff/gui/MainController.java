@@ -32,8 +32,8 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
-import xyz.hotchpotch.hogandiff.Stats;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.Stats;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
@@ -338,7 +338,6 @@ public class MainController extends VBox {
     }
     
     // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
-    // FIXME: タスクの結果に応じて精緻に判定を行うように修正する
     private void alertPasswordUnlocked() {
         if (isPasswordUsed()) {
             new Alert(
