@@ -291,9 +291,9 @@ public class SettingKeys {
             Boolean::valueOf,
             true);
     
-    /** レポートオプション：比較結果が記載されたテキストを表示するか */
-    public static final Key<Boolean> SHOW_RESULT_TEXT = new Key<>(
-            "report.showResultText",
+    /** レポートオプション：比較結果レポート（Excelブック）を表示するか */
+    public static final Key<Boolean> SHOW_RESULT_REPORT = new Key<>(
+            "report.showResultText", // 互換性のためキー文字列は変更しない
             () -> true,
             String::valueOf,
             Boolean::valueOf,

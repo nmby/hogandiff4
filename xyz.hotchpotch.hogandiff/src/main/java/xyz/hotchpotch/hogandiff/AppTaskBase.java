@@ -437,7 +437,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
+            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
                 str.append(rb.getString("CompareBooksTask.080")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
