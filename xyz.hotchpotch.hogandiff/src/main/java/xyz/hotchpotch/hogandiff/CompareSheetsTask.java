@@ -48,12 +48,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 0. 処理開始のアナウンス
             announceStart(0, 0);
             
-            // 2. シート同士の比較
+            // 1. シート同士の比較
             BookResult bResult = compareSheets(0, 75);
             
             Exception failed = null;
             
-            // 3. 差分箇所への着色と表示
+            // 2. 差分箇所への着色と表示
             try {
                 BookComparison bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                 paintSaveAndShowBook(workDir, bookComparison.parentBookInfoPair()
@@ -62,7 +62,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 failed = e;
             }
             
-            // 4. 比較結果レポート（Excelブック）の保存と表示
+            // 3. 比較結果レポート（Excelブック）の保存と表示
             try {
                 createSaveAndShowReportBook(workDir, bResult, 95, 98);
             } catch (Exception e) {

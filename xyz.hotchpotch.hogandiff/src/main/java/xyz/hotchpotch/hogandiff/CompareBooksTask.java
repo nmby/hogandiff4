@@ -52,17 +52,45 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             // 1. シート同士の比較
             BookResult bResult = compareSheets(3, 75);
             
-            // 2. 比較結果の表示（テキスト）
-            saveResultText(workDir, bResult.toString(), 75, 80);
-            createSaveAndShowReportBook(workDir, bResult, 75, 80);
+            Exception failed = null;
             
-            // 3. 比較結果の表示（Excelブック）
-            BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            paintSaveAndShowBook(workDir, bookComparison.parentBookInfoPair()
-                    .map(BookInfo::bookPath), bResult, 80, 98);
+            // 2. 差分箇所への着色と表示
+            try {
+                BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                paintSaveAndShowBook(workDir, bookComparison.parentBookInfoPair()
+                        .map(BookInfo::bookPath), bResult, 75, 95);
+            } catch (Exception e) {
+                failed = e;
+            }
             
-            // 4. 処理終了のアナウンス
+            // 3. 比較結果レポート（Excelブック）の保存と表示
+            try {
+                createSaveAndShowReportBook(workDir, bResult, 95, 98);
+            } catch (Exception e) {
+                if (failed == null) {
+                    failed = e;
+                } else {
+                    failed.addSuppressed(e);
+                }
+            }
+            
+            // 4. 比較結果レポート（テキスト）の保存
+            try {
+                saveResultText(workDir, bResult.toString(), 98, 99);
+            } catch (Exception e) {
+                if (failed == null) {
+                    failed = e;
+                } else {
+                    failed.addSuppressed(e);
+                }
+            }
+            
+            // 5. 処理終了のアナウンス
             announceEnd();
+            
+            if (failed != null) {
+                throw failed;
+            }
             
             return bResult;
             
