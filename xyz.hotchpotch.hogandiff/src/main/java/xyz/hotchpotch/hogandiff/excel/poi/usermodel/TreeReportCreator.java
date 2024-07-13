@@ -39,7 +39,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class TreeResultBookCreator {
+public class TreeReportCreator {
     
     // [static members] ********************************************************
     

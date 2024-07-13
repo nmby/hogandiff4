@@ -32,7 +32,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class BookResultBookCreator {
+public class BookReportCreator {
     
     // [static members] ********************************************************
     
