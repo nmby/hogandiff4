@@ -161,12 +161,6 @@ public class BookReportCreator {
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.040"));
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.050"));
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_RROWS_TITLE, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.060"));
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_RCOLS_TITLE, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.070"));
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_DCELLS_TITLE, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.080"));
     }
     
     private int outputSheetResult(
@@ -186,24 +180,32 @@ public class BookReportCreator {
                         : rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
         rowIdx++;
         
+        // 比較対象なしの場合はシート名タイトルのみ出力する。
         if (!sheetNamePair.isPaired()) {
             return rowIdx;
         }
         
+        // 比較結果なしの場合は「失敗」の旨を出力する。
         if (sheetResult == null) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_FAILED, rowIdx);
             rowIdx++;
             return rowIdx;
         }
         
+        // 差分なしの場合は「差分なし」の旨を出力する。
         if (!sheetResult.hasDiff()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_NO_DIFF, rowIdx);
             rowIdx++;
             return rowIdx;
         }
         
+        // 余剰行ありの場合
         if (!sheetResult.redundantRows().a().isEmpty() || !sheetResult.redundantRows().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE, rowIdx);
+            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
+                    rb.getString("excel.poi.usermodel.BookResultBookCreator.060").formatted(
+                            sheetResult.redundantRows().a().size(),
+                            sheetResult.redundantRows().b().size()));
             rowIdx++;
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE + 1, rowIdx);
             
@@ -214,8 +216,13 @@ public class BookReportCreator {
             rowIdx++;
         }
         
+        // 余剰列ありの場合
         if (!sheetResult.redundantColumns().a().isEmpty() || !sheetResult.redundantColumns().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE, rowIdx);
+            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
+                    rb.getString("excel.poi.usermodel.BookResultBookCreator.070").formatted(
+                            sheetResult.redundantColumns().a().size(),
+                            sheetResult.redundantColumns().b().size()));
             rowIdx++;
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE + 1, rowIdx);
             
@@ -226,8 +233,12 @@ public class BookReportCreator {
             rowIdx++;
         }
         
+        // 差分セルありの場合
         if (!sheetResult.diffCells().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE, rowIdx);
+            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
+                    rb.getString("excel.poi.usermodel.BookResultBookCreator.080").formatted(
+                            sheetResult.diffCells().size()));
             rowIdx++;
             
             for (Pair<CellData> pair : sheetResult.diffCells()) {
