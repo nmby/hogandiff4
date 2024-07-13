@@ -78,7 +78,7 @@ public class CommonUtil {
      * @throws IllegalArgumentException
      *              指定されたクラスに {@link SheetHandler} アノテーションが付与されていない場合
      */
-    // FIXME: [No.1 シート識別不正] 「ありうる種類」とか「扱えそう」とかの部分をどうにかしたい orz...
+    // FIXME: [No.01 シート識別不正] 「ありうる種類」とか「扱えそう」とかの部分をどうにかしたい orz...
     public static boolean isSupportedSheetType(
             Class<?> clazz,
             Set<SheetType> possibleTypes) {

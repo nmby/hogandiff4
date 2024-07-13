@@ -321,7 +321,7 @@ public class SaxUtil {
      * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    // FIXME: 読み取りパスワード付きExcelファイルに対応できるようにする
+    // FIXME: [No.08 読取PW対応] 読み取りパスワード付きExcelファイルに対応できるようにする
     public static List<SheetInfo> loadSheetInfo(
             Path bookPath,
             String readPassword)
@@ -372,7 +372,7 @@ public class SaxUtil {
      * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    // FIXME: 読み取りパスワード付きExcelファイルに対応できるようにする
+    // FIXME: [No.08 読取PW対応] 読み取りパスワード付きExcelファイルに対応できるようにする
     public static List<String> loadSharedStrings(
             Path bookPath,
             String readPassword)

@@ -179,7 +179,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 }
                 
                 if (dirInfoPair.isPaired()) {
-                    // FIXME: この辺の見通しが非常に悪いので改善する
+                    // FIXME: [No.X 内部実装改善] この辺の見通しが非常に悪いので改善する
                     DirResult dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
@@ -190,7 +190,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     dirResults.put(dirInfoPair, Optional.of(dirResult));
                     
                 } else {
-                    // FIXME: 片フォルダの場合も内部のファイルをコピーする
+                    // FIXME: [No.11 機能改善] 片フォルダの場合も内部のファイルをコピーする
                     dirResults.put(dirInfoPair, Optional.empty());
                     str.append(BR);
                     updateMessage(str.toString());

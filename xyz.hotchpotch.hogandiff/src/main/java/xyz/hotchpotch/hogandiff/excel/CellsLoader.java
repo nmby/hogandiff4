@@ -61,7 +61,7 @@ public interface CellsLoader {
                             () -> new CellsLoaderWithPoiUserApi(converter)))
                     : new CellsLoaderWithPoiUserApi(converter);
         
-            // FIXME: [No.2 .xlsbのサポート]
+            // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
             default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };

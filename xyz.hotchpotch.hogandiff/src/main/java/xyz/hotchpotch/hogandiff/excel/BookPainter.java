@@ -59,7 +59,7 @@ public interface BookPainter {
         
         return switch (BookType.of(bookPath)) {
             case XLS -> CombinedBookPainter.of(List.of(
-                    // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
+                    // FIXME: [No.03 着色関連] 形式特化型ペインターも実装して追加する
                     () -> new BookPainterWithPoiUserApi(
                             redundantColor,
                             diffColor,
@@ -87,7 +87,7 @@ public interface BookPainter {
                             diffSheetColor,
                             sameSheetColor)));
         
-            // FIXME: [No.2 .xlsbのサポート]
+            // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
             default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };

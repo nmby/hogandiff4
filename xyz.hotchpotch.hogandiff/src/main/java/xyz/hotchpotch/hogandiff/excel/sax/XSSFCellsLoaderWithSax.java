@@ -42,7 +42,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
  *
  * @author nmby
  */
-// FIXME: このローダーが読み取りパスワード付きExcelファイルに対応できるようにする
+// FIXME: [No.08 読取PW対応] このローダーが読み取りパスワード付きExcelファイルに対応できるようにする
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class XSSFCellsLoaderWithSax implements CellsLoader {

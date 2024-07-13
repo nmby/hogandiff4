@@ -44,7 +44,7 @@ public interface BookLoader {
                     () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
                     () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
         
-            // FIXME: [No.2 .xlsbのサポート]
+            // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
             default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };

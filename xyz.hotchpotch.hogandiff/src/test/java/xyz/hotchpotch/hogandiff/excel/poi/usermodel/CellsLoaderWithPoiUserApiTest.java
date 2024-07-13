@@ -106,14 +106,14 @@ class CellsLoaderWithPoiUserApiTest {
                 ExcelHandlingException.class,
                 () -> testee.loadCells(test1_xlsm, null, "A2_グラフ"));
         assertThrows(
-                // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か、Apache POI ユーザーモデルAPIでは
+                // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か、Apache POI ユーザーモデルAPIでは
                 // .xlsm 形式のExcelブックからダイアログシートを読み込めない。
                 // そのため「当該シート無し」と判定され、
                 // 結果的には目的通りの ExcelHandlingException がスローされる。
                 ExcelHandlingException.class,
                 () -> testee.loadCells(test1_xlsm, null, "A3_ダイアログ"));
         assertThrows(
-                // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か、Apache POI ユーザーモデルAPIでは
+                // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か、Apache POI ユーザーモデルAPIでは
                 // .xlsm 形式のExcelブックからマクロシートを読み込めない。
                 // そのため「当該シート無し」と判定され、
                 // 結果的には目的通りの ExcelHandlingException がスローされる。

@@ -163,7 +163,7 @@ public class MainController extends VBox {
      * {@link #sheetComparisonProp} プロパティにデータソースをバインドします。<br>
      */
     // こんなメソッドをpublicにするのはいくらなんでもおかしい。
-    // TODO: 処理構成を見直す
+    // FIXME: [No.X 内部実装改善] 処理構成を見直す
     public void bindSheetComparisonProp() {
         sheetComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
@@ -413,7 +413,7 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
-        // FIXME: createWorkDirもTaskの中に入れるべき
+        // FIXME: [No.X 内部実装改善] createWorkDirもTaskの中に入れるべき
         Path workDir = createWorkDir(ar.settings());
         if (workDir == null) {
             new Alert(

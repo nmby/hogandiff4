@@ -119,7 +119,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     
     @Override
     protected void seekNext() throws XMLStreamException {
-        // FIXME: [No.91 内部実装改善] 我ながらチョー読みにくいのでどうにかしたい
+        // FIXME: [No.X 内部実装改善] 我ながらチョー読みにくいのでどうにかしたい
         
         if (auto || !source.hasNext()) {
             return;
