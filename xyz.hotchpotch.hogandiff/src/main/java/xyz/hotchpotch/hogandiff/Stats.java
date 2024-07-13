@@ -352,7 +352,7 @@ public abstract sealed class Stats
             str.append(booleanProperty("considerColumnGaps", SettingKeys.CONSIDER_COLUMN_GAPS)).append(COMMA);
             str.append(booleanProperty("compareOnFormula", SettingKeys.COMPARE_ON_FORMULA_STRING)).append(COMMA);
             str.append(booleanProperty("showPaintedSheets", SettingKeys.SHOW_PAINTED_SHEETS)).append(COMMA);
-            str.append(booleanProperty("showResultText", SettingKeys.SHOW_RESULT_TEXT)).append(COMMA);
+            str.append(booleanProperty("showResultText", SettingKeys.SHOW_RESULT_REPORT)).append(COMMA);
             str.append(booleanProperty("exitWhenFinished", SettingKeys.EXIT_WHEN_FINISHED)).append(COMMA);
             str.append(booleanProperty("prioritizeSpeed", SettingKeys.PRIORITIZE_SPEED));
         }

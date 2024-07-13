@@ -182,6 +182,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                             ? minSize + 2
                             : sumSize - n + 2;
             
+            // TODO: ループごとにメモリ領域を確保するのではなく使い回す方式に変更する
             accCosts0 = new long[sliceLen];
             comeFrom0 = new ComeFrom[sliceLen];
             

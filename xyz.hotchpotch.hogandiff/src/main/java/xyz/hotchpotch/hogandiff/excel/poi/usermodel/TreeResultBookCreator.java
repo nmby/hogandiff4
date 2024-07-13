@@ -41,7 +41,7 @@ public class TreeResultBookCreator {
     
     // [static members] ********************************************************
     
-    private static final String templateBookName = "result.xlsx";
+    private static final String templateBookName = "result_tree.xlsx";
     private static final String sheetName = "result";
     
     private static final int ROW_LIST_TEMPLATE = 4;
@@ -210,26 +210,26 @@ public class TreeResultBookCreator {
             Path workDir,
             TreeResult treeResult) {
         
-        PoiUtil.setCellValue(sheet, 0, 1,
+        PoiUtil.setCellValue(sheet, 0, 4,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 1, 1,
+        PoiUtil.setCellValue(sheet, 1, 4,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.B));
-        PoiUtil.setCellValue(sheet, 2, 1,
+        PoiUtil.setCellValue(sheet, 2, 4,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
         
         Path topDirA = treeResult.flattenDirComparison().parentDirInfoPair().a().dirPath();
         Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
         linkA.setAddress(sanitize(topDirA));
-        PoiUtil.setCellValue(sheet, 0, 2, topDirA.toString()).setHyperlink(linkA);
+        PoiUtil.setCellValue(sheet, 0, 5, topDirA.toString()).setHyperlink(linkA);
         
         Path topDirB = treeResult.flattenDirComparison().parentDirInfoPair().b().dirPath();
         Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
         linkB.setAddress(sanitize(topDirB));
-        PoiUtil.setCellValue(sheet, 1, 2, topDirB.toString()).setHyperlink(linkB);
+        PoiUtil.setCellValue(sheet, 1, 5, topDirB.toString()).setHyperlink(linkB);
         
         Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
         linkW.setAddress(sanitize(workDir));
-        PoiUtil.setCellValue(sheet, 2, 2, workDir.toString()).setHyperlink(linkW);
+        PoiUtil.setCellValue(sheet, 2, 5, workDir.toString()).setHyperlink(linkW);
     }
     
     private void outputDirLine(

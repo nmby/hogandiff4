@@ -95,7 +95,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
-        applicator.accept(SettingKeys.SHOW_RESULT_TEXT, showResultTextCheckBox::setSelected);
+        applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
         applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
         
@@ -106,7 +106,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
         addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
         addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
-        addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_TEXT);
+        addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
         
         compareValuesOrFormulas.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar

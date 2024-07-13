@@ -590,15 +590,103 @@ public class PoiUtil {
      * @param value 設定する値
      * @return セルオブジェクト
      */
-    public static Cell setCellValue(
-            Sheet sheet,
-            int r,
-            int c,
-            String value) {
-        
+    // 醜いオーバーロードだ・・
+    public static Cell setCellValue(Sheet sheet, int r, int c, String value) {
         Cell cell = getCell(sheet, r, c);
         cell.setCellValue(value);
         return cell;
+    }
+    
+    /**
+     * シート上の指定した位置のセルに値を設定します。<br>
+     * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
+     * 
+     * @param sheet シート
+     * @param r 行インデックス（0開始）
+     * @param c 列インデックス（0開始）
+     * @param value 設定する値
+     * @return セルオブジェクト
+     */
+    // 醜いオーバーロードだ・・
+    public static Cell setCellValue(Sheet sheet, int r, int c, double value) {
+        Cell cell = getCell(sheet, r, c);
+        cell.setCellValue(value);
+        return cell;
+    }
+    
+    /**
+     * シート上の指定した位置のセルに値を設定します。<br>
+     * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
+     * 
+     * @param sheet シート
+     * @param r 行インデックス（0開始）
+     * @param c 列インデックス（0開始）
+     * @param value 設定する値
+     * @return セルオブジェクト
+     */
+    // 醜いオーバーロードだ・・
+    public static Cell setCellValue(Sheet sheet, int r, int c, LocalDateTime value) {
+        Cell cell = getCell(sheet, r, c);
+        cell.setCellValue(value);
+        return cell;
+    }
+    
+    /**
+     * シート上の指定された行の内容を指定された行にコピーします。<br>
+     * 現在のバージョンでは次の内容をコピーします。<br>
+     *  - セルのスタイル
+     *  - セルの内容
+     * これ以外の内容はコピーしませんのでご注意ください。<br>
+     * 
+     * @param sheet シート
+     * @param srcRowNo コピー元行番号
+     * @param dstRowNo コピー先行番号
+     * @return コピー先の行
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
+    public static Row copyRow(
+            Sheet sheet,
+            int srcRowNo,
+            int dstRowNo) {
+        
+        Objects.requireNonNull(sheet);
+        
+        Row srcRow = sheet.getRow(srcRowNo);
+        Row dstRow = sheet.getRow(dstRowNo);
+        
+        if (dstRow != null) {
+            sheet.removeRow(dstRow);
+        }
+        dstRow = sheet.createRow(dstRowNo);
+        
+        Iterator<Cell> itr = srcRow.cellIterator();
+        while (itr.hasNext()) {
+            Cell srcCell = itr.next();
+            Cell dstCell = dstRow.createCell(srcCell.getColumnIndex(), srcCell.getCellType());
+            
+            // スタイルの設定
+            dstCell.setCellStyle(srcCell.getCellStyle());
+            
+            // セル値の設定
+            copyCellValue(srcCell, dstCell);
+        }
+        return null;
+    }
+    
+    private static void copyCellValue(Cell srcCell, Cell dstCell) {
+        switch (srcCell.getCellType()) {
+            case BOOLEAN -> dstCell.setCellValue(srcCell.getBooleanCellValue());
+            case ERROR -> dstCell.setCellErrorValue(srcCell.getErrorCellValue());
+            case FORMULA -> dstCell.setCellFormula(srcCell.getCellFormula());
+            case NUMERIC -> dstCell.setCellValue(srcCell.getNumericCellValue());
+            case STRING -> dstCell.setCellValue(srcCell.getStringCellValue());
+            case BLANK, _NONE -> {
+                //nop
+            }
+            default -> {
+                //nop
+            }
+        }
     }
     
     // [instance members] ******************************************************

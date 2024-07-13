@@ -161,8 +161,16 @@ public record CellData(
     
     @Override
     public String toString() {
-        return "%s: %s%s".formatted(
-                address(),
+        return "%s: %s".formatted(address(), dataString());
+    }
+    
+    /**
+     * セル内容とセルコメントの文字列表現を返します。<br>
+     * 
+     * @return セル内容とセルコメントの文字列表現
+     */
+    public String dataString() {
+        return "%s%s".formatted(
                 content,
                 comment == null ? "" : " [comment: " + comment + "]");
     }
