@@ -144,7 +144,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         consentHelpHyperlink.setOnAction(event -> {
             try {
                 // 一旦、v0.21.1新機能紹介ページに飛ばすことにしておく。
-                // TODO: 恒久的な説明ページを作成しリンク先を変更する
+                // FIXME: [No.X Webサイト改善] 恒久的な説明ページを作成しリンク先を変更する
                 String url = "https://hogandiff.hotchpotch.xyz/releasenotes/v0-21-1/";
                 Desktop.getDesktop().browse(URI.create(url));
             } catch (Exception e) {

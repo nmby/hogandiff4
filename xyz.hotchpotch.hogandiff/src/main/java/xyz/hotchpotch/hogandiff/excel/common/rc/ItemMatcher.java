@@ -43,7 +43,6 @@ import xyz.hotchpotch.hogandiff.util.Pair;
         }
         
         Comparator<CellData> horizontalComparator = considerHGaps
-                // TODO: セルコメント加味の要否について再検討する。
                 ? Comparator.comparing(CellData::content)
                 : Comparator.comparingInt(horizontal);
         

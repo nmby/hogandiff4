@@ -18,9 +18,6 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
  *
  * @author nmby
  */
-// FIXME: [No.92 ドキュメント改善] 要お勉強
-// 副作用があっても「関数型インタフェース」と言って良いのかしら？？
-// Consumer も同じだから、良いのかな？？
 @FunctionalInterface
 public interface BookPainter {
     
@@ -62,7 +59,7 @@ public interface BookPainter {
         
         return switch (BookType.of(bookPath)) {
             case XLS -> CombinedBookPainter.of(List.of(
-                    // FIXME: [No.3 着色関連] 形式特化型ペインターも実装して追加する
+                    // FIXME: [No.03 着色関連] 形式特化型ペインターも実装して追加する
                     () -> new BookPainterWithPoiUserApi(
                             redundantColor,
                             diffColor,
@@ -90,7 +87,7 @@ public interface BookPainter {
                             diffSheetColor,
                             sameSheetColor)));
         
-            // FIXME: [No.2 .xlsbのサポート]
+            // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);
             default -> throw new AssertionError("unknown book type: " + BookType.of(bookPath));
         };

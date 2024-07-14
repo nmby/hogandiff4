@@ -296,8 +296,9 @@ public class PaintColumnsReader extends BufferingReader {
         attrs.add(eventFactory.createAttribute(NONS_QNAME.MIN, Integer.toString(start + 1)));
         attrs.add(eventFactory.createAttribute(NONS_QNAME.MAX, Integer.toString(end + 1)));
         attrs.add(eventFactory.createAttribute(NONS_QNAME.STYLE, Integer.toString(newStyle)));
-        // FIXME: [No.7 POI関連] 列幅のデフォルト値をどっから取ってくるべきなのか要確認
-        attrs.add(eventFactory.createAttribute(NONS_QNAME.WIDTH, "9"));
+        // Excelのデフォルトの列幅は 8.47 らしいが、"8.47" を指定するとより狭い幅になってしまい、
+        // "9.1" を指定すると 8.47 になる。Apache POI は魔訶不識である。
+        attrs.add(eventFactory.createAttribute(NONS_QNAME.WIDTH, "9.1"));
         
         buffer.add(eventFactory.createStartElement(QNAME.COL, attrs.iterator(), null));
         buffer.add(eventFactory.createEndElement(QNAME.COL, null));

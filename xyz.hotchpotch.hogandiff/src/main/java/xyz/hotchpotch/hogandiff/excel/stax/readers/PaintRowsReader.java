@@ -121,10 +121,6 @@ public class PaintRowsReader extends BufferingReader {
                 : targetRows.peek();
         
         if (sourceRow < targetRow) {
-            // この処理が何故必要なのか忘れてしまった・・ orz
-            // この処理が必要ならば、considerRowGaps==false の場合も実行すべきな気がする。
-            // あるいは、おおもとのスタイルの削除処理かこの処理かのどちらか一方があればよいのかもしれない。
-            // TODO: 必要性を確認して不要ならば削除する
             if (rowStart.getAttributeByName(NONS_QNAME.CUSTOM_FORMAT) != null) {
                 buffer.add(removeCustomFormat(rowStart));
                 source.nextEvent();

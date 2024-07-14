@@ -207,7 +207,6 @@ public class ItemMatcherImpl2 implements ItemMatcher {
                 } else if (0 < comp) {
                     cost += weightsB[horizontal.applyAsInt(cell2)];
                 } else if (!cell1.contentEquals(cell2)) {
-                    // TODO: セルコメント加味の要否について再検討する。
                     cost += weightsA[horizontal.applyAsInt(cell1)] + weightsB[horizontal.applyAsInt(cell2)];
                 }
             }

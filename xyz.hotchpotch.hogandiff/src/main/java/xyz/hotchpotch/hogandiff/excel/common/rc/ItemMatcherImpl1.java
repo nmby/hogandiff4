@@ -66,7 +66,6 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                 } else if (0 < comp) {
                     cost++;
                 } else if (!cell1.contentEquals(cell2)) {
-                    // TODO: セルコメント加味の要否について再検討する。
                     cost += 2;
                 }
             }

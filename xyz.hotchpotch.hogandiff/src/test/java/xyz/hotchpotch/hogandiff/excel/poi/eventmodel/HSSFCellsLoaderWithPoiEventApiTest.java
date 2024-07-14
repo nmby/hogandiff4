@@ -104,7 +104,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         assertThrows(
                 ExcelHandlingException.class,
                 () -> testee.loadCells(test1_xls, null, "A2_グラフ"));
-        // FIXME: [No.1 シート識別不正 - usermodel] どういう訳かダイアログシートとワークシートを見分けられない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳かダイアログシートとワークシートを見分けられない。
         //assertThrows(
         //        ExcelHandlingException.class,
         //        () -> testee.loadCells(test1_xls, "A3_ダイアログ"));
@@ -124,7 +124,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     void testLoadCells_例外系_チェック例外2() {
         CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(false);
         
-        // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
+        // FIXME: [No.04 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
                 ExcelHandlingException.class,
                 () -> testee.loadCells(test3_xls, null, "A_バリエーション"));
@@ -202,7 +202,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         
         assertEquals(
                 List.of(
-                        // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
+                        // FIXME: [No.05 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
                         new CellData(13, 2, "日付", null),
                         //CellReplica.of(13, 3, "2019/7/28", null),
                         new CellData(13, 3, "43674", null),
@@ -245,7 +245,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
         
         assertEquals(
                 List.of(
-                        // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
+                        // FIXME: [No.05 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
                         new CellData(28, 2, "数式（日付）", null),
                         //CellReplica.of(28, 3, "2019/7/28", null),
                         new CellData(28, 3, "43674", null),
@@ -259,7 +259,7 @@ class HSSFCellsLoaderWithPoiEventApiTest {
     void testLoadCells_正常系3_バリエーション_数式抽出() throws ExcelHandlingException {
         CellsLoader testee = new HSSFCellsLoaderWithPoiEventApi(false);
         
-        // FIXME: [No.4 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
+        // FIXME: [No.04 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
         assertThrows(
                 ExcelHandlingException.class,
                 () -> testee.loadCells(test3_xls, null, "A_バリエーション"));

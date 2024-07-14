@@ -155,7 +155,7 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(1, 2, "数値：整数", null),
                         new CellData(1, 3, "1234567890", null),
                         new CellData(2, 2, "数値：小数", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(2, 3, "3.141592", null),
                         new CellData(2, 3, "3.1415920000000002", null),
                         new CellData(3, 2, "文字列", null),
@@ -186,12 +186,12 @@ class XSSFCellsLoaderWithSaxTest {
         
         assertEquals(
                 List.of(
-                        // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
+                        // FIXME: [No.05 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
                         new CellData(13, 2, "日付", null),
                         //CellReplica.of(13, 3, "2019/7/28", null),
                         new CellData(13, 3, "43674", null),
                         new CellData(14, 2, "時刻", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(14, 3, "13:47", null),
                         new CellData(14, 3, "0.57430555555555551", null)),
                 actual.subList(24, 28));
@@ -201,7 +201,7 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(16, 2, "数式（数値：整数）", null),
                         new CellData(16, 3, "31400", null),
                         new CellData(17, 2, "数式（数値：小数）", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         new CellData(17, 3, "3.3333333333333335", null),
                         new CellData(18, 2, "数式（文字列）", null),
                         new CellData(18, 3, "TRUEだよ", null),
@@ -231,12 +231,12 @@ class XSSFCellsLoaderWithSaxTest {
         
         assertEquals(
                 List.of(
-                        // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
+                        // FIXME: [No.05 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
                         new CellData(28, 2, "数式（日付）", null),
                         //CellReplica.of(28, 3, "2019/7/28", null),
                         new CellData(28, 3, "43674", null),
                         new CellData(29, 2, "数式（時刻）", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(29, 3, "12:47", null)),
                         new CellData(29, 3, "0.53263888888888888", null)),
                 actual.subList(52, 56));
@@ -265,7 +265,7 @@ class XSSFCellsLoaderWithSaxTest {
                         new CellData(1, 2, "数値：整数", null),
                         new CellData(1, 3, "1234567890", null),
                         new CellData(2, 2, "数値：小数", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(2, 3, "3.141592", null),
                         new CellData(2, 3, "3.1415920000000002", null),
                         new CellData(3, 2, "文字列", null),
@@ -296,12 +296,12 @@ class XSSFCellsLoaderWithSaxTest {
         
         assertEquals(
                 List.of(
-                        // FIXME: [No.5 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
+                        // FIXME: [No.05 日付と時刻の扱い改善] 日付と時刻が数値フォーマットで取得されてしまう。
                         new CellData(13, 2, "日付", null),
                         //CellReplica.of(13, 3, "2019/7/28", null),
                         new CellData(13, 3, "43674", null),
                         new CellData(14, 2, "時刻", null),
-                        // FIXME: [No.6 小数の扱い改善] 小数精度は仕方ないのかな？
+                        // FIXME: [No.06 小数の扱い改善] 小数精度は仕方ないのかな？
                         //CellReplica.of(14, 3, "13:47", null),
                         new CellData(14, 3, "0.57430555555555551", null)),
                 actual.subList(24, 28));

@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookResult;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
@@ -57,15 +60,20 @@ public class TreeReportCreator {
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
     
-    // こんなの絶対標準APIにあるはずだけど見つけられていない・・・
-    // TODO: 実装改善（標準APIを利用する）
     private static String sanitize(Path path) {
-        return path.toString().replace("\\", "/").replace(" ", "%20");
+        try {
+            URI uri = path.toAbsolutePath().toUri();
+            return uri.toString().replaceFirst("file:///", "");
+            
+        } catch (Exception e) {
+            return path.toString().replace("\\", "/").replace(" ", "%20");
+        }
     }
     
     // [instance members] ******************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     /**
      * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
@@ -223,8 +231,8 @@ public class TreeReportCreator {
         PoiUtil.setCellValue(sheet, 3, 4,
                 rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.B));
         
-        // TODO: フォルダ名から日時取るのはスマートじゃないので改善する
-        LocalDateTime localDateTime = LocalDateTime.parse(workDir.getFileName().toString(), formatter);
+        String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
         PoiUtil.setCellValue(sheet, 0, 5, localDateTime);
         
         Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
