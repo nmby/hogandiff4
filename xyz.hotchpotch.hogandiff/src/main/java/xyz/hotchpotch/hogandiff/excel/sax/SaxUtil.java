@@ -388,9 +388,13 @@ public class SaxUtil {
                     String id = sheetNameAndId.id;
                     SheetType type = handler2.idToType.get(id);
                     String source = handler2.idToSource.get(id);
+                    String commentSource = null;
+                    String vmlDrawingSource = null;
                     Handler3 handler3 = handler3s.get(Handler3.entryFor(source));
-                    String commentSource = handler3.commentSource;
-                    String vmlDrawingSource = handler3.vmlDrawingSource;
+                    if (handler3 != null) {
+                        commentSource = handler3.commentSource;
+                        vmlDrawingSource = handler3.vmlDrawingSource;
+                    }
                     
                     return new SheetInfo(
                             sheetName,
