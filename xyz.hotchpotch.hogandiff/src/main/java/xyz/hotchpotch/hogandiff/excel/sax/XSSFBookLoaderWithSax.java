@@ -9,6 +9,7 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -75,7 +76,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try {
-            List<SheetInfo> sheets = SaxUtil.loadSheetInfo(bookPath, readPassword);
+            List<SheetInfo> sheets = SaxUtil.loadSheetInfos(bookPath, readPassword);
             
             List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
@@ -83,6 +84,9 @@ public class XSSFBookLoaderWithSax implements BookLoader {
                     .toList();
             
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
+            
+        } catch (PasswordHandlingException e) {
+            return BookInfo.ofNeedsPassword(bookPath);
             
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);

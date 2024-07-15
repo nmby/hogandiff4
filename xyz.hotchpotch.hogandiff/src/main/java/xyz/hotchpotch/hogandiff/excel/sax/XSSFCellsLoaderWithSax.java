@@ -310,7 +310,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         }
         
         if (nameToInfo == null) {
-            nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
+            nameToInfo = SaxUtil.loadSheetInfos(bookPath, readPassword).stream()
                     .collect(Collectors.toMap(
                             SheetInfo::sheetName,
                             Function.identity()));

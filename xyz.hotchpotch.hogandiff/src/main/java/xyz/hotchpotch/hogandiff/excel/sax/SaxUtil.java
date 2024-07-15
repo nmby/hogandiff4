@@ -16,14 +16,20 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.poi.poifs.crypt.Decryptor;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.excel.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -293,8 +299,7 @@ public class SaxUtil {
      * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
-    // FIXME: [No.08 読取PW対応] 読み取りパスワード付きExcelファイルに対応できるようにする
-    public static List<SheetInfo> loadSheetInfo(
+    public static List<SheetInfo> loadSheetInfos(
             Path bookPath,
             String readPassword)
             throws ExcelHandlingException {
@@ -303,60 +308,99 @@ public class SaxUtil {
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, BookType.of(bookPath));
         
-        try (InputStream is = Files.newInputStream(bookPath);
-                ZipInputStream zis = new ZipInputStream(is)) {
-            
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            ZipEntry entry;
-            Handler1 handler1 = new Handler1();
-            Handler2 handler2 = new Handler2();
-            Map<String, Handler3> handler3s = new HashMap<>();
-            
-            // SAXParser#parseが勝手にソースzisを閉じてしまうっぽいので、
-            // IgnoreCloseInputStream なるラッパーを導入した。
-            // 糞がッッッ
-            // see: https://stackoverflow.com/questions/53690819/java-io-ioexception-stream-closed-zipinputstream
-            InputStream ignoreCloseZip = new IgnoreCloseInputStream(zis);
-            
-            while ((entry = zis.getNextEntry()) != null) {
-                if (Handler1.isTarget(entry.getName())) {
-                    parser.parse(ignoreCloseZip, handler1);
+        if (readPassword == null) {
+            try (InputStream is = Files.newInputStream(bookPath);
+                    ZipInputStream zis = new ZipInputStream(is)) {
+                
+                List<SheetInfo> sheetInfos = loadSheetInfos2(zis);
+                if (sheetInfos.size() == 0) {
+                    // 大変雑ではあるが、例外がスローされずしかしシート情報を読み込めなかった場合は
+                    // 読取パスワードで保護されているのだと見做してしまう。
+                    throw new PasswordHandlingException();
                 }
-                if (Handler2.isTarget(entry.getName())) {
-                    parser.parse(ignoreCloseZip, handler2);
-                }
-                if (Handler3.isTarget(entry.getName())) {
-                    Handler3 handler3 = new Handler3();
-                    parser.parse(ignoreCloseZip, handler3);
-                    handler3s.put(entry.getName(), handler3);
-                }
+                return sheetInfos;
+                
+            } catch (ExcelHandlingException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new ExcelHandlingException(
+                        "failed to load the book : %s".formatted(bookPath), e);
             }
             
-            return handler1.sheetNameAndId.stream()
-                    .map(sheetNameAndId -> {
-                        String sheetName = sheetNameAndId.sheetName;
-                        String id = sheetNameAndId.id;
-                        SheetType type = handler2.idToType.get(id);
-                        String source = handler2.idToSource.get(id);
-                        Handler3 handler3 = handler3s.get(Handler3.entryFor(source));
-                        String commentSource = handler3.commentSource;
-                        String vmlDrawingSource = handler3.vmlDrawingSource;
-                        
-                        return new SheetInfo(
-                                sheetName,
-                                id,
-                                type,
-                                source,
-                                commentSource,
-                                vmlDrawingSource);
-                    })
-                    .toList();
-            
-        } catch (Exception e) {
-            throw new ExcelHandlingException(
-                    "failed to load the book : %s".formatted(bookPath), e);
+        } else {
+            try (InputStream is = Files.newInputStream(bookPath);
+                    POIFSFileSystem poifs = new POIFSFileSystem(is)) {
+                
+                EncryptionInfo encInfo = new EncryptionInfo(poifs);
+                Decryptor decryptor = Decryptor.getInstance(encInfo);
+                if (!decryptor.verifyPassword(readPassword)) {
+                    throw new PasswordHandlingException();
+                }
+                
+                try (InputStream decryptedIs = decryptor.getDataStream(poifs);
+                        ZipInputStream zis = new ZipInputStream(decryptedIs)) {
+                    
+                    return loadSheetInfos2(zis);
+                }
+                
+            } catch (ExcelHandlingException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new ExcelHandlingException(
+                        "failed to load the book : %s".formatted(bookPath), e);
+            }
         }
+    }
+    
+    private static List<SheetInfo> loadSheetInfos2(ZipInputStream zis)
+            throws ParserConfigurationException, SAXException, IOException {
+        
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        ZipEntry entry;
+        Handler1 handler1 = new Handler1();
+        Handler2 handler2 = new Handler2();
+        Map<String, Handler3> handler3s = new HashMap<>();
+        
+        // SAXParser#parseが勝手にソースzisを閉じてしまうっぽいので、
+        // IgnoreCloseInputStream なるラッパーを導入した。
+        // 糞がッッッ
+        // see: https://stackoverflow.com/questions/53690819/java-io-ioexception-stream-closed-zipinputstream
+        InputStream ignoreCloseZip = new IgnoreCloseInputStream(zis);
+        
+        while ((entry = zis.getNextEntry()) != null) {
+            if (Handler1.isTarget(entry.getName())) {
+                parser.parse(ignoreCloseZip, handler1);
+            }
+            if (Handler2.isTarget(entry.getName())) {
+                parser.parse(ignoreCloseZip, handler2);
+            }
+            if (Handler3.isTarget(entry.getName())) {
+                Handler3 handler3 = new Handler3();
+                parser.parse(ignoreCloseZip, handler3);
+                handler3s.put(entry.getName(), handler3);
+            }
+        }
+        
+        return handler1.sheetNameAndId.stream()
+                .map(sheetNameAndId -> {
+                    String sheetName = sheetNameAndId.sheetName;
+                    String id = sheetNameAndId.id;
+                    SheetType type = handler2.idToType.get(id);
+                    String source = handler2.idToSource.get(id);
+                    Handler3 handler3 = handler3s.get(Handler3.entryFor(source));
+                    String commentSource = handler3.commentSource;
+                    String vmlDrawingSource = handler3.vmlDrawingSource;
+                    
+                    return new SheetInfo(
+                            sheetName,
+                            id,
+                            type,
+                            source,
+                            commentSource,
+                            vmlDrawingSource);
+                })
+                .toList();
     }
     
     /**
