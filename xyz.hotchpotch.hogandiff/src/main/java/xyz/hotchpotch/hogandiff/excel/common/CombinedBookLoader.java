@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.excel.BookLoader;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 
@@ -77,23 +76,21 @@ public class CombinedBookLoader implements BookLoader {
         
         try {
             Iterator<Supplier<BookLoader>> itr = suppliers.iterator();
-            boolean passwordIssue = false;
             
             while (itr.hasNext()) {
                 BookLoader loader = itr.next().get();
                 BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
                 
-                if (bookInfo.status() == Status.LOAD_COMPLETED) {
-                    return bookInfo;
+                switch (bookInfo.status()) {
+                    case LOAD_COMPLETED:
+                    case NEEDS_PASSWORD:
+                        return bookInfo;
                     
-                } else if (bookInfo.status() == Status.NEEDS_PASSWORD) {
-                    passwordIssue = true;
+                    case LOAD_FAILED:
+                        // continue
                 }
             }
-            
-            return passwordIssue
-                    ? BookInfo.ofNeedsPassword(bookPath)
-                    : BookInfo.ofLoadFailed(bookPath);
+            return BookInfo.ofLoadFailed(bookPath);
             
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
