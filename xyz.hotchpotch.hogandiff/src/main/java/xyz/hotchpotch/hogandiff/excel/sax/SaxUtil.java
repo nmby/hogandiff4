@@ -290,12 +290,16 @@ public class SaxUtil {
     
     /**
      * *.xlsx/*.xlsm 形式のExcelファイルをZipファイルとして処理するためのユーティリティメソッドです。<br>
+     * {@code processor} が例外をスローした場合、このメソッドは
+     * スローされた例外が {@link ExcelHandlingException} とそのサブタイプの場合はそのままスローし、
+     * それ以外の例外の場合は {@link ExcelHandlingException} でラップしてスローします。<br>
      * 
      * @param <T> 戻り値の型
      * @param bookPath Excelブックのパス
      * @param readPassword 読取パスワード（読取パスワード無しの場合は {@code null}）
      * @param processor Zip処理プロセッサ
      * @return 処理結果
+     * @throws NullPointerException {@code bookPath}, {@code processor} のいずれかが {@code null} の場合
      * @throws ExcelHandlingException 処理に失敗した場合
      */
     public static <T> T processExcelAsZip(
@@ -303,6 +307,10 @@ public class SaxUtil {
             String readPassword,
             UnsafeFunction<ZipInputStream, T, Exception> processor)
             throws ExcelHandlingException {
+        
+        Objects.requireNonNull(bookPath);
+        // readPassword may be null
+        Objects.requireNonNull(processor);
         
         if (readPassword == null) {
             try (InputStream is = Files.newInputStream(bookPath);
@@ -364,7 +372,6 @@ public class SaxUtil {
         UnsafeFunction<ZipInputStream, List<SheetInfo>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            ZipEntry entry;
             Handler1 handler1 = new Handler1();
             Handler2 handler2 = new Handler2();
             Map<String, Handler3> handler3s = new HashMap<>();
@@ -374,6 +381,7 @@ public class SaxUtil {
             // 糞がッッッ
             // see: https://stackoverflow.com/questions/53690819/java-io-ioexception-stream-closed-zipinputstream
             InputStream ignoreCloseZis = new IgnoreCloseInputStream(zis);
+            ZipEntry entry;
             
             while ((entry = zis.getNextEntry()) != null) {
                 if (Handler1.isTarget(entry.getName())) {
@@ -389,9 +397,9 @@ public class SaxUtil {
                 }
             }
             
-            if (handler1.sheetNameAndId.size() == 0) {
-                // 大変雑ではあるが、例外がスローされずしかしシート情報を読み込めなかった場合は
-                // 読取パスワードありのファイルをreadPassword==nullで読み取ろうとしたと見做してしまう。
+            if (readPassword == null && handler1.sheetNameAndId.size() == 0) {
+                // 大変雑ではあるが、例外がスローされずしかしシート情報を読み取れなかった場合は
+                // 読取パスワードでロックされていると見做してしまう。
                 throw new PasswordHandlingException();
             }
             
