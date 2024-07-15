@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public class SaxUtil {
         
         // [instance members] --------------------------------------------------
         
-        private final String name;
+        private final String sheetName;
         private final String id;
         private SheetType type;
         private String source;
@@ -62,7 +63,7 @@ public class SaxUtil {
         private String vmlDrawingSource;
         
         private SheetInfo(String name, String id) {
-            this.name = name;
+            this.sheetName = name;
             this.id = id;
         }
         
@@ -72,8 +73,8 @@ public class SaxUtil {
          * 
          * @return シート名
          */
-        public String name() {
-            return name;
+        public String sheetName() {
+            return sheetName;
         }
         
         /**
@@ -131,6 +132,31 @@ public class SaxUtil {
     }
     
     /**
+     * .xlsx/.xlsm 形式のExcelブックに含まれるシートエントリの情報を保持する
+     * 不変クラスです。<br>
+     *
+     * @author nmby
+     * @param sheetName シート名（例：{@code "シート1"}）
+     * @param id シートId(relId)（例：{@code "rId1"}）
+     * @param type シート形式（例：{@link SheetType#WORKSHEET}）
+     * @param source ソースエントリのパス文字列（例：{@code "xl/worksheets/sheet1.xml"}）
+     * @param commentSource セルコメントのソースエントリのパス文字列（例：{@code "xl/comments1.xml"}）
+     * @param vmlDrawingSource セルコメントの図としての情報を保持するソースエントリのパス（例：{@code "xl/drawings/vmlDrawing1.vml"}）
+     */
+    public static record SheetInfoB(
+            String sheetName,
+            String id,
+            SheetType type,
+            String source,
+            String commentSource,
+            String vmlDrawingSource) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+    }
+    
+    /**
      * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
      * シート名とシートId（relId）を抽出します。<br>
      * <pre>
@@ -157,6 +183,39 @@ public class SaxUtil {
                 sheetInfos.add(new SheetInfo(
                         attributes.getValue("name"),
                         attributes.getValue("r:id")));
+            }
+        }
+    }
+    
+    /**
+     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
+     * シート名に対するシートId（relId）を抽出します。<br>
+     * <pre>
+     * *.xlsx
+     *   +-xl
+     *     +-workbook.xml
+     * </pre>
+     * 
+     * @author nmby
+     */
+    private static class Handler1b extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        private static boolean isTarget(String entryName) {
+            return "xl/workbook.xml".equals(entryName);
+        }
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Map<String, String> nameToId = new HashMap<>();
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+            if ("sheet".equals(qName)) {
+                nameToId.put(
+                        attributes.getValue("name"),
+                        attributes.getValue("r:id"));
             }
         }
     }
@@ -212,6 +271,148 @@ public class SaxUtil {
     
     /**
      * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
+     * シートId(relId)に対するシート形式とソースパスを抽出します。<br>
+     * <pre>
+     * *.xlsx
+     *   +-xl
+     *     +-_rels
+     *       +-workbook.xml.rels
+     * </pre>
+     * 
+     * @author nmby
+     */
+    private static class Handler2b extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        private static boolean isTarget(String entryName) {
+            return "xl/_rels/workbook.xml.rels".equals(entryName);
+        }
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Map<String, SheetType> idToType = new HashMap<>();
+        private final Map<String, String> idToSource = new HashMap<>();
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+            if ("Relationship".equals(qName)) {
+                String id = attributes.getValue("Id");
+                SheetType type = switch (attributes.getValue("Type")) {
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet" -> SheetType.CHART_SHEET;
+                    case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet" -> SheetType.DIALOG_SHEET;
+                    case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
+                    default -> null;
+                };
+                String source = "xl/" + attributes.getValue("Target");
+                
+                idToType.put(id, type);
+                idToSource.put(id, source);
+            }
+        }
+    }
+    
+    /**
+     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
+     * 指定されたシートに対するセルコメントのソースパス
+     * およびセルコメントの図としての情報を保持するソースパスを抽出します。<br>
+     * <pre>
+     * *.xlsx
+     *   +-xl
+     *     +-worksheets
+     *       +-_rels
+     *         +-sheet?.xml.rels
+     * </pre>
+     * 
+     * @author nmby
+     */
+    private static class Handler3 extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+        private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
+        
+        // [instance members] --------------------------------------------------
+        
+        private final SheetInfo info;
+        private final String relEntry;
+        
+        private Handler3(SheetInfo info) {
+            assert info != null;
+            
+            this.info = info;
+            this.relEntry = info.source.replace("xl/worksheets/", "xl/worksheets/_rels/") + ".rels";
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+            if ("Relationship".equals(qName)) {
+                if (commentRelType.equals(attributes.getValue("Type"))) {
+                    info.commentSource = attributes.getValue("Target").replace("../", "xl/");
+                } else if (vmlDrawingRelType.equals(attributes.getValue("Type"))) {
+                    info.vmlDrawingSource = attributes.getValue("Target").replace("../", "xl/");
+                }
+            }
+        }
+    }
+    
+    /**
+     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
+     * 指定されたシートに対するセルコメントのソースパス
+     * およびセルコメントの図としての情報を保持するソースパスを抽出します。<br>
+     * <pre>
+     * *.xlsx
+     *   +-xl
+     *     +-worksheets
+     *       +-_rels
+     *         +-sheet?.xml.rels
+     * </pre>
+     * 
+     * @author nmby
+     */
+    private static class Handler3b extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+        private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
+        
+        private static boolean isTarget(String entryName) {
+            assert entryName != null;
+            return entryName.startsWith("xl/worksheets/_rels/") && entryName.endsWith(".rels");
+        }
+        
+        // [instance members] --------------------------------------------------
+        
+        private final String entryName;
+        private String commentSource = null;
+        private String vmlDrawingSource = null;
+        
+        private Handler3b(String entryName) {
+            assert entryName != null;
+            
+            this.entryName = entryName;
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+            if ("Relationship".equals(qName)) {
+                switch (attributes.getValue("Type")) {
+                    case commentRelType:
+                        commentSource = attributes.getValue("Target").replace("../", "xl/");
+                        break;
+                    case vmlDrawingRelType:
+                        vmlDrawingSource = attributes.getValue("Target").replace("../", "xl/");
+                        break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
      * いわゆる SharedStringsTable のデータを抽出します。<br>
      * <pre>
      * *.xlsx
@@ -221,7 +422,7 @@ public class SaxUtil {
      * 
      * @author nmby
      */
-    private static class Handler3 extends DefaultHandler {
+    private static class Handler4 extends DefaultHandler {
         
         // [static members] ----------------------------------------------------
         
@@ -267,51 +468,6 @@ public class SaxUtil {
     }
     
     /**
-     * zipファイルとしての.xlsx/.xlsmファイルから次のエントリを読み込み、
-     * 指定されたシートに対するセルコメントのソースパス
-     * およびセルコメントの図としての情報を保持するソースパスを抽出します。<br>
-     * <pre>
-     * *.xlsx
-     *   +-xl
-     *     +-worksheets
-     *       +-_rels
-     *         +-sheet?.xml.rels
-     * </pre>
-     * 
-     * @author nmby
-     */
-    private static class Handler4 extends DefaultHandler {
-        
-        // [static members] ----------------------------------------------------
-        
-        private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
-        private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
-        
-        // [instance members] --------------------------------------------------
-        
-        private final SheetInfo info;
-        private final String relEntry;
-        
-        private Handler4(SheetInfo info) {
-            assert info != null;
-            
-            this.info = info;
-            this.relEntry = info.source.replace("xl/worksheets/", "xl/worksheets/_rels/") + ".rels";
-        }
-        
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("Relationship".equals(qName)) {
-                if (commentRelType.equals(attributes.getValue("Type"))) {
-                    info.commentSource = attributes.getValue("Target").replace("../", "xl/");
-                } else if (vmlDrawingRelType.equals(attributes.getValue("Type"))) {
-                    info.vmlDrawingSource = attributes.getValue("Target").replace("../", "xl/");
-                }
-            }
-        }
-    }
-    
-    /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
      * @param bookPath Excelブックのパス
@@ -346,10 +502,10 @@ public class SaxUtil {
             }
             
             for (SheetInfo info : handler1.sheetInfos) {
-                Handler4 handler4 = new Handler4(info);
-                if (Files.exists(fs.getPath(handler4.relEntry))) {
-                    try (InputStream is = Files.newInputStream(fs.getPath(handler4.relEntry))) {
-                        parser.parse(is, handler4);
+                Handler3 handler3 = new Handler3(info);
+                if (Files.exists(fs.getPath(handler3.relEntry))) {
+                    try (InputStream is = Files.newInputStream(fs.getPath(handler3.relEntry))) {
+                        parser.parse(is, handler3);
                     }
                 }
             }
@@ -386,12 +542,12 @@ public class SaxUtil {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             
-            if (Files.exists(fs.getPath(Handler3.targetEntry))) {
-                Handler3 handler3 = new Handler3();
-                try (InputStream is = Files.newInputStream(fs.getPath(Handler3.targetEntry))) {
-                    parser.parse(is, handler3);
+            if (Files.exists(fs.getPath(Handler4.targetEntry))) {
+                Handler4 handler4 = new Handler4();
+                try (InputStream is = Files.newInputStream(fs.getPath(Handler4.targetEntry))) {
+                    parser.parse(is, handler4);
                 }
-                return List.copyOf(handler3.sst);
+                return List.copyOf(handler4.sst);
                 
             } else {
                 return List.of();

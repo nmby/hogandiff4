@@ -431,7 +431,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
         // 次に、比較対象シートに対する着色処理を行う。
         List<SheetInfo> sheetInfos = SaxUtil.loadSheetInfo(bookPath, readPassword);
         for (SheetInfo sheetInfo : sheetInfos) {
-            String sheetName = sheetInfo.name();
+            String sheetName = sheetInfo.sheetName();
             
             if (diffs.containsKey(sheetName)) {
                 // 比較対象シートの場合

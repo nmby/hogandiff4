@@ -79,7 +79,7 @@ public class XSSFBookLoaderWithSax implements BookLoader {
             
             List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
-                    .map(SheetInfo::name)
+                    .map(SheetInfo::sheetName)
                     .toList();
             
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
