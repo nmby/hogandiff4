@@ -2,6 +2,7 @@ package xyz.hotchpotch.hogandiff.excel.sax;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -255,7 +256,10 @@ public class SaxUtil {
         }
     }
     
-    private static class IgnoreCloseInputStream extends InputStream {
+    /**
+     * {@link InputStream#close()} を無視する {@link InputStream} のラッパーです。<br>
+     */
+    public static class IgnoreCloseInputStream extends InputStream {
         
         // [static members] ----------------------------------------------------
         
@@ -263,9 +267,20 @@ public class SaxUtil {
         
         private final InputStream delegate;
         
-        private IgnoreCloseInputStream(InputStream delegate) {
-            assert delegate != null;
+        /**
+         * コンストラクタ<br>
+         * 
+         * @param delegate ソースインプットストリーム
+         * @throws NullPointerException パラメータが {@code null} の場合
+         */
+        public IgnoreCloseInputStream(InputStream delegate) {
+            Objects.requireNonNull(delegate);
             this.delegate = delegate;
+        }
+        
+        @Override
+        public void close() {
+            // ignore
         }
         
         @Override
@@ -274,18 +289,65 @@ public class SaxUtil {
         }
         
         @Override
+        public int read(byte[] b) throws IOException {
+            return delegate.read(b);
+        }
+        
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             return delegate.read(b, off, len);
         }
         
         @Override
-        public void close() {
-            // ignore
+        public byte[] readAllBytes() throws IOException {
+            return delegate.readAllBytes();
         }
         
-        // 実装メモ：
-        // SAXParser#parse のためには上記3メソッドをオーバーライドすれば足りるらしい。
-        // FIXME: [No.X 内部実装改善] 脆弱なコードには違いないので、将来的にはどうにかしたい。
+        @Override
+        public byte[] readNBytes(int len) throws IOException {
+            return delegate.readNBytes(len);
+        }
+        
+        @Override
+        public int readNBytes(byte[] b, int off, int len) throws IOException {
+            return delegate.readNBytes(b, off, len);
+        }
+        
+        @Override
+        public long skip(long n) throws IOException {
+            return delegate.skip(n);
+        }
+        
+        @Override
+        public void skipNBytes(long n) throws IOException {
+            delegate.skipNBytes(n);
+        }
+        
+        @Override
+        public int available() throws IOException {
+            return delegate.available();
+        }
+        
+        @Override
+        public void mark(int readlimit) {
+            delegate.mark(readlimit);
+        }
+        
+        @Override
+        public void reset() throws IOException {
+            delegate.reset();
+        }
+        
+        @Override
+        public boolean markSupported() {
+            return delegate.markSupported();
+        }
+        
+        @Override
+        public long transferTo(OutputStream out) throws IOException {
+            return delegate.transferTo(out);
+        }
+        
     }
     
     /**
