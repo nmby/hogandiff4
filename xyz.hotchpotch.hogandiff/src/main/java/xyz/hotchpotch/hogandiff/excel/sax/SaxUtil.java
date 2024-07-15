@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.sax;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -14,6 +15,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -49,7 +52,7 @@ public class SaxUtil {
     // SaxUtil クラス内部でしか可変でなく外部からは不変だし、
     // 変更中のオブジェクトを決して外部に公開しないので、
     // 「不変クラスです。」と言っちゃって良いよね？！だめかな？！
-    public static class SheetInfo {
+    public static class SheetInfoA {
         
         // [static members] ----------------------------------------------------
         
@@ -62,7 +65,7 @@ public class SaxUtil {
         private String commentSource;
         private String vmlDrawingSource;
         
-        private SheetInfo(String name, String id) {
+        private SheetInfoA(String name, String id) {
             this.sheetName = name;
             this.id = id;
         }
@@ -143,7 +146,7 @@ public class SaxUtil {
      * @param commentSource セルコメントのソースエントリのパス文字列（例：{@code "xl/comments1.xml"}）
      * @param vmlDrawingSource セルコメントの図としての情報を保持するソースエントリのパス（例：{@code "xl/drawings/vmlDrawing1.vml"}）
      */
-    public static record SheetInfoB(
+    public static record SheetInfo(
             String sheetName,
             String id,
             SheetType type,
@@ -175,12 +178,12 @@ public class SaxUtil {
         
         // [instance members] --------------------------------------------------
         
-        private final List<SheetInfo> sheetInfos = new ArrayList<>();
+        private final List<SheetInfoA> sheetInfos = new ArrayList<>();
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if ("sheet".equals(qName)) {
-                sheetInfos.add(new SheetInfo(
+                sheetInfos.add(new SheetInfoA(
                         attributes.getValue("name"),
                         attributes.getValue("r:id")));
             }
@@ -202,20 +205,23 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
+        private static record SheetNameAndId(String sheetName, String id) {
+        };
+        
         private static boolean isTarget(String entryName) {
             return "xl/workbook.xml".equals(entryName);
         }
         
         // [instance members] --------------------------------------------------
         
-        private final Map<String, String> nameToId = new HashMap<>();
+        private final List<SheetNameAndId> sheetNameAndId = new ArrayList<>();
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if ("sheet".equals(qName)) {
-                nameToId.put(
+                sheetNameAndId.add(new SheetNameAndId(
                         attributes.getValue("name"),
-                        attributes.getValue("r:id"));
+                        attributes.getValue("r:id")));
             }
         }
     }
@@ -240,9 +246,9 @@ public class SaxUtil {
         
         // [instance members] --------------------------------------------------
         
-        private final Map<String, SheetInfo> sheets;
+        private final Map<String, SheetInfoA> sheets;
         
-        private Handler2(List<SheetInfo> sheets) {
+        private Handler2(List<SheetInfoA> sheets) {
             assert sheets != null;
             
             this.sheets = sheets.stream()
@@ -254,7 +260,7 @@ public class SaxUtil {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if ("Relationship".equals(qName)) {
-                SheetInfo info = sheets.get(attributes.getValue("Id"));
+                SheetInfoA info = sheets.get(attributes.getValue("Id"));
                 if (info != null) {
                     info.type = switch (attributes.getValue("Type")) {
                         case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
@@ -336,10 +342,10 @@ public class SaxUtil {
         
         // [instance members] --------------------------------------------------
         
-        private final SheetInfo info;
+        private final SheetInfoA info;
         private final String relEntry;
         
-        private Handler3(SheetInfo info) {
+        private Handler3(SheetInfoA info) {
             assert info != null;
             
             this.info = info;
@@ -384,17 +390,14 @@ public class SaxUtil {
             return entryName.startsWith("xl/worksheets/_rels/") && entryName.endsWith(".rels");
         }
         
+        private static String entryFor(String sheetSource) {
+            return sheetSource.replace("xl/worksheets/", "xl/worksheets/_rels/") + ".rels";
+        }
+        
         // [instance members] --------------------------------------------------
         
-        private final String entryName;
         private String commentSource = null;
         private String vmlDrawingSource = null;
-        
-        private Handler3b(String entryName) {
-            assert entryName != null;
-            
-            this.entryName = entryName;
-        }
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -467,6 +470,35 @@ public class SaxUtil {
         }
     }
     
+    private static class IgnoreCloseInputStream extends InputStream {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final InputStream delegate;
+        
+        private IgnoreCloseInputStream(InputStream delegate) {
+            assert delegate != null;
+            this.delegate = delegate;
+        }
+        
+        @Override
+        public int read() throws IOException {
+            return delegate.read();
+        }
+        
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            return delegate.read(b, off, len);
+        }
+        
+        @Override
+        public void close() {
+            // nop
+        }
+    }
+    
     /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
@@ -487,30 +519,55 @@ public class SaxUtil {
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, BookType.of(bookPath));
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
+        try (InputStream is = Files.newInputStream(bookPath);
+                ZipInputStream zis = new ZipInputStream(is)) {
+            
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
+            ZipEntry entry;
+            Handler1b handler1 = new Handler1b();
+            Handler2b handler2 = new Handler2b();
+            Map<String, Handler3b> handler3s = new HashMap<>();
             
-            Handler1 handler1 = new Handler1();
-            try (InputStream is = Files.newInputStream(fs.getPath(Handler1.targetEntry))) {
-                parser.parse(is, handler1);
-            }
+            // SAXParser#parseが勝手にソースzisを閉じてしまうっぽいので、
+            // IgnoreCloseInputStream なるラッパーを導入した。
+            // 糞がッッッ
+            // see: https://stackoverflow.com/questions/53690819/java-io-ioexception-stream-closed-zipinputstream
+            InputStream ignoreCloseZip = new IgnoreCloseInputStream(zis);
             
-            Handler2 handler2 = new Handler2(handler1.sheetInfos);
-            try (InputStream is = Files.newInputStream(fs.getPath(Handler2.targetEntry))) {
-                parser.parse(is, handler2);
-            }
-            
-            for (SheetInfo info : handler1.sheetInfos) {
-                Handler3 handler3 = new Handler3(info);
-                if (Files.exists(fs.getPath(handler3.relEntry))) {
-                    try (InputStream is = Files.newInputStream(fs.getPath(handler3.relEntry))) {
-                        parser.parse(is, handler3);
-                    }
+            while ((entry = zis.getNextEntry()) != null) {
+                if (Handler1b.isTarget(entry.getName())) {
+                    parser.parse(ignoreCloseZip, handler1);
+                }
+                if (Handler2b.isTarget(entry.getName())) {
+                    parser.parse(ignoreCloseZip, handler2);
+                }
+                if (Handler3b.isTarget(entry.getName())) {
+                    Handler3b handler3 = new Handler3b();
+                    parser.parse(ignoreCloseZip, handler3);
+                    handler3s.put(entry.getName(), handler3);
                 }
             }
             
-            return List.copyOf(handler1.sheetInfos);
+            return handler1.sheetNameAndId.stream()
+                    .map(sheetNameAndId -> {
+                        String sheetName = sheetNameAndId.sheetName;
+                        String id = sheetNameAndId.id;
+                        SheetType type = handler2.idToType.get(id);
+                        String source = handler2.idToSource.get(id);
+                        Handler3b handler3 = handler3s.get(Handler3b.entryFor(source));
+                        String commentSource = handler3.commentSource;
+                        String vmlDrawingSource = handler3.vmlDrawingSource;
+                        
+                        return new SheetInfo(
+                                sheetName,
+                                id,
+                                type,
+                                source,
+                                commentSource,
+                                vmlDrawingSource);
+                    })
+                    .toList();
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
