@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -190,6 +189,108 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         }
     }
     
+    private static class Handler1b extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final boolean extractCachedValue;
+        private final List<String> sst;
+        
+        private final Deque<String> qNames = new ArrayDeque<>();
+        private final Map<String, StringBuilder> texts = new HashMap<>();
+        private final Map<String, String> addressToContent = new HashMap<>();
+        
+        private XSSFCellType type;
+        private String address;
+        
+        private Handler1b(
+                boolean extractCachedValue,
+                List<String> sst) {
+            
+            assert sst != null;
+            
+            this.extractCachedValue = extractCachedValue;
+            this.sst = sst;
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+                throws SAXException {
+            
+            qNames.addFirst(qName);
+            
+            if ("c".equals(qName)) {
+                type = XSSFCellType.of(attributes.getValue("t"));
+                address = attributes.getValue("r");
+                texts.clear();
+            }
+        }
+        
+        @Override
+        public void characters(char ch[], int start, int length) {
+            String qName = qNames.getFirst();
+            texts.putIfAbsent(qName, new StringBuilder());
+            texts.get(qName).append(ch, start, length);
+        }
+        
+        @Override
+        public void endElement(String uri, String localName, String qName) {
+            if ("c".equals(qName)) {
+                StringBuilder vText = texts.get("v");
+                StringBuilder fText = texts.get("f");
+                StringBuilder tText = texts.get("t");
+                String value = null;
+                
+                if (!extractCachedValue && fText != null) {
+                    value = fText.toString();
+                } else {
+                    switch (type) {
+                        case b:
+                            if (vText != null) {
+                                value = Boolean.toString("1".equals(vText.toString()));
+                            }
+                            break;
+                        
+                        case n:
+                        case d:
+                        case e:
+                        case str:
+                            if (vText != null) {
+                                value = vText.toString();
+                            }
+                            break;
+                        
+                        case inlineStr:
+                            if (tText != null) {
+                                value = tText.toString();
+                            }
+                            break;
+                        
+                        case s:
+                            if (vText != null) {
+                                int idx = Integer.parseInt(vText.toString());
+                                value = sst.get(idx);
+                            }
+                            break;
+                        
+                        default:
+                            throw new AssertionError(type);
+                    }
+                }
+                if (value != null && !"".equals(value)) {
+                    addressToContent.put(address, value);
+                }
+                
+                qNames.removeFirst();
+                type = null;
+                address = null;
+                texts.clear();
+            }
+        }
+    }
+    
     private static class Handler2 extends DefaultHandler {
         
         // [static members] ----------------------------------------------------
@@ -238,6 +339,44 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                     cells.add(CellData.of(address, "", comment.toString()));
                 }
                 
+                address = null;
+                comment = null;
+            }
+        }
+    }
+    
+    private static class Handler2b extends DefaultHandler {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+        private final Map<String, String> addressToComment = new HashMap<>();
+        
+        private String address;
+        private StringBuilder comment;
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+                throws SAXException {
+            
+            if ("comment".equals(qName)) {
+                address = attributes.getValue("ref");
+                comment = new StringBuilder();
+            }
+        }
+        
+        @Override
+        public void characters(char ch[], int start, int length) {
+            if (comment != null) {
+                comment.append(ch, start, length);
+            }
+        }
+        
+        @Override
+        public void endElement(String uri, String localName, String qName) {
+            if ("comment".equals(qName)) {
+                addressToComment.put(address, comment.toString());
                 address = null;
                 comment = null;
             }
@@ -315,40 +454,58 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                             SheetInfo::sheetName,
                             Function.identity()));
         }
+        
+        if (!nameToInfo.containsKey(sheetName)) {
+            throw new ExcelHandlingException(
+                    "Processing failed. No such sheet : %s - %s".formatted(bookPath, sheetName));
+        }
+        SheetInfo info = nameToInfo.get(sheetName);
+        if (!CommonUtil.isSupportedSheetType(getClass(), EnumSet.of(info.type()))) {
+            throw new ExcelHandlingException(
+                    "Processing failed. Unsupported sheet type : %s - %s".formatted(bookPath, sheetName));
+        }
+        
         if (sst == null) {
             sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
         }
         
         try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
-            
-            if (!nameToInfo.containsKey(sheetName)) {
-                // 例外カスケードポリシーに従い、
-                // 後続の catch でさらに ExcelHandlingException にラップする。
-                // ちょっと気持ち悪い気もするけど。
-                throw new NoSuchElementException("no such sheet : " + sheetName);
-            }
-            SheetInfo info = nameToInfo.get(sheetName);
-            // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
-            CommonUtil.ifNotSupportedSheetTypeThenThrow(getClass(), EnumSet.of(info.type()));
-            
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            Set<CellData> cells = null;
             
-            Handler1 handler1 = new Handler1(extractCachedValue, sst);
+            Handler1b handler1 = new Handler1b(extractCachedValue, sst);
             try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
                 parser.parse(is, handler1);
             }
-            cells = handler1.cells;
-            
-            if (info.commentSource() != null) {
-                Handler2 handler2 = new Handler2(cells);
-                try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
-                    parser.parse(is, handler2);
-                }
+            if (info.commentSource() == null) {
+                return handler1.addressToContent.entrySet().stream()
+                        .map(entry -> CellData.of(entry.getKey(), entry.getValue(), null))
+                        .collect(Collectors.toSet());
             }
             
-            return Set.copyOf(cells);
+            Handler2b handler2 = new Handler2b();
+            try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
+                parser.parse(is, handler2);
+            }
+            
+            Set<CellData> cells = handler1.addressToContent.entrySet().stream()
+                    .map(entry -> {
+                        String address = entry.getKey();
+                        String content = entry.getValue();
+                        String comment = handler2.addressToComment.containsKey(address)
+                                ? handler2.addressToComment.get(address)
+                                : null;
+                        return CellData.of(address, content, comment);
+                    })
+                    .collect(Collectors.toCollection(HashSet::new));
+            
+            cells.addAll(
+                    handler2.addressToComment.entrySet().stream()
+                            .filter(entry -> !handler1.addressToContent.containsKey(entry.getKey()))
+                            .map(entry -> CellData.of(entry.getKey(), "", entry.getValue()))
+                            .toList());
+            
+            return cells;
             
         } catch (Exception e) {
             throw new ExcelHandlingException(
