@@ -2,8 +2,6 @@ package xyz.hotchpotch.hogandiff.excel.sax;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -214,7 +212,9 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
-        private static final String targetEntry = "xl/sharedStrings.xml";
+        private static boolean isTarget(String entryName) {
+            return "xl/sharedStrings.xml".equals(entryName);
+        }
         
         // [instance members] --------------------------------------------------
         
@@ -373,18 +373,18 @@ public class SaxUtil {
             // IgnoreCloseInputStream なるラッパーを導入した。
             // 糞がッッッ
             // see: https://stackoverflow.com/questions/53690819/java-io-ioexception-stream-closed-zipinputstream
-            InputStream ignoreCloseZip = new IgnoreCloseInputStream(zis);
+            InputStream ignoreCloseZis = new IgnoreCloseInputStream(zis);
             
             while ((entry = zis.getNextEntry()) != null) {
                 if (Handler1.isTarget(entry.getName())) {
-                    parser.parse(ignoreCloseZip, handler1);
+                    parser.parse(ignoreCloseZis, handler1);
                 }
                 if (Handler2.isTarget(entry.getName())) {
-                    parser.parse(ignoreCloseZip, handler2);
+                    parser.parse(ignoreCloseZis, handler2);
                 }
                 if (Handler3.isTarget(entry.getName())) {
                     Handler3 handler3 = new Handler3();
-                    parser.parse(ignoreCloseZip, handler3);
+                    parser.parse(ignoreCloseZis, handler3);
                     handler3s.put(entry.getName(), handler3);
                 }
             }
@@ -439,25 +439,22 @@ public class SaxUtil {
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(SaxUtil.class, BookType.of(bookPath));
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
+        UnsafeFunction<ZipInputStream, List<String>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
+            Handler4 handler4 = new Handler4();
+            ZipEntry entry;
             
-            if (Files.exists(fs.getPath(Handler4.targetEntry))) {
-                Handler4 handler4 = new Handler4();
-                try (InputStream is = Files.newInputStream(fs.getPath(Handler4.targetEntry))) {
-                    parser.parse(is, handler4);
+            while ((entry = zis.getNextEntry()) != null) {
+                if (Handler4.isTarget(entry.getName())) {
+                    parser.parse(zis, handler4);
+                    return handler4.sst;
                 }
-                return List.copyOf(handler4.sst);
-                
-            } else {
-                return List.of();
             }
-            
-        } catch (Exception e) {
-            throw new ExcelHandlingException(
-                    "failed to load the book : %s".formatted(bookPath), e);
-        }
+            return List.of();
+        };
+        
+        return processExcelAsZip(bookPath, readPassword, processor);
     }
     
     // [instance members] ******************************************************
