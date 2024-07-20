@@ -174,25 +174,26 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         ComeFrom[] comeFrom2 = null;
         ComeFrom[] comeFrom1 = new ComeFrom[] { null };
         ComeFrom[] comeFrom0 = null;
+        int sliceLen1 = 1;
         
         for (int n = 0; n < sumSize; n++) {
-            int sliceLen = n < minSize
+            int sliceLen0 = n < minSize
                     ? n + 2
                     : n < maxSize
                             ? minSize + 2
                             : sumSize - n + 2;
             
             // FIXME: [No.12 性能改善] ループごとにメモリ領域を確保するのではなく使い回す方式に変更する
-            accCosts0 = new long[sliceLen];
-            comeFrom0 = new ComeFrom[sliceLen];
+            accCosts0 = new long[sliceLen0];
+            comeFrom0 = new ComeFrom[sliceLen0];
             
             if (n < listA.size()) {
                 accCosts0[0] = accCosts1[0] + gapCostsA[n];
                 comeFrom0[0] = new ComeFrom.Upper(comeFrom1[0]);
             }
             if (n < listB.size()) {
-                accCosts0[accCosts0.length - 1] = accCosts1[accCosts1.length - 1] + gapCostsB[n];
-                comeFrom0[comeFrom0.length - 1] = new ComeFrom.Left(comeFrom1[comeFrom1.length - 1]);
+                accCosts0[sliceLen0 - 1] = accCosts1[sliceLen1 - 1] + gapCostsB[n];
+                comeFrom0[sliceLen0 - 1] = new ComeFrom.Left(comeFrom1[sliceLen1 - 1]);
             }
             
             final int nf = n;
@@ -203,7 +204,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             final ComeFrom[] comeFrom1f = comeFrom1;
             final ComeFrom[] comeFrom0f = comeFrom0;
             
-            IntStream.range(1, sliceLen - 1).parallel().forEach(k -> {
+            IntStream.range(1, sliceLen0 - 1).parallel().forEach(k -> {
                 int a = nf < listA.size() ? nf - k : listA.size() - k;
                 int b = nf - a - 1;
                 
@@ -239,6 +240,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             accCosts1 = accCosts0;
             comeFrom2 = comeFrom1;
             comeFrom1 = comeFrom0;
+            sliceLen1 = sliceLen0;
         }
         
         return comeFrom0[1];
