@@ -184,8 +184,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                             : sumSize - n + 2;
             
             // FIXME: [No.12 性能改善] ループごとにメモリ領域を確保するのではなく使い回す方式に変更する
-            accCosts0 = new long[sliceLen0];
-            comeFrom0 = new ComeFrom[sliceLen0];
+            accCosts0 = new long[minSize + 2];
+            comeFrom0 = new ComeFrom[minSize + 2];
             
             if (n < listA.size()) {
                 accCosts0[0] = accCosts1[0] + gapCostsA[n];
