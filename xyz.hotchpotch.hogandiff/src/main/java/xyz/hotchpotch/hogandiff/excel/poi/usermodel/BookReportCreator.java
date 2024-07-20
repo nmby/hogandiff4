@@ -44,11 +44,12 @@ public class BookReportCreator {
     
     private static final int ROW_TEMPLATE_SHEET_TITLE = 4;
     private static final int ROW_TEMPLATE_NO_DIFF = 5;
-    private static final int ROW_TEMPLATE_FAILED = 6;
-    private static final int ROW_TEMPLATE_RROWS_TITLE = 7;
-    private static final int ROW_TEMPLATE_RCOLS_TITLE = 9;
-    private static final int ROW_TEMPLATE_DCELLS_TITLE = 11;
-    private static final int ROW_START = 14;
+    private static final int ROW_TEMPLATE_NO_OPPONENT = 6;
+    private static final int ROW_TEMPLATE_FAILED = 7;
+    private static final int ROW_TEMPLATE_RROWS_TITLE = 8;
+    private static final int ROW_TEMPLATE_RCOLS_TITLE = 10;
+    private static final int ROW_TEMPLATE_DCELLS_TITLE = 12;
+    private static final int ROW_START = 15;
     private static final IntPair COL_LEFT = IntPair.of(3, 5);
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
@@ -167,6 +168,8 @@ public class BookReportCreator {
         
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.040"));
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(),
+                rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.050"));
     }
@@ -188,8 +191,10 @@ public class BookReportCreator {
                         : rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
         rowIdx++;
         
-        // 比較対象なしの場合はシート名タイトルのみ出力する。
+        // 比較対象なしの場合は「比較対象なし」の旨を出力する。
         if (!sheetNamePair.isPaired()) {
+            PoiUtil.copyRow(sheet, ROW_TEMPLATE_NO_OPPONENT, rowIdx);
+            rowIdx++;
             return rowIdx;
         }
         
