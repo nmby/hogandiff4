@@ -75,11 +75,11 @@ public enum AppMenu {
     
     // [instance members] ******************************************************
     
-    private final Function<Settings, Task<Report>> taskFactory;
+    private final Function<Settings, Task<Stats>> taskFactory;
     private final Predicate<Settings> targetValidator;
     
     private AppMenu(
-            Function<Settings, Task<Report>> taskFactory,
+            Function<Settings, Task<Stats>> taskFactory,
             Predicate<Settings> targetValidator) {
         
         assert taskFactory != null;
@@ -111,7 +111,7 @@ public enum AppMenu {
      * @return 新しいタスク
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public Task<Report> getTask(Settings settings) {
+    public Task<Stats> getTask(Settings settings) {
         Objects.requireNonNull(settings);
         
         return taskFactory.apply(settings);

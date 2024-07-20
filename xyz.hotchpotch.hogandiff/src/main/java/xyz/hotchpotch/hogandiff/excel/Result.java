@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.excel;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 
 /**
  * 各種比較操作の比較結果を表します。<br>
@@ -22,5 +22,5 @@ public sealed interface Result
      * 
      * @return シートごとの統計情報
      */
-    List<Stats> getSheetStats();
+    List<SheetStats> sheetStats();
 }

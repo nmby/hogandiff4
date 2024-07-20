@@ -1,16 +1,15 @@
 package xyz.hotchpotch.hogandiff.excel.stax.readers;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -53,13 +52,13 @@ public class PaintRowsReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             StylesManager stylesManager,
-            int[] targetRows,
+            List<Integer> targetRows,
             short colorIdx) {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
         Objects.requireNonNull(targetRows);
-        if (targetRows.length == 0) {
+        if (targetRows.isEmpty()) {
             throw new IllegalArgumentException("no target rows");
         }
         
@@ -80,17 +79,17 @@ public class PaintRowsReader extends BufferingReader {
     private PaintRowsReader(
             XMLEventReader source,
             StylesManager stylesManager,
-            int[] targetRows,
+            List<Integer> targetRows,
             short colorIdx) {
         
         super(source);
         
         assert stylesManager != null;
         assert targetRows != null;
-        assert 0 < targetRows.length;
+        assert !targetRows.isEmpty();
         
         this.stylesManager = stylesManager;
-        this.targetRows = Arrays.stream(targetRows).boxed().collect(Collectors.toCollection(ArrayDeque::new));
+        this.targetRows = new ArrayDeque<>(targetRows);
         this.colorIdx = colorIdx;
     }
     
@@ -122,10 +121,6 @@ public class PaintRowsReader extends BufferingReader {
                 : targetRows.peek();
         
         if (sourceRow < targetRow) {
-            // この処理が何故必要なのか忘れてしまった・・ orz
-            // この処理が必要ならば、considerRowGaps==false の場合も実行すべきな気がする。
-            // あるいは、おおもとのスタイルの削除処理かこの処理かのどちらか一方があればよいのかもしれない。
-            // TODO: 必要性を確認して不要ならば削除する
             if (rowStart.getAttributeByName(NONS_QNAME.CUSTOM_FORMAT) != null) {
                 buffer.add(removeCustomFormat(rowStart));
                 source.nextEvent();

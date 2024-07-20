@@ -28,7 +28,8 @@ import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.SheetComparator;
 import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeResultBookCreator;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookReportCreator;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.TreeReportCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -38,7 +39,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract sealed class AppTaskBase extends Task<Report>
+/*package*/ abstract sealed class AppTaskBase extends Task<Stats>
         permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
     
     // [static members] ********************************************************
@@ -89,23 +90,23 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Report call() throws ApplicationException {
+    protected Stats call() throws ApplicationException {
         Instant start = Instant.now();
-        Report report = null;
+        Stats report = null;
         
         try {
             Result result = call2();
             
-            report = new Report.Succeeded(settings, start, Instant.now(), result);
+            report = new Stats.Succeeded(settings, start, Instant.now(), result);
             
             return report;
             
         } catch (OutOfMemoryError e) {
-            report = new Report.Failed(settings, start, Instant.now(), e);
+            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.170", "");
             
         } catch (Exception e) {
-            report = new Report.Failed(settings, start, Instant.now(), e);
+            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
             
         } finally {
@@ -118,7 +119,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param report 統計情報
      */
-    private void writeReport(Report report) {
+    private void writeReport(Stats report) {
         try {
             Path reportPath = workDir.resolve("report.json");
             try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
@@ -141,8 +142,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     //■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     /**
-     * 比較結果文字列をテキストファイルに保存するとともに、
-     * 設定に応じてアプリケーション（メモ帳）を立ち上げて表示します。<br>
+     * 比較結果文字列をテキストファイルに保存します。<br>
      * 
      * @param workDir 作業用フォルダ
      * @param resultText 比較結果文字列
@@ -151,7 +151,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws ApplicationException 処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
-    protected void saveAndShowResultText(
+    protected void saveResultText(
             Path workDir,
             String resultText,
             int progressBefore,
@@ -173,11 +173,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
                 writer.write(resultText);
-            }
-            if (settings.get(SettingKeys.SHOW_RESULT_TEXT)) {
-                str.append(rb.getString("AppTaskBase.040")).append(BR).append(BR);
-                updateMessage(str.toString());
-                Desktop.getDesktop().open(textPath.toFile());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -386,18 +381,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
             updateMessage(str.toString());
             
-            TreeResultBookCreator creator = new TreeResultBookCreator();
+            TreeReportCreator creator = new TreeReportCreator();
             creator.createResultBook(
                     resultBookPath,
                     tResult,
                     settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_TREES);
+            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.080", "");
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
+            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
                 str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
@@ -406,6 +402,52 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.100", "");
+        }
+    }
+    
+    /**
+     * Excelブック同士の比較結果Excelブックを作成し、保存し、表示します。<br>
+     * 
+     * @param workDir 作業用フォルダ
+     * @param bResult Excelブック比較結果
+     * @param progressBefore 進捗率（開始時）
+     * @param progressAfter 進捗率（終了時）
+     * @throws ApplicationException 処理に失敗した場合
+     */
+    // CompareSheetsTask, CompareBooksTask
+    protected void createSaveAndShowReportBook(
+            Path workDir,
+            BookResult bResult,
+            int progressBefore,
+            int progressAfter)
+            throws ApplicationException {
+        
+        Path resultBookPath = null;
+        try {
+            updateProgress(progressBefore, PROGRESS_MAX);
+            
+            resultBookPath = workDir.resolve("result.xlsx");
+            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareBooksTask.060"), resultBookPath));
+            updateMessage(str.toString());
+            
+            BookReportCreator creator = new BookReportCreator();
+            creator.createResultBook(resultBookPath, bResult);
+            updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareBooksTask.070", "");
+        }
+        
+        try {
+            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
+                str.append(rb.getString("CompareBooksTask.080")).append(BR).append(BR);
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(resultBookPath.toFile());
+            }
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, "CompareBooksTask.090", "");
         }
     }
     

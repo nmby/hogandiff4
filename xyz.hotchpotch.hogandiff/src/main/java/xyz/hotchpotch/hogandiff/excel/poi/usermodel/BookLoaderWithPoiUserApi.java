@@ -71,7 +71,7 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * @throws IllegalArgumentException
      *              {@code bookPath} がサポート対象外の形式の場合
      */
-    // FIXME: [No.1 シート識別不正 - usermodel] 上記のバグを改修する。（できるのか？）
+    // FIXME: [No.01 シート識別不正 - usermodel] 上記のバグを改修する。（できるのか？）
     //
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
@@ -99,7 +99,7 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
             
         } catch (LeftoverDataException e) {
-            // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+            // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
             // 
             // 書き込みpw有り/読み込みpw無しのxlsファイルを開こうとすると
             // org.apache.poi.hssf.record.RecordInputStream$LeftoverDataException が発生する。

@@ -119,7 +119,7 @@ class BookLoaderWithPoiUserApiTest {
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadBookInfo(test1_xls, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」と「x4_マクロ」を取得できない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」と「x4_マクロ」を取得できない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -128,7 +128,7 @@ class BookLoaderWithPoiUserApiTest {
                                 "B1_ワークシート", "B2_グラフ")),
                 testee.loadBookInfo(test1_xlsm, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」を取得できない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か「x3_ダイアログ」を取得できない。
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
         // 「x4_マクロ」は取得できている。
         // どうしようもないのかしら？？
@@ -144,7 +144,7 @@ class BookLoaderWithPoiUserApiTest {
     void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
         BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.WORKSHEET));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
+        // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -174,7 +174,7 @@ class BookLoaderWithPoiUserApiTest {
     void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
         BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.CHART_SHEET));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
+        // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -202,7 +202,7 @@ class BookLoaderWithPoiUserApiTest {
     void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
         BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
+        // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -211,7 +211,7 @@ class BookLoaderWithPoiUserApiTest {
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadBookInfo(test1_xls, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
+        // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -219,7 +219,7 @@ class BookLoaderWithPoiUserApiTest {
                         List.of()),
                 testee.loadBookInfo(test1_xlsm, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
+        // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートを正しく識別できない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -232,7 +232,7 @@ class BookLoaderWithPoiUserApiTest {
     void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
         BookLoader testee = BookLoaderWithPoiUserApi.of(EnumSet.of(SheetType.MACRO_SHEET));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
+        // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
         // どうしようもないのかしら？？
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -241,7 +241,7 @@ class BookLoaderWithPoiUserApiTest {
                                 "B1_ワークシート", "B2_グラフ", "B3_ダイアログ", "B4_マクロ")),
                 testee.loadBookInfo(test1_xls, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つのバグが重なっているっぽい。
+        // FIXME: [No.01 シート識別不正 - usermodel] どうやら次の２つのバグが重なっているっぽい。
         //   ・.xlsm 形式のExcelブックからは「4_マクロ」を取得できない
         //   ・「1_ワークシート」と「4_マクロ」を判別できない
         // どうしようもないのかしら？？
@@ -252,7 +252,7 @@ class BookLoaderWithPoiUserApiTest {
                                 "B1_ワークシート")),
                 testee.loadBookInfo(test1_xlsm, null));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どうやら次の２つの事情によりこうなるっぽい。
+        // FIXME: [No.01 シート識別不正 - usermodel] どうやら次の２つの事情によりこうなるっぽい。
         //   ・マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存された
         //   ・「1_ワークシート」と「4_マクロ」を判別できない
         // どうしようもないのかしら？？
@@ -276,7 +276,7 @@ class BookLoaderWithPoiUserApiTest {
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest3_xlsx, null));
         
-        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+        // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw無しのxlsファイルは開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
         assertEquals(
@@ -310,7 +310,7 @@ class BookLoaderWithPoiUserApiTest {
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest2_xlsx, "123"));
         
-        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+        // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
@@ -321,7 +321,7 @@ class BookLoaderWithPoiUserApiTest {
         assertDoesNotThrow(
                 () -> testee.loadBookInfo(bookPwTest3_xlsx, "123"));
         
-        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+        // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames
@@ -349,7 +349,7 @@ class BookLoaderWithPoiUserApiTest {
                 BookInfo.ofNeedsPassword(bookPwTest2_xlsx),
                 testee.loadBookInfo(bookPwTest2_xlsx, "456"));
         
-        // FIXME: [No.7 POI関連] 書き込みpw付きのxlsファイルを開けない
+        // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
         // 書き込みpw有り/読み取りpw有りのxlsファイルは
         // 読み取り専用であれば正しい読み取りパスワードで開けるべきだができない。
         // see: BookLoaderWithPoiUserApi#loadSheetNames

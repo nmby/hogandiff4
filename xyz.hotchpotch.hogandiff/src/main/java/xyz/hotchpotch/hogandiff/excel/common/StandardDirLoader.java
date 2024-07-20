@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class StandardDirLoader implements DirLoader {
                             .map(((UnsafeFunction<Path, DirInfo, ExcelHandlingException>) (this::loadDir2)).convert())
                             .filter(r -> r.result() != null)
                             .map(ResultOrThrown::result)
-                            .sorted()
+                            .sorted(Comparator.comparing(DirInfo::dirPath))
                             .toList()
                     : List.of();
             

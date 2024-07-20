@@ -247,7 +247,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
         private void checkWorksheetOrDialogsheet(Record record) {
             if (record instanceof WSBoolRecord wsbRec) {
                 if (wsbRec.getDialog()) {
-                    // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートも何故か getDialog() == false が返されるっぽい。
+                    // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートも何故か getDialog() == false が返されるっぽい。
                     throw new UnsupportedOperationException("dialog sheets are not supported");
                 }
                 step = ProcessingStep.READING_CELL_CONTENTS_AND_COMMENTS;
@@ -332,7 +332,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 case TextObjectRecord txoRec: // セルコメント抽出用
                     if (prevFtCmoRec == null) {
                         // throw new AssertionError("no preceding ftCmo record");
-                        // FIXME: [No.1 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
+                        // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートの場合もこのパスに流れ込んできてしまう。
                         break;
                     }
                     comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
@@ -400,7 +400,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 
                     // 利用者からのレポートによると、このパスに入る場合があるらしい。
                     // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
-                    // FIXME: [No.4 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
+                    // FIXME: [No.04 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
                     case STRING -> null;
                 
                     case _NONE -> throw new AssertionError("_NONE");
@@ -412,7 +412,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 };
                 
             } else {
-                // FIXME: [No.4 数式サポート改善] 数式文字列もサポートできるようにする
+                // FIXME: [No.04 数式サポート改善] 数式文字列もサポートできるようにする
                 throw new UnsupportedOperationException(
                         "extraction of formula strings is not supported");
             }

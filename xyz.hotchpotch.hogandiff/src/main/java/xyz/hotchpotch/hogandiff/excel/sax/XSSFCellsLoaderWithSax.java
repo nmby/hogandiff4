@@ -1,9 +1,6 @@
 package xyz.hotchpotch.hogandiff.excel.sax;
 
 import java.io.InputStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -12,11 +9,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -33,7 +31,9 @@ import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
+import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.IgnoreCloseInputStream;
 import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 
 /**
  * SAX (Simple API for XML) を利用して、
@@ -42,7 +42,6 @@ import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
  *
  * @author nmby
  */
-// FIXME: このローダーが読み取りパスワード付きExcelファイルに対応できるようにする
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class XSSFCellsLoaderWithSax implements CellsLoader {
@@ -99,7 +98,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         
         private final Deque<String> qNames = new ArrayDeque<>();
         private final Map<String, StringBuilder> texts = new HashMap<>();
-        private final Set<CellData> cells = new HashSet<>();
+        private final Map<String, String> addressToContent = new HashMap<>();
         
         private XSSFCellType type;
         private String address;
@@ -179,7 +178,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
                     }
                 }
                 if (value != null && !"".equals(value)) {
-                    cells.add(CellData.of(address, value, null));
+                    addressToContent.put(address, value);
                 }
                 
                 qNames.removeFirst();
@@ -196,19 +195,10 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         
         // [instance members] --------------------------------------------------
         
-        private final Set<CellData> cells;
-        private final Map<String, CellData> cellsMap;
+        private final Map<String, String> addressToComment = new HashMap<>();
         
         private String address;
         private StringBuilder comment;
-        
-        private Handler2(Set<CellData> cells) {
-            assert cells != null;
-            
-            this.cells = cells;
-            this.cellsMap = cells.parallelStream()
-                    .collect(Collectors.toMap(CellData::address, Function.identity()));
-        }
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes)
@@ -230,14 +220,7 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         @Override
         public void endElement(String uri, String localName, String qName) {
             if ("comment".equals(qName)) {
-                if (cellsMap.containsKey(address)) {
-                    CellData original = cellsMap.get(address);
-                    cells.remove(original);
-                    cells.add(original.withComment(comment.toString()));
-                } else {
-                    cells.add(CellData.of(address, "", comment.toString()));
-                }
-                
+                addressToComment.put(address, comment.toString());
                 address = null;
                 comment = null;
             }
@@ -310,49 +293,69 @@ public class XSSFCellsLoaderWithSax implements CellsLoader {
         }
         
         if (nameToInfo == null) {
-            nameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
+            nameToInfo = SaxUtil.loadSheetInfos(bookPath, readPassword).stream()
                     .collect(Collectors.toMap(
-                            SheetInfo::name,
+                            SheetInfo::sheetName,
                             Function.identity()));
         }
+        
+        if (!nameToInfo.containsKey(sheetName)) {
+            throw new ExcelHandlingException(
+                    "Processing failed. No such sheet : %s - %s".formatted(bookPath, sheetName));
+        }
+        SheetInfo info = nameToInfo.get(sheetName);
+        if (!CommonUtil.isSupportedSheetType(getClass(), EnumSet.of(info.type()))) {
+            throw new ExcelHandlingException(
+                    "Processing failed. Unsupported sheet type : %s - %s".formatted(bookPath, sheetName));
+        }
+        
         if (sst == null) {
             sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
         }
         
-        try (FileSystem fs = FileSystems.newFileSystem(bookPath)) {
-            
-            if (!nameToInfo.containsKey(sheetName)) {
-                // 例外カスケードポリシーに従い、
-                // 後続の catch でさらに ExcelHandlingException にラップする。
-                // ちょっと気持ち悪い気もするけど。
-                throw new NoSuchElementException("no such sheet : " + sheetName);
-            }
-            SheetInfo info = nameToInfo.get(sheetName);
-            // 同じく、後続の catch でさらに ExcelHandlingException にラップする。
-            CommonUtil.ifNotSupportedSheetTypeThenThrow(getClass(), EnumSet.of(info.type()));
-            
+        UnsafeFunction<ZipInputStream, Set<CellData>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            Set<CellData> cells = null;
-            
             Handler1 handler1 = new Handler1(extractCachedValue, sst);
-            try (InputStream is = Files.newInputStream(fs.getPath(info.source()))) {
-                parser.parse(is, handler1);
-            }
-            cells = handler1.cells;
+            Handler2 handler2 = new Handler2();
+            InputStream ignoreCloseZis = new IgnoreCloseInputStream(zis);
+            ZipEntry zipEntry;
             
-            if (info.commentSource() != null) {
-                Handler2 handler2 = new Handler2(cells);
-                try (InputStream is = Files.newInputStream(fs.getPath(info.commentSource()))) {
-                    parser.parse(is, handler2);
+            while ((zipEntry = zis.getNextEntry()) != null) {
+                if (zipEntry.getName().equals(info.source())) {
+                    parser.parse(ignoreCloseZis, handler1);
+                }
+                if (info.commentSource() != null && zipEntry.getName().equals(info.commentSource())) {
+                    parser.parse(ignoreCloseZis, handler2);
                 }
             }
             
-            return Set.copyOf(cells);
-            
-        } catch (Exception e) {
-            throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookPath, sheetName), e);
-        }
+            if (info.commentSource() == null || handler2.addressToComment.isEmpty()) {
+                return handler1.addressToContent.entrySet().stream()
+                        .map(entry -> CellData.of(entry.getKey(), entry.getValue(), null))
+                        .collect(Collectors.toSet());
+            } else {
+                Set<CellData> cells = handler1.addressToContent.entrySet().stream()
+                        .map(entry -> {
+                            String address = entry.getKey();
+                            String content = entry.getValue();
+                            String comment = handler2.addressToComment.containsKey(address)
+                                    ? handler2.addressToComment.get(address)
+                                    : null;
+                            return CellData.of(address, content, comment);
+                        })
+                        .collect(Collectors.toCollection(HashSet::new));
+                        
+                cells.addAll(
+                        handler2.addressToComment.entrySet().stream()
+                                .filter(entry -> !handler1.addressToContent.containsKey(entry.getKey()))
+                                .map(entry -> CellData.of(entry.getKey(), "", entry.getValue()))
+                                .toList());
+                
+                return cells;
+            }
+        };
+        
+        return SaxUtil.processExcelAsZip(bookPath, readPassword, processor);
     }
 }

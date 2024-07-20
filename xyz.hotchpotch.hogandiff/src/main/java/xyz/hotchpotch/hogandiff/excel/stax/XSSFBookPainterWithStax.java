@@ -9,12 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -430,29 +429,33 @@ public class XSSFBookPainterWithStax implements BookPainter {
         }
         
         // 次に、比較対象シートに対する着色処理を行う。
-        Map<String, SheetInfo> sheetNameToInfo = SaxUtil.loadSheetInfo(bookPath, readPassword).stream()
-                .collect(Collectors.toMap(SheetInfo::name, Function.identity()));
-        
-        for (Entry<String, Optional<Piece>> diff : diffs.entrySet()) {
-            String sheetName = diff.getKey();
-            Optional<Piece> piece = diff.getValue();
-            SheetInfo info = sheetNameToInfo.get(sheetName);
+        List<SheetInfo> sheetInfos = SaxUtil.loadSheetInfos(bookPath, readPassword);
+        for (SheetInfo sheetInfo : sheetInfos) {
+            String sheetName = sheetInfo.sheetName();
             
-            // xl/worksheets/sheet?.xml エントリに対する処理
-            String source = info.source();
-            processWorksheetEntry(inFs, outFs, stylesManager, source, piece);
-            
-            // xl/drawings/vmlDrawing?.vml エントリに対する処理
-            String vmlDrawingSource = info.vmlDrawingSource();
-            if (vmlDrawingSource != null) {
-                processCommentDrawingEntry(
-                        inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
-            }
-            
-            // xl/comments?.xml エントリに対する処理
-            String commentSource = info.commentSource();
-            if (commentSource != null) {
-                processCommentEntry(inFs, outFs, commentSource);
+            if (diffs.containsKey(sheetName)) {
+                // 比較対象シートの場合
+                Optional<Piece> piece = diffs.get(sheetName);
+                
+                // xl/worksheets/sheet?.xml エントリに対する処理
+                processWorksheetEntry(inFs, outFs, stylesManager, sheetInfo.source(), piece);
+                
+                // xl/drawings/vmlDrawing?.vml エントリに対する処理
+                String vmlDrawingSource = sheetInfo.vmlDrawingSource();
+                if (vmlDrawingSource != null) {
+                    processCommentDrawingEntry(
+                            inFs, outFs, vmlDrawingSource, piece, redundantCommentColor, diffCommentColor);
+                }
+                
+                // xl/comments?.xml エントリに対する処理
+                String commentSource = sheetInfo.commentSource();
+                if (commentSource != null) {
+                    processCommentEntry(inFs, outFs, commentSource);
+                }
+                
+            } else {
+                // 比較対象外のシートの場合
+                processWorksheetEntryClearTab(inFs, outFs, sheetInfo.source());
             }
         }
         
@@ -504,7 +507,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                         reader,
                         p.hasDiff() ? diffSheetColor : sameSheetColor);
                 
-                if (0 < p.redundantColumns().length) {
+                if (!p.redundantColumns().isEmpty()) {
                     // 余剰列にデフォルト色を付けるリーダーを追加
                     reader = PaintColumnsReader.of(
                             reader,
@@ -513,7 +516,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                             redundantColor);
                 }
                 
-                if (0 < p.redundantRows().length) {
+                if (!p.redundantRows().isEmpty()) {
                     // 余剰行にデフォルト色を付けるリーダーを追加
                     reader = PaintRowsReader.of(
                             reader,
@@ -522,7 +525,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
                             redundantColor);
                 }
                 
-                if (0 < p.redundantRows().length || 0 < p.redundantColumns().length) {
+                if (!p.redundantRows().isEmpty() || !p.redundantColumns().isEmpty()) {
                     // 余剰行や余剰列の上にあるセルに色を付けるリーダーを追加
                     reader = PaintRedundantCellsReader.of(
                             reader,
@@ -548,6 +551,33 @@ public class XSSFBookPainterWithStax implements BookPainter {
                         reader,
                         redundantSheetColor);
             }
+            
+            writer.add(reader);
+            
+        } catch (Exception e) {
+            throw new ExcelHandlingException("failed to process the entry : " + source, e);
+        }
+    }
+    
+    private void processWorksheetEntryClearTab(
+            FileSystem inFs,
+            FileSystem outFs,
+            String source)
+            throws ExcelHandlingException {
+        
+        try (InputStream is = Files.newInputStream(inFs.getPath(source));
+                OutputStream os = Files.newOutputStream(outFs.getPath(source),
+                        StandardOpenOption.TRUNCATE_EXISTING)) {
+            
+            XMLEventReader reader = inFactory.createXMLEventReader(is, "UTF-8");
+            XMLEventWriter writer = outFactory.createXMLEventWriter(os, "UTF-8");
+            
+            // 不要な要素を除去するリーダーを追加
+            reader = FilteringReader.builder(reader)
+                    //.addFilter(QNAME.SHEET_PR, QNAME.TAB_COLOR)
+                    .addFilter(QNAME.SHEET_PR)
+                    .addFilter(QNAME.CONDITIONAL_FORMATTING)
+                    .build();
             
             writer.add(reader);
             

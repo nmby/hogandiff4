@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Stats;
+import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -172,7 +172,6 @@ public record DirResult(
         if (bookResults.isEmpty()) {
             str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
             if (isDetailMode) {
-                // TODO: とても不細工なのでどうにかしたい
                 str.append(BR);
             }
             return str.toString();
@@ -189,7 +188,6 @@ public record DirResult(
             } else {
                 str.append(BR);
                 if (isDetailMode) {
-                    // TODO: とても不細工なのでどうにかしたい
                     str.append(BR);
                 }
             }
@@ -223,11 +221,11 @@ public record DirResult(
     }
     
     @Override
-    public List<Stats> getSheetStats() {
+    public List<SheetStats> sheetStats() {
         return bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(BookResult::getSheetStats)
+                .map(BookResult::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

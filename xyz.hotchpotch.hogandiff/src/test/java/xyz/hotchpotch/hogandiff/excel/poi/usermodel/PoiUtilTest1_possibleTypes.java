@@ -63,22 +63,22 @@ class PoiUtilTest1_possibleTypes {
     
     @Test
     void testPossibleTypes_xls形式() {
-        // FIXME: [No.1 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
+        // FIXME: [No.01 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
         assertEquals(
                 EnumSet.allOf(SheetType.class),
                 PoiUtil.possibleTypes(test1_xls_A1_Worksheet));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
+        // FIXME: [No.01 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
         assertEquals(
                 EnumSet.allOf(SheetType.class),
                 PoiUtil.possibleTypes(test1_xls_A2_ChartSheet));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] 「3_ダイアログ」が正しく識別されない。
+        // FIXME: [No.01 シート識別不正 - usermodel] 「3_ダイアログ」が正しく識別されない。
         assertEquals(
                 EnumSet.allOf(SheetType.class),
                 PoiUtil.possibleTypes(test1_xls_A3_DialogSheet));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
+        // FIXME: [No.01 シート識別不正 - usermodel] 「1_ワークシート」「2_グラフ」「4_マクロ」を見分ける術が分からない。
         assertEquals(
                 EnumSet.allOf(SheetType.class),
                 PoiUtil.possibleTypes(test1_xls_A4_MacroSheet));
@@ -86,7 +86,7 @@ class PoiUtilTest1_possibleTypes {
     
     @Test
     void testPossibleTypes_xlsm形式() {
-        // FIXME: [No.1 シート識別不正 - usermodel] 「1_ワークシート」と「4_マクロ」を見分ける術が分からない。
+        // FIXME: [No.01 シート識別不正 - usermodel] 「1_ワークシート」と「4_マクロ」を見分ける術が分からない。
         assertEquals(
                 EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET),
                 PoiUtil.possibleTypes(test1_xlsm_A1_Worksheet));
@@ -95,7 +95,7 @@ class PoiUtilTest1_possibleTypes {
                 EnumSet.of(SheetType.CHART_SHEET),
                 PoiUtil.possibleTypes(test1_xlsm_A2_ChartSheet));
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か .xlsm 形式のExcelブックから「3_ダイアログ」を読み込めない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か .xlsm 形式のExcelブックから「3_ダイアログ」を読み込めない。
         // つまり test1_xlsm_A3_DialogSheet == null。なのでテストできない。
         // どうしようもないのかしら？？
         //assertEquals(
@@ -103,7 +103,7 @@ class PoiUtilTest1_possibleTypes {
         //        PoiUtil.possibleTypes(test1_xlsm_A3_DialogSheet));
         assertNull(test1_xlsm_A3_DialogSheet);
         
-        // FIXME: [No.1 シート識別不正 - usermodel] どういう訳か .xlsm 形式のExcelブックから「4_マクロ」を読み込めない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か .xlsm 形式のExcelブックから「4_マクロ」を読み込めない。
         // つまり test1_xlsm_A4_MacroSheet == null。なのでテストできない。
         // どうしようもないのかしら？？
         //assertEquals(
