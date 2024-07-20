@@ -216,6 +216,7 @@ public class BookReportCreator {
                             sheetResult.redundantRows().b().size()));
             rowIdx++;
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE + 1, rowIdx);
+            sheet.groupRow(rowIdx, rowIdx);
             
             Pair<String> rRows = sheetResult.redundantRows()
                     .map(rows -> rows.stream().map(i -> String.valueOf(i + 1)).collect(Collectors.joining(", ")));
@@ -233,6 +234,7 @@ public class BookReportCreator {
                             sheetResult.redundantColumns().b().size()));
             rowIdx++;
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE + 1, rowIdx);
+            sheet.groupRow(rowIdx, rowIdx);
             
             Pair<String> rCols = sheetResult.redundantColumns()
                     .map(cols -> cols.stream().map(CellsUtil::columnIdxToStr).collect(Collectors.joining(", ")));
@@ -248,6 +250,7 @@ public class BookReportCreator {
                     rb.getString("excel.poi.usermodel.BookResultBookCreator.080").formatted(
                             sheetResult.diffCells().size()));
             rowIdx++;
+            int start = rowIdx;
             
             for (Pair<CellData> pair : sheetResult.diffCells()) {
                 PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE + 1, rowIdx);
@@ -258,6 +261,7 @@ public class BookReportCreator {
                 PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1, pair.b().dataString());
                 rowIdx++;
             }
+            sheet.groupRow(start, rowIdx - 1);
         }
         return rowIdx;
     }
