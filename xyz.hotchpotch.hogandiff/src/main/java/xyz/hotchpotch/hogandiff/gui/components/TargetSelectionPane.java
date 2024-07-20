@@ -433,17 +433,21 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
                 
-                if (bookInfo.status() == Status.LOAD_COMPLETED) {
-                    readPasswords.put(newBookPath, readPassword);
-                    return bookInfo;
-                }
-                
-                PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
-                Optional<String> newPassword = dialog.showAndWait();
-                if (newPassword.isPresent()) {
-                    readPassword = newPassword.get();
-                } else {
-                    return bookInfo;
+                switch (bookInfo.status()) {
+                    case LOAD_COMPLETED:
+                        readPasswords.put(newBookPath, readPassword);
+                        return bookInfo;
+                    
+                    case LOAD_FAILED:
+                        return bookInfo;
+                    
+                    case NEEDS_PASSWORD:
+                        PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
+                        Optional<String> newPassword = dialog.showAndWait();
+                        if (!newPassword.isPresent()) {
+                            return bookInfo;
+                        }
+                        readPassword = newPassword.get();
                 }
             }
         } catch (Exception e) {
