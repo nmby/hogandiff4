@@ -168,12 +168,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         int maxSize = Math.max(listA.size(), listB.size());
         int sumSize = listA.size() + listB.size();
         
-        long[] accCosts2 = null;
-        long[] accCosts1 = new long[] { 0 };
-        long[] accCosts0 = null;
-        ComeFrom[] comeFrom2 = null;
-        ComeFrom[] comeFrom1 = new ComeFrom[] { null };
-        ComeFrom[] comeFrom0 = null;
+        long[] accCosts2 = new long[minSize + 2];
+        long[] accCosts1 = new long[minSize + 2];
+        long[] accCosts0 = new long[minSize + 2];
+        ComeFrom[] comeFrom2 = new ComeFrom[minSize + 2];
+        ComeFrom[] comeFrom1 = new ComeFrom[minSize + 2];
+        ComeFrom[] comeFrom0 = new ComeFrom[minSize + 2];
         int sliceLen1 = 1;
         
         for (int n = 0; n < sumSize; n++) {
@@ -182,10 +182,6 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                     : n < maxSize
                             ? minSize + 2
                             : sumSize - n + 2;
-            
-            // FIXME: [No.12 性能改善] ループごとにメモリ領域を確保するのではなく使い回す方式に変更する
-            accCosts0 = new long[minSize + 2];
-            comeFrom0 = new ComeFrom[minSize + 2];
             
             if (n < listA.size()) {
                 accCosts0[0] = accCosts1[0] + gapCostsA[n];
@@ -236,14 +232,30 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                 }
             });
             
+            long[] accCostsTmp = accCosts2;
             accCosts2 = accCosts1;
             accCosts1 = accCosts0;
+            accCosts0 = accCostsTmp;
+            
+            ComeFrom[] comeFromTmp = comeFrom2;
             comeFrom2 = comeFrom1;
             comeFrom1 = comeFrom0;
+            comeFrom0 = comeFromTmp;
+            
             sliceLen1 = sliceLen0;
         }
         
-        return comeFrom0[1];
+        ComeFrom finalResult = comeFrom1[1];
+        
+        // どれだけ意味があるのか分からないが長大配列をGCしてもらうために null 代入しておく
+        accCosts2 = null;
+        accCosts1 = null;
+        accCosts0 = null;
+        comeFrom2 = null;
+        comeFrom1 = null;
+        comeFrom0 = null;
+        
+        return finalResult;
     }
     
     private List<IntPair> traceBestRoute(
