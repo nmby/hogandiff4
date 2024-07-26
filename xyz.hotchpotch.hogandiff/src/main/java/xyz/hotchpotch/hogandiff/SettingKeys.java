@@ -247,7 +247,7 @@ public class SettingKeys {
     public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<>(
             "report.redundantCommentColor",
             () -> new Color(255, 128, 128),
-            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -255,7 +255,7 @@ public class SettingKeys {
     public static final Key<Color> DIFF_COMMENT_COLOR = new Key<>(
             "report.diffCommentColor",
             () -> Color.YELLOW,
-            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -263,7 +263,7 @@ public class SettingKeys {
     public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<>(
             "report.redundantSheetColor",
             () -> Color.RED,
-            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -271,7 +271,7 @@ public class SettingKeys {
     public static final Key<Color> DIFF_SHEET_COLOR = new Key<>(
             "report.diffSheetColor",
             () -> Color.YELLOW,
-            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
@@ -279,7 +279,7 @@ public class SettingKeys {
     public static final Key<Color> SAME_SHEET_COLOR = new Key<>(
             "report.sameSheetColor",
             () -> Color.CYAN,
-            color -> "%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
+            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
     
