@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -11,9 +10,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -53,16 +50,6 @@ public class BookReportCreator {
     private static final IntPair COL_LEFT = IntPair.of(3, 5);
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
-    
-    private static String sanitize(Path path) {
-        try {
-            URI uri = path.toAbsolutePath().toUri();
-            return uri.toString().replaceFirst("file:///", "");
-            
-        } catch (Exception e) {
-            return path.toString().replace("\\", "/").replace(" ", "%20");
-        }
-    }
     
     // [instance members] ******************************************************
     
@@ -152,19 +139,19 @@ public class BookReportCreator {
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
         PoiUtil.setCellValue(sheet, 0, COL_LEFT.a() + 1, localDateTime);
         
-        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
-        linkW.setAddress(sanitize(workDir));
-        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a() + 1, workDir.toString()).setHyperlink(linkW);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 1, COL_LEFT.a() + 1, workDir.toString()),
+                workDir);
         
         Path bookPathA = bookResult.bookComparison().parentBookInfoPair().a().bookPath();
-        Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
-        linkA.setAddress(sanitize(bookPathA));
-        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookPathA.toString()).setHyperlink(linkA);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookPathA.toString()),
+                bookPathA);
         
         Path bookPathB = bookResult.bookComparison().parentBookInfoPair().b().bookPath();
-        Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
-        linkB.setAddress(sanitize(bookPathB));
-        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookPathB.toString()).setHyperlink(linkB);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookPathB.toString()),
+                bookPathB);
         
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.040"));

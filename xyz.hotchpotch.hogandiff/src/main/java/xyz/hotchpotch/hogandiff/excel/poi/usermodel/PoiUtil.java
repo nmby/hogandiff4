@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.record.ExtendedFormatRecord;
 import org.apache.poi.hssf.usermodel.HSSFComment;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -31,8 +33,10 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -699,6 +703,34 @@ public class PoiUtil {
                 //nop
             }
         }
+    }
+    
+    /**
+     * 指定されたセルに指定されたパスへのハイパーリンクを設定します。<br>
+     * 
+     * @param cell ハイパーリンクを付与するセル
+     * @param path ハイパーリンク化するパス
+     * @return セル
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
+    public static Cell setHyperlink(
+            Cell cell,
+            Path path) {
+        
+        Objects.requireNonNull(cell);
+        Objects.requireNonNull(path);
+        
+        try {
+            CreationHelper ch = cell.getSheet().getWorkbook().getCreationHelper();
+            Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
+            String pathStr = path.toUri().toString();
+            link.setAddress(pathStr);
+            cell.setHyperlink(link);
+            
+        } catch (Exception e) {
+            // nop
+        }
+        return cell;
     }
     
     // [instance members] ******************************************************
