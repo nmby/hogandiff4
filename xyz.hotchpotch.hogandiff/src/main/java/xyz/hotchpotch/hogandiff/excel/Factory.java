@@ -195,9 +195,8 @@ public class Factory {
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
         Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
         Color diffCommentColor = settings.get(SettingKeys.DIFF_COMMENT_COLOR);
-        // もうなんか滅茶苦茶や・・・
-        String redundantCommentHex = "#" + SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
-        String diffCommentHex = "#" + SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
+        String redundantCommentHex = SettingKeys.REDUNDANT_COMMENT_COLOR.encoder().apply(redundantCommentColor);
+        String diffCommentHex = SettingKeys.DIFF_COMMENT_COLOR.encoder().apply(diffCommentColor);
         Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
         Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
