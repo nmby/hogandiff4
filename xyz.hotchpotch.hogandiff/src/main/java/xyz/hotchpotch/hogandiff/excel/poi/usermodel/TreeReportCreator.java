@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -14,9 +13,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.BiFunction;
 
-import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -59,16 +56,6 @@ public class TreeReportCreator {
     private static final String DIFF_FAILED = "?";
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
-    
-    private static String sanitize(Path path) {
-        try {
-            URI uri = path.toAbsolutePath().toUri();
-            return uri.toString().replaceFirst("file:///", "");
-            
-        } catch (Exception e) {
-            return path.toString().replace("\\", "/").replace(" ", "%20");
-        }
-    }
     
     // [instance members] ******************************************************
     
@@ -235,19 +222,19 @@ public class TreeReportCreator {
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
         PoiUtil.setCellValue(sheet, 0, 5, localDateTime);
         
-        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
-        linkW.setAddress(sanitize(workDir));
-        PoiUtil.setCellValue(sheet, 1, 5, workDir.toString()).setHyperlink(linkW);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 1, 5, workDir.toString()),
+                workDir);
         
         Path topDirA = treeResult.flattenDirComparison().parentDirInfoPair().a().dirPath();
-        Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
-        linkA.setAddress(sanitize(topDirA));
-        PoiUtil.setCellValue(sheet, 2, 5, topDirA.toString()).setHyperlink(linkA);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 2, 5, topDirA.toString()),
+                topDirA);
         
         Path topDirB = treeResult.flattenDirComparison().parentDirInfoPair().b().dirPath();
-        Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
-        linkB.setAddress(sanitize(topDirB));
-        PoiUtil.setCellValue(sheet, 3, 5, topDirB.toString()).setHyperlink(linkB);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 3, 5, topDirB.toString()),
+                topDirB);
     }
     
     private void outputDirLine(
@@ -267,9 +254,9 @@ public class TreeReportCreator {
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 1, dirRelNamePair.get(side));
                 
                 // ハイパーリンクの設定
-                Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
-                link.setAddress(sanitize(outputDirPair.get(side)));
-                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(link);
+                PoiUtil.setHyperlink(
+                        PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)),
+                        outputDirPair.get(side));
             }
         }
     }
@@ -297,14 +284,15 @@ public class TreeReportCreator {
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side) + 3, bookName);
                 
                 // ハイパーリンクの設定
-                Hyperlink dirLink = ch.createHyperlink(HyperlinkType.FILE);
-                dirLink.setAddress(sanitize(outputDirPair.get(side)));
-                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)).setHyperlink(dirLink);
+                PoiUtil.setHyperlink(
+                        PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side)),
+                        outputDirPair.get(side));
                 
-                Hyperlink fileLink = ch.createHyperlink(HyperlinkType.FILE);
-                fileLink.setAddress(sanitize(outputDirPair.get(side)
-                        .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookName))));
-                PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2).setHyperlink(fileLink);
+                Path bookPath = outputDirPair.get(side)
+                        .resolve("【%s%s-%d】%s".formatted(side, dirId, bookNo, bookName));
+                PoiUtil.setHyperlink(
+                        PoiUtil.getCell(sheet, rowNo, COL_LEFT.get(side) + 2),
+                        bookPath);
             }
         }
         

@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.excel.poi.usermodel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -11,9 +10,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -41,28 +38,19 @@ public class BookReportCreator {
     
     private static final String templateBookName = "result_book.xlsx";
     private static final String sheetName = "result";
+    private static final int MAX_CHARS = 2_000;
     
     private static final int ROW_TEMPLATE_SHEET_TITLE = 4;
     private static final int ROW_TEMPLATE_NO_DIFF = 5;
     private static final int ROW_TEMPLATE_NO_OPPONENT = 6;
     private static final int ROW_TEMPLATE_FAILED = 7;
     private static final int ROW_TEMPLATE_RROWS_TITLE = 8;
-    private static final int ROW_TEMPLATE_RCOLS_TITLE = 10;
-    private static final int ROW_TEMPLATE_DCELLS_TITLE = 12;
-    private static final int ROW_START = 15;
+    private static final int ROW_TEMPLATE_RCOLS_TITLE = 12;
+    private static final int ROW_TEMPLATE_DCELLS_TITLE = 16;
+    private static final int ROW_START = 19;
     private static final IntPair COL_LEFT = IntPair.of(3, 5);
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
-    
-    private static String sanitize(Path path) {
-        try {
-            URI uri = path.toAbsolutePath().toUri();
-            return uri.toString().replaceFirst("file:///", "");
-            
-        } catch (Exception e) {
-            return path.toString().replace("\\", "/").replace(" ", "%20");
-        }
-    }
     
     // [instance members] ******************************************************
     
@@ -152,19 +140,19 @@ public class BookReportCreator {
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
         PoiUtil.setCellValue(sheet, 0, COL_LEFT.a() + 1, localDateTime);
         
-        Hyperlink linkW = ch.createHyperlink(HyperlinkType.FILE);
-        linkW.setAddress(sanitize(workDir));
-        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a() + 1, workDir.toString()).setHyperlink(linkW);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 1, COL_LEFT.a() + 1, workDir.toString()),
+                workDir);
         
         Path bookPathA = bookResult.bookComparison().parentBookInfoPair().a().bookPath();
-        Hyperlink linkA = ch.createHyperlink(HyperlinkType.FILE);
-        linkA.setAddress(sanitize(bookPathA));
-        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookPathA.toString()).setHyperlink(linkA);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookPathA.toString()),
+                bookPathA);
         
         Path bookPathB = bookResult.bookComparison().parentBookInfoPair().b().bookPath();
-        Hyperlink linkB = ch.createHyperlink(HyperlinkType.FILE);
-        linkB.setAddress(sanitize(bookPathB));
-        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookPathB.toString()).setHyperlink(linkB);
+        PoiUtil.setHyperlink(
+                PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookPathB.toString()),
+                bookPathB);
         
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.040"));
@@ -220,14 +208,44 @@ public class BookReportCreator {
                             sheetResult.redundantRows().a().size(),
                             sheetResult.redundantRows().b().size()));
             rowIdx++;
-            PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE + 1, rowIdx);
-            sheet.groupRow(rowIdx, rowIdx);
             
             Pair<String> rRows = sheetResult.redundantRows()
                     .map(rows -> rows.stream().map(i -> String.valueOf(i + 1)).collect(Collectors.joining(", ")));
-            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1, rRows.a());
-            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1, rRows.b());
-            rowIdx++;
+            String rRowsA = rRows.a();
+            String rRowsB = rRows.b();
+            int rRowsStart = rowIdx;
+            
+            while (!rRowsA.isEmpty() || !rRowsB.isEmpty()) {
+                boolean isLast = rRowsA.length() <= MAX_CHARS && rRowsB.length() <= MAX_CHARS;
+                PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE + (isLast ? 3 : 2), rowIdx);
+                if (rowIdx == rRowsStart) {
+                    PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(), "【A】");
+                    PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b(), "【B】");
+                }
+                
+                String a = null;
+                String b = null;
+                if (rRowsA.length() <= MAX_CHARS) {
+                    a = rRowsA;
+                    rRowsA = "";
+                } else {
+                    int idx = rRowsA.lastIndexOf(", ", MAX_CHARS) + 2;
+                    a = rRowsA.substring(0, idx);
+                    rRowsA = rRowsA.substring(idx);
+                }
+                if (rRowsB.length() <= MAX_CHARS) {
+                    b = rRowsB;
+                    rRowsB = "";
+                } else {
+                    int idx = rRowsB.lastIndexOf(", ", MAX_CHARS) + 2;
+                    b = rRowsB.substring(0, idx);
+                    rRowsB = rRowsB.substring(idx);
+                }
+                PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1, a);
+                PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1, b);
+                rowIdx++;
+            }
+            sheet.groupRow(rRowsStart, rowIdx - 1);
         }
         
         // 余剰列ありの場合
@@ -238,14 +256,44 @@ public class BookReportCreator {
                             sheetResult.redundantColumns().a().size(),
                             sheetResult.redundantColumns().b().size()));
             rowIdx++;
-            PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE + 1, rowIdx);
-            sheet.groupRow(rowIdx, rowIdx);
             
             Pair<String> rCols = sheetResult.redundantColumns()
                     .map(cols -> cols.stream().map(CellsUtil::columnIdxToStr).collect(Collectors.joining(", ")));
-            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1, rCols.a());
-            PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1, rCols.b());
-            rowIdx++;
+            String rColsA = rCols.a();
+            String rColsB = rCols.b();
+            int rColsStart = rowIdx;
+            
+            while (!rColsA.isEmpty() || !rColsB.isEmpty()) {
+                boolean isLast = rColsA.length() <= MAX_CHARS && rColsB.length() <= MAX_CHARS;
+                PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE + (isLast ? 3 : 2), rowIdx);
+                if (rowIdx == rColsStart) {
+                    PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(), "【A】");
+                    PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b(), "【B】");
+                }
+                
+                String a = null;
+                String b = null;
+                if (rColsA.length() <= MAX_CHARS) {
+                    a = rColsA;
+                    rColsA = "";
+                } else {
+                    int idx = rColsA.lastIndexOf(", ", MAX_CHARS) + 2;
+                    a = rColsA.substring(0, idx);
+                    rColsA = rColsA.substring(idx);
+                }
+                if (rColsB.length() <= MAX_CHARS) {
+                    b = rColsB;
+                    rColsB = "";
+                } else {
+                    int idx = rColsB.lastIndexOf(", ", MAX_CHARS) + 2;
+                    b = rColsB.substring(0, idx);
+                    rColsB = rColsB.substring(idx);
+                }
+                PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1, a);
+                PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1, b);
+                rowIdx++;
+            }
+            sheet.groupRow(rColsStart, rowIdx - 1);
         }
         
         // 差分セルありの場合
