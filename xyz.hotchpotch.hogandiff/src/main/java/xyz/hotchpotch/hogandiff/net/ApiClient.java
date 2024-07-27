@@ -20,7 +20,7 @@ public class ApiClient {
     
     // [static members] ********************************************************
     
-    private static final String endpointUrl = "https://api-hogandiff.hotchpotch.xyz/postStats";
+    private static final String endpointUrl = "https://api.hogandiff.hotchpotch.info/postStats";
     
     // [instance members] ******************************************************
     
