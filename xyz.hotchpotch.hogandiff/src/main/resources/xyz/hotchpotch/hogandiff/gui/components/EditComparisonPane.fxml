@@ -18,7 +18,7 @@
 			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
 			AnchorPane.topAnchor="10.0">
 			<graphic>
-				<ImageView fitWidth="20.0" pickOnBounds="true"
+				<ImageView fitWidth="18.0" pickOnBounds="true"
 					preserveRatio="true">
 					<image>
 						<Image url="@tune-vertical.png" />
