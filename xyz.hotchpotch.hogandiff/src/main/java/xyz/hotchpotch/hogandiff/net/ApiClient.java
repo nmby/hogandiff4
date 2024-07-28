@@ -49,7 +49,7 @@ public class ApiClient {
                 System.err.println("Failed to send stats. Status code: " + response.statusCode());
             }
         }).exceptionally(e -> {
-            System.err.println("An error occurred while sending stats: " + e.getMessage());
+            e.printStackTrace();
             return null;
         });
     }
