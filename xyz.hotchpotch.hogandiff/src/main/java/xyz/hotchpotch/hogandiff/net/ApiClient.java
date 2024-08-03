@@ -32,7 +32,7 @@ public class ApiClient {
      * @param stats 比較実行結果の統計情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public void sendStatsAsync(Stats stats) {
+    public void postStatsAsync(Stats stats) {
         Objects.requireNonNull(stats);
         
         HttpRequest request = HttpRequest.newBuilder()
@@ -46,10 +46,11 @@ public class ApiClient {
         
         future.thenAccept(response -> {
             if (response.statusCode() < 200 || 300 <= response.statusCode()) {
-                System.err.println("Failed to send stats. Status code: " + response.statusCode());
+                System.err.println("統計情報送信失敗(POST): " + response.statusCode());
             }
         }).exceptionally(e -> {
-            System.err.println("An error occurred while sending stats: " + e.getMessage());
+            System.err.println("統計情報送信失敗(POST):");
+            e.printStackTrace();
             return null;
         });
     }

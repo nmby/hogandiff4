@@ -485,7 +485,7 @@ public class MainController extends VBox {
             try {
                 Stats report = task.get();
                 ApiClient client = new ApiClient();
-                client.sendStatsAsync(report);
+                client.postStatsAsync(report);
                 
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
