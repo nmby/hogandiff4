@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.net;
 
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,8 +25,6 @@ public class ApiClient {
     
     // [instance members] ******************************************************
     
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    
     /**
      * 比較実行結果の統計情報をWeb API向けにPOSTします。<br>
      * 
@@ -34,6 +33,10 @@ public class ApiClient {
      */
     public void postStatsAsync(Stats stats) {
         Objects.requireNonNull(stats);
+        
+        HttpClient httpClient = HttpClient.newBuilder()
+                .proxy(ProxySelector.getDefault())
+                .build();
         
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpointUrl))
