@@ -264,6 +264,9 @@ public abstract sealed class Stats
                 maxDCells = Math.max(maxDCells, stats.diffCells());
             }
             
+            // num: result.sheetStats().size(): "99"
+            str.append("&num=").append(result.sheetStats().size());
+            
             // sr: sumRows(A-B): "9-9"
             str.append("&sr=").append("%d-%d".formatted(sumRows.a(), sumRows.b()));
             

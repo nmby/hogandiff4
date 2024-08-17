@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.net;
 
+import java.io.IOException;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -8,7 +9,6 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import xyz.hotchpotch.hogandiff.Stats;
 
@@ -31,30 +31,54 @@ public class ApiClient {
      * @param stats 比較実行結果の統計情報
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public void postStatsAsync(Stats stats) {
+    public void sendStatsAsync(Stats stats) {
         Objects.requireNonNull(stats);
         
         HttpClient httpClient = HttpClient.newBuilder()
                 .proxy(ProxySelector.getDefault())
                 .build();
         
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpointUrl))
-                .header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofString(stats.toJsonString(), StandardCharsets.UTF_8))
-                .build();
-        
-        CompletableFuture<HttpResponse<Void>> future = httpClient
-                .sendAsync(request, HttpResponse.BodyHandlers.discarding());
-        
-        future.thenAccept(response -> {
-            if (response.statusCode() < 200 || 300 <= response.statusCode()) {
-                System.err.println("統計情報送信失敗(POST): " + response.statusCode());
+        Thread.startVirtualThread(() -> {
+            boolean postResult = postStats(stats, httpClient);
+            if (postResult) {
+                return;
             }
-        }).exceptionally(e -> {
-            System.err.println("統計情報送信失敗(POST):");
-            e.printStackTrace();
-            return null;
+            boolean getResult = getStats(stats, httpClient);
+            if (getResult) {
+                return;
+            }
+            System.err.println("Failed to send stats.");
         });
+    }
+    
+    private boolean postStats(Stats stats, HttpClient httpClient) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpointUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(BodyPublishers.ofString(stats.toJsonString(), StandardCharsets.UTF_8))
+                    .build();
+            
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return 200 <= response.statusCode() && response.statusCode() < 300;
+            
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+    
+    private boolean getStats(Stats stats, HttpClient httpClient) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpointUrl + "?" + stats.toUrlParamString()))
+                    .GET()
+                    .build();
+            
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return 200 <= response.statusCode() && response.statusCode() < 300;
+            
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
     }
 }
