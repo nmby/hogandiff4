@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff.net;
 
+import java.io.IOException;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -7,7 +9,6 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import xyz.hotchpotch.hogandiff.Stats;
 
@@ -24,8 +25,6 @@ public class ApiClient {
     
     // [instance members] ******************************************************
     
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    
     /**
      * 比較実行結果の統計情報をWeb API向けにPOSTします。<br>
      * 
@@ -35,22 +34,51 @@ public class ApiClient {
     public void sendStatsAsync(Stats stats) {
         Objects.requireNonNull(stats);
         
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpointUrl))
-                .header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofString(stats.toJsonString(), StandardCharsets.UTF_8))
+        HttpClient httpClient = HttpClient.newBuilder()
+                .proxy(ProxySelector.getDefault())
                 .build();
         
-        CompletableFuture<HttpResponse<Void>> future = httpClient
-                .sendAsync(request, HttpResponse.BodyHandlers.discarding());
-        
-        future.thenAccept(response -> {
-            if (response.statusCode() < 200 || 300 <= response.statusCode()) {
-                System.err.println("Failed to send stats. Status code: " + response.statusCode());
+        Thread.startVirtualThread(() -> {
+            boolean postResult = postStats(stats, httpClient);
+            if (postResult) {
+                return;
             }
-        }).exceptionally(e -> {
-            System.err.println("An error occurred while sending stats: " + e.getMessage());
-            return null;
+            boolean getResult = getStats(stats, httpClient);
+            if (getResult) {
+                return;
+            }
+            System.err.println("Failed to send stats.");
         });
+    }
+    
+    private boolean postStats(Stats stats, HttpClient httpClient) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpointUrl))
+                    .header("Content-Type", "application/json")
+                    .POST(BodyPublishers.ofString(stats.toJsonString(), StandardCharsets.UTF_8))
+                    .build();
+            
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return 200 <= response.statusCode() && response.statusCode() < 300;
+            
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+    
+    private boolean getStats(Stats stats, HttpClient httpClient) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpointUrl + "?" + stats.toUrlParamString()))
+                    .GET()
+                    .build();
+            
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
+            return 200 <= response.statusCode() && response.statusCode() < 300;
+            
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
     }
 }

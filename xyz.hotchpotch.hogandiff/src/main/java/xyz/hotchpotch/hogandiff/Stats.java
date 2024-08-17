@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -203,6 +205,106 @@ public abstract sealed class Stats
                 }
             };
         }
+        
+        @Override
+        protected String toUrlParamString2() {
+            StringBuilder str = new StringBuilder();
+            
+            switch (super.settings.get(SettingKeys.CURR_MENU)) {
+                case COMPARE_TREES:
+                    // pd: dirPairs(paired-unpaired): "9-9"
+                    IntPair dPair = dirPairs(result);
+                    str.append("&pd=").append("%d-%d".formatted(dPair.a(), dPair.b()));
+                    
+                    // fallthrough
+                    
+                case COMPARE_DIRS:
+                    // pb: bookPairs(paired-unpaired): "9-9"
+                    IntPair bPair = bookPairs(result);
+                    str.append("&pb=").append("%d-%d".formatted(bPair.a(), bPair.b()));
+                    
+                    // fallthrough
+                    
+                case COMPARE_BOOKS:
+                    // ps: sheetPairs(paired-unpaired): "9-9"
+                    IntPair sPair = sheetPairs(result);
+                    str.append("&ps=").append("%d-%d".formatted(sPair.a(), sPair.b()));
+                    
+                    // fallthrough
+                    
+                case COMPARE_SHEETS:
+                    // nop
+            }
+            
+            IntPair sumRows = IntPair.of(0, 0);
+            IntPair sumCols = IntPair.of(0, 0);
+            IntPair sumCells = IntPair.of(0, 0);
+            IntPair sumRRows = IntPair.of(0, 0);
+            IntPair sumRCols = IntPair.of(0, 0);
+            int sumDCells = 0;
+            int maxRows = 0;
+            int maxCols = 0;
+            int maxCells = 0;
+            int maxRRows = 0;
+            int maxRCols = 0;
+            int maxDCells = 0;
+            
+            for (SheetStats stats : result.sheetStats()) {
+                sumRows = sumIntPairs.apply(sumRows, stats.rows());
+                sumCols = sumIntPairs.apply(sumCols, stats.columns());
+                sumCells = sumIntPairs.apply(sumCells, stats.cells());
+                sumRRows = sumIntPairs.apply(sumRRows, stats.redundantRows());
+                sumRCols = sumIntPairs.apply(sumRCols, stats.redundantColumns());
+                sumDCells += stats.diffCells();
+                maxRows = Math.max(maxRows, Math.max(stats.rows().a(), stats.rows().b()));
+                maxCols = Math.max(maxCols, Math.max(stats.columns().a(), stats.columns().b()));
+                maxCells = Math.max(maxCells, Math.max(stats.cells().a(), stats.cells().b()));
+                maxRRows = Math.max(maxRRows, Math.max(stats.redundantRows().a(), stats.redundantRows().b()));
+                maxRCols = Math.max(maxRCols, Math.max(stats.redundantColumns().a(), stats.redundantColumns().b()));
+                maxDCells = Math.max(maxDCells, stats.diffCells());
+            }
+            
+            // num: result.sheetStats().size(): "99"
+            str.append("&num=").append(result.sheetStats().size());
+            
+            // sr: sumRows(A-B): "9-9"
+            str.append("&sr=").append("%d-%d".formatted(sumRows.a(), sumRows.b()));
+            
+            // sc: sumCols(A-B): "9-9"
+            str.append("&sc=").append("%d-%d".formatted(sumCols.a(), sumCols.b()));
+            
+            // se: sumCells(A-B): "9-9"
+            str.append("&se=").append("%d-%d".formatted(sumCells.a(), sumCells.b()));
+            
+            // srr: sumRRows(A-B): "9-9"
+            str.append("&srr=").append("%d-%d".formatted(sumRRows.a(), sumRRows.b()));
+            
+            // src: sumRCols(A-B): "9-9"
+            str.append("&src=").append("%d-%d".formatted(sumRCols.a(), sumRCols.b()));
+            
+            // sde: sumDCells(A-B): "9"
+            str.append("&sde=").append(sumDCells);
+            
+            // mr: maxRows: "9"
+            str.append("&mr=").append(maxRows);
+            
+            // mc: maxCols: "9"
+            str.append("&mc=").append(maxCols);
+            
+            // me: maxCells: "9"
+            str.append("&me=").append(maxCells);
+            
+            // mrr: maxRRows: "9"
+            str.append("&mrr=").append(maxRRows);
+            
+            // mrc: maxRCols: "9"
+            str.append("&mrc=").append(maxRCols);
+            
+            // mde: maxDCells: "9"
+            str.append("&mde=").append(maxDCells);
+            
+            return str.toString();
+        }
     }
     
     /**
@@ -268,6 +370,19 @@ public abstract sealed class Stats
             
             return exceptions;
         }
+        
+        @Override
+        protected String toUrlParamString2() {
+            String chain = getChain().stream()
+                    .map(Throwable::getClass)
+                    .map(Class::getName)
+                    .collect(Collectors.joining("-"));
+            
+            return "&thr=%s&msg=%s".formatted(
+                    chain,
+                    URLEncoder.encode(thrown.getMessage(), StandardCharsets.UTF_8));
+        }
+        
     }
     
     // [instance members] ******************************************************
@@ -375,4 +490,68 @@ public abstract sealed class Stats
      * @return サブクラス独自内容のJSON形式の文字列表現
      */
     protected abstract String toJsonString2();
+    
+    /**
+     * この統計情報のURLクエリパラメータ形式の文字列表現を返します。<br>
+     * 
+     * @return この統計情報のURLクエリパラメータ形式の文字列表現
+     */
+    public String toUrlParamString() {
+        StringBuilder str = new StringBuilder();
+        
+        // p00: CLIENT_UUID: "01234567-89ab-cde0-1234-56789abcde01"
+        str.append("p00=").append(settings.get(SettingKeys.CLIENT_UUID));
+        
+        // p01: APP_VERSION: "v0.22.1"
+        str.append("&p01=").append(settings.get(SettingKeys.APP_VERSION));
+        
+        // p02: APP_LOCALE: "ja"/"en"/"cn"
+        str.append("&p02=").append(settings.get(SettingKeys.APP_LOCALE));
+        
+        // p11: CONSIDER_ROW_GAPS: "y"/"n"
+        str.append("&p11=").append(settings.get(SettingKeys.CONSIDER_ROW_GAPS) ? "y" : "n");
+        
+        // p12: CONSIDER_COLUMN_GAPS: "y"/"n"
+        str.append("&p12=").append(settings.get(SettingKeys.CONSIDER_COLUMN_GAPS) ? "y" : "n");
+        
+        // p13: COMPARE_ON_FORMULA_STRING: "y"/"n"
+        str.append("&p13=").append(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING) ? "y" : "n");
+        
+        // p14: SHOW_PAINTED_SHEETS: "y"/"n"
+        str.append("&p14=").append(settings.get(SettingKeys.SHOW_PAINTED_SHEETS) ? "y" : "n");
+        
+        // p15: SHOW_RESULT_REPORT: "y"/"n"
+        str.append("&p15=").append(settings.get(SettingKeys.SHOW_RESULT_REPORT) ? "y" : "n");
+        
+        // p16: EXIT_WHEN_FINISHED: "y"/"n"
+        str.append("&p16=").append(settings.get(SettingKeys.EXIT_WHEN_FINISHED) ? "y" : "n");
+        
+        // p17: PRIORITIZE_SPEED: "y"/"n"
+        str.append("&p17=").append(settings.get(SettingKeys.PRIORITIZE_SPEED) ? "y" : "n");
+        
+        // p21: CURR_MENU: "S"/"B"/"D"/"T"
+        str.append("&p21=").append(switch (settings.get(SettingKeys.CURR_MENU)) {
+            case COMPARE_SHEETS -> "S";
+            case COMPARE_BOOKS -> "B";
+            case COMPARE_DIRS -> "D";
+            case COMPARE_TREES -> "T";
+        });
+        
+        // p22: executedAt: "2024-08-11T09%3A18%3A22.556913700Z"
+        str.append("&p22=").append(start.toString().replace(":", "%3A"));
+        
+        // p23: elapsedMillis: "9999"
+        str.append("&p23=").append(Duration.between(start, end).toMillis());
+        
+        str.append(toUrlParamString2());
+        
+        return str.toString();
+    }
+    
+    /**
+     * サブクラス独自内容のURLクエリパラメータ形式の文字列表現を返します。<br>
+     * 
+     * @return サブクラス独自内容のURLクエリパラメータ形式の文字列表現
+     */
+    protected abstract String toUrlParamString2();
 }
