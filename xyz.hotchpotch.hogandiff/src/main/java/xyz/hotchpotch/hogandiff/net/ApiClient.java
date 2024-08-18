@@ -8,6 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.Stats;
@@ -21,7 +22,10 @@ public class ApiClient {
     
     // [static members] ********************************************************
     
-    private static final String endpointUrl = "https://api.hogandiff.hotchpotch.info/postStats";
+    private static final List<String> endpointUrls = List.of(
+            "https://api.hogandiff.hotchpotch.info/postStats",
+            "https://hogandiff-prod1.firebaseapp.com/postStats",
+            "https://hogandiff-prod1.web.app/postStats");
     
     // [instance members] ******************************************************
     
@@ -39,19 +43,21 @@ public class ApiClient {
                 .build();
         
         Thread.startVirtualThread(() -> {
-            boolean postResult = postStats(stats, httpClient);
-            if (postResult) {
-                return;
-            }
-            boolean getResult = getStats(stats, httpClient);
-            if (getResult) {
-                return;
+            for (String endpointUrl : endpointUrls) {
+                boolean postResult = postStats(endpointUrl, httpClient, stats);
+                if (postResult) {
+                    return;
+                }
+                boolean getResult = getStats(endpointUrl, httpClient, stats);
+                if (getResult) {
+                    return;
+                }
             }
             System.err.println("Failed to send stats.");
         });
     }
     
-    private boolean postStats(Stats stats, HttpClient httpClient) {
+    private boolean postStats(String endpointUrl, HttpClient httpClient, Stats stats) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(endpointUrl))
@@ -67,7 +73,7 @@ public class ApiClient {
         }
     }
     
-    private boolean getStats(Stats stats, HttpClient httpClient) {
+    private boolean getStats(String endpointUrl, HttpClient httpClient, Stats stats) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(endpointUrl + "?" + stats.toUrlParamString()))
