@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +51,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     
     /** 進捗度の最大値 */
     protected static final int PROGRESS_MAX = 100;
+    
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
+    private static final DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy/M/d H:mm");
     
     // [instance members] ******************************************************
     
@@ -171,8 +176,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.030"), textPath));
             updateMessage(str.toString());
             
+            String timestamp = settings.get(SettingKeys.CURR_TIMESTAMP);
+            LocalDateTime execDatetime = LocalDateTime.parse(timestamp, formatter);
+            String execDatetimeStr = "%s%s%n".formatted(
+                    rb.getString("excel.poi.usermodel.BookResultBookCreator.010"),
+                    execDatetime.format(formatter2));
+            
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
-                writer.write(resultText);
+                writer.write(execDatetimeStr + resultText);
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
