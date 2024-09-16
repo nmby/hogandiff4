@@ -179,7 +179,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             String timestamp = settings.get(SettingKeys.CURR_TIMESTAMP);
             LocalDateTime execDatetime = LocalDateTime.parse(timestamp, formatter);
             String execDatetimeStr = "%s%s%n".formatted(
-                    rb.getString("excel.poi.usermodel.BookResultBookCreator.010"),
+                    rb.getString("AppTaskBase.200"),
                     execDatetime.format(formatter2));
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
