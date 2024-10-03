@@ -109,10 +109,10 @@ public class Factory {
                 : Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
-                                bookInfo -> bookInfo.toString().length(),
+                                bookInfo -> bookInfo.bookName().length(),
                                 (bookInfo1, bookInfo2) -> {
-                                    String bookName1 = bookInfo1.toString();
-                                    String bookName2 = bookInfo2.toString();
+                                    String bookName1 = bookInfo1.bookName();
+                                    String bookName2 = bookInfo2.bookName();
                                     return StringDiffUtil.levenshteinDistance(bookName1, bookName2) + 1;
                                 })));
     }

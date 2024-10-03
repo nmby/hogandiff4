@@ -106,12 +106,17 @@ public class BookInfo {
     
     @Override
     public String toString() {
-        return bookPath.getFileName().toString();
+        return bookName();
     }
     
     /** @return Excelブックのパス */
     public Path bookPath() {
         return bookPath;
+    }
+    
+    /** @return Excelブックのファイル名 */
+    public String bookName() {
+        return bookPath.getFileName().toString();
     }
     
     /** @return Excelブックに含まれるシート名 */

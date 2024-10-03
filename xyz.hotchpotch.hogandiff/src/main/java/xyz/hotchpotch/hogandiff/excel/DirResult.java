@@ -50,8 +50,8 @@ public record DirResult(
         Objects.requireNonNull(bookId);
         Objects.requireNonNull(bookInfoPair);
         
-        String bookNameA = bookInfoPair.hasA() ? bookInfoPair.a().toString() : null;
-        String bookNameB = bookInfoPair.hasB() ? bookInfoPair.b().toString() : null;
+        String bookNameA = bookInfoPair.hasA() ? bookInfoPair.a().bookName() : null;
+        String bookNameB = bookInfoPair.hasB() ? bookInfoPair.b().bookName() : null;
         
         return "    %s  vs  %s".formatted(
                 bookInfoPair.hasA()

@@ -580,7 +580,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
                 Pair<Path> srcPathPair = bookInfoPair.map(BookInfo::bookPath);
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
-                        "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookInfoPair.get(side).toString())));
+                        "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookInfoPair.get(side).bookName())));
                 
                 BookResult bookResult = compareBooks(
                         dirComparison.childBookComparisons().get(bookInfoPair).get(),
@@ -609,13 +609,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 if (bookInfoPair.hasA()) {
                     Path srcBookPath = bookInfoPair.a().bookPath();
                     Path dstBookPath = outputDirPair.a().resolve(
-                            "【A%s-%d】%s".formatted(dirId, i + 1, bookInfoPair.a().toString()));
+                            "【A%s-%d】%s".formatted(dirId, i + 1, bookInfoPair.a().bookName()));
                     skipUnpairedBook(Side.A, srcBookPath, dstBookPath);
                 }
                 if (bookInfoPair.hasB()) {
                     Path srcBookPath = bookInfoPair.b().bookPath();
                     Path dstBookPath = outputDirPair.b().resolve(
-                            "【B%s-%d】%s".formatted(dirId, i + 1, bookInfoPair.b().toString()));
+                            "【B%s-%d】%s".formatted(dirId, i + 1, bookInfoPair.b().bookName()));
                     skipUnpairedBook(Side.B, srcBookPath, dstBookPath);
                 }
                 bookResults.put(bookInfoPair, Optional.empty());
