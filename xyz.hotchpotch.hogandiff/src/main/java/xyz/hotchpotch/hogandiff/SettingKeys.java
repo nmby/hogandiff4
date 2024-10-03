@@ -217,7 +217,7 @@ public class SettingKeys {
             () -> true,
             String::valueOf,
             Boolean::valueOf,
-            false);
+            true);
     
     /** 子フォルダも再帰的に比較するか */
     public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<>(

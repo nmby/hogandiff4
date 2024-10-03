@@ -466,6 +466,7 @@ public abstract sealed class Stats
             str.append(booleanProperty("considerRowGaps", SettingKeys.CONSIDER_ROW_GAPS)).append(COMMA);
             str.append(booleanProperty("considerColumnGaps", SettingKeys.CONSIDER_COLUMN_GAPS)).append(COMMA);
             str.append(booleanProperty("compareOnFormula", SettingKeys.COMPARE_ON_FORMULA_STRING)).append(COMMA);
+            str.append(booleanProperty("matchNamesLoosely", SettingKeys.MATCH_NAMES_LOOSELY)).append(COMMA);
             str.append(booleanProperty("showPaintedSheets", SettingKeys.SHOW_PAINTED_SHEETS)).append(COMMA);
             str.append(booleanProperty("showResultText", SettingKeys.SHOW_RESULT_REPORT)).append(COMMA);
             str.append(booleanProperty("exitWhenFinished", SettingKeys.EXIT_WHEN_FINISHED)).append(COMMA);
@@ -516,6 +517,9 @@ public abstract sealed class Stats
         
         // p13: COMPARE_ON_FORMULA_STRING: "y"/"n"
         str.append("&p13=").append(settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING) ? "y" : "n");
+        
+        // p18: MATCH_NAMES_LOOSELY: "y"/"n"
+        str.append("&p18=").append(settings.get(SettingKeys.MATCH_NAMES_LOOSELY) ? "y" : "n");
         
         // p14: SHOW_PAINTED_SHEETS: "y"/"n"
         str.append("&p14=").append(settings.get(SettingKeys.SHOW_PAINTED_SHEETS) ? "y" : "n");

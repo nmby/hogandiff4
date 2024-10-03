@@ -37,6 +37,8 @@ public class AppArgsParser {
             + SettingKeys.CONSIDER_COLUMN_GAPS.ifNotSetSupplier().get() + BR
             + "    --compare-on-formulas=[true|false]   : default value is "
             + SettingKeys.COMPARE_ON_FORMULA_STRING.ifNotSetSupplier().get() + BR
+            + "    --match-names-loosely=[true|false]  : default value is "
+            + SettingKeys.MATCH_NAMES_LOOSELY.ifNotSetSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
             + SettingKeys.SHOW_PAINTED_SHEETS.ifNotSetSupplier().get() + BR
             + "    --show-result-text=[true|false]      : default value is "
@@ -51,6 +53,7 @@ public class AppArgsParser {
             "--consider-row-gaps", SettingKeys.CONSIDER_ROW_GAPS,
             "--consider-column-gaps", SettingKeys.CONSIDER_COLUMN_GAPS,
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
+            "--match-names-loosely", SettingKeys.MATCH_NAMES_LOOSELY,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-result-text", SettingKeys.SHOW_RESULT_REPORT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,

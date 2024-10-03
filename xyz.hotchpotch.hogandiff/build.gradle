@@ -55,5 +55,5 @@ run {
     //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
     
     // for console-launching test
-    //args = ["C:\\テスト\\ExcelブックA.xlsx", "C:\\テスト\\ExcelブックB.xlsx"]
+    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックA.xlsx", "--match-names-loosely=false"]
 }
