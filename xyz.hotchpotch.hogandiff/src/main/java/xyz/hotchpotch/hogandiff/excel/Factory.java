@@ -105,9 +105,9 @@ public class Factory {
         
         boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
         return matchNamesStrictly
-                ? Matcher.identityMatcherOf()
+                ? Matcher.identityMatcherOf(BookInfo::bookName)
                 : Matcher.combinedMatcherOf(List.of(
-                        Matcher.identityMatcherOf(),
+                        Matcher.identityMatcherOf(BookInfo::bookName),
                         Matcher.minimumCostFlowMatcherOf(
                                 bookInfo -> bookInfo.bookName().length(),
                                 (bookInfo1, bookInfo2) -> {
