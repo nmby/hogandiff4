@@ -212,9 +212,9 @@ public class SettingKeys {
      * シート名同士の対応付けにおいて完全一致でマッチングする（{@code true}）か、
      * ある程度の揺らぎを許容する（{@code flase}）か
      */
-    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<>(
-            "compare.matchNamesStrictly",
-            () -> false,
+    public static final Key<Boolean> MATCH_NAMES_LOOSELY = new Key<>(
+            "compare.matchNamesLoosely",
+            () -> true,
             String::valueOf,
             Boolean::valueOf,
             false);
