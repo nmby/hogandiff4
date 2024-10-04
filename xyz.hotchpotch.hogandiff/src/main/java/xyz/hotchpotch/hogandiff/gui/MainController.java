@@ -170,27 +170,20 @@ public class MainController extends VBox {
     public void bindSheetComparisonProp() {
         sheetComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
-                    AppMenu menu = menuProp.getValue();
-                    Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-                    Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
-                    BookComparison prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                    
-                    switch (menu) {
+                    switch (menuProp.getValue()) {
                         case COMPARE_SHEETS:
-                            if (!bookInfoPair.isPaired() || !sheetNamePair.isPaired()) {
-                                return null;
-                            }
-                            if (prevValue != null
-                                    && bookInfoPair.equals(prevValue.parentBookInfoPair())
-                                    && sheetNamePair.equals(prevValue.childSheetNamePairs().get(0))) {
-                                return prevValue;
-                            } else {
-                                return new BookComparison(bookInfoPair, List.of(sheetNamePair));
-                            }
+                            Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+                            Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
+                            return bookInfoPair.isPaired() && sheetNamePair.isPaired()
+                                    ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
+                                    : null;
+                        
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
                         case COMPARE_TREES:
+                            BookComparison prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                             return prevValue;
+                        
                         default:
                             throw new AssertionError();
                     }
@@ -213,12 +206,9 @@ public class MainController extends VBox {
                     // TODO: 要リファクタリング
                     boolean dummy = enableFuzzyMatchingProp.getValue();
                     
-                    AppMenu menu = menuProp.getValue();
-                    Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-                    BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                    
-                    switch (menu) {
+                    switch (menuProp.getValue()) {
                         case COMPARE_BOOKS:
+                            Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
                             return bookInfoPair.isPaired()
                                     ? BookComparison.calculate(
                                             bookInfoPair,
@@ -228,7 +218,9 @@ public class MainController extends VBox {
                         case COMPARE_SHEETS:
                         case COMPARE_DIRS:
                         case COMPARE_TREES:
+                            BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                             return prevValue;
+                        
                         default:
                             throw new AssertionError();
                     }
@@ -250,12 +242,9 @@ public class MainController extends VBox {
                     // TODO: 要リファクタリング
                     boolean dummy = enableFuzzyMatchingProp.getValue();
                     
-                    AppMenu menu = menuProp.getValue();
-                    Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                    DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                    
-                    switch (menu) {
+                    switch (menuProp.getValue()) {
                         case COMPARE_DIRS:
+                            Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                             return dirInfoPair.isPaired()
                                     ? DirComparison.calculate(
                                             dirInfoPair,
@@ -268,7 +257,9 @@ public class MainController extends VBox {
                         case COMPARE_SHEETS:
                         case COMPARE_BOOKS:
                         case COMPARE_TREES:
+                            DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
                             return prevValue;
+                        
                         default:
                             throw new AssertionError();
                     }
@@ -290,12 +281,9 @@ public class MainController extends VBox {
                     // TODO: 要リファクタリング
                     boolean dummy = enableFuzzyMatchingProp.getValue();
                     
-                    AppMenu menu = menuProp.getValue();
-                    Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                    DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                    
-                    switch (menu) {
+                    switch (menuProp.getValue()) {
                         case COMPARE_TREES:
+                            Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                             return dirInfoPair.isPaired()
                                     ? DirComparison.calculate(
                                             dirInfoPair,
@@ -308,7 +296,9 @@ public class MainController extends VBox {
                         case COMPARE_SHEETS:
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
+                            DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
                             return prevValue;
+                        
                         default:
                             throw new AssertionError();
                     }
