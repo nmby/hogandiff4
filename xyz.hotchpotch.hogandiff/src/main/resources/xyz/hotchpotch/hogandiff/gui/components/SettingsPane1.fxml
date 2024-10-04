@@ -36,9 +36,14 @@
 						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
 				</CheckBox>
-				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+            <CheckBox fx:id="enableFuzzyMatchingCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </CheckBox>
+				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="NEVER">
 					<GridPane.margin>
-						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
+						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
 					<children>
 						<RadioButton fx:id="compareValuesRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.SettingsPane1.compare.030">
@@ -49,11 +54,6 @@
 						<RadioButton fx:id="compareFormulasRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.040" toggleGroup="$compareValuesOrFormulas" />
 					</children>
 				</HBox>
-            <CheckBox fx:id="enableFuzzyMatchingCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <GridPane.margin>
-                  <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
-               </GridPane.margin>
-            </CheckBox>
 			</children>
 		</GridPane>
 		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
