@@ -212,8 +212,8 @@ public class SettingKeys {
      * シート名同士の対応付けにおいて完全一致でマッチングする（{@code true}）か、
      * ある程度の揺らぎを許容する（{@code flase}）か
      */
-    public static final Key<Boolean> MATCH_NAMES_LOOSELY = new Key<>(
-            "compare.matchNamesLoosely",
+    public static final Key<Boolean> ENABLE_FUZZY_MATCHING = new Key<>(
+            "compare.enableFuzzyMatching",
             () -> true,
             String::valueOf,
             Boolean::valueOf,

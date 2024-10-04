@@ -49,7 +49,7 @@
 						<RadioButton fx:id="compareFormulasRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.040" toggleGroup="$compareValuesOrFormulas" />
 					</children>
 				</HBox>
-            <CheckBox fx:id="matchNamesLooselyCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <CheckBox fx:id="enableFuzzyMatchingCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
                </GridPane.margin>

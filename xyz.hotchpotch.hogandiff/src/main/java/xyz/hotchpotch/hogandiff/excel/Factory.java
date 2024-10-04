@@ -82,8 +82,8 @@ public class Factory {
     public static Matcher<String> sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesLoosely = settings.get(SettingKeys.MATCH_NAMES_LOOSELY);
-        return matchNamesLoosely
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
@@ -103,8 +103,8 @@ public class Factory {
     public static Matcher<BookInfo> bookInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesLoosely = settings.get(SettingKeys.MATCH_NAMES_LOOSELY);
-        return matchNamesLoosely
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(BookInfo::bookName),
                         Matcher.minimumCostFlowMatcherOf(
@@ -127,8 +127,8 @@ public class Factory {
     public static Matcher<DirInfo> dirInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesLoosely = settings.get(SettingKeys.MATCH_NAMES_LOOSELY);
-        return matchNamesLoosely
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
                         strictDirInfosMatcher,
                         fuzzyButSimpleDirInfosMatcher))
