@@ -97,11 +97,14 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
-        applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
         applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
+        
+        applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
+        parent.enableFuzzyMatchingProp.setValue(ar.settings().get(SettingKeys.ENABLE_FUZZY_MATCHING));
+        // TODO: この辺わけわかんなくなってきたのでリファクタリングする
         
         // 4.値変更時のイベントハンドラの設定
         BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
@@ -110,7 +113,6 @@ public class SettingsPane1 extends VBox implements ChildController {
         addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
         addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
         addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
-        addListener.accept(enableFuzzyMatchingCheckBox, SettingKeys.ENABLE_FUZZY_MATCHING);
         addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
         
@@ -118,5 +120,12 @@ public class SettingsPane1 extends VBox implements ChildController {
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
         prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
                 .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
+        
+        // enableFuzzyMatchingだけは特別
+        enableFuzzyMatchingCheckBox.setOnAction(event -> {
+            boolean newValue = enableFuzzyMatchingCheckBox.isSelected();
+            ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, newValue);
+            parent.enableFuzzyMatchingProp.setValue(newValue);
+        });
     }
 }
