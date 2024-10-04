@@ -49,6 +49,9 @@ public class SettingsPane1 extends VBox implements ChildController {
     private RadioButton compareFormulasRadioButton;
     
     @FXML
+    private CheckBox matchNamesLooselyCheckBox;
+    
+    @FXML
     private CheckBox showPaintedSheetsCheckBox;
     
     @FXML
@@ -94,6 +97,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
+        applicator.accept(SettingKeys.MATCH_NAMES_LOOSELY, matchNamesLooselyCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
@@ -106,6 +110,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
         addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
         addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
+        addListener.accept(matchNamesLooselyCheckBox, SettingKeys.MATCH_NAMES_LOOSELY);
         addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
         

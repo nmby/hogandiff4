@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane1" type="VBox" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane1" type="VBox" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
 		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
 			<columnConstraints>
@@ -22,9 +22,10 @@
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel1" text="%fx.SettingsPane1.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3" />
+				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel1" text="%fx.SettingsPane1.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="4" />
 				<CheckBox fx:id="considerRowGapsCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.SettingsPane1.compare.010" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="5.0" />
@@ -37,7 +38,7 @@
 				</CheckBox>
 				<HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
 					<GridPane.margin>
-						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
 					<children>
 						<RadioButton fx:id="compareValuesRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" selected="true" text="%fx.SettingsPane1.compare.030">
@@ -48,6 +49,11 @@
 						<RadioButton fx:id="compareFormulasRadioButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.040" toggleGroup="$compareValuesOrFormulas" />
 					</children>
 				</HBox>
+            <CheckBox fx:id="matchNamesLooselyCheckBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
+               </GridPane.margin>
+            </CheckBox>
 			</children>
 		</GridPane>
 		<GridPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">

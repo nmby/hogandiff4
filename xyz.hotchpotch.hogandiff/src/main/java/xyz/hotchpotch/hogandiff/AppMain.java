@@ -42,13 +42,13 @@ public class AppMain extends Application {
     
     // FIXME: [No.10 UIサイズ] コンポーネントの実効サイズを動的に取得する方法を見つける
     /** 設定エリアを開いたときのメインステージの最小高さ */
-    public static final double STAGE_HEIGHT_OPEN = 390d;
+    public static final double STAGE_HEIGHT_OPEN = 408d;
     
     /** 設定エリアを閉じたときのメインステージの最小高さ */
     public static final double STAGE_HEIGHT_CLOSE = 232d;
     
     /** メインステージの最小幅 */
-    public static final double STAGE_WIDTH = 521d;
+    public static final double STAGE_WIDTH = 525d;
     
     /**
      * このアプリケーションのエントリポイントです。<br>
