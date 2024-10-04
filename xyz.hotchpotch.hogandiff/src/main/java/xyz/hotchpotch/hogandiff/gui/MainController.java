@@ -208,6 +208,11 @@ public class MainController extends VBox {
     public void bindBookComparisonProp() {
         bookComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
                     BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
@@ -240,6 +245,11 @@ public class MainController extends VBox {
     public void bindDirComparisonProp() {
         dirComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                     DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
@@ -275,6 +285,11 @@ public class MainController extends VBox {
     public void bindTreeComparisonProp() {
         treeComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                     DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
