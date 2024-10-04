@@ -274,7 +274,7 @@ public class TreeReportCreator {
         
         for (Side side : Side.values()) {
             if (bookInfoPair.has(side)) {
-                String bookName = bookInfoPair.get(side).toString();
+                String bookName = bookInfoPair.get(side).bookName();
                 
                 // フォルダ名とファイル名の出力
                 PoiUtil.setCellValue(sheet, rowNo, COL_LEFT.get(side), "【%s%s】".formatted(side, dirId));

@@ -49,6 +49,9 @@ public class SettingsPane1 extends VBox implements ChildController {
     private RadioButton compareFormulasRadioButton;
     
     @FXML
+    private CheckBox enableFuzzyMatchingCheckBox;
+    
+    @FXML
     private CheckBox showPaintedSheetsCheckBox;
     
     @FXML
@@ -99,6 +102,10 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
         applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
         
+        applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
+        parent.enableFuzzyMatchingProp.setValue(ar.settings().get(SettingKeys.ENABLE_FUZZY_MATCHING));
+        // TODO: この辺わけわかんなくなってきたのでリファクタリングする
+        
         // 4.値変更時のイベントハンドラの設定
         BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
                 .setOnAction(event -> ar.changeSetting(key, target.isSelected()));
@@ -113,5 +120,12 @@ public class SettingsPane1 extends VBox implements ChildController {
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
         prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
                 .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
+        
+        // enableFuzzyMatchingだけは特別
+        enableFuzzyMatchingCheckBox.setOnAction(event -> {
+            boolean newValue = enableFuzzyMatchingCheckBox.isSelected();
+            ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, newValue);
+            parent.enableFuzzyMatchingProp.setValue(newValue);
+        });
     }
 }

@@ -107,6 +107,9 @@ public class MainController extends VBox {
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
+    /** シート名／ブック名の曖昧マッチ有無 */
+    public final BooleanProperty enableFuzzyMatchingProp = new SimpleBooleanProperty();
+    
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
@@ -205,22 +208,23 @@ public class MainController extends VBox {
     public void bindBookComparisonProp() {
         bookComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
                     BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_BOOKS:
-                            if (!bookInfoPair.isPaired()) {
-                                return null;
-                            }
-                            if (prevValue != null && bookInfoPair.equals(prevValue.parentBookInfoPair())) {
-                                return prevValue;
-                            } else {
-                                return BookComparison.calculate(
-                                        bookInfoPair,
-                                        Factory.sheetNamesMatcher(ar.settings()));
-                            }
+                            return bookInfoPair.isPaired()
+                                    ? BookComparison.calculate(
+                                            bookInfoPair,
+                                            Factory.sheetNamesMatcher(ar.settings()))
+                                    : null;
+                        
                         case COMPARE_SHEETS:
                         case COMPARE_DIRS:
                         case COMPARE_TREES:
@@ -231,7 +235,8 @@ public class MainController extends VBox {
                 },
                 menuProp,
                 bookInfoPropPair.a(),
-                bookInfoPropPair.b()));
+                bookInfoPropPair.b(),
+                enableFuzzyMatchingProp));
     }
     
     /**
@@ -240,25 +245,26 @@ public class MainController extends VBox {
     public void bindDirComparisonProp() {
         dirComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                     DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_DIRS:
-                            if (!dirInfoPair.isPaired()) {
-                                return null;
-                            }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
-                                return prevValue;
-                            } else {
-                                return DirComparison.calculate(
-                                        dirInfoPair,
-                                        Factory.dirInfosMatcher(ar.settings()),
-                                        Factory.bookInfosMatcher(ar.settings()),
-                                        Factory.sheetNamesMatcher(ar.settings()),
-                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
-                            }
+                            return dirInfoPair.isPaired()
+                                    ? DirComparison.calculate(
+                                            dirInfoPair,
+                                            Factory.dirInfosMatcher(ar.settings()),
+                                            Factory.bookInfosMatcher(ar.settings()),
+                                            Factory.sheetNamesMatcher(ar.settings()),
+                                            ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                    : null;
+                        
                         case COMPARE_SHEETS:
                         case COMPARE_BOOKS:
                         case COMPARE_TREES:
@@ -269,7 +275,8 @@ public class MainController extends VBox {
                 },
                 menuProp,
                 dirInfoPropPair.a(),
-                dirInfoPropPair.b()));
+                dirInfoPropPair.b(),
+                enableFuzzyMatchingProp));
     }
     
     /**
@@ -278,25 +285,26 @@ public class MainController extends VBox {
     public void bindTreeComparisonProp() {
         treeComparisonProp.bind(Bindings.createObjectBinding(
                 () -> {
+                    @SuppressWarnings("unused")
+                    // この行を消してはならない！ orz
+                    // TODO: 要リファクタリング
+                    boolean dummy = enableFuzzyMatchingProp.getValue();
+                    
                     AppMenu menu = menuProp.getValue();
                     Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
                     DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
                     
                     switch (menu) {
                         case COMPARE_TREES:
-                            if (!dirInfoPair.isPaired()) {
-                                return null;
-                            }
-                            if (prevValue != null && dirInfoPair.equals(prevValue.parentDirInfoPair())) {
-                                return prevValue;
-                            } else {
-                                return DirComparison.calculate(
-                                        dirInfoPair,
-                                        Factory.dirInfosMatcher(ar.settings()),
-                                        Factory.bookInfosMatcher(ar.settings()),
-                                        Factory.sheetNamesMatcher(ar.settings()),
-                                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS));
-                            }
+                            return dirInfoPair.isPaired()
+                                    ? DirComparison.calculate(
+                                            dirInfoPair,
+                                            Factory.dirInfosMatcher(ar.settings()),
+                                            Factory.bookInfosMatcher(ar.settings()),
+                                            Factory.sheetNamesMatcher(ar.settings()),
+                                            ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                                    : null;
+                        
                         case COMPARE_SHEETS:
                         case COMPARE_BOOKS:
                         case COMPARE_DIRS:
@@ -307,7 +315,8 @@ public class MainController extends VBox {
                 },
                 menuProp,
                 dirInfoPropPair.a(),
-                dirInfoPropPair.b()));
+                dirInfoPropPair.b(),
+                enableFuzzyMatchingProp));
     }
     
     /**

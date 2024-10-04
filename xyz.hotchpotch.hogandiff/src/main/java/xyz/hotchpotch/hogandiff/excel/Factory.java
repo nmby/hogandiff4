@@ -82,14 +82,14 @@ public class Factory {
     public static Matcher<String> sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return matchNamesStrictly
-                ? Matcher.identityMatcherOf()
-                : Matcher.combinedMatcherOf(List.of(
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
+                ? Matcher.combinedMatcherOf(List.of(
                         Matcher.identityMatcherOf(),
                         Matcher.minimumCostFlowMatcherOf(
                                 String::length,
-                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)));
+                                (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)))
+                : Matcher.identityMatcherOf();
     }
     
     /**
@@ -103,18 +103,18 @@ public class Factory {
     public static Matcher<BookInfo> bookInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return matchNamesStrictly
-                ? Matcher.identityMatcherOf()
-                : Matcher.combinedMatcherOf(List.of(
-                        Matcher.identityMatcherOf(),
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
+                ? Matcher.combinedMatcherOf(List.of(
+                        Matcher.identityMatcherOf(BookInfo::bookName),
                         Matcher.minimumCostFlowMatcherOf(
-                                bookInfo -> bookInfo.toString().length(),
+                                bookInfo -> bookInfo.bookName().length(),
                                 (bookInfo1, bookInfo2) -> {
-                                    String bookName1 = bookInfo1.toString();
-                                    String bookName2 = bookInfo2.toString();
+                                    String bookName1 = bookInfo1.bookName();
+                                    String bookName2 = bookInfo2.bookName();
                                     return StringDiffUtil.levenshteinDistance(bookName1, bookName2) + 1;
-                                })));
+                                })))
+                : Matcher.identityMatcherOf(BookInfo::bookName);
     }
     
     /**
@@ -127,12 +127,12 @@ public class Factory {
     public static Matcher<DirInfo> dirInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
         
-        boolean matchNamesStrictly = settings.get(SettingKeys.MATCH_NAMES_STRICTLY);
-        return matchNamesStrictly
-                ? strictDirInfosMatcher
-                : Matcher.combinedMatcherOf(List.of(
+        boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
+        return enableFuzzyMatching
+                ? Matcher.combinedMatcherOf(List.of(
                         strictDirInfosMatcher,
-                        fuzzyButSimpleDirInfosMatcher));
+                        fuzzyButSimpleDirInfosMatcher))
+                : strictDirInfosMatcher;
     }
     
     private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();

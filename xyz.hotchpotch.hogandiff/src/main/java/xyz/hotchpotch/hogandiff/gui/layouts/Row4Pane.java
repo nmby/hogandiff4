@@ -27,7 +27,7 @@ public class Row4Pane extends HBox implements ChildController {
     
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
-    private final double originalHeight = 155d;
+    private final double originalHeight = 174d;
     
     @FXML
     private SettingsPane1 settingsPane1;
