@@ -94,9 +94,6 @@ public class MainController extends VBox {
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
-    /** シート名／ブック名の曖昧マッチ有無 */
-    public final BooleanProperty enableFuzzyMatchingProp = new SimpleBooleanProperty();
-    
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
@@ -135,7 +132,6 @@ public class MainController extends VBox {
         bookInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
         dirInfoPropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
         dirInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        enableFuzzyMatchingProp.addListener((target, oldVal, newVal) -> updateActiveComparison());
         
         // 3.初期値の設定
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
@@ -144,7 +140,7 @@ public class MainController extends VBox {
         // nop
     }
     
-    private void updateActiveComparison() {
+    public void updateActiveComparison() {
         switch (menuProp.getValue()) {
             case COMPARE_SHEETS -> updateSheetComparison();
             case COMPARE_BOOKS -> updateBookComparison();
