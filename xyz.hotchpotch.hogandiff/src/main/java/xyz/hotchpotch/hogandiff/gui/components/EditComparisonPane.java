@@ -93,7 +93,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<BookComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<BookComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.bookComparisonProp.setValue(modified.get());
+                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, modified.get());
                     }
                     return;
                 }
@@ -102,7 +102,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.dirComparisonProp.setValue(modified.get());
+                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, modified.get());
                     }
                     return;
                 }
@@ -111,7 +111,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.treeComparisonProp.setValue(modified.get());
+                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, modified.get());
                     }
                     return;
                 }

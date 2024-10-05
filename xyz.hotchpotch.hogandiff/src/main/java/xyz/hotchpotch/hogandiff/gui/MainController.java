@@ -79,18 +79,6 @@ public class MainController extends VBox {
     /** 現在選択されている比較メニュー */
     public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
     
-    /** シート比較情報 */
-    public final Property<BookComparison> sheetComparisonProp = new SimpleObjectProperty<>();
-    
-    /** Excelブック比較情報 */
-    public final Property<BookComparison> bookComparisonProp = new SimpleObjectProperty<>();
-    
-    /** フォルダ比較情報 */
-    public final Property<DirComparison> dirComparisonProp = new SimpleObjectProperty<>();
-    
-    /** フォルダツリー比較情報 */
-    public final Property<DirComparison> treeComparisonProp = new SimpleObjectProperty<>();
-    
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
             new SimpleStringProperty(),
@@ -149,15 +137,6 @@ public class MainController extends VBox {
         dirInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
         enableFuzzyMatchingProp.addListener((target, oldVal, newVal) -> updateActiveComparison());
         
-        sheetComparisonProp.addListener(
-                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newVal));
-        bookComparisonProp.addListener(
-                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, newVal));
-        dirComparisonProp.addListener(
-                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, newVal));
-        treeComparisonProp.addListener(
-                (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, newVal));
-        
         // 3.初期値の設定
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
@@ -178,42 +157,46 @@ public class MainController extends VBox {
     public void updateSheetComparison() {
         Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
         Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
-        sheetComparisonProp.setValue(bookInfoPair.isPaired() && sheetNamePair.isPaired()
-                ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
-                : null);
+        ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
+                bookInfoPair.isPaired() && sheetNamePair.isPaired()
+                        ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
+                        : null);
     }
     
     public void updateBookComparison() {
         Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-        bookComparisonProp.setValue(bookInfoPair.isPaired()
-                ? BookComparison.calculate(
-                        bookInfoPair,
-                        Factory.sheetNamesMatcher(ar.settings()))
-                : null);
+        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
+                bookInfoPair.isPaired()
+                        ? BookComparison.calculate(
+                                bookInfoPair,
+                                Factory.sheetNamesMatcher(ar.settings()))
+                        : null);
     }
     
     public void updateDirComparison() {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-        dirComparisonProp.setValue(dirInfoPair.isPaired()
-                ? DirComparison.calculate(
-                        dirInfoPair,
-                        Factory.dirInfosMatcher(ar.settings()),
-                        Factory.bookInfosMatcher(ar.settings()),
-                        Factory.sheetNamesMatcher(ar.settings()),
-                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                : null);
+        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
+                dirInfoPair.isPaired()
+                        ? DirComparison.calculate(
+                                dirInfoPair,
+                                Factory.dirInfosMatcher(ar.settings()),
+                                Factory.bookInfosMatcher(ar.settings()),
+                                Factory.sheetNamesMatcher(ar.settings()),
+                                ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                        : null);
     }
     
     public void updateTreeComparison() {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-        treeComparisonProp.setValue(dirInfoPair.isPaired()
-                ? DirComparison.calculate(
-                        dirInfoPair,
-                        Factory.dirInfosMatcher(ar.settings()),
-                        Factory.bookInfosMatcher(ar.settings()),
-                        Factory.sheetNamesMatcher(ar.settings()),
-                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                : null);
+        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
+                dirInfoPair.isPaired()
+                        ? DirComparison.calculate(
+                                dirInfoPair,
+                                Factory.dirInfosMatcher(ar.settings()),
+                                Factory.bookInfosMatcher(ar.settings()),
+                                Factory.sheetNamesMatcher(ar.settings()),
+                                ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                        : null);
     }
     
     /**
