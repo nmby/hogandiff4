@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -141,10 +140,14 @@ public class MainController extends VBox {
             }
         });
         
-        bindSheetComparisonProp();
-        bindBookComparisonProp();
-        bindDirComparisonProp();
-        bindTreeComparisonProp();
+        menuProp.addListener((target, oldVal, newVal) -> updateActiveComparison());
+        sheetNamePropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        sheetNamePropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        bookInfoPropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        bookInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        dirInfoPropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        dirInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        enableFuzzyMatchingProp.addListener((target, oldVal, newVal) -> updateActiveComparison());
         
         sheetComparisonProp.addListener(
                 (target, oldVal, newVal) -> ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO, newVal));
@@ -162,151 +165,55 @@ public class MainController extends VBox {
         // nop
     }
     
-    /**
-     * {@link #sheetComparisonProp} プロパティにデータソースをバインドします。<br>
-     */
-    // こんなメソッドをpublicにするのはいくらなんでもおかしい。
-    // FIXME: [No.X 内部実装改善] 処理構成を見直す
-    public void bindSheetComparisonProp() {
-        sheetComparisonProp.bind(Bindings.createObjectBinding(
-                () -> {
-                    switch (menuProp.getValue()) {
-                        case COMPARE_SHEETS:
-                            Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-                            Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
-                            return bookInfoPair.isPaired() && sheetNamePair.isPaired()
-                                    ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
-                                    : null;
-                        
-                        case COMPARE_BOOKS:
-                        case COMPARE_DIRS:
-                        case COMPARE_TREES:
-                            BookComparison prevValue = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                            return prevValue;
-                        
-                        default:
-                            throw new AssertionError();
-                    }
-                },
-                menuProp,
-                bookInfoPropPair.a(),
-                bookInfoPropPair.b(),
-                sheetNamePropPair.a(),
-                sheetNamePropPair.b()));
+    public void updateActiveComparison() {
+        switch (menuProp.getValue()) {
+            case COMPARE_SHEETS -> updateSheetComparison();
+            case COMPARE_BOOKS -> updateBookComparison();
+            case COMPARE_DIRS -> updateDirComparison();
+            case COMPARE_TREES -> updateTreeComparison();
+            default -> throw new AssertionError();
+        }
     }
     
-    /**
-     * {@link #bookComparisonProp} プロパティにデータソースをバインドします。<br>
-     */
-    public void bindBookComparisonProp() {
-        bookComparisonProp.bind(Bindings.createObjectBinding(
-                () -> {
-                    @SuppressWarnings("unused")
-                    // この行を消してはならない！ orz
-                    // TODO: 要リファクタリング
-                    boolean dummy = enableFuzzyMatchingProp.getValue();
-                    
-                    switch (menuProp.getValue()) {
-                        case COMPARE_BOOKS:
-                            Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-                            return bookInfoPair.isPaired()
-                                    ? BookComparison.calculate(
-                                            bookInfoPair,
-                                            Factory.sheetNamesMatcher(ar.settings()))
-                                    : null;
-                        
-                        case COMPARE_SHEETS:
-                        case COMPARE_DIRS:
-                        case COMPARE_TREES:
-                            BookComparison prevValue = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                            return prevValue;
-                        
-                        default:
-                            throw new AssertionError();
-                    }
-                },
-                menuProp,
-                bookInfoPropPair.a(),
-                bookInfoPropPair.b(),
-                enableFuzzyMatchingProp));
+    public void updateSheetComparison() {
+        Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+        Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
+        sheetComparisonProp.setValue(bookInfoPair.isPaired() && sheetNamePair.isPaired()
+                ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
+                : null);
     }
     
-    /**
-     * {@link #dirComparisonProp} プロパティにデータソースをバインドします。<br>
-     */
-    public void bindDirComparisonProp() {
-        dirComparisonProp.bind(Bindings.createObjectBinding(
-                () -> {
-                    @SuppressWarnings("unused")
-                    // この行を消してはならない！ orz
-                    // TODO: 要リファクタリング
-                    boolean dummy = enableFuzzyMatchingProp.getValue();
-                    
-                    switch (menuProp.getValue()) {
-                        case COMPARE_DIRS:
-                            Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                            return dirInfoPair.isPaired()
-                                    ? DirComparison.calculate(
-                                            dirInfoPair,
-                                            Factory.dirInfosMatcher(ar.settings()),
-                                            Factory.bookInfosMatcher(ar.settings()),
-                                            Factory.sheetNamesMatcher(ar.settings()),
-                                            ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                                    : null;
-                        
-                        case COMPARE_SHEETS:
-                        case COMPARE_BOOKS:
-                        case COMPARE_TREES:
-                            DirComparison prevValue = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                            return prevValue;
-                        
-                        default:
-                            throw new AssertionError();
-                    }
-                },
-                menuProp,
-                dirInfoPropPair.a(),
-                dirInfoPropPair.b(),
-                enableFuzzyMatchingProp));
+    public void updateBookComparison() {
+        Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+        bookComparisonProp.setValue(bookInfoPair.isPaired()
+                ? BookComparison.calculate(
+                        bookInfoPair,
+                        Factory.sheetNamesMatcher(ar.settings()))
+                : null);
     }
     
-    /**
-     * {@link #treeComparisonProp} プロパティにデータソースをバインドします。<br>
-     */
-    public void bindTreeComparisonProp() {
-        treeComparisonProp.bind(Bindings.createObjectBinding(
-                () -> {
-                    @SuppressWarnings("unused")
-                    // この行を消してはならない！ orz
-                    // TODO: 要リファクタリング
-                    boolean dummy = enableFuzzyMatchingProp.getValue();
-                    
-                    switch (menuProp.getValue()) {
-                        case COMPARE_TREES:
-                            Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
-                            return dirInfoPair.isPaired()
-                                    ? DirComparison.calculate(
-                                            dirInfoPair,
-                                            Factory.dirInfosMatcher(ar.settings()),
-                                            Factory.bookInfosMatcher(ar.settings()),
-                                            Factory.sheetNamesMatcher(ar.settings()),
-                                            ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
-                                    : null;
-                        
-                        case COMPARE_SHEETS:
-                        case COMPARE_BOOKS:
-                        case COMPARE_DIRS:
-                            DirComparison prevValue = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                            return prevValue;
-                        
-                        default:
-                            throw new AssertionError();
-                    }
-                },
-                menuProp,
-                dirInfoPropPair.a(),
-                dirInfoPropPair.b(),
-                enableFuzzyMatchingProp));
+    public void updateDirComparison() {
+        Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+        dirComparisonProp.setValue(dirInfoPair.isPaired()
+                ? DirComparison.calculate(
+                        dirInfoPair,
+                        Factory.dirInfosMatcher(ar.settings()),
+                        Factory.bookInfosMatcher(ar.settings()),
+                        Factory.sheetNamesMatcher(ar.settings()),
+                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                : null);
+    }
+    
+    public void updateTreeComparison() {
+        Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+        treeComparisonProp.setValue(dirInfoPair.isPaired()
+                ? DirComparison.calculate(
+                        dirInfoPair,
+                        Factory.dirInfosMatcher(ar.settings()),
+                        Factory.bookInfosMatcher(ar.settings()),
+                        Factory.sheetNamesMatcher(ar.settings()),
+                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
+                : null);
     }
     
     /**
