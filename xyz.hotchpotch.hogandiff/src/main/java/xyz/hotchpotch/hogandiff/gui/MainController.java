@@ -144,7 +144,7 @@ public class MainController extends VBox {
         // nop
     }
     
-    public void updateActiveComparison() {
+    private void updateActiveComparison() {
         switch (menuProp.getValue()) {
             case COMPARE_SHEETS -> updateSheetComparison();
             case COMPARE_BOOKS -> updateBookComparison();
@@ -154,7 +154,7 @@ public class MainController extends VBox {
         }
     }
     
-    public void updateSheetComparison() {
+    private void updateSheetComparison() {
         Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
         Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
@@ -163,7 +163,7 @@ public class MainController extends VBox {
                         : null);
     }
     
-    public void updateBookComparison() {
+    private void updateBookComparison() {
         Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
                 bookInfoPair.isPaired()
@@ -173,7 +173,7 @@ public class MainController extends VBox {
                         : null);
     }
     
-    public void updateDirComparison() {
+    private void updateDirComparison() {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
                 dirInfoPair.isPaired()
@@ -186,7 +186,7 @@ public class MainController extends VBox {
                         : null);
     }
     
-    public void updateTreeComparison() {
+    private void updateTreeComparison() {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
                 dirInfoPair.isPaired()
