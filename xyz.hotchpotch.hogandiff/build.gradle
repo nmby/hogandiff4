@@ -11,11 +11,11 @@ repositories {
 
 dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.3.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.24.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.24.1'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.3'
 }
 
 test {
@@ -55,5 +55,5 @@ run {
     //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
     
     // for console-launching test
-    //args = ["C:\\テスト\\ExcelブックA.xlsx", "C:\\テスト\\ExcelブックB.xlsx"]
+    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックA.xlsx", "--enable-fuzzy-matching=true"]
 }

@@ -49,6 +49,9 @@ public class SettingsPane1 extends VBox implements ChildController {
     private RadioButton compareFormulasRadioButton;
     
     @FXML
+    private CheckBox enableFuzzyMatchingCheckBox;
+    
+    @FXML
     private CheckBox showPaintedSheetsCheckBox;
     
     @FXML
@@ -94,6 +97,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
         applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
+        applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
         applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
         applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
@@ -113,5 +117,10 @@ public class SettingsPane1 extends VBox implements ChildController {
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
         prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
                 .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
+        
+        enableFuzzyMatchingCheckBox.setOnAction(event -> {
+            ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
+            parent.updateActiveComparison();
+        });
     }
 }

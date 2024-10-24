@@ -93,9 +93,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<BookComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<BookComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.bookComparisonProp.unbind();
-                        parent.bookComparisonProp.setValue(modified.get());
-                        parent.bindBookComparisonProp();
+                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, modified.get());
                     }
                     return;
                 }
@@ -104,9 +102,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.dirComparisonProp.unbind();
-                        parent.dirComparisonProp.setValue(modified.get());
-                        parent.bindDirComparisonProp();
+                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, modified.get());
                     }
                     return;
                 }
@@ -115,9 +111,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                     EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
                     Optional<DirComparison> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        parent.treeComparisonProp.unbind();
-                        parent.treeComparisonProp.setValue(modified.get());
-                        parent.bindTreeComparisonProp();
+                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, modified.get());
                     }
                     return;
                 }

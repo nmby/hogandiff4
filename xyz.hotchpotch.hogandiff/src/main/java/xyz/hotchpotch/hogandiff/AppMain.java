@@ -26,7 +26,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    public static final String VERSION = "v0.22.2";
+    public static final String VERSION = "v0.23.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -42,13 +42,13 @@ public class AppMain extends Application {
     
     // FIXME: [No.10 UIサイズ] コンポーネントの実効サイズを動的に取得する方法を見つける
     /** 設定エリアを開いたときのメインステージの最小高さ */
-    public static final double STAGE_HEIGHT_OPEN = 390d;
+    public static final double STAGE_HEIGHT_OPEN = 408d;
     
     /** 設定エリアを閉じたときのメインステージの最小高さ */
     public static final double STAGE_HEIGHT_CLOSE = 232d;
     
     /** メインステージの最小幅 */
-    public static final double STAGE_WIDTH = 521d;
+    public static final double STAGE_WIDTH = 525d;
     
     /**
      * このアプリケーションのエントリポイントです。<br>
@@ -138,22 +138,16 @@ public class AppMain extends Application {
         String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
             
-            assert VERSION.equals("v0.22.2");
-            // v0.22.2 では次の2点を行う。
+            assert VERSION.equals("v0.23.0");
+            // v0.23.0 では次を行う。
             //  ・新機能紹介ページの表示
-            //  ・統計情報の収集に同意していない場合に、設定エリアを開く（同意促進）
             
             try {
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-22-2/"));
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-23-0/"));
             } catch (IOException e) {
                 e.printStackTrace();
                 // nop
             }
-            if (!appResource.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION)) {
-                appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
-                stage.setMinHeight(STAGE_HEIGHT_OPEN);
-            }
-            
             appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }

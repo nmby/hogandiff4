@@ -28,12 +28,6 @@ public class SettingKeys {
     
     // [static members] ********************************************************
     
-    private static <T> Function<T, String> encodeNotSupported(String msg) {
-        return obj -> {
-            throw new UnsupportedOperationException(msg);
-        };
-    }
-    
     private static <T> Function<String, T> decodeNotSupported(String msg) {
         return str -> {
             throw new UnsupportedOperationException(msg);
@@ -124,7 +118,7 @@ public class SettingKeys {
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
             () -> Map.of(),
-            encodeNotSupported("cannot encode."),
+            readPasswords -> "*****",
             decodeNotSupported("cannot decode."),
             false);
     
@@ -132,7 +126,7 @@ public class SettingKeys {
     public static final Key<BookInfo> CURR_BOOK_INFO1 = new Key<>(
             "current.bookInfo1",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            BookInfo::toString,
             decodeNotSupported("cannot decode."),
             false);
     
@@ -140,7 +134,7 @@ public class SettingKeys {
     public static final Key<BookInfo> CURR_BOOK_INFO2 = new Key<>(
             "current.bookInfo2",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            BookInfo::toString,
             decodeNotSupported("cannot decode."),
             false);
     
@@ -153,7 +147,7 @@ public class SettingKeys {
     public static final Key<BookComparison> CURR_SHEET_COMPARE_INFO = new Key<>(
             "current.sheetComparison",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            BookComparison::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
@@ -161,7 +155,7 @@ public class SettingKeys {
     public static final Key<BookComparison> CURR_BOOK_COMPARE_INFO = new Key<>(
             "current.bookComparison",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            BookComparison::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
@@ -169,7 +163,7 @@ public class SettingKeys {
     public static final Key<DirComparison> CURR_DIR_COMPARE_INFO = new Key<>(
             "current.dirComparison",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            DirComparison::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
@@ -177,7 +171,7 @@ public class SettingKeys {
     public static final Key<DirComparison> CURR_TREE_COMPARE_INFO = new Key<>(
             "current.treeComparison",
             () -> null,
-            encodeNotSupported("cannot encode."),
+            DirComparison::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
@@ -212,12 +206,12 @@ public class SettingKeys {
      * シート名同士の対応付けにおいて完全一致でマッチングする（{@code true}）か、
      * ある程度の揺らぎを許容する（{@code flase}）か
      */
-    public static final Key<Boolean> MATCH_NAMES_STRICTLY = new Key<>(
-            "compare.matchNamesStrictly",
-            () -> false,
+    public static final Key<Boolean> ENABLE_FUZZY_MATCHING = new Key<>(
+            "compare.enableFuzzyMatching",
+            () -> true,
             String::valueOf,
             Boolean::valueOf,
-            false);
+            true);
     
     /** 子フォルダも再帰的に比較するか */
     public static final Key<Boolean> COMPARE_DIRS_RECURSIVELY = new Key<>(
