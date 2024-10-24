@@ -269,7 +269,7 @@ public class Settings {
         assert map.containsKey(key);
         
         T value = get(key);
-        return key.encoder().apply(value);
+        return value == null ? "null" : key.encoder().apply(value);
     }
     
     /**

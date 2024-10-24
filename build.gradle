@@ -28,7 +28,6 @@ final def outputDirMacX64 = outputDir.resolve("hogandiff-${version}-mac-x64")
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.management,' \
     + 'java.net.http,' \
     + 'java.xml,' \
     + 'javafx.base,' \
