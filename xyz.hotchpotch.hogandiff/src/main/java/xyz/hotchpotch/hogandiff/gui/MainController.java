@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -43,7 +42,6 @@ import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
-import xyz.hotchpotch.hogandiff.net.ApiClient;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -319,8 +317,6 @@ public class MainController extends VBox {
             
             alertPasswordUnlocked();
             
-            callApiIfConsented(task);
-            
             if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
                 Platform.exit();
             } else {
@@ -355,28 +351,12 @@ public class MainController extends VBox {
                                 .showAndWait();
             }
             
-            callApiIfConsented(task);
-            
             isRunning.set(false);
         });
         
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
-    }
-    
-    private void callApiIfConsented(Task<Stats> task) {
-        if (ar.settings().get(SettingKeys.CONSENTED_STATS_COLLECTION)) {
-            try {
-                Stats report = task.get();
-                ApiClient client = new ApiClient();
-                client.sendStatsAsync(report);
-                
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                // nop
-            }
-        }
     }
     
     private Path createWorkDir(Settings settings) {
