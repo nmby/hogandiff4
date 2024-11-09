@@ -113,26 +113,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         } catch (Exception e) {
             report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
-            
-        } finally {
-            writeReport(report);
-        }
-    }
-    
-    /**
-     * 統計情報を report.json ファイルに出力します。<br>
-     * 
-     * @param report 統計情報
-     */
-    private void writeReport(Stats report) {
-        try {
-            Path reportPath = workDir.resolve("report.json");
-            try (BufferedWriter writer = Files.newBufferedWriter(reportPath)) {
-                writer.write(report.toJsonString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // nop
         }
     }
     
