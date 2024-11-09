@@ -31,7 +31,6 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.Stats;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
@@ -309,7 +308,7 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Stats> task = menu.getTask(ar.settings());
+        Task<Void> task = menu.getTask(ar.settings());
         row3Pane.bind(task);
         
         task.setOnSucceeded(event -> {

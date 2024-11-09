@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract sealed class AppTaskBase extends Task<Stats>
+/*package*/ abstract sealed class AppTaskBase extends Task<Void>
         permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
     
     // [static members] ********************************************************
@@ -95,23 +94,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     }
     
     @Override
-    protected Stats call() throws ApplicationException {
-        Instant start = Instant.now();
-        Stats report = null;
-        
+    protected Void call() throws ApplicationException {
         try {
-            Result result = call2();
-            
-            report = new Stats.Succeeded(settings, start, Instant.now(), result);
-            
-            return report;
+            call2();
+            return null;
             
         } catch (OutOfMemoryError e) {
-            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.170", "");
             
         } catch (Exception e) {
-            report = new Stats.Failed(settings, start, Instant.now(), e);
             throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
         }
     }
