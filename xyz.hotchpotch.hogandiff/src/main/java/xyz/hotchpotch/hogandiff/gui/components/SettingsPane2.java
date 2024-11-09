@@ -45,9 +45,6 @@ public class SettingsPane2 extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
-    private static final Image consentHelpImage = new Image(
-            SettingsPane2.class.getResourceAsStream("help-circle.png"));
-    
     private static enum LocaleItem {
         
         // [static members] ----------------------------------------------------
@@ -127,10 +124,6 @@ public class SettingsPane2 extends VBox implements ChildController {
         openWorkDirButton.setOnAction(openDir);
         changeWorkDirButton.setOnAction(changeDir);
         deleteWorkDirButton.setOnAction(deleteDir);
-        
-        ImageView imageView = new ImageView(consentHelpImage);
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(16);
         
         // 3.初期値の設定
         Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
