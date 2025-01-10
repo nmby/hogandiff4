@@ -30,6 +30,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheetConditionalFormatting;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.formula.eval.ErrorEval;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellPropertyType;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Comment;
@@ -460,15 +461,15 @@ public class PoiUtil {
                 .collect(Collectors.toSet()));
         
         // 最後に、現行スタイルごとに着色スタイルを用意し、対象セルに適用する。
-        Map<String, Object> newProperties = Map.of(
-                CellUtil.FILL_PATTERN, FillPatternType.SOLID_FOREGROUND,
-                CellUtil.FILL_FOREGROUND_COLOR, color);
+        Map<CellPropertyType, Object> newProperties = Map.of(
+                CellPropertyType.FILL_PATTERN, FillPatternType.SOLID_FOREGROUND,
+                CellPropertyType.FILL_FOREGROUND_COLOR, color);
         
         currStyles.forEach((currStyle, cs) -> {
             Iterator<Cell> itr = cs.iterator();
             if (itr.hasNext()) {
                 Cell first = itr.next();
-                CellUtil.setCellStyleProperties(first, newProperties);
+                CellUtil.setCellStylePropertiesEnum(first, newProperties);
                 CellStyle newStyle = first.getCellStyle();
                 itr.forEachRemaining(cell -> cell.setCellStyle(newStyle));
             }
