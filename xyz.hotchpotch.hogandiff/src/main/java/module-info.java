@@ -5,8 +5,6 @@
  */
 module xyz.hotchpotch.hogandiff {
     requires java.desktop;
-    requires java.management;
-    requires java.net.http;
     requires java.xml;
     requires javafx.base;
     requires javafx.controls;

@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.23.0'
+final def version = '0.24.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 final def baseDir = projectDir.toPath()
@@ -24,11 +24,13 @@ final def outputDirTmpJars = outputDir.resolve("tmp/fat/xyz.hotchpotch.hogandiff
 final def outputDirWinX64 = outputDir.resolve("hogandiff-${version}-win-x64")
 final def outputDirMacX64 = outputDir.resolve("hogandiff-${version}-mac-x64")
 
+final def poiSrc = project['myprop.poi.src']
+final def log4jBin = project['myprop.log4j.bin']
+
 // TODO: module-info.java なんもわからん
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
-    + 'java.net.http,' \
     + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
@@ -38,7 +40,7 @@ final def requiredMods = '' \
     + 'jdk.zipfs'
 
 task pickupAndExpandFatJar(type: Copy) {
-    group 'distribution_common'
+    group = 'distribution_common'
 
     from zipTree(targetFatZip)
     into outputDir.resolve("tmp/fat")
@@ -46,7 +48,7 @@ task pickupAndExpandFatJar(type: Copy) {
 
 // executable on [win-x64, mac-x64]
 task jlinkForWinX64(type: Exec) {
-    group 'distribution_win_x64'
+    group = 'distribution_win_x64'
 
     commandLine project['myprop.cmd.jlink'],
             '--no-header-files',
@@ -60,7 +62,7 @@ task jlinkForWinX64(type: Exec) {
 
 // executable on [win-x64, mac-x64]
 task jlinkForMacX64(type: Exec) {
-    group 'distribution_mac_x64'
+    group = 'distribution_mac_x64'
 
     commandLine project['myprop.cmd.jlink'],
             '--no-header-files',
@@ -74,7 +76,7 @@ task jlinkForMacX64(type: Exec) {
 
 // executable on [win-x64]
 task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
-    group 'distribution_win_x64'
+    group = 'distribution_win_x64'
 
     commandLine project['myprop.cmd.exewrap'],
             '-g',
@@ -85,14 +87,14 @@ task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
             '-V', version,
             '-d', '方眼Diff',
             '-p', '方眼Diff',
-            '-c', '(c) 2018-2024 nmby',
+            '-c', '(c) 2018-2025 nmby',
             '-j', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar"),
             '-o', outputDirWinX64.resolve('hogandiff.exe')
 }
 
 // executable on [win-x64, mac-x64]
 task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
-    group 'distribution_win_x64'
+    group = 'distribution_win_x64'
 
     doLast {
         copy {
@@ -115,12 +117,12 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
             into outputDirWinX64.resolve("jre-min")
         }
         copy {
-            from project['myprop.poi.src']
+            from poiSrc
             include 'LICENSE', 'NOTICE'
             into outputDirWinX64.resolve("lib/legal/poi")
         }
         copy {
-            from project['myprop.log4j.bin']
+            from log4jBin
             include 'LICENSE.txt', 'NOTICE.txt'
             into outputDirWinX64.resolve("lib/legal/log4j")
         }
@@ -129,7 +131,7 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
 
 // executable on [win-x64, mac-x64]
 task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
-    group 'distribution_mac_x64'
+    group = 'distribution_mac_x64'
 
     doLast {
         copy {
@@ -151,12 +153,12 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
             into outputDirMacX64.resolve('hogandiff.app/Contents/PlugIns/jre-min')
         }
         copy {
-            from project['myprop.poi.src']
+            from poiSrc
             include 'LICENSE', 'NOTICE'
             into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/poi')
         }
         copy {
-            from project['myprop.log4j.bin']
+            from log4jBin
             include 'LICENSE.txt', 'NOTICE.txt'
             into outputDirMacX64.resolve('hogandiff.app/Contents/Java/legal/log4j')
         }
@@ -165,7 +167,7 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
 
 // executable on [win-x64]
 task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]) {
-    group 'distribution_win_x64'
+    group = 'distribution_win_x64'
 
     metadataCharset = 'UTF-8'
     archiveBaseName = "hogandiff-${version}-win-x64"
@@ -176,7 +178,7 @@ task zipForWinX64(type: Zip, dependsOn: [exewrapForWinX64, gatherFilesForWinX64]
 
 // executable on [win-x64, mac-x64]
 task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
-    group 'distribution_mac_x64'
+    group = 'distribution_mac_x64'
 
     metadataCharset = 'UTF-8'
     archiveBaseName = "hogandiff-${version}-mac-x64"
@@ -187,22 +189,22 @@ task zipForMacX64(type: Zip, dependsOn: gatherFilesForMacX64) {
 
 // executable on [win-x64]
 task allForWinX64(dependsOn: zipForWinX64) {
-    group 'distribution_win_x64'
+    group = 'distribution_win_x64'
 }
 
 // executable on [win-x64, mac-x64]
 task allForMacX64(dependsOn: zipForMacX64) {
-    group 'distribution_mac_x64'
+    group = 'distribution_mac_x64'
 }
 
 // executable on [win-x64]
 task all(dependsOn: [allForWinX64, allForMacX64]) {
-    group 'distribution_common'
+    group = 'distribution_common'
 }
 
 // executable on [win-x64, mac-x64]
 task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
-    group 'test'
+    group = 'test'
 
     commandLine project['myprop.cmd.jdeps'],
             // 直近の LTS-version とする。
