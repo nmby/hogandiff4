@@ -1,0 +1,5 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "gradle.nestedProjects": true,
+    "gradle.autoDetect": "on"
+}
