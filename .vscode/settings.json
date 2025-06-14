@@ -2,5 +2,5 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "gradle.nestedProjects": true,
     "gradle.autoDetect": "on",
-    "java.jdt.ls.java.home": "C:/UserLibs/jdk-23.0.2+7-win-aarch64"
+    "java.jdt.ls.java.home": "C:/UserLibs/jdk-24.0.1+9-win-x64"
 }
