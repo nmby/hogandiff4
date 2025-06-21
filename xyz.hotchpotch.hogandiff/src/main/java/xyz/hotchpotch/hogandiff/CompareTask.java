@@ -40,8 +40,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ abstract sealed class AppTaskBase extends Task<Void>
-        permits CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask {
+/*package*/ abstract sealed class CompareTask extends Task<Void>
+        permits CompareTaskSheets, CompareTaskBooks, CompareTaskDirs, CompareTaskTrees {
     
     // [static members] ********************************************************
     
@@ -74,7 +74,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param settings 設定セット
      * @param factory ファクトリ
      */
-    /*package*/ AppTaskBase(Settings settings) {
+    /*package*/ CompareTask(Settings settings) {
         assert settings != null;
         
         this.settings = settings;

@@ -27,7 +27,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ final class CompareSheetsTask extends AppTaskBase {
+/*package*/ final class CompareTaskSheets extends CompareTask {
     
     // [static members] ********************************************************
     
@@ -38,7 +38,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param settings 設定セット
      */
-    /*package*/ CompareSheetsTask(Settings settings) {
+    /*package*/ CompareTaskSheets(Settings settings) {
         super(settings);
     }
     

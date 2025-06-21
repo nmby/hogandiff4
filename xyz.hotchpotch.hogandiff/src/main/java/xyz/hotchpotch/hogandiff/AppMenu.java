@@ -24,7 +24,7 @@ public enum AppMenu {
      * それらのペアごとに比較を行います。<br>
      */
     COMPARE_BOOKS(
-            CompareBooksTask::new,
+            CompareTaskBooks::new,
             settings -> {
                 BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                 Objects.requireNonNull(bookComparison);
@@ -36,7 +36,7 @@ public enum AppMenu {
      * 特定のExcelシート同士を比較します。
      */
     COMPARE_SHEETS(
-            CompareSheetsTask::new,
+            CompareTaskSheets::new,
             settings -> {
                 BookComparison bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                 Objects.requireNonNull(bookComparison);
@@ -51,7 +51,7 @@ public enum AppMenu {
      * それらのペアごとに比較を行います。<br>
      */
     COMPARE_DIRS(
-            CompareDirsTask::new,
+            CompareTaskDirs::new,
             settings -> {
                 DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
                 Objects.requireNonNull(dirComparison);
@@ -65,7 +65,7 @@ public enum AppMenu {
      * それらのペアごとに比較を行います。<br>
      */
     COMPARE_TREES(
-            CompareTreesTask::new,
+            CompareTaskTrees::new,
             settings -> {
                 DirComparison dirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
                 Objects.requireNonNull(dirComparison);
