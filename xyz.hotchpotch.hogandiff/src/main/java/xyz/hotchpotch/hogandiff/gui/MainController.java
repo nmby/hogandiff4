@@ -113,10 +113,10 @@ public class MainController extends VBox {
         row3Pane.showSettings().addListener((target, oldValue, newValue) -> {
             if (newValue) {
                 row4Pane.setVisible2(true);
-                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight() + 3);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight());
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_OPEN);
             } else {
-                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight() - 3);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight());
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
                 row4Pane.setVisible2(false);
             }
