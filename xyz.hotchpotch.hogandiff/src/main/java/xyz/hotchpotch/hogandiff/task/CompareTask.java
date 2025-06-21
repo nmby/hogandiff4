@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.awt.Desktop;
 import java.io.BufferedWriter;
@@ -15,6 +15,10 @@ import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.BookPainter;
@@ -74,7 +78,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @param settings 設定セット
      * @param factory ファクトリ
      */
-    /*package*/ CompareTask(Settings settings) {
+    protected CompareTask(Settings settings) {
         assert settings != null;
         
         this.settings = settings;
@@ -445,7 +449,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @return 比較結果
      * @throws ExcelHandlingException Excel関連処理に失敗した場合
      */
-    // AppTaskBase#compareDirs
+    // CompareTask#compareDirs
     private BookResult compareBooks(
             BookComparison bookComparison,
             int progressBefore,

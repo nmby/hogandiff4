@@ -7,6 +7,10 @@ import java.util.function.Predicate;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.excel.BookComparison;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
+import xyz.hotchpotch.hogandiff.task.CompareTaskBooks;
+import xyz.hotchpotch.hogandiff.task.CompareTaskDirs;
+import xyz.hotchpotch.hogandiff.task.CompareTaskSheets;
+import xyz.hotchpotch.hogandiff.task.CompareTaskTrees;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**

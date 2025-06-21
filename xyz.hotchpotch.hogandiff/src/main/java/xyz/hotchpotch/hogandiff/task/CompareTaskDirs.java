@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.excel.DirInfo;
@@ -27,7 +29,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * 
  * @author nmby
  */
-/*package*/ final class CompareTaskDirs extends CompareTask {
+public final class CompareTaskDirs extends CompareTask {
     
     // [static members] ********************************************************
     
@@ -38,7 +40,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 
      * @param settings 設定セット
      */
-    /*package*/ CompareTaskDirs(Settings settings) {
+    public CompareTaskDirs(Settings settings) {
         super(settings);
     }
     
