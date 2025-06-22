@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public final class SheetResult implements Result {
+public final class ResultOfSheets implements Result {
 
     // [static members] ********************************************************
 
@@ -140,7 +140,7 @@ public final class SheetResult implements Result {
      * @throws IllegalArgumentException
      *                                  余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
-    public SheetResult(
+    public ResultOfSheets(
             Pair<Set<CellData>> cellsSetPair,
             Pair<List<Integer>> redundantRows,
             Pair<List<Integer>> redundantColumns,

@@ -44,7 +44,7 @@ public final class CompareTaskBooks extends CompareTask {
             announceStart(0, 3);
 
             // 1. シート同士の比較
-            BookResult bResult = compareSheets(3, 75);
+            ResultOfBooks bResult = compareSheets(3, 75);
 
             Exception failed = null;
 
@@ -112,7 +112,7 @@ public final class CompareTaskBooks extends CompareTask {
 
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
-                str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
+                str.append(ResultOfBooks.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
 
             str.append(BR);
@@ -125,7 +125,7 @@ public final class CompareTaskBooks extends CompareTask {
     }
 
     // 1. シート同士の比較
-    private BookResult compareSheets(
+    private ResultOfBooks compareSheets(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -143,18 +143,18 @@ public final class CompareTaskBooks extends CompareTask {
 
             SheetComparator sheetComparator = Factory.sheetComparator(settings);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-            Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
+            Map<Pair<String>, Optional<ResultOfSheets>> results = new HashMap<>();
 
             double progressDelta = (progressAfter - progressBefore)
                     / (double) pairingInfoBooks.childSheetNamePairs().size();
 
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
-                SheetResult result = null;
+                ResultOfSheets result = null;
 
                 try {
                     if (sheetNamePair.isPaired()) {
-                        str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
+                        str.append(ResultOfBooks.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair));
                         updateMessage(str.toString());
 
                         Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
@@ -180,7 +180,7 @@ public final class CompareTaskBooks extends CompareTask {
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
 
-            return new BookResult(pairingInfoBooks, results);
+            return new ResultOfBooks(pairingInfoBooks, results);
 
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.050", "");

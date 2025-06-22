@@ -23,7 +23,7 @@ import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 import xyz.hotchpotch.hogandiff.task.BookPainter;
-import xyz.hotchpotch.hogandiff.task.SheetResult.Piece;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 
 /**
  * Apache POI のユーザーモデル API を利用して

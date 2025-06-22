@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.task;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.SheetStats;
 
 /**
  * 各種比較操作の比較結果を表します。<br>
@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
  */
 // sealed を使ってみる
 public sealed interface Result
-        permits SheetResult, BookResult, DirResult, TreeResult {
+        permits ResultOfSheets, ResultOfBooks, ResultOtDirs, ResultOfTrees {
 
     // [static members] ********************************************************
 

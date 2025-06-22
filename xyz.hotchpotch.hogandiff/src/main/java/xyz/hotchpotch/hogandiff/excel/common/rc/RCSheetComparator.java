@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.task.SheetComparator;
-import xyz.hotchpotch.hogandiff.task.SheetResult;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -66,12 +66,12 @@ public class RCSheetComparator implements SheetComparator {
          *                                  {@code cellsSetPair} に含まれるセルセットが同一インスタンスの場合
          */
         @Override
-        public SheetResult compare(Pair<Set<CellData>> cellsSetPair) {
+        public ResultOfSheets compare(Pair<Set<CellData>> cellsSetPair) {
                 Objects.requireNonNull(cellsSetPair);
 
                 if (cellsSetPair.a() == cellsSetPair.b()) {
                         if (cellsSetPair.a().isEmpty()) {
-                                return new SheetResult(
+                                return new ResultOfSheets(
                                                 cellsSetPair,
                                                 EMPTY_PAIR,
                                                 EMPTY_PAIR,
@@ -100,7 +100,7 @@ public class RCSheetComparator implements SheetComparator {
                 // 差分セルの収集
                 List<Pair<CellData>> diffCells = extractDiffs(cellsSetPair, rowPairs, columnPairs);
 
-                return new SheetResult(
+                return new ResultOfSheets(
                                 cellsSetPair,
                                 redundantRows,
                                 redundantColumns,

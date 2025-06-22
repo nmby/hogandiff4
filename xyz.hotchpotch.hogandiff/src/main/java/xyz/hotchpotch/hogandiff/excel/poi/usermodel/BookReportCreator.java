@@ -21,8 +21,8 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.BookResult;
-import xyz.hotchpotch.hogandiff.task.SheetResult;
+import xyz.hotchpotch.hogandiff.task.ResultOfBooks;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -67,7 +67,7 @@ public class BookReportCreator {
      */
     public void createResultBook(
             Path dstBookPath,
-            BookResult bookResult)
+            ResultOfBooks bookResult)
             throws ExcelHandlingException {
 
         Objects.requireNonNull(dstBookPath);
@@ -103,7 +103,7 @@ public class BookReportCreator {
             // 4-2. シートペアごとの処理
             for (int j = 0; j < bookResult.bookComparison().childSheetNamePairs().size(); j++) {
                 Pair<String> sheetNamePair = bookResult.bookComparison().childSheetNamePairs().get(j);
-                SheetResult sheetResult = bookResult.sheetResults().get(sheetNamePair).orElse(null);
+                ResultOfSheets sheetResult = bookResult.sheetResults().get(sheetNamePair).orElse(null);
                 rowIdx++;
 
                 // 4-3. シートペアの差分出力
@@ -125,7 +125,7 @@ public class BookReportCreator {
             CreationHelper ch,
             Sheet sheet,
             Path workDir,
-            BookResult bookResult) {
+            ResultOfBooks bookResult) {
 
         PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(),
                 rb.getString("excel.poi.usermodel.BookResultBookCreator.010"));
@@ -167,7 +167,7 @@ public class BookReportCreator {
             int sheetIdx,
             int rowIdx,
             Pair<String> sheetNamePair,
-            SheetResult sheetResult) {
+            ResultOfSheets sheetResult) {
 
         PoiUtil.copyRow(sheet, ROW_TEMPLATE_SHEET_TITLE, rowIdx);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() - 1, sheetIdx + 1);

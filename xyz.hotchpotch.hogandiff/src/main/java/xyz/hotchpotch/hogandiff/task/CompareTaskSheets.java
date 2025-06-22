@@ -43,7 +43,7 @@ public final class CompareTaskSheets extends CompareTask {
             announceStart(0, 0);
 
             // 1. シート同士の比較
-            BookResult bResult = compareSheets(0, 75);
+            ResultOfBooks bResult = compareSheets(0, 75);
 
             Exception failed = null;
 
@@ -123,7 +123,7 @@ public final class CompareTaskSheets extends CompareTask {
     }
 
     // 2. シート同士の比較
-    private BookResult compareSheets(
+    private ResultOfBooks compareSheets(
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -140,7 +140,7 @@ public final class CompareTaskSheets extends CompareTask {
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                     bookPath -> Factory.cellsLoader(settings, bookPath));
 
-            str.append(BookResult.formatSheetNamesPair("1", sheetNamePair));
+            str.append(ResultOfBooks.formatSheetNamesPair("1", sheetNamePair));
             updateMessage(str.toString());
 
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
@@ -151,13 +151,13 @@ public final class CompareTaskSheets extends CompareTask {
                             sheetNamePair.get(side)));
 
             SheetComparator comparator = Factory.sheetComparator(settings);
-            SheetResult result = comparator.compare(cellsSetPair);
+            ResultOfSheets result = comparator.compare(cellsSetPair);
 
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
 
-            return new BookResult(
+            return new ResultOfBooks(
                     pairingInfoBooks,
                     Map.of(sheetNamePair, Optional.of(result)));
 

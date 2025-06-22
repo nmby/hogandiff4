@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -21,9 +21,9 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param bookResults   Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
  * @param dirId         フォルダの識別番号
  */
-public record DirResult(
+public record ResultOtDirs(
         PairingInfoDirs dirComparison,
-        Map<Pair<BookInfo>, Optional<BookResult>> bookResults,
+        Map<Pair<BookInfo>, Optional<ResultOfBooks>> bookResults,
         String dirId)
         implements Result {
 
@@ -72,9 +72,9 @@ public record DirResult(
      * @param dirId         フォルダの識別番号
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirResult(
+    public ResultOtDirs(
             PairingInfoDirs dirComparison,
-            Map<Pair<BookInfo>, Optional<BookResult>> bookResults,
+            Map<Pair<BookInfo>, Optional<ResultOfBooks>> bookResults,
             String dirId) {
 
         Objects.requireNonNull(dirComparison);
@@ -110,7 +110,7 @@ public record DirResult(
         int diffBooks = (int) bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .filter(BookResult::hasDiff)
+                .filter(ResultOfBooks::hasDiff)
                 .count();
         int gapBooks = (int) dirComparison.childBookInfoPairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
@@ -164,7 +164,7 @@ public record DirResult(
     }
 
     private String getDiffText(
-            Function<Optional<BookResult>, String> diffDescriptor,
+            Function<Optional<ResultOfBooks>, String> diffDescriptor,
             boolean isDetailMode) {
 
         StringBuilder str = new StringBuilder();
@@ -179,7 +179,7 @@ public record DirResult(
 
         for (int i = 0; i < dirComparison.childBookInfoPairs().size(); i++) {
             Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
-            Optional<BookResult> bResult = bookResults.get(bookInfoPair);
+            Optional<ResultOfBooks> bResult = bookResults.get(bookInfoPair);
 
             str.append(formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
 
@@ -225,7 +225,7 @@ public record DirResult(
         return bookResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(BookResult::sheetStats)
+                .map(ResultOfBooks::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

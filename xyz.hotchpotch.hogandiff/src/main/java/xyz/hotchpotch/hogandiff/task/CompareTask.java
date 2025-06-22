@@ -188,7 +188,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     protected void paintSaveAndShowBook(
             Path workDir,
             Pair<Path> srcBookPathPair,
-            BookResult bResult,
+            ResultOfBooks bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -219,7 +219,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private void paintSaveAndShowBook1(
             Path workDir,
             Path srcBookPath,
-            BookResult bResult,
+            ResultOfBooks bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -239,7 +239,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateMessage(str.toString());
 
             BookPainter painter = Factory.painter(settings, dstBookPath, readPassword);
-            Map<String, Optional<SheetResult.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
+            Map<String, Optional<ResultOfSheets.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
             painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
 
@@ -277,7 +277,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private void paintSaveAndShowBook2(
             Path workDir,
             Pair<Path> srcBookPathPair,
-            BookResult bResult,
+            ResultOfBooks bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -342,7 +342,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareDirsTask, CompareTreesTask
     protected void createSaveAndShowResultBook(
             Path workDir,
-            TreeResult tResult,
+            ResultOfTrees tResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -391,7 +391,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareSheetsTask, CompareBooksTask
     protected void createSaveAndShowReportBook(
             Path workDir,
-            BookResult bResult,
+            ResultOfBooks bResult,
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
@@ -438,7 +438,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @throws ExcelHandlingException Excel関連処理に失敗した場合
      */
     // CompareTask#compareDirs
-    private BookResult compareBooks(
+    private ResultOfBooks compareBooks(
             PairingInfoBooks bookComparison,
             int progressBefore,
             int progressAfter)
@@ -450,7 +450,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 bookPath -> Factory.cellsLoader(settings, bookPath));
         SheetComparator sheetComparator = Factory.sheetComparator(settings);
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
-        Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
+        Map<Pair<String>, Optional<ResultOfSheets>> results = new HashMap<>();
 
         for (int i = 0; i < bookComparison.childSheetNamePairs().size(); i++) {
             Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
@@ -464,7 +464,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
                         bookPathB, readPasswords.get(bookPathB), sheetNamePair.b());
 
-                SheetResult result = sheetComparator.compare(Pair.of(cellsSetA, cellsSetB));
+                ResultOfSheets result = sheetComparator.compare(Pair.of(cellsSetA, cellsSetB));
                 results.put(sheetNamePair, Optional.of(result));
 
             } else {
@@ -477,7 +477,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     PROGRESS_MAX);
         }
 
-        return new BookResult(bookComparison, results);
+        return new ResultOfBooks(bookComparison, results);
     }
 
     /**
@@ -512,7 +512,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @return 比較結果
      */
     // CompareDirsTask, CompareTreesTask
-    protected DirResult compareDirs(
+    protected ResultOtDirs compareDirs(
             String dirId,
             String indent,
             PairingInfoDirs dirComparison,
@@ -520,7 +520,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore,
             int progressAfter) {
 
-        Map<Pair<BookInfo>, Optional<BookResult>> bookResults = new HashMap<>();
+        Map<Pair<BookInfo>, Optional<ResultOfBooks>> bookResults = new HashMap<>();
         IntUnaryOperator getProgress = n -> progressBefore
                 + (progressAfter - progressBefore) * n / dirComparison.childBookInfoPairs().size();
 
@@ -535,7 +535,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
 
             str.append(indent
-                    + DirResult.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
+                    + ResultOtDirs.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
             updateMessage(str.toString());
 
             if (bookInfoPair.isPaired()
@@ -545,7 +545,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookInfoPair.get(side).bookName())));
 
-                BookResult bookResult = compareBooks(
+                ResultOfBooks bookResult = compareBooks(
                         dirComparison.childBookComparisons().get(bookInfoPair).get(),
                         srcPathPair,
                         dstPathPair,
@@ -587,10 +587,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
 
-        return new DirResult(dirComparison, bookResults, dirId);
+        return new ResultOtDirs(dirComparison, bookResults, dirId);
     }
 
-    private BookResult compareBooks(
+    private ResultOfBooks compareBooks(
             PairingInfoBooks bookComparison,
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
@@ -622,7 +622,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     private void paintBook(
             Pair<Path> srcPathPair,
             Pair<Path> dstPathPair,
-            BookResult bookResult,
+            ResultOfBooks bookResult,
             int progressAfter) {
 
         try {

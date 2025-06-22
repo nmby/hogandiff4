@@ -48,11 +48,11 @@ public final class CompareTaskDirs extends CompareTask {
             Pair<Path> outputDirPair = createOutputDirs(workDir);
 
             // 2. フォルダ同士の比較
-            DirResult dResult = compareDirs(outputDirPair, 5, 93);
+            ResultOtDirs dResult = compareDirs(outputDirPair, 5, 93);
 
             PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
-            TreeResult tResult = new TreeResult(
+            ResultOfTrees tResult = new ResultOfTrees(
                     pairingInfoDirs.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
 
@@ -115,7 +115,7 @@ public final class CompareTaskDirs extends CompareTask {
             }
             for (int i = 0; i < bookInfoPairs.size(); i++) {
                 Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);
-                str.append(DirResult.formatBookNamesPair("", Integer.toString(i + 1), bookInfoPair)).append(BR);
+                str.append(ResultOtDirs.formatBookNamesPair("", Integer.toString(i + 1), bookInfoPair)).append(BR);
             }
 
             updateMessage(str.toString());
@@ -146,7 +146,7 @@ public final class CompareTaskDirs extends CompareTask {
     }
 
     // 5. フォルダ同士の比較
-    private DirResult compareDirs(
+    private ResultOtDirs compareDirs(
             Pair<Path> outputDirPair,
             int progressBefore,
             int progressAfter)
@@ -169,7 +169,7 @@ public final class CompareTaskDirs extends CompareTask {
                         progressAfter);
 
             } else {
-                return new DirResult(
+                return new ResultOtDirs(
                         pairingInfoDirs,
                         pairingInfoDirs.childBookInfoPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),

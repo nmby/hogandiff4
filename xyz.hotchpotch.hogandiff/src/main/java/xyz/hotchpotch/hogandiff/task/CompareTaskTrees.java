@@ -45,7 +45,7 @@ public final class CompareTaskTrees extends CompareTask {
             announceStart(0, 5);
 
             // 1. フォルダツリー同士の比較
-            TreeResult tResult = compareTrees(workDir, 5, 93);
+            ResultOfTrees tResult = compareTrees(workDir, 5, 93);
 
             Exception failed = null;
 
@@ -102,7 +102,7 @@ public final class CompareTaskTrees extends CompareTask {
 
             for (int i = 0; i < pairingInfoDirsFlatten.dirInfoPairs().size(); i++) {
                 Pair<DirInfo> dirInfoPair = pairingInfoDirsFlatten.dirInfoPairs().get(i);
-                str.append(TreeResult.formatDirInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
+                str.append(ResultOfTrees.formatDirInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
             }
 
@@ -115,7 +115,7 @@ public final class CompareTaskTrees extends CompareTask {
     }
 
     // 1. フォルダツリー同士の比較
-    private TreeResult compareTrees(
+    private ResultOfTrees compareTrees(
             Path workDir,
             int progressBefore,
             int progressAfter)
@@ -129,7 +129,7 @@ public final class CompareTaskTrees extends CompareTask {
             PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
                     .flatten();
 
-            Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
+            Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
 
             double progressDelta = (progressAfter - progressBefore)
@@ -142,7 +142,7 @@ public final class CompareTaskTrees extends CompareTask {
                 PairingInfoDirs pairingInfoDirs = pairingInfoDirsFlatten.dirComparisons().get(dirInfoPair).get();
 
                 str.append(
-                        TreeResult.formatDirInfoPair(Integer.toString(i + 1), pairingInfoDirs.parentDirInfoPair()));
+                        ResultOfTrees.formatDirInfoPair(Integer.toString(i + 1), pairingInfoDirs.parentDirInfoPair()));
                 updateMessage(str.toString());
 
                 Pair<Path> outputDirPair = null;
@@ -177,7 +177,7 @@ public final class CompareTaskTrees extends CompareTask {
 
                 if (dirInfoPair.isPaired()) {
                     // FIXME: [No.X 内部実装改善] この辺の見通しが非常に悪いので改善する
-                    DirResult dirResult = compareDirs(
+                    ResultOtDirs dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
                             pairingInfoDirs,
@@ -197,7 +197,7 @@ public final class CompareTaskTrees extends CompareTask {
 
             updateProgress(progressAfter, PROGRESS_MAX);
 
-            return new TreeResult(pairingInfoDirsFlatten, dirResults);
+            return new ResultOfTrees(pairingInfoDirsFlatten, dirResults);
 
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.110", "");

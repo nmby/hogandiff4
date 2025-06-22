@@ -25,11 +25,11 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookResult;
+import xyz.hotchpotch.hogandiff.task.ResultOfBooks;
 import xyz.hotchpotch.hogandiff.task.DirInfo;
-import xyz.hotchpotch.hogandiff.task.DirResult;
+import xyz.hotchpotch.hogandiff.task.ResultOtDirs;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.task.TreeResult;
+import xyz.hotchpotch.hogandiff.task.ResultOfTrees;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -73,7 +73,7 @@ public class TreeReportCreator {
          */
         public void createResultBook(
                         Path dstBookPath,
-                        TreeResult treeResult,
+                        ResultOfTrees treeResult,
                         boolean recursively)
                         throws ExcelHandlingException {
 
@@ -136,7 +136,7 @@ public class TreeReportCreator {
                                 rowNo++;
 
                                 // 4-3. フォルダ名と差分シンボルの出力
-                                Optional<DirResult> dirResult = treeResult.dirResults().get(dirInfoPair);
+                                Optional<ResultOtDirs> dirResult = treeResult.dirResults().get(dirInfoPair);
 
                                 Pair<String> dirRelNamePair = Side.map(
                                                 side -> dirInfoPair.has(side)
@@ -178,8 +178,8 @@ public class TreeReportCreator {
 
                                         // 4-6. Excelブック名と差分シンボルの出力
                                         Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
-                                        Optional<BookResult> bookResult = dirResult
-                                                        .map(DirResult::bookResults)
+                                        Optional<ResultOfBooks> bookResult = dirResult
+                                                        .map(ResultOtDirs::bookResults)
                                                         .flatMap(br -> br.get(bookInfoPair));
 
                                         outputFileLine(
@@ -216,7 +216,7 @@ public class TreeReportCreator {
                         CreationHelper ch,
                         Sheet sheet,
                         Path workDir,
-                        TreeResult treeResult) {
+                        ResultOfTrees treeResult) {
 
                 PoiUtil.setCellValue(sheet, 0, 4,
                                 rb.getString("excel.poi.usermodel.BookResultBookCreator.010"));
@@ -254,7 +254,7 @@ public class TreeReportCreator {
                         Pair<Path> outputDirPair,
                         Pair<String> dirRelNamePair,
                         Pair<DirInfo> dirPair,
-                        Optional<DirResult> dirResult) {
+                        Optional<ResultOtDirs> dirResult) {
 
                 for (Side side : Side.values()) {
                         if (dirPair.has(side)) {
@@ -279,7 +279,7 @@ public class TreeReportCreator {
                         Pair<Path> outputDirPair,
                         Pair<String> dirRelNamePair,
                         Pair<BookInfo> bookInfoPair,
-                        Optional<BookResult> bookResult) {
+                        Optional<ResultOfBooks> bookResult) {
 
                 for (Side side : Side.values()) {
                         if (bookInfoPair.has(side)) {

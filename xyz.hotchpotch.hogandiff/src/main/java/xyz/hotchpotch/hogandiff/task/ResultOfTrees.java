@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
-import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -20,9 +20,9 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param flattenDirComparison フォルダツリー比較情報
  * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
-public record TreeResult(
+public record ResultOfTrees(
         PairingInfoDirsFlatten flattenDirComparison,
-        Map<Pair<DirInfo>, Optional<DirResult>> dirResults)
+        Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults)
         implements Result {
 
     // [static members] ********************************************************
@@ -63,9 +63,9 @@ public record TreeResult(
      * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public TreeResult(
+    public ResultOfTrees(
             PairingInfoDirsFlatten flattenDirComparison,
-            Map<Pair<DirInfo>, Optional<DirResult>> dirResults) {
+            Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults) {
 
         Objects.requireNonNull(flattenDirComparison);
         Objects.requireNonNull(dirResults);
@@ -97,13 +97,13 @@ public record TreeResult(
                 : "        " + rb.getString("excel.TreeResult.050") + BR + BR);
     }
 
-    private String getDiffText(Function<Optional<DirResult>, String> diffDescriptor) {
+    private String getDiffText(Function<Optional<ResultOtDirs>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i < flattenDirComparison.dirInfoPairs().size(); i++) {
             Pair<DirInfo> dirInfoPair = flattenDirComparison.dirInfoPairs().get(i);
             PairingInfoDirs dirComparison = flattenDirComparison.dirComparisons().get(dirInfoPair).get();
-            Optional<DirResult> dirResult = dirResults.get(dirInfoPair);
+            Optional<ResultOtDirs> dirResult = dirResults.get(dirInfoPair);
 
             str.append(formatDirInfoPair(Integer.toString(i + 1), dirComparison.parentDirInfoPair()));
 
@@ -142,7 +142,7 @@ public record TreeResult(
         return dirResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(DirResult::sheetStats)
+                .map(ResultOtDirs::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

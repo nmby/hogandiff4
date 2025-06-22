@@ -51,7 +51,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintSheetTabReader;
 import xyz.hotchpotch.hogandiff.task.BookPainter;
-import xyz.hotchpotch.hogandiff.task.SheetResult.Piece;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**

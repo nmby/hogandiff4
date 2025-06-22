@@ -10,8 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.task.SheetResult.Piece;
-import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
+import xyz.hotchpotch.hogandiff.task.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -23,9 +23,9 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @param bookComparison Excelブック比較情報
  * @param sheetResults   Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
-public record BookResult(
+public record ResultOfBooks(
         PairingInfoBooks bookComparison,
-        Map<Pair<String>, Optional<SheetResult>> sheetResults)
+        Map<Pair<String>, Optional<ResultOfSheets>> sheetResults)
         implements Result {
 
     // [static members] ********************************************************
@@ -65,9 +65,9 @@ public record BookResult(
      * @param sheetResults   Excelシート同士の比較結果（片側だけの欠損ペアも含む）
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public BookResult(
+    public ResultOfBooks(
             PairingInfoBooks bookComparison,
-            Map<Pair<String>, Optional<SheetResult>> sheetResults) {
+            Map<Pair<String>, Optional<ResultOfSheets>> sheetResults) {
 
         Objects.requireNonNull(bookComparison);
         Objects.requireNonNull(sheetResults);
@@ -114,7 +114,7 @@ public record BookResult(
                 .filter(Pair::isPaired)
                 .map(sheetResults::get)
                 .map(Optional::get)
-                .filter(SheetResult::hasDiff)
+                .filter(ResultOfSheets::hasDiff)
                 .count();
         int gapSheets = (int) bookComparison.childSheetNamePairs().stream()
                 .filter(Predicate.not(Pair::isPaired))
@@ -156,12 +156,12 @@ public record BookResult(
         return getDiffText(sResult -> BR + sResult.getDiffDetail().indent(8).replace("\n", BR));
     }
 
-    private String getDiffText(Function<SheetResult, String> diffDescriptor) {
+    private String getDiffText(Function<ResultOfSheets, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i < bookComparison.childSheetNamePairs().size(); i++) {
             Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
-            Optional<SheetResult> sResult = sheetResults.get(sheetNamePair);
+            Optional<ResultOfSheets> sResult = sheetResults.get(sheetNamePair);
 
             if (!sheetNamePair.isPaired() || sResult.isEmpty() || !sResult.get().hasDiff()) {
                 continue;
@@ -210,7 +210,7 @@ public record BookResult(
         return sheetResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(SheetResult::sheetStats)
+                .map(ResultOfSheets::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

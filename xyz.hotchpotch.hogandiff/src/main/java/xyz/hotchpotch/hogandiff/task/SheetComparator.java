@@ -44,5 +44,5 @@ public interface SheetComparator {
      * @param cellsSetPair セルセット
      * @return 比較結果
      */
-    SheetResult compare(Pair<Set<CellData>> cellsSetPair);
+    ResultOfSheets compare(Pair<Set<CellData>> cellsSetPair);
 }
