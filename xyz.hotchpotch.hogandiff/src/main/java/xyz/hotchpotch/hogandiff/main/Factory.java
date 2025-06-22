@@ -10,10 +10,10 @@ import java.util.function.Predicate;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
+import xyz.hotchpotch.hogandiff.main.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForBooks;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForCells;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForDirs;
-import xyz.hotchpotch.hogandiff.main.misc.SheetComparator;
 import xyz.hotchpotch.hogandiff.main.models.BookInfo;
 import xyz.hotchpotch.hogandiff.main.models.DirInfo;
 import xyz.hotchpotch.hogandiff.main.painters.Painter;
@@ -169,14 +169,14 @@ public class Factory {
      * @return セルセット同士を比較するコンパレータ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static SheetComparator sheetComparator(Settings settings) {
+    public static ComparatorOfSheets sheetComparator(Settings settings) {
         Objects.requireNonNull(settings);
 
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean prioritizeSpeed = settings.get(SettingKeys.PRIORITIZE_SPEED);
 
-        return SheetComparator.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
+        return ComparatorOfSheets.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
     }
 
     /**

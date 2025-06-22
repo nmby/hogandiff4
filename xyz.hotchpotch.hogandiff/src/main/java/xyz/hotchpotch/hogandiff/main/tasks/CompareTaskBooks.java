@@ -9,8 +9,8 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.main.Factory;
+import xyz.hotchpotch.hogandiff.main.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForCells;
-import xyz.hotchpotch.hogandiff.main.misc.SheetComparator;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.Result;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfBooks;
@@ -149,7 +149,7 @@ public final class CompareTaskBooks extends CompareTask {
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
 
-            SheetComparator sheetComparator = Factory.sheetComparator(settings);
+            ComparatorOfSheets sheetComparator = Factory.sheetComparator(settings);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
             Map<Pair<String>, Optional<ResultOfSheets>> results = new HashMap<>();
 

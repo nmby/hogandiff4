@@ -1,8 +1,7 @@
-package xyz.hotchpotch.hogandiff.main.misc;
+package xyz.hotchpotch.hogandiff.main.comparators;
 
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.common.rc.RCSheetComparator;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfSheets;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -14,24 +13,24 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  */
 @FunctionalInterface
-public interface SheetComparator {
+public interface ComparatorOfSheets {
 
     // [static members] ********************************************************
 
     /**
-     * {@link SheetComparator} のインスタンスを生成して返します。<br>
+     * {@link ComparatorOfSheets} のインスタンスを生成して返します。<br>
      * 
      * @param considerRowGaps    行の挿入／削除を考慮する場合は {@code true}
      * @param considerColumnGaps 列の挿入／削除を考慮する場合は {@code true}
      * @param prioritizeSpeed    比較処理の速度を優先する場合は {@code true}
      * @return コンパレータ
      */
-    public static SheetComparator of(
+    public static ComparatorOfSheets of(
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean prioritizeSpeed) {
 
-        return RCSheetComparator.of(
+        return ComparatorOfSheetsRC.of(
                 considerRowGaps,
                 considerColumnGaps,
                 prioritizeSpeed);

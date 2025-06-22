@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.common;
+package xyz.hotchpotch.hogandiff.main.comparators.matchers;
 
 import java.util.ArrayList;
 import java.util.List;

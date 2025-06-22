@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.common;
+package xyz.hotchpotch.hogandiff.main;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;

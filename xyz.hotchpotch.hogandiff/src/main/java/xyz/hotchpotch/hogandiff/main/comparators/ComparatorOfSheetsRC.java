@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.common.rc;
+package xyz.hotchpotch.hogandiff.main.comparators;
 
 import java.util.List;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.main.misc.SheetComparator;
+import xyz.hotchpotch.hogandiff.main.comparators.matchers.RCMatcher;
 import xyz.hotchpotch.hogandiff.main.misc.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfSheets;
@@ -17,11 +17,11 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 行同士の対応関係と列同士の対応関係をそれぞれ求めることによりセル同士の対応関係を決定する
- * {@link SheetComparator} の実装です。<br>
+ * {@link ComparatorOfSheets} の実装です。<br>
  *
  * @author nmby
  */
-public class RCSheetComparator implements SheetComparator {
+public class ComparatorOfSheetsRC implements ComparatorOfSheets {
 
         // [static members] ********************************************************
 
@@ -35,12 +35,12 @@ public class RCSheetComparator implements SheetComparator {
          * @param prioritizeSpeed    比較処理の速度を優先する場合は {@code true}
          * @return 新たなコンパレータ
          */
-        public static RCSheetComparator of(
+        public static ComparatorOfSheetsRC of(
                         boolean considerRowGaps,
                         boolean considerColumnGaps,
                         boolean prioritizeSpeed) {
 
-                return new RCSheetComparator(
+                return new ComparatorOfSheetsRC(
                                 RCMatcher.of(
                                                 considerRowGaps,
                                                 considerColumnGaps,
@@ -51,7 +51,7 @@ public class RCSheetComparator implements SheetComparator {
 
         private final RCMatcher rcMatcher;
 
-        private RCSheetComparator(RCMatcher rcMatcher) {
+        private ComparatorOfSheetsRC(RCMatcher rcMatcher) {
                 assert rcMatcher != null;
 
                 this.rcMatcher = rcMatcher;

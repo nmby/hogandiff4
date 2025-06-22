@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.common.BookHandler;
-import xyz.hotchpotch.hogandiff.main.misc.excel.common.CommonUtil;
+import xyz.hotchpotch.hogandiff.main.BookHandler;
+import xyz.hotchpotch.hogandiff.main.CommonUtil;
 import xyz.hotchpotch.hogandiff.main.models.BookInfo;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 

@@ -20,8 +20,8 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.main.Factory;
+import xyz.hotchpotch.hogandiff.main.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForCells;
-import xyz.hotchpotch.hogandiff.main.misc.SheetComparator;
 import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel.BookReportCreator;
 import xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel.TreeReportCreator;
@@ -460,7 +460,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 
         Pair<LoaderForCells> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath));
-        SheetComparator sheetComparator = Factory.sheetComparator(settings);
+        ComparatorOfSheets sheetComparator = Factory.sheetComparator(settings);
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
         Map<Pair<String>, Optional<ResultOfSheets>> results = new HashMap<>();
 

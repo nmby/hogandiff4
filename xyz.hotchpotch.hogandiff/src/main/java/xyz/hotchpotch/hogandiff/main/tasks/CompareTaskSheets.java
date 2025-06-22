@@ -8,8 +8,8 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.main.Factory;
+import xyz.hotchpotch.hogandiff.main.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.main.loaders.LoaderForCells;
-import xyz.hotchpotch.hogandiff.main.misc.SheetComparator;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.Result;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfBooks;
@@ -158,7 +158,7 @@ public final class CompareTaskSheets extends CompareTask {
                             readPasswords.get(bookInfoPair.get(side).bookPath()),
                             sheetNamePair.get(side)));
 
-            SheetComparator comparator = Factory.sheetComparator(settings);
+            ComparatorOfSheets comparator = Factory.sheetComparator(settings);
             ResultOfSheets result = comparator.compare(cellsSetPair);
 
             str.append("  -  ").append(result.getDiffSummary()).append(BR).append(BR);
