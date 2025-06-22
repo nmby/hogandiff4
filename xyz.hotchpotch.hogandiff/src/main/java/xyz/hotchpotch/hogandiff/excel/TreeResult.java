@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.DirInfo;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;

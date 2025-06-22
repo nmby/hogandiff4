@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.excel;
 import java.util.List;
 
 import xyz.hotchpotch.hogandiff.excel.common.VerticallyStrictDirInfosMatcher;
+import xyz.hotchpotch.hogandiff.task.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -13,9 +14,9 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  */
 @FunctionalInterface
 public interface DirInfosMatcher {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
      * 
@@ -25,9 +26,9 @@ public interface DirInfosMatcher {
     public static DirInfosMatcher of(boolean matchNamesStrictly) {
         return VerticallyStrictDirInfosMatcher.of(matchNamesStrictly);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     /**
      * フォルダツリーに含まれるフォルダ同士の組み合わせを決定して返します。<br>
      * 

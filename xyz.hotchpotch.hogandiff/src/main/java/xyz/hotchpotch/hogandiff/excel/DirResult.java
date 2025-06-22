@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.BookInfo;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 

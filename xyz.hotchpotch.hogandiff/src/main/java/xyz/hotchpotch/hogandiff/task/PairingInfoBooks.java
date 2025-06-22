@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

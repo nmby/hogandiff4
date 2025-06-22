@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
+import xyz.hotchpotch.hogandiff.task.BookInfo;
 import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;

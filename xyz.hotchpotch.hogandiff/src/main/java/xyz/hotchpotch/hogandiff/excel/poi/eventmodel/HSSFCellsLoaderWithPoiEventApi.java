@@ -40,13 +40,13 @@ import org.apache.poi.ss.util.NumberToTextConverter;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
+import xyz.hotchpotch.hogandiff.task.CellsLoader;
 
 /**
  * Apache POI イベントモデル API を利用して、
@@ -58,74 +58,74 @@ import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * 内部処理のステップを表す列挙型です。<br>
      *
      * @author nmby
      */
     private static enum ProcessingStep {
-        
+
         // [static members] ----------------------------------------------------
-        
+
         /** BOUNDSHEET レコードの中から、目的のシートが何番目に定義されているかを探します。 */
         SEARCHING_SHEET_DEFINITION,
-        
+
         /** Excelブック共通の SST レコードを読み取ります。 */
         READING_SST_DATA,
-        
+
         /** 目的のシートが定義される BOF レコードを探します。 */
         SEARCHING_SHEET_BODY,
-        
+
         /** 目的のシートがワークシートなのかダイアログシートなのかを確認します。 */
         CHECK_WORKSHEET_OR_DIALOGSHEET,
-        
+
         /** 目的のシートのセル内容物とセルコメントを読み取ります。 */
         READING_CELL_CONTENTS_AND_COMMENTS,
-        
+
         /** 処理完了。 */
         COMPLETED;
-        
+
         // [instance members] --------------------------------------------------
     }
-    
+
     private static class Listener1 implements HSSFListener {
-        
+
         // [static members] ----------------------------------------------------
-        
+
         // [instance members] --------------------------------------------------
-        
+
         private final String sheetName;
         private final boolean extractCachedValue;
         private final Map<String, CellData> cells = new HashMap<>();
         private final Map<Integer, String> comments = new HashMap<>();
-        
+
         private ProcessingStep step = ProcessingStep.SEARCHING_SHEET_DEFINITION;
         private int sheetIdx = 0;
         private int currIdx = 0;
         private List<String> sst;
         private FormulaRecord prevFormulaRec;
         private CommonObjectDataSubRecord prevFtCmoRec;
-        
+
         private Listener1(String sheetName, boolean extractCachedValue) {
             assert sheetName != null;
-            
+
             this.sheetName = sheetName;
             this.extractCachedValue = extractCachedValue;
         }
-        
+
         /**
          * .xls 形式のExcelブックからセルデータを抽出します。<br>
          * 
          * @param record レコード
          * @throws NoSuchElementException
-         *      指定された名前のシートが見つからない場合
+         *                                       指定された名前のシートが見つからない場合
          * @throws UnsupportedOperationException
-         *      指定された名前のシートがワークシートではなかった場合
+         *                                       指定された名前のシートがワークシートではなかった場合
          * @throws UnsupportedOperationException
-         *      数式セルからキャッシュされた計算値ではなく数式文字列を抽出しようとした場合
+         *                                       数式セルからキャッシュされた計算値ではなく数式文字列を抽出しようとした場合
          */
         @Override
         public void processRecord(Record record) {
@@ -133,32 +133,32 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 case SEARCHING_SHEET_DEFINITION:
                     searchingSheetDefinition(record);
                     break;
-                
+
                 case READING_SST_DATA:
                     readingSstData(record);
                     break;
-                
+
                 case SEARCHING_SHEET_BODY:
                     searchingSheetBody(record);
                     break;
-                
+
                 case CHECK_WORKSHEET_OR_DIALOGSHEET:
                     checkWorksheetOrDialogsheet(record);
                     break;
-                
+
                 case READING_CELL_CONTENTS_AND_COMMENTS:
                     readingCellContentsAndComments(record);
                     break;
-                
+
                 case COMPLETED:
                     // nop
                     break;
-                
+
                 default:
                     throw new AssertionError(step);
             }
         }
-        
+
         /**
          * BOUNDSHEET レコードの中から、目的のシートが何番目に定義されているかを探します。<br>
          * 
@@ -172,13 +172,13 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                 } else {
                     sheetIdx++;
                 }
-                
+
             } else if (record instanceof EOFRecord) {
                 throw new NoSuchElementException(
                         "no such sheet : " + sheetName);
             }
         }
-        
+
         /**
          * Excelブック共通の SST レコードを読み取ります。<br>
          * 
@@ -191,18 +191,18 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                         .map(UnicodeString::getString)
                         .toList();
                 step = ProcessingStep.SEARCHING_SHEET_BODY;
-                
+
             } else if (record instanceof EOFRecord) {
                 throw new AssertionError("no sst record");
             }
         }
-        
+
         /**
          * 目的のシートが定義される BOF レコードを探します。<br>
          * 
          * @param record レコード
          * @throws UnsupportedOperationException
-         *      指定された名前のシートがグラフシートもしくはマクロシートだった場合
+         *                                       指定された名前のシートがグラフシートもしくはマクロシートだった場合
          */
         private void searchingSheetBody(Record record) {
             if (record instanceof BOFRecord bofRec) {
@@ -214,7 +214,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                             currIdx++;
                         }
                         break;
-                    
+
                     case BOFRecord.TYPE_CHART:
                     case BOFRecord.TYPE_EXCEL_4_MACRO:
                         if (currIdx == sheetIdx) {
@@ -224,25 +224,25 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                             currIdx++;
                             break;
                         }
-                        
+
                     case BOFRecord.TYPE_WORKBOOK:
                     case BOFRecord.TYPE_WORKSPACE_FILE:
                     case BOFRecord.TYPE_VB_MODULE:
                         // nop
                         break;
-                    
+
                     default:
                         throw new AssertionError("unknown BOF type: " + bofRec.getType());
                 }
             }
         }
-        
+
         /**
          * 目的のシートがワークシートなのかダイアログシートなのかを確認します。<br>
          * 
          * @param record レコード
          * @throws UnsupportedOperationException
-         *      指定された名前のシートがダイアログシートだった場合
+         *                                       指定された名前のシートがダイアログシートだった場合
          */
         private void checkWorksheetOrDialogsheet(Record record) {
             if (record instanceof WSBoolRecord wsbRec) {
@@ -251,12 +251,12 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     throw new UnsupportedOperationException("dialog sheets are not supported");
                 }
                 step = ProcessingStep.READING_CELL_CONTENTS_AND_COMMENTS;
-                
+
             } else if (record instanceof EOFRecord) {
                 throw new AssertionError("no WSBool record");
             }
         }
-        
+
         /**
          * 目的のシートのセル内容物とセルコメントを読み取ります。<br>
          * 
@@ -264,29 +264,29 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
          */
         private void readingCellContentsAndComments(Record record) {
             assert record != null;
-            
+
             if (record instanceof CellRecord && prevFormulaRec != null) {
                 throw new AssertionError("no following string record");
             }
             if (record instanceof StringRecord && prevFormulaRec == null) {
                 throw new AssertionError("unexpected string record");
             }
-            
+
             String value = null;
-            
+
             switch (record) {
                 case LabelSSTRecord lRec: // セル内容抽出用
                     value = sst.get(lRec.getSSTIndex());
                     break;
-                
+
                 case NumberRecord nRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(nRec.getValue());
                     break;
-                
+
                 case RKRecord rkRec: // セル内容抽出用
                     value = NumberToTextConverter.toText(rkRec.getRKNumber());
                     break;
-                
+
                 case BoolErrRecord beRec: // セル内容抽出用
                     if (beRec.isBoolean()) {
                         value = Boolean.toString(beRec.getBooleanValue());
@@ -294,11 +294,11 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                         value = ErrorEval.getText(beRec.getErrorValue());
                     }
                     break;
-                
+
                 case FormulaRecord fRec: // セル内容抽出用
                     value = getValueFromFormulaRecord(fRec);
                     break;
-                
+
                 case StringRecord sRec: // 数式計算値抽出用
                     String calculated = sRec.getString();
                     if (calculated != null && !"".equals(calculated)) {
@@ -314,7 +314,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     }
                     prevFormulaRec = null;
                     break;
-                
+
                 case ObjRecord objRec: // セルコメント抽出用
                     Optional<CommonObjectDataSubRecord> ftCmo = objRec.getSubRecords().stream()
                             .filter(sub -> sub instanceof CommonObjectDataSubRecord)
@@ -328,7 +328,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                         prevFtCmoRec = ftCmoRec;
                     });
                     break;
-                
+
                 case TextObjectRecord txoRec: // セルコメント抽出用
                     if (prevFtCmoRec == null) {
                         // throw new AssertionError("no preceding ftCmo record");
@@ -338,11 +338,11 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     comments.put(prevFtCmoRec.getObjectId(), txoRec.getStr().getString());
                     prevFtCmoRec = null;
                     break;
-                
+
                 case NoteRecord noteRec: // セルコメント抽出用
                     String address = CellsUtil.idxToAddress(noteRec.getRow(), noteRec.getColumn());
                     String comment = comments.remove(noteRec.getShapeId());
-                    
+
                     if (cells.containsKey(address)) {
                         CellData original = cells.get(address);
                         cells.put(address, original.withComment(comment));
@@ -350,15 +350,15 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                         cells.put(address, CellData.of(address, "", comment));
                     }
                     break;
-                
+
                 case EOFRecord eofRec: // 次ステップに移行
                     step = ProcessingStep.COMPLETED;
                     break;
-                
+
                 default:
                     // nop
             }
-            
+
             if (value != null && !"".equals(value)) {
                 CellRecord cellRec = (CellRecord) record;
                 cells.put(
@@ -372,14 +372,14 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                                 null));
             }
         }
-        
+
         /**
          * FORMULA レコードからセル格納値を抽出します。<br>
          * 
          * @param fRec レコード
          * @return セル格納値
          * @throws UnsupportedOperationException
-         *      キャッシュされた計算値ではなく数式文字列を抽出しようとした場合
+         *                                       キャッシュされた計算値ではなく数式文字列を抽出しようとした場合
          */
         private String getValueFromFormulaRecord(FormulaRecord fRec) {
             if (extractCachedValue) {
@@ -387,30 +387,30 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
                     prevFormulaRec = fRec;
                     return null;
                 }
-                
+
                 CellType type = fRec.getCachedResultTypeEnum();
-                
+
                 return switch (type) {
                     case NUMERIC -> NumberToTextConverter.toText(fRec.getValue());
                     case BOOLEAN -> Boolean.toString(fRec.getCachedBooleanValue());
                     case ERROR -> ErrorEval.getText(fRec.getCachedErrorValue());
-                
+
                     // nop: 空のセルは抽出しない。
                     case BLANK -> null;
-                
+
                     // 利用者からのレポートによると、このパスに入る場合があるらしい。
                     // 返すべき適切な fRec のメンバが見当たらないため、nullを返しておく。
                     // FIXME: [No.04 数式サポート改善].xlsファイル形式を理解したうえでちゃんとやる
                     case STRING -> null;
-                
+
                     case _NONE -> throw new AssertionError("_NONE");
-                
+
                     // キャッシュされた値のタイプが FORMULA というのは無いはず
                     case FORMULA -> throw new AssertionError("FORMULA");
-                
+
                     default -> throw new AssertionError("unknown cell type: " + type);
                 };
-                
+
             } else {
                 // FIXME: [No.04 数式サポート改善] 数式文字列もサポートできるようにする
                 throw new UnsupportedOperationException(
@@ -418,64 +418,65 @@ public class HSSFCellsLoaderWithPoiEventApi implements CellsLoader {
             }
         }
     }
-    
+
     // [instance members] ******************************************************
-    
+
     private final boolean extractCachedValue;
-    
+
     /**
      * コンストラクタ
      * 
      * @param extractCachedValue
-     *              数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
-     *              数式文字列を抽出する場合は {@code false}
+     *                           数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
+     *                           数式文字列を抽出する場合は {@code false}
      */
     public HSSFCellsLoaderWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
     }
-    
+
     /**
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
+     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式の場合
+     *                                  {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
-     *              処理に失敗した場合
+     *                                  処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
-    //      例えば null パラメータとか、サポート対象外のブック形式とか。
+    // 例えば null パラメータとか、サポート対象外のブック形式とか。
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
-    //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
+    // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
             Path bookPath,
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
-        
+
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-        
+
         Biff8EncryptionKey.setCurrentUserPassword(readPassword);
         try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
-            
+
             HSSFRequest req = new HSSFRequest();
             Listener1 listener1 = new Listener1(sheetName, extractCachedValue);
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
             return Set.copyOf(listener1.cells.values());
-            
+
         } catch (Exception e) {
             throw new ExcelHandlingException(
                     "processing failed : %s - %s".formatted(bookPath, sheetName), e);
-            
+
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
         }

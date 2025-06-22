@@ -12,13 +12,13 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.task.BookInfo;
+import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.task.DirInfo;
+import xyz.hotchpotch.hogandiff.task.Factory;
 import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.task.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

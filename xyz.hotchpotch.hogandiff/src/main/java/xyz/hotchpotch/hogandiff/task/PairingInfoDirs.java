@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

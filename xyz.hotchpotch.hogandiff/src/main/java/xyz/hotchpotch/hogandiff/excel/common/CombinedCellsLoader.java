@@ -8,8 +8,8 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.CellsLoader;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.task.CellsLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -20,15 +20,15 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 @BookHandler
 @SheetHandler
 public class CombinedCellsLoader implements CellsLoader {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * 新しいローダーを構成します。<br>
      * 
      * @param suppliers このローダーを構成するローダーたちのサプライヤ
      * @return 新しいローダー
-     * @throws NullPointerException {@code suppliers} が {@code null} の場合
+     * @throws NullPointerException     {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
     public static CellsLoader of(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
@@ -36,20 +36,20 @@ public class CombinedCellsLoader implements CellsLoader {
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
-        
+
         return new CombinedCellsLoader(suppliers);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     private final List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers;
-    
+
     private CombinedCellsLoader(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
-        
+
         this.suppliers = List.copyOf(suppliers);
     }
-    
+
     /**
      * {@inheritDoc}
      * <br>
@@ -60,32 +60,33 @@ public class CombinedCellsLoader implements CellsLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code bookPath}, {@code sheetName} のいずれかが {@code null} の場合
+     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code bookPath} がサポート対象外の形式の場合
+     *                                  {@code bookPath} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
-     *              処理に失敗した場合
+     *                                  処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
-    //      例えば null パラメータとか、サポート対象外のブック形式とか。
+    // 例えば null パラメータとか、サポート対象外のブック形式とか。
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
-    //      例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
+    // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
             Path bookPath,
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
-        
+
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-        
+
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s - %s".formatted(bookPath, sheetName));
-        
+
         Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {

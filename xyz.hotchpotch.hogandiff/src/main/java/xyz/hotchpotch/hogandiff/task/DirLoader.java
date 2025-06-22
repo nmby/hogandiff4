@@ -1,7 +1,8 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.nio.file.Path;
 
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
 
 /**
@@ -12,9 +13,9 @@ import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
  */
 @FunctionalInterface
 public interface DirLoader {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
@@ -24,9 +25,9 @@ public interface DirLoader {
     public static DirLoader of(boolean recursively) {
         return new StandardDirLoader(recursively);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     /**
      * 指定されたパスのフォルダ情報を返します。<br>
      * 

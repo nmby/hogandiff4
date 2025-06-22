@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.excel.BookPainter;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
+import xyz.hotchpotch.hogandiff.task.BookPainter;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
@@ -23,15 +23,15 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 @BookHandler
 @SheetHandler
 public class CombinedBookPainter implements BookPainter {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * 新しいペインターを構成します。<br>
      * 
      * @param suppliers このペインターを構成するペインターたちのサプライヤ
      * @return 新しいペインター
-     * @throws NullPointerException {@code suppliers} が {@code null} の場合
+     * @throws NullPointerException     {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
     public static BookPainter of(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
@@ -39,20 +39,20 @@ public class CombinedBookPainter implements BookPainter {
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
-        
+
         return new CombinedBookPainter(suppliers);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     private final List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers;
-    
+
     private CombinedBookPainter(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
-        
+
         this.suppliers = List.copyOf(suppliers);
     }
-    
+
     /**
      * {@inheritDoc}
      * <br>
@@ -63,22 +63,25 @@ public class CombinedBookPainter implements BookPainter {
      * 全てのペインターで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *              {@code srcBookPath}, {@code dstBookPath}, {@code diffs}
-     *              のいずれかが {@code null} の場合
+     *                                  {@code srcBookPath}, {@code dstBookPath},
+     *                                  {@code diffs}
+     *                                  のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} がサポート対象外の形式の場合
+     *                                  {@code srcBookPath} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} と {@code dstBookPath} が同じパスの場合
+     *                                  {@code srcBookPath} と {@code dstBookPath}
+     *                                  が同じパスの場合
      * @throws IllegalArgumentException
-     *              {@code srcBookPath} と {@code dstBookPath} の形式が異なる場合
+     *                                  {@code srcBookPath} と {@code dstBookPath}
+     *                                  の形式が異なる場合
      * @throws ExcelHandlingException
-     *              処理に失敗した場合
+     *                                  処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
-    //      例えば null パラメータとか、サポート対象外のブック形式とか。
+    // 例えば null パラメータとか、サポート対象外のブック形式とか。
     // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
-    //      例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
+    // 例えば、ブックが見つからないとか、ファイル内容がおかしく予期せぬ実行時例外が発生したとか。
     @Override
     public void paintAndSave(
             Path srcBookPath,
@@ -86,7 +89,7 @@ public class CombinedBookPainter implements BookPainter {
             String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
-        
+
         Objects.requireNonNull(srcBookPath);
         Objects.requireNonNull(dstBookPath);
         // readPassword may be null.
@@ -100,10 +103,10 @@ public class CombinedBookPainter implements BookPainter {
             throw new IllegalArgumentException(
                     "extentions must be the same : %s -> %s".formatted(srcBookPath, dstBookPath));
         }
-        
+
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s -> %s".formatted(srcBookPath, dstBookPath));
-        
+
         Iterator<UnsafeSupplier<BookPainter, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
@@ -114,7 +117,7 @@ public class CombinedBookPainter implements BookPainter {
                 e.printStackTrace();
                 failed.addSuppressed(e);
             }
-            
+
             // painterの処理に失敗し、かつ後続painterがある場合は、
             // 保存先ファイルを削除しておく。
             if (itr.hasNext()) {

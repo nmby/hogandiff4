@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
