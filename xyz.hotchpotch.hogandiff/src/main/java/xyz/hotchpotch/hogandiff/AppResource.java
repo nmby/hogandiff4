@@ -14,7 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
 import xyz.hotchpotch.hogandiff.task.Factory;
 import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -203,7 +203,7 @@ public class AppResource {
     }
 
     private BookInfo loadBookInfo(Path bookPath) {
-        BookLoader loader = Factory.bookLoader(bookPath);
+        LoaderForBooks loader = Factory.bookLoader(bookPath);
         return loader.loadBookInfo(bookPath, null);
     }
 }

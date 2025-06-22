@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedCellsLoader;
+import xyz.hotchpotch.hogandiff.excel.common.LoaderForCellsCombined;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFCellsLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.CellsLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PoiUtil;
@@ -24,7 +24,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.XSSFCellsLoaderWithSax;
  * @author nmby
  */
 @FunctionalInterface
-public interface CellsLoader {
+public interface LoaderForCells {
 
         // [static members] ********************************************************
 
@@ -37,7 +37,7 @@ public interface CellsLoader {
          * @throws NullPointerException          {@code bookPath} が {@code null} の場合
          * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
          */
-        public static CellsLoader of(Path bookPath, boolean useCachedValue) {
+        public static LoaderForCells of(Path bookPath, boolean useCachedValue) {
                 Objects.requireNonNull(bookPath);
 
                 Function<Cell, CellData> converter = cell -> {
@@ -53,13 +53,13 @@ public interface CellsLoader {
 
                 return switch (BookType.of(bookPath)) {
                         case XLS -> useCachedValue
-                                        ? CombinedCellsLoader.of(List.of(
+                                        ? LoaderForCellsCombined.of(List.of(
                                                         () -> new HSSFCellsLoaderWithPoiEventApi(useCachedValue),
                                                         () -> new CellsLoaderWithPoiUserApi(converter)))
                                         : new CellsLoaderWithPoiUserApi(converter);
 
                         case XLSX, XLSM -> useCachedValue
-                                        ? CombinedCellsLoader.of(List.of(
+                                        ? LoaderForCellsCombined.of(List.of(
                                                         () -> new XSSFCellsLoaderWithSax(useCachedValue, bookPath),
                                                         () -> new CellsLoaderWithPoiUserApi(converter)))
                                         : new CellsLoaderWithPoiUserApi(converter);

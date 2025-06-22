@@ -8,7 +8,7 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookLoader;
+import xyz.hotchpotch.hogandiff.excel.common.LoaderForBooksCombined;
 import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
 import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
  * @author nmby
  */
 @FunctionalInterface
-public interface BookLoader {
+public interface LoaderForBooks {
 
     // [static members] ********************************************************
 
@@ -32,17 +32,17 @@ public interface BookLoader {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookLoader of(Path bookPath) {
+    public static LoaderForBooks of(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
 
         return switch (BookType.of(bookPath)) {
-            case XLS -> CombinedBookLoader.of(List.of(
+            case XLS -> LoaderForBooksCombined.of(List.of(
                     () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
                     () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
 
-            case XLSX, XLSM -> CombinedBookLoader.of(List.of(
+            case XLSX, XLSM -> LoaderForBooksCombined.of(List.of(
                     () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
                     () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
 

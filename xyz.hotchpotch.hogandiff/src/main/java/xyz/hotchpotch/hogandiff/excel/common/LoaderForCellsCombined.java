@@ -4,19 +4,22 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
-import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.excel.CellData;
+import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
- * 処理が成功するまで複数のローダーで順に処理を行う {@link BookLoader} の実装です。<br>
+ * 処理が成功するまで複数のローダーで順に処理を行う {@link LoaderForCells} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler
-public class CombinedBookLoader implements BookLoader {
+@SheetHandler
+public class LoaderForCellsCombined implements LoaderForCells {
 
     // [static members] ********************************************************
 
@@ -25,23 +28,23 @@ public class CombinedBookLoader implements BookLoader {
      * 
      * @param suppliers このローダーを構成するローダーたちのサプライヤ
      * @return 新しいローダー
-     * @throws NullPointerException     パラメータが {@code null} の場合
+     * @throws NullPointerException     {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static BookLoader of(List<Supplier<BookLoader>> suppliers) {
+    public static LoaderForCells of(List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
 
-        return new CombinedBookLoader(suppliers);
+        return new LoaderForCellsCombined(suppliers);
     }
 
     // [instance members] ******************************************************
 
-    private final List<Supplier<BookLoader>> suppliers;
+    private final List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers;
 
-    private CombinedBookLoader(List<Supplier<BookLoader>> suppliers) {
+    private LoaderForCellsCombined(List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
 
         this.suppliers = List.copyOf(suppliers);
@@ -57,43 +60,43 @@ public class CombinedBookLoader implements BookLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *                                  {@code bookPath} が {@code null} の場合
+     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code null} の場合
      * @throws IllegalArgumentException
      *                                  {@code bookPath} がサポート対象外の形式の場合
+     * @throws ExcelHandlingException
+     *                                  処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
     // 例えば null パラメータとか、サポート対象外のブック形式とか。
-    // ・抽出処理中に発生したあらゆる例外は catch し、呼出元には必ず {@link BookInfo} オブジェクトを返却する。
+    // ・それ以外のあらゆる例外は ExcelHandlingException でレポートする。
+    // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
-    public BookInfo loadBookInfo(
+    public Set<CellData> loadCells(
             Path bookPath,
-            String readPassword) {
+            String readPassword,
+            String sheetName)
+            throws ExcelHandlingException {
 
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
+        Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
 
-        try {
-            Iterator<Supplier<BookLoader>> itr = suppliers.iterator();
+        ExcelHandlingException failed = new ExcelHandlingException(
+                "processiong failed : %s - %s".formatted(bookPath, sheetName));
 
-            while (itr.hasNext()) {
-                BookLoader loader = itr.next().get();
-                BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
-
-                switch (bookInfo.status()) {
-                    case LOAD_COMPLETED:
-                    case NEEDS_PASSWORD:
-                        return bookInfo;
-
-                    case LOAD_FAILED:
-                        // continue
-                }
+        Iterator<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> itr = suppliers.iterator();
+        while (itr.hasNext()) {
+            try {
+                LoaderForCells loader = itr.next().get();
+                return loader.loadCells(bookPath, readPassword, sheetName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                failed.addSuppressed(e);
             }
-            return BookInfo.ofLoadFailed(bookPath);
-
-        } catch (Exception e) {
-            return BookInfo.ofLoadFailed(bookPath);
         }
+        throw failed;
     }
 }

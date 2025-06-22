@@ -32,19 +32,19 @@ import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
 import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.IgnoreCloseInputStream;
 import xyz.hotchpotch.hogandiff.excel.sax.SaxUtil.SheetInfo;
-import xyz.hotchpotch.hogandiff.task.CellsLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 
 /**
  * SAX (Simple API for XML) を利用して、
  * .xlsx/.xlsm 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link CellsLoader} の実装です。<br>
+ * セルデータを抽出する {@link LoaderForCells} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFCellsLoaderWithSax implements CellsLoader {
+public class XSSFCellsLoaderWithSax implements LoaderForCells {
 
     // [static members] ********************************************************
 

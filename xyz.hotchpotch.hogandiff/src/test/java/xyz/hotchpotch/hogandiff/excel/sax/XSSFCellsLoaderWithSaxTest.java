@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.CellsLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
 
 class XSSFCellsLoaderWithSaxTest {
 
@@ -73,7 +73,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
 
                 // 対照
                 assertDoesNotThrow(
@@ -98,7 +98,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(true, test1_xlsm);
 
                 // 存在しないシート
                 assertThrows(
@@ -119,7 +119,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系1() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(true, test1_xlsx);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(true, test1_xlsx);
 
                 assertEquals(
                                 Set.of(
@@ -135,7 +135,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(true, test3_xlsx);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(true, test3_xlsx);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -245,7 +245,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(false, test3_xlsx);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(false, test3_xlsx);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -350,7 +350,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(true, test4_xlsx);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(true, test4_xlsx);
 
                 assertEquals(
                                 Set.of(
@@ -366,7 +366,7 @@ class XSSFCellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-                CellsLoader testee = new XSSFCellsLoaderWithSax(false, test4_xlsx);
+                LoaderForCells testee = new XSSFCellsLoaderWithSax(false, test4_xlsx);
 
                 assertEquals(
                                 Set.of(

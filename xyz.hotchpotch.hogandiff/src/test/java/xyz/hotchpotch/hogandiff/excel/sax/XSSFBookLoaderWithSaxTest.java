@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
 
 class XSSFBookLoaderWithSaxTest {
 
@@ -57,7 +57,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_例外系_非チェック例外() {
-                BookLoader testee = XSSFBookLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
 
                 // null パラメータ
                 assertThrows(
@@ -78,7 +78,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_例外系_チェック例外() {
-                BookLoader testee = XSSFBookLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
 
                 // 存在しないファイル
                 assertEquals(
@@ -93,7 +93,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_全てのシート種別が対象の場合() throws ExcelHandlingException {
-                BookLoader testee = XSSFBookLoaderWithSax.of(EnumSet.allOf(SheetType.class));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(EnumSet.allOf(SheetType.class));
 
                 assertEquals(
                                 BookInfo.ofLoadCompleted(
@@ -111,7 +111,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
-                BookLoader testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.WORKSHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.WORKSHEET));
 
                 // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
                 // 「x4_マクロ」も取得されている。
@@ -131,7 +131,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
-                BookLoader testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.CHART_SHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.CHART_SHEET));
 
                 assertEquals(
                                 BookInfo.ofLoadCompleted(
@@ -149,7 +149,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
-                BookLoader testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.DIALOG_SHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.DIALOG_SHEET));
 
                 assertEquals(
                                 BookInfo.ofLoadCompleted(
@@ -167,7 +167,7 @@ class XSSFBookLoaderWithSaxTest {
 
         @Test
         void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
-                BookLoader testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.MACRO_SHEET));
+                LoaderForBooks testee = XSSFBookLoaderWithSax.of(EnumSet.of(SheetType.MACRO_SHEET));
 
                 // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
                 // 「x4_マクロ」が取得されない。

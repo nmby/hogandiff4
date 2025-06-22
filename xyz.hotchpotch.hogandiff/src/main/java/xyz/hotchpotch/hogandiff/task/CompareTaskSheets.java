@@ -137,7 +137,7 @@ public final class CompareTaskSheets extends CompareTask {
             Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
             Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
 
-            Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
+            Pair<LoaderForCells> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                     bookPath -> Factory.cellsLoader(settings, bookPath));
 
             str.append(ResultOfBooks.formatSheetNamesPair("1", sheetNamePair));

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.CellsLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
 
 class CellsLoaderWithPoiUserApiTest {
 
@@ -60,7 +60,7 @@ class CellsLoaderWithPoiUserApiTest {
 
         @Test
         void testLoadCells_例外系_非チェック例外() {
-                CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
+                LoaderForCells testee = new CellsLoaderWithPoiUserApi(converter);
 
                 // 対照群
                 assertDoesNotThrow(
@@ -89,7 +89,7 @@ class CellsLoaderWithPoiUserApiTest {
 
         @Test
         void testLoadCells_例外系_チェック例外() {
-                CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
+                LoaderForCells testee = new CellsLoaderWithPoiUserApi(converter);
 
                 // 存在しないファイル
                 assertThrows(
@@ -131,7 +131,7 @@ class CellsLoaderWithPoiUserApiTest {
 
         @Test
         void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-                CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
+                LoaderForCells testee1 = new CellsLoaderWithPoiUserApi(converter);
 
                 assertEquals(
                                 Set.of(
@@ -167,7 +167,7 @@ class CellsLoaderWithPoiUserApiTest {
 
         @Test
         void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-                CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
+                LoaderForCells testee1 = new CellsLoaderWithPoiUserApi(converter);
 
                 assertEquals(
                                 Set.of(

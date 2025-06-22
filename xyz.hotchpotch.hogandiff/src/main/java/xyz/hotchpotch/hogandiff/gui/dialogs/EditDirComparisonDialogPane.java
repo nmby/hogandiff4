@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
 import xyz.hotchpotch.hogandiff.task.DirInfo;
 import xyz.hotchpotch.hogandiff.task.Factory;
 import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
@@ -263,7 +263,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
 
         try {
             String readPassword = readPasswords.get(bookPath);
-            BookLoader loader = Factory.bookLoader(bookPath);
+            LoaderForBooks loader = Factory.bookLoader(bookPath);
             BookInfo newBookInfo = null;
 
             while (true) {

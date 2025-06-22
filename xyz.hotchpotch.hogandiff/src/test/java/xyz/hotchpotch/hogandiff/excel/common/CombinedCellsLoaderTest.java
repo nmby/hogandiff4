@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.CellsLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 class CombinedCellsLoaderTest {
@@ -19,9 +19,9 @@ class CombinedCellsLoaderTest {
 
         private static final CellData cell1 = new CellData(1, 2, "success", null);
 
-        private static final CellsLoader successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
+        private static final LoaderForCells successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
 
-        private static final CellsLoader failLoader = (bookPath, readPassword, sheetName) -> {
+        private static final LoaderForCells failLoader = (bookPath, readPassword, sheetName) -> {
                 throw new RuntimeException("fail");
         };
 
@@ -32,25 +32,26 @@ class CombinedCellsLoaderTest {
                 // 異常系
                 assertThrows(
                                 NullPointerException.class,
-                                () -> CombinedCellsLoader.of(null));
+                                () -> LoaderForCellsCombined.of(null));
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> CombinedCellsLoader.of(List.of()));
+                                () -> LoaderForCellsCombined.of(List.of()));
 
                 // 正常系
                 assertTrue(
-                                CombinedCellsLoader.of(List.of(
+                                LoaderForCellsCombined.of(List.of(
                                                 UnsafeSupplier.from(
-                                                                () -> successLoader))) instanceof CombinedCellsLoader);
+                                                                () -> successLoader))) instanceof LoaderForCellsCombined);
                 assertTrue(
-                                CombinedCellsLoader.of(List.of(
+                                LoaderForCellsCombined.of(List.of(
                                                 UnsafeSupplier.from(() -> successLoader),
-                                                UnsafeSupplier.from(() -> failLoader))) instanceof CombinedCellsLoader);
+                                                UnsafeSupplier.from(
+                                                                () -> failLoader))) instanceof LoaderForCellsCombined);
         }
 
         @Test
         void testLoadCells_パラメータチェック() {
-                CellsLoader testee = CombinedCellsLoader.of(List.of(
+                LoaderForCells testee = LoaderForCellsCombined.of(List.of(
                                 UnsafeSupplier.from(() -> successLoader)));
 
                 // null パラメータ
@@ -66,9 +67,9 @@ class CombinedCellsLoaderTest {
 
         @Test
         void testLoadCells_失敗系() {
-                CellsLoader testeeF = CombinedCellsLoader.of(List.of(
+                LoaderForCells testeeF = LoaderForCellsCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader)));
-                CellsLoader testeeFFF = CombinedCellsLoader.of(List.of(
+                LoaderForCells testeeFFF = LoaderForCellsCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader)));
@@ -86,9 +87,9 @@ class CombinedCellsLoaderTest {
 
         @Test
         void testLoadSheetNames_成功系() throws ExcelHandlingException {
-                CellsLoader testeeS = CombinedCellsLoader.of(List.of(
+                LoaderForCells testeeS = LoaderForCellsCombined.of(List.of(
                                 UnsafeSupplier.from(() -> successLoader)));
-                CellsLoader testeeFFSF = CombinedCellsLoader.of(List.of(
+                LoaderForCells testeeFFSF = LoaderForCellsCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> successLoader),

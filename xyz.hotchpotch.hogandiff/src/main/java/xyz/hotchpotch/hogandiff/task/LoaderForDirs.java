@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.task;
 import java.nio.file.Path;
 
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
+import xyz.hotchpotch.hogandiff.excel.common.LoaderForDirsStandard;
 
 /**
  * フォルダ情報を抽出するローダーを表します。<br>
@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.excel.common.StandardDirLoader;
  * @author nmby
  */
 @FunctionalInterface
-public interface DirLoader {
+public interface LoaderForDirs {
 
     // [static members] ********************************************************
 
@@ -22,8 +22,8 @@ public interface DirLoader {
      * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダ情報を抽出するローダー
      */
-    public static DirLoader of(boolean recursively) {
-        return new StandardDirLoader(recursively);
+    public static LoaderForDirs of(boolean recursively) {
+        return new LoaderForDirsStandard(recursively);
     }
 
     // [instance members] ******************************************************

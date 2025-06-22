@@ -137,7 +137,7 @@ public final class CompareTaskBooks extends CompareTask {
 
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
-            Pair<CellsLoader> loaderPair = bookInfoPair
+            Pair<LoaderForCells> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
 

@@ -23,18 +23,18 @@ import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
-import xyz.hotchpotch.hogandiff.task.CellsLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForCells;
 
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link CellsLoader} の実装です。<br>
+ * セルデータを抽出する {@link LoaderForCells} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class CellsLoaderWithPoiUserApi implements CellsLoader {
+public class CellsLoaderWithPoiUserApi implements LoaderForCells {
 
     // [static members] ********************************************************
 

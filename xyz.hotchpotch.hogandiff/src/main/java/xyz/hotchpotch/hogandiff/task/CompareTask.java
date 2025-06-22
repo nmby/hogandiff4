@@ -446,7 +446,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 
         updateProgress(progressBefore, PROGRESS_MAX);
 
-        Pair<CellsLoader> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
+        Pair<LoaderForCells> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath));
         SheetComparator sheetComparator = Factory.sheetComparator(settings);
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);

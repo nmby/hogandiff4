@@ -18,17 +18,17 @@ import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.BookLoader;
+import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
 
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link BookLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link LoaderForBooks} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
-public class BookLoaderWithPoiUserApi implements BookLoader {
+public class BookLoaderWithPoiUserApi implements LoaderForBooks {
 
     // [static members] ********************************************************
 
@@ -40,7 +40,7 @@ public class BookLoaderWithPoiUserApi implements BookLoader {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static BookLoader of(Set<SheetType> targetTypes) {
+    public static LoaderForBooks of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes);
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");

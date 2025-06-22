@@ -30,10 +30,10 @@ public class Factory {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookLoader bookLoader(Path bookPath) {
+    public static LoaderForBooks bookLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
-        return BookLoader.of(bookPath);
+        return LoaderForBooks.of(bookPath);
     }
 
     /**
@@ -46,7 +46,7 @@ public class Factory {
      *                                       のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
+    public static LoaderForCells cellsLoader(Settings settings, Path bookPath) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
 
@@ -56,7 +56,7 @@ public class Factory {
 
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
 
-        return CellsLoader.of(bookPath, useCachedValue);
+        return LoaderForCells.of(bookPath, useCachedValue);
     }
 
     /**
@@ -66,11 +66,11 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirLoader dirLoader(Settings settings) {
+    public static LoaderForDirs dirLoader(Settings settings) {
         Objects.requireNonNull(settings);
 
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return DirLoader.of(recursively);
+        return LoaderForDirs.of(recursively);
     }
 
     /**
