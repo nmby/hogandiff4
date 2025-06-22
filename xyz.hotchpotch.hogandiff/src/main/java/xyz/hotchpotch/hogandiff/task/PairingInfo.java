@@ -1,9 +1,9 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff.task;
 
-public sealed interface Comparison
-        permits BookComparison, DirComparison {
-    
+public sealed interface PairingInfo
+        permits PairingInfoBooks, PairingInfoDirs {
+
     // [static members] ********************************************************
-    
+
     // [instance members] ******************************************************
 }

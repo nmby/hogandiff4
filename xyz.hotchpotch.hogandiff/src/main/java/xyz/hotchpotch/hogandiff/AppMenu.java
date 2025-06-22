@@ -5,12 +5,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.DirComparison;
 import xyz.hotchpotch.hogandiff.task.CompareTaskBooks;
 import xyz.hotchpotch.hogandiff.task.CompareTaskDirs;
 import xyz.hotchpotch.hogandiff.task.CompareTaskSheets;
 import xyz.hotchpotch.hogandiff.task.CompareTaskTrees;
+import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
@@ -19,9 +19,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * @author nmby
  */
 public enum AppMenu {
-    
+
     // [static members] ********************************************************
-    
+
     /**
      * Excelブックに含まれる全シートを比較します。
      * 具体的には、2つのExcelブックに含まれる名前の似ているシート同士をマッチングし、
@@ -30,25 +30,25 @@ public enum AppMenu {
     COMPARE_BOOKS(
             CompareTaskBooks::new,
             settings -> {
-                BookComparison bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                 Objects.requireNonNull(bookComparison);
-                
+
                 return !bookComparison.parentBookInfoPair().isIdentical();
             }),
-    
+
     /**
      * 特定のExcelシート同士を比較します。
      */
     COMPARE_SHEETS(
             CompareTaskSheets::new,
             settings -> {
-                BookComparison bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                 Objects.requireNonNull(bookComparison);
-                
+
                 return !bookComparison.parentBookInfoPair().isIdentical()
                         || !bookComparison.childSheetNamePairs().get(0).isIdentical();
             }),
-    
+
     /**
      * 指定されたフォルダに含まれる全Excelブックを比較します。
      * 具体的には、2つのフォルダに含まれる名前の似ているExcelブック同士をマッチングし、
@@ -57,12 +57,12 @@ public enum AppMenu {
     COMPARE_DIRS(
             CompareTaskDirs::new,
             settings -> {
-                DirComparison dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
                 Objects.requireNonNull(dirComparison);
-                
+
                 return !dirComparison.parentDirInfoPair().isIdentical();
             }),
-    
+
     /**
      * 指定されたフォルダ配下のフォルダツリーを比較します。
      * 具体的には、2つのフォルダツリーに含まれるフォルダ同士をマッチングし、
@@ -71,28 +71,28 @@ public enum AppMenu {
     COMPARE_TREES(
             CompareTaskTrees::new,
             settings -> {
-                DirComparison dirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO);
                 Objects.requireNonNull(dirComparison);
-                
+
                 return !dirComparison.parentDirInfoPair().isIdentical();
             });
-    
+
     // [instance members] ******************************************************
-    
+
     private final Function<Settings, Task<Void>> taskFactory;
     private final Predicate<Settings> targetValidator;
-    
+
     private AppMenu(
             Function<Settings, Task<Void>> taskFactory,
             Predicate<Settings> targetValidator) {
-        
+
         assert taskFactory != null;
         assert targetValidator != null;
-        
+
         this.taskFactory = taskFactory;
         this.targetValidator = targetValidator;
     }
-    
+
     /**
      * 処理対象のフォルダ／Excelブック／シートの指定が妥当なものかを確認します。<br>
      * 具体的には、2つの比較対象が同じものの場合は {@code false} を、
@@ -104,10 +104,10 @@ public enum AppMenu {
      */
     public boolean isValidTargets(Settings settings) {
         Objects.requireNonNull(settings);
-        
+
         return targetValidator.test(settings);
     }
-    
+
     /**
      * このメニューを実行するためのタスクを生成して返します。<br>
      * 
@@ -117,7 +117,7 @@ public enum AppMenu {
      */
     public Task<Void> getTask(Settings settings) {
         Objects.requireNonNull(settings);
-        
+
         return taskFactory.apply(settings);
     }
 }
