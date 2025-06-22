@@ -1,8 +1,8 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
+import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
 
 /**
  * 各種比較操作の比較結果を表します。<br>
@@ -12,11 +12,11 @@ import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 // sealed を使ってみる
 public sealed interface Result
         permits SheetResult, BookResult, DirResult, TreeResult {
-    
+
     // [static members] ********************************************************
-    
+
     // [instance members] ******************************************************
-    
+
     /**
      * 比較結果のシートごとの統計情報を返します。<br>
      * 

@@ -34,7 +34,6 @@ import org.w3c.dom.Element;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.CellData;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
@@ -52,6 +51,7 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintSheetTabReader;
 import xyz.hotchpotch.hogandiff.task.BookPainter;
+import xyz.hotchpotch.hogandiff.task.SheetResult.Piece;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**

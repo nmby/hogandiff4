@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.task;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.excel.CellData;
-import xyz.hotchpotch.hogandiff.excel.SheetResult;
 import xyz.hotchpotch.hogandiff.excel.common.rc.RCSheetComparator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 

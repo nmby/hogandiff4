@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.util.List;
 import java.util.Map;
@@ -8,10 +8,8 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
-import xyz.hotchpotch.hogandiff.task.DirInfo;
-import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
+import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**

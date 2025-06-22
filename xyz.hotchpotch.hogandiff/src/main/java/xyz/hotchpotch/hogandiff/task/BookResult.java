@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.excel;
+package xyz.hotchpotch.hogandiff.task;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.Piece;
-import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
-import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.task.SheetResult.Piece;
+import xyz.hotchpotch.hogandiff.task.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
