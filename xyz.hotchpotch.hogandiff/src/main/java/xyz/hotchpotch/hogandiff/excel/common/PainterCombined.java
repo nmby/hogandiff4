@@ -11,18 +11,18 @@ import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.BookPainter;
+import xyz.hotchpotch.hogandiff.task.Painter;
 import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
- * 処理が成功するまで複数のペインターで順に処理を行う {@link BookPainter} の実装です。<br>
+ * 処理が成功するまで複数のペインターで順に処理を行う {@link Painter} の実装です。<br>
  * 
  * @author nmby
  */
 @BookHandler
 @SheetHandler
-public class CombinedBookPainter implements BookPainter {
+public class PainterCombined implements Painter {
 
     // [static members] ********************************************************
 
@@ -34,20 +34,20 @@ public class CombinedBookPainter implements BookPainter {
      * @throws NullPointerException     {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static BookPainter of(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
+    public static Painter of(List<UnsafeSupplier<Painter, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
 
-        return new CombinedBookPainter(suppliers);
+        return new PainterCombined(suppliers);
     }
 
     // [instance members] ******************************************************
 
-    private final List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers;
+    private final List<UnsafeSupplier<Painter, ExcelHandlingException>> suppliers;
 
-    private CombinedBookPainter(List<UnsafeSupplier<BookPainter, ExcelHandlingException>> suppliers) {
+    private PainterCombined(List<UnsafeSupplier<Painter, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
 
         this.suppliers = List.copyOf(suppliers);
@@ -107,10 +107,10 @@ public class CombinedBookPainter implements BookPainter {
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s -> %s".formatted(srcBookPath, dstBookPath));
 
-        Iterator<UnsafeSupplier<BookPainter, ExcelHandlingException>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<Painter, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
-                BookPainter painter = itr.next().get();
+                Painter painter = itr.next().get();
                 painter.paintAndSave(srcBookPath, dstBookPath, readPassword, diffs);
                 return;
             } catch (Exception e) {

@@ -44,7 +44,7 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFCellsLoaderWithSax implements LoaderForCells {
+public class LoaderForCellsWithSax implements LoaderForCells {
 
     // [static members] ********************************************************
 
@@ -246,13 +246,13 @@ public class XSSFCellsLoaderWithSax implements LoaderForCells {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      */
-    public XSSFCellsLoaderWithSax(
+    public LoaderForCellsWithSax(
             boolean extractCachedValue,
             Path bookPath) {
 
         Objects.requireNonNull(bookPath);
         CommonUtil.ifNotSupportedBookTypeThenThrow(
-                XSSFCellsLoaderWithSax.class,
+                LoaderForCellsWithSax.class,
                 BookType.of(bookPath));
 
         this.extractCachedValue = extractCachedValue;

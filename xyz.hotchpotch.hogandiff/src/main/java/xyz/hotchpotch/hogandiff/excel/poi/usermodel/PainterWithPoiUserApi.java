@@ -22,19 +22,19 @@ import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.BookHandler;
 import xyz.hotchpotch.hogandiff.excel.common.CommonUtil;
 import xyz.hotchpotch.hogandiff.excel.common.SheetHandler;
-import xyz.hotchpotch.hogandiff.task.BookPainter;
+import xyz.hotchpotch.hogandiff.task.Painter;
 import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートに着色を行う
- * {@link BookPainter} の実装です。<br>
+ * {@link Painter} の実装です。<br>
  * 
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class BookPainterWithPoiUserApi implements BookPainter {
+public class PainterWithPoiUserApi implements Painter {
 
     // [static members] ********************************************************
 
@@ -59,7 +59,7 @@ public class BookPainterWithPoiUserApi implements BookPainter {
      * @param diffSheetColor        差分シートの見出しに着ける色
      * @param sameSheetColor        差分が無いシートの見出しに着ける色
      */
-    public BookPainterWithPoiUserApi(
+    public PainterWithPoiUserApi(
             short redundantColor,
             short diffColor,
             Color redundantCommentColor,

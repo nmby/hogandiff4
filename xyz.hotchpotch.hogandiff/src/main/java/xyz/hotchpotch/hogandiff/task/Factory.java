@@ -184,7 +184,7 @@ public class Factory {
      *                                       のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static BookPainter painter(
+    public static Painter painter(
             Settings settings,
             Path bookPath,
             String readPassword) {
@@ -203,7 +203,7 @@ public class Factory {
         Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
 
-        return BookPainter.of(
+        return Painter.of(
                 bookPath,
                 readPassword,
                 redundantColor,

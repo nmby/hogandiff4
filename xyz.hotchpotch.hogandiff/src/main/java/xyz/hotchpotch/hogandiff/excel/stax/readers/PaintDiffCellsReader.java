@@ -26,7 +26,7 @@ import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
-import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
+import xyz.hotchpotch.hogandiff.excel.stax.PainterWithStax.StylesManager;
 
 /**
  * 差分セルに色を付ける {@link XMLEventReader} の実装です。<br>
@@ -37,11 +37,11 @@ import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager
  * @author nmby
  */
 public class PaintDiffCellsReader extends BufferingReader {
-    
+
     // [static members] ********************************************************
-    
+
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
+
     private static final Comparator<CellData> cellSorter = (c1, c2) -> {
         if (c1.row() != c2.row()) {
             return c1.row() < c2.row() ? -1 : 1;
@@ -51,16 +51,16 @@ public class PaintDiffCellsReader extends BufferingReader {
         }
         return 0;
     };
-    
+
     /**
      * 新しいリーダーを構成します。<br>
      * 
-     * @param source ソースリーダー
-     * @param stylesManager スタイルマネージャ
+     * @param source           ソースリーダー
+     * @param stylesManager    スタイルマネージャ
      * @param diffCellContents 差分セル
-     * @param colorIdx 着色する色のインデックス
+     * @param colorIdx         着色する色のインデックス
      * @return 新しいリーダー
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code diffCellContents} が空の場合
      */
     public static XMLEventReader of(
@@ -68,41 +68,41 @@ public class PaintDiffCellsReader extends BufferingReader {
             StylesManager stylesManager,
             List<CellData> diffCellContents,
             short colorIdx) {
-        
+
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
         Objects.requireNonNull(diffCellContents);
         if (diffCellContents.isEmpty()) {
             throw new IllegalArgumentException("no target cells");
         }
-        
+
         return new PaintDiffCellsReader(
                 source,
                 stylesManager,
                 diffCellContents,
                 colorIdx);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     private final StylesManager stylesManager;
     private final Map<Integer, Queue<String>> diffAddresses;
     private final Queue<Integer> targetRows;
     private final short colorIdx;
     private boolean auto = false;
-    
+
     private PaintDiffCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
             List<CellData> diffCellContents,
             short colorIdx) {
-        
+
         super(source);
-        
+
         assert stylesManager != null;
         assert diffCellContents != null;
         assert !diffCellContents.isEmpty();
-        
+
         this.stylesManager = stylesManager;
         this.diffAddresses = diffCellContents.stream()
                 .sorted(cellSorter)
@@ -116,11 +116,11 @@ public class PaintDiffCellsReader extends BufferingReader {
                 .collect(Collectors.toCollection(ArrayDeque::new));
         this.colorIdx = colorIdx;
     }
-    
+
     @Override
     protected void seekNext() throws XMLStreamException {
         // FIXME: [No.X 内部実装改善] 我ながらチョー読みにくいのでどうにかしたい
-        
+
         if (auto || !source.hasNext()) {
             return;
         }
@@ -128,50 +128,50 @@ public class PaintDiffCellsReader extends BufferingReader {
         if (!StaxUtil.isStart(event, QNAME.ROW)) {
             return;
         }
-        
+
         int sourceRow = Integer.parseInt(
                 event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue()) - 1;
         int targetRow = targetRows.peek();
-        
+
         if (sourceRow < targetRow) {
             // nop
             return;
         }
-        
+
         Queue<String> addrs = diffAddresses.get(targetRow);
-        
+
         if (targetRow < sourceRow) {
             createRowStart(targetRow);
             addrs.forEach(this::createCell);
             createRowEnd();
-            
+
             targetRows.remove();
             if (targetRows.isEmpty()) {
                 auto = true;
             }
             return;
         }
-        
+
         // row 要素開始イベントをバッファに逃がす
         buffer.add(source.nextEvent());
-        
+
         Queue<Queue<XMLEvent>> sourceCs = groupingCEvents();
         Queue<XMLEvent> nextC = sourceCs.poll();
         String addr = addrs.poll();
-        
+
         while (nextC != null && addr != null) {
             int sourceColumn = CellsUtil.addressToIdx(
                     nextC.peek().asStartElement().getAttributeByName(NONS_QNAME.R).getValue()).b();
             int targetColumn = CellsUtil.addressToIdx(addr).b();
-            
+
             if (targetColumn < sourceColumn) {
                 createCell(addr);
                 addr = addrs.poll();
-                
+
             } else if (sourceColumn < targetColumn) {
                 buffer.addAll(nextC);
                 nextC = sourceCs.poll();
-                
+
             } else {
                 buffer.add(paintCell(nextC.remove().asStartElement()));
                 buffer.addAll(nextC);
@@ -179,22 +179,22 @@ public class PaintDiffCellsReader extends BufferingReader {
                 nextC = sourceCs.poll();
             }
         }
-        
+
         if (nextC != null) {
             buffer.addAll(nextC);
             sourceCs.forEach(buffer::addAll);
-            
+
         } else if (addr != null) {
             createCell(addr);
             addrs.forEach(this::createCell);
         }
-        
+
         targetRows.remove();
         if (targetRows.isEmpty()) {
             auto = true;
         }
     }
-    
+
     /**
      * ひとつの r 要素に含まれる c 要素ほか一連の子要素を、
      * c 要素ごとにグルーピングして返します。<br>
@@ -204,11 +204,11 @@ public class PaintDiffCellsReader extends BufferingReader {
      */
     private Queue<Queue<XMLEvent>> groupingCEvents() throws XMLStreamException {
         Queue<Queue<XMLEvent>> sourceCs = new ArrayDeque<>();
-        
+
         XMLEvent event = source.peek();
         while (StaxUtil.isStart(event, QNAME.C)) {
             Queue<XMLEvent> events = new ArrayDeque<>();
-            
+
             while (!StaxUtil.isEnd(event, QNAME.C)) {
                 event = source.nextEvent();
                 events.add(event);
@@ -218,7 +218,7 @@ public class PaintDiffCellsReader extends BufferingReader {
         }
         return sourceCs;
     }
-    
+
     /**
      * row 要素開始イベントを作成してバッファに追加します。<br>
      * 
@@ -229,29 +229,30 @@ public class PaintDiffCellsReader extends BufferingReader {
         attrs.add(eventFactory.createAttribute(NONS_QNAME.R, Integer.toString(r + 1)));
         buffer.add(eventFactory.createStartElement(QNAME.ROW, attrs.iterator(), null));
     }
-    
+
     /**
      * row 要素終了イベントを作成してバッファに追加します。<br>
      */
     private void createRowEnd() {
         buffer.add(eventFactory.createEndElement(QNAME.ROW, null));
     }
-    
+
     /**
      * c 要素開始／終了イベントを作成してバッファに追加します。<br>
+     * 
      * @param addr
      */
     private void createCell(String addr) {
         int newStyle = stylesManager.getPaintedStyle(0, colorIdx);
-        
+
         Set<Attribute> attrs = new HashSet<>();
         attrs.add(eventFactory.createAttribute(NONS_QNAME.R, addr));
         attrs.add(eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyle)));
-        
+
         buffer.add(eventFactory.createStartElement(QNAME.C, attrs.iterator(), null));
         buffer.add(eventFactory.createEndElement(QNAME.C, null));
     }
-    
+
     /**
      * c 要素開始イベントを受け取り、適用するスタイルを着色スタイルに変更して返します。<br>
      * 
@@ -265,12 +266,12 @@ public class PaintDiffCellsReader extends BufferingReader {
                 .map(Integer::parseInt)
                 .orElse(0);
         int newStyleIdx = stylesManager.getPaintedStyle(currStyleIdx, colorIdx);
-        
+
         Map<QName, Attribute> newAttrs = new HashMap<>();
         newAttrs.put(
                 NONS_QNAME.S,
                 eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyleIdx)));
-        
+
         Iterator<Attribute> itr = original.getAttributes();
         while (itr.hasNext()) {
             Attribute attr = itr.next();
@@ -278,7 +279,7 @@ public class PaintDiffCellsReader extends BufferingReader {
                 newAttrs.put(attr.getName(), attr);
             }
         }
-        
+
         return eventFactory.createStartElement(QNAME.C, newAttrs.values().iterator(), null);
     }
 }

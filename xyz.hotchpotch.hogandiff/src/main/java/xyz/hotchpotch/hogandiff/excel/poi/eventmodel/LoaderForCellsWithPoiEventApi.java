@@ -57,7 +57,7 @@ import xyz.hotchpotch.hogandiff.task.LoaderForCells;
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class HSSFCellsLoaderWithPoiEventApi implements LoaderForCells {
+public class LoaderForCellsWithPoiEventApi implements LoaderForCells {
 
     // [static members] ********************************************************
 
@@ -430,7 +430,7 @@ public class HSSFCellsLoaderWithPoiEventApi implements LoaderForCells {
      *                           数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *                           数式文字列を抽出する場合は {@code false}
      */
-    public HSSFCellsLoaderWithPoiEventApi(boolean extractCachedValue) {
+    public LoaderForCellsWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
     }
 

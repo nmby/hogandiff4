@@ -10,14 +10,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.task.BookPainter;
+import xyz.hotchpotch.hogandiff.task.Painter;
 import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 
 class CombinedBookPainterTest {
 
         // [static members] ********************************************************
 
-        private static final BookPainter successPainter = new BookPainter() {
+        private static final Painter successPainter = new Painter() {
                 @Override
                 public void paintAndSave(
                                 Path srcBookPath,
@@ -30,7 +30,7 @@ class CombinedBookPainterTest {
                 }
         };
 
-        private static final BookPainter failPainter = new BookPainter() {
+        private static final Painter failPainter = new Painter() {
                 @Override
                 public void paintAndSave(
                                 Path srcBookPath,
@@ -54,24 +54,24 @@ class CombinedBookPainterTest {
                 // 異常系
                 assertThrows(
                                 NullPointerException.class,
-                                () -> CombinedBookPainter.of(null));
+                                () -> PainterCombined.of(null));
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> CombinedBookPainter.of(List.of()));
+                                () -> PainterCombined.of(List.of()));
 
                 // 正常系
                 assertTrue(
-                                CombinedBookPainter.of(List.of(
-                                                () -> successPainter)) instanceof CombinedBookPainter);
+                                PainterCombined.of(List.of(
+                                                () -> successPainter)) instanceof PainterCombined);
                 assertTrue(
-                                CombinedBookPainter.of(List.of(
+                                PainterCombined.of(List.of(
                                                 () -> successPainter,
-                                                () -> failPainter)) instanceof CombinedBookPainter);
+                                                () -> failPainter)) instanceof PainterCombined);
         }
 
         @Test
         void testPaintAndSave_パラメータチェック() {
-                BookPainter testee = CombinedBookPainter.of(List.of(() -> successPainter));
+                Painter testee = PainterCombined.of(List.of(() -> successPainter));
 
                 // null パラメータ
                 assertThrows(
@@ -124,8 +124,8 @@ class CombinedBookPainterTest {
 
         @Test
         void testPaintAndSave_失敗系() {
-                BookPainter testeeF = CombinedBookPainter.of(List.of(() -> failPainter));
-                BookPainter testeeFFF = CombinedBookPainter.of(List.of(
+                Painter testeeF = PainterCombined.of(List.of(() -> failPainter));
+                Painter testeeFFF = PainterCombined.of(List.of(
                                 () -> failPainter, () -> failPainter, () -> failPainter));
 
                 // 失敗１つ
@@ -147,8 +147,8 @@ class CombinedBookPainterTest {
 
         @Test
         void testPaintAndSave_成功系() {
-                BookPainter testeeS = CombinedBookPainter.of(List.of(() -> successPainter));
-                BookPainter testeeFFSF = CombinedBookPainter.of(List.of(
+                Painter testeeS = PainterCombined.of(List.of(() -> successPainter));
+                Painter testeeFFSF = PainterCombined.of(List.of(
                                 () -> failPainter, () -> failPainter, () -> successPainter, () -> failPainter));
 
                 // 成功１つ

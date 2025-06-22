@@ -34,7 +34,7 @@ import xyz.hotchpotch.hogandiff.task.LoaderForCells;
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class CellsLoaderWithPoiUserApi implements LoaderForCells {
+public class LoaderForCellsWithPoiUserApi implements LoaderForCells {
 
     // [static members] ********************************************************
 
@@ -48,7 +48,7 @@ public class CellsLoaderWithPoiUserApi implements LoaderForCells {
      * @param converter セル変換関数
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public CellsLoaderWithPoiUserApi(Function<Cell, CellData> converter) {
+    public LoaderForCellsWithPoiUserApi(Function<Cell, CellData> converter) {
         Objects.requireNonNull(converter);
 
         this.converter = converter;

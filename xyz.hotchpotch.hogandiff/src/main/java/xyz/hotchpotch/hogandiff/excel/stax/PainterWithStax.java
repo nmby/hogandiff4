@@ -50,20 +50,20 @@ import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintDiffOrRedundantCommentsR
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.excel.stax.readers.PaintSheetTabReader;
-import xyz.hotchpotch.hogandiff.task.BookPainter;
+import xyz.hotchpotch.hogandiff.task.Painter;
 import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
  * StAX (Streaming API for XML) を利用して
  * .xlsx/.xlsm 形式のExcelブックのワークシートに着色を行う
- * {@link BookPainter} の実装です。<br>
+ * {@link Painter} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class XSSFBookPainterWithStax implements BookPainter {
+public class PainterWithStax implements Painter {
 
     // [static members] ********************************************************
 
@@ -207,7 +207,7 @@ public class XSSFBookPainterWithStax implements BookPainter {
      * @param diffSheetColor        差分シートの見出しにつける色
      * @param sameSheetColor        差分の無いシートの見出しにつける色
      */
-    public XSSFBookPainterWithStax(
+    public PainterWithStax(
             short redundantColor,
             short diffColor,
             String redundantCommentColor,

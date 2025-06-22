@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.excel.common.CombinedBookPainter;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookPainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax;
+import xyz.hotchpotch.hogandiff.excel.common.PainterCombined;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.PainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.stax.PainterWithStax;
 import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
 
 /**
@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.task.ResultOfSheets.Piece;
  * @author nmby
  */
 @FunctionalInterface
-public interface BookPainter {
+public interface Painter {
 
         // [static members] ********************************************************
 
@@ -45,7 +45,7 @@ public interface BookPainter {
          * @throws NullPointerException          {@code bookPath} が {@code null} の場合
          * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
          */
-        public static BookPainter of(
+        public static Painter of(
                         Path bookPath,
                         String readPassword,
                         short redundantColor,
@@ -61,9 +61,9 @@ public interface BookPainter {
                 Objects.requireNonNull(bookPath);
 
                 return switch (BookType.of(bookPath)) {
-                        case XLS -> CombinedBookPainter.of(List.of(
+                        case XLS -> PainterCombined.of(List.of(
                                         // FIXME: [No.03 着色関連] 形式特化型ペインターも実装して追加する
-                                        () -> new BookPainterWithPoiUserApi(
+                                        () -> new PainterWithPoiUserApi(
                                                         redundantColor,
                                                         diffColor,
                                                         redundantCommentColor,
@@ -72,8 +72,8 @@ public interface BookPainter {
                                                         diffSheetColor,
                                                         sameSheetColor)));
 
-                        case XLSX, XLSM -> CombinedBookPainter.of(List.of(
-                                        () -> new XSSFBookPainterWithStax(
+                        case XLSX, XLSM -> PainterCombined.of(List.of(
+                                        () -> new PainterWithStax(
                                                         redundantColor,
                                                         diffColor,
                                                         redundantCommentHex,
@@ -81,7 +81,7 @@ public interface BookPainter {
                                                         redundantSheetColor,
                                                         diffSheetColor,
                                                         sameSheetColor),
-                                        () -> new BookPainterWithPoiUserApi(
+                                        () -> new PainterWithPoiUserApi(
                                                         redundantColor,
                                                         diffColor,
                                                         redundantCommentColor,

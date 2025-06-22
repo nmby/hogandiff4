@@ -34,7 +34,7 @@ import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
-public class HSSFBookLoaderWithPoiEventApi implements LoaderForBooks {
+public class LoaderForBooksWithPoiEventApi implements LoaderForBooks {
 
     // [static members] ********************************************************
 
@@ -142,14 +142,14 @@ public class HSSFBookLoaderWithPoiEventApi implements LoaderForBooks {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
 
-        return new HSSFBookLoaderWithPoiEventApi(targetTypes);
+        return new LoaderForBooksWithPoiEventApi(targetTypes);
     }
 
     // [instance members] ******************************************************
 
     private final Set<SheetType> targetTypes;
 
-    private HSSFBookLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
+    private LoaderForBooksWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
 
         this.targetTypes = EnumSet.copyOf(targetTypes);

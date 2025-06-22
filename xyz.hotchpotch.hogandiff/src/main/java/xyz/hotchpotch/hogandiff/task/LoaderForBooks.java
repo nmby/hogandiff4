@@ -9,9 +9,9 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.excel.BookType;
 import xyz.hotchpotch.hogandiff.excel.SheetType;
 import xyz.hotchpotch.hogandiff.excel.common.LoaderForBooksCombined;
-import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.HSSFBookLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.excel.poi.usermodel.BookLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.excel.sax.XSSFBookLoaderWithSax;
+import xyz.hotchpotch.hogandiff.excel.poi.eventmodel.LoaderForBooksWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.excel.poi.usermodel.LoaderForBooksWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.excel.sax.LoaderForBooksWithSax;
 
 /**
  * Excelブック情報を抽出するローダーを表します。<br>
@@ -39,12 +39,12 @@ public interface LoaderForBooks {
 
         return switch (BookType.of(bookPath)) {
             case XLS -> LoaderForBooksCombined.of(List.of(
-                    () -> HSSFBookLoaderWithPoiEventApi.of(targetSheetTypes),
-                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+                    () -> LoaderForBooksWithPoiEventApi.of(targetSheetTypes),
+                    () -> LoaderForBooksWithPoiUserApi.of(targetSheetTypes)));
 
             case XLSX, XLSM -> LoaderForBooksCombined.of(List.of(
-                    () -> XSSFBookLoaderWithSax.of(targetSheetTypes),
-                    () -> BookLoaderWithPoiUserApi.of(targetSheetTypes)));
+                    () -> LoaderForBooksWithSax.of(targetSheetTypes),
+                    () -> LoaderForBooksWithPoiUserApi.of(targetSheetTypes)));
 
             // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);

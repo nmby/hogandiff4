@@ -238,7 +238,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("    - %s%n%n".formatted(dstBookPath));
             updateMessage(str.toString());
 
-            BookPainter painter = Factory.painter(settings, dstBookPath, readPassword);
+            Painter painter = Factory.painter(settings, dstBookPath, readPassword);
             Map<String, Optional<ResultOfSheets.Piece>> result = new HashMap<>(bResult.getPiece(Side.A));
             result.putAll(bResult.getPiece(Side.B));
             painter.paintAndSave(srcBookPath, dstBookPath, readPassword, result);
@@ -299,7 +299,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     Path srcBookPath = srcBookPathPair.get(side);
                     Path dstBookPath = dstBookPathPair.get(side);
 
-                    BookPainter painter = Factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
+                    Painter painter = Factory.painter(settings, dstBookPath, readPasswords.get(srcBookPath));
                     painter.paintAndSave(
                             srcBookPath,
                             dstBookPath,
@@ -631,7 +631,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             for (Side side : Side.values()) {
                 Path srcPath = srcPathPair.get(side);
                 Path dstPath = dstPathPair.get(side);
-                BookPainter painter = Factory.painter(settings, srcPath, readPasswords.get(srcPath));
+                Painter painter = Factory.painter(settings, srcPath, readPasswords.get(srcPath));
 
                 painter.paintAndSave(
                         srcPath,

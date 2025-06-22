@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.excel.stax.StaxUtil.QNAME;
-import xyz.hotchpotch.hogandiff.excel.stax.XSSFBookPainterWithStax.StylesManager;
+import xyz.hotchpotch.hogandiff.excel.stax.PainterWithStax.StylesManager;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**
@@ -32,23 +32,24 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @author nmby
  */
 public class PaintRedundantCellsReader extends BufferingReader {
-    
+
     // [static members] ********************************************************
-    
+
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
+
     /**
      * 新しいリーダーを構成します。<br>
      * 
-     * @param source ソースリーダー
-     * @param stylesManager スタイルマネージャ
-     * @param redundantRows 余剰行インデックス（0 開始）
+     * @param source           ソースリーダー
+     * @param stylesManager    スタイルマネージャ
+     * @param redundantRows    余剰行インデックス（0 開始）
      * @param redundantColumns 余剰列インデックス（0 開始）
-     * @param colorIdx 着色する色のインデックス
+     * @param colorIdx         着色する色のインデックス
      * @return 新しいリーダー
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException
-     *      {@code redundantRows}, {@code redundantColumns} の長さがいずれも 0 の場合
+     *                                  {@code redundantRows},
+     *                                  {@code redundantColumns} の長さがいずれも 0 の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
@@ -56,7 +57,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
             short colorIdx) {
-        
+
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
         Objects.requireNonNull(redundantRows);
@@ -64,7 +65,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
         if (redundantRows.isEmpty() && redundantColumns.isEmpty()) {
             throw new IllegalArgumentException("no target cells");
         }
-        
+
         return new PaintRedundantCellsReader(
                 source,
                 stylesManager,
@@ -72,34 +73,34 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 redundantColumns,
                 colorIdx);
     }
-    
+
     // [instance members] ******************************************************
-    
+
     private final StylesManager stylesManager;
     private final Set<Integer> redundantRows;
     private final Set<Integer> redundantColumns;
     private final short colorIdx;
-    
+
     private PaintRedundantCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
             short colorIdx) {
-        
+
         super(source);
-        
+
         assert stylesManager != null;
         assert redundantRows != null;
         assert redundantColumns != null;
         assert !redundantRows.isEmpty() || !redundantColumns.isEmpty();
-        
+
         this.stylesManager = stylesManager;
         this.redundantRows = Set.copyOf(redundantRows);
         this.redundantColumns = Set.copyOf(redundantColumns);
         this.colorIdx = colorIdx;
     }
-    
+
     @Override
     protected void seekNext() throws XMLStreamException {
         if (!source.hasNext()) {
@@ -109,16 +110,16 @@ public class PaintRedundantCellsReader extends BufferingReader {
         if (!StaxUtil.isStart(event, QNAME.C)) {
             return;
         }
-        
+
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
         IntPair idx = CellsUtil.addressToIdx(address);
-        
+
         if (redundantRows.contains(idx.a()) || redundantColumns.contains(idx.b())) {
             buffer.add(paintCell(event.asStartElement()));
             source.nextEvent();
         }
     }
-    
+
     /**
      * c 要素開始イベントを受け取り、適用するスタイルを着色スタイルに変更して返します。<br>
      * 
@@ -132,12 +133,12 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 .map(Integer::parseInt)
                 .orElse(0);
         int newStyleIdx = stylesManager.getPaintedStyle(currStyleIdx, colorIdx);
-        
+
         Map<QName, Attribute> newAttrs = new HashMap<>();
         newAttrs.put(
                 NONS_QNAME.S,
                 eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyleIdx)));
-        
+
         Iterator<Attribute> itr = original.getAttributes();
         while (itr.hasNext()) {
             Attribute attr = itr.next();
@@ -145,7 +146,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 newAttrs.put(attr.getName(), attr);
             }
         }
-        
+
         return eventFactory.createStartElement(QNAME.C, newAttrs.values().iterator(), null);
     }
 }
