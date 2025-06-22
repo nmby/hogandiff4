@@ -57,8 +57,8 @@ public final class CompareTaskBooks extends CompareTask {
 
             // 2. 差分箇所への着色と表示
             try {
-                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                paintSaveAndShowBook(workDir, bookComparison.parentBookInfoPair()
+                PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                paintSaveAndShowBook(workDir, pairingInfoBooks.parentBookInfoPair()
                         .map(BookInfo::bookPath), bResult, 75, 95);
             } catch (Exception e) {
                 failed = e;
@@ -111,14 +111,14 @@ public final class CompareTaskBooks extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
 
-            PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::bookPath);
 
             str.append("%s%n[A] %s%n[B] %s%n"
                     .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
 
-            for (int i = 0; i < bookComparison.childSheetNamePairs().size(); i++) {
-                Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
+            for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
                 str.append(BookResult.formatSheetNamesPair(Integer.toString(i + 1), sheetNamePair)).append(BR);
             }
 
@@ -142,8 +142,8 @@ public final class CompareTaskBooks extends CompareTask {
             str.append(rb.getString("CompareBooksTask.040")).append(BR);
             updateMessage(str.toString());
 
-            PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<BookInfo> bookInfoPair = bookComparison.parentBookInfoPair();
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
             Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
@@ -153,10 +153,10 @@ public final class CompareTaskBooks extends CompareTask {
             Map<Pair<String>, Optional<SheetResult>> results = new HashMap<>();
 
             double progressDelta = (progressAfter - progressBefore)
-                    / (double) bookComparison.childSheetNamePairs().size();
+                    / (double) pairingInfoBooks.childSheetNamePairs().size();
 
-            for (int i = 0; i < bookComparison.childSheetNamePairs().size(); i++) {
-                Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
+            for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
+                Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
                 SheetResult result = null;
 
                 try {
@@ -187,7 +187,7 @@ public final class CompareTaskBooks extends CompareTask {
             updateMessage(str.toString());
             updateProgress(progressAfter, PROGRESS_MAX);
 
-            return new BookResult(bookComparison, results);
+            return new BookResult(pairingInfoBooks, results);
 
         } catch (Exception e) {
             throw getApplicationException(e, "CompareBooksTask.050", "");

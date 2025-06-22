@@ -41,7 +41,7 @@ public final record PairingInfoDirs(
      * @param dirInfoPairs      子フォルダ情報
      * @param dirComparisons    子フォルダ比較情報
      */
-    public static record FlattenDirComparison(
+    public static record PairingInfoDirsFlatten(
             Pair<DirInfo> parentDirInfoPair,
             List<Pair<DirInfo>> dirInfoPairs,
             Map<Pair<DirInfo>, Optional<PairingInfoDirs>> dirComparisons) {
@@ -166,11 +166,11 @@ public final record PairingInfoDirs(
 
     /**
      * ツリー状の本オフジェクトの内容を一層に並べた
-     * {@link FlattenDirComparison} オブジェクトに変換して返します。<br>
+     * {@link PairingInfoDirsFlatten} オブジェクトに変換して返します。<br>
      * 
      * @return 平坦化されたフォルダ比較情報
      */
-    public FlattenDirComparison flatten() {
+    public PairingInfoDirsFlatten flatten() {
         List<Pair<DirInfo>> accDirInfoPairs = new ArrayList<>();
         Map<Pair<DirInfo>, Optional<PairingInfoDirs>> accDirComparisons = new HashMap<>();
 
@@ -178,7 +178,7 @@ public final record PairingInfoDirs(
         accDirComparisons.put(parentDirInfoPair, Optional.of(this));
         gather(this, accDirInfoPairs, accDirComparisons);
 
-        return new FlattenDirComparison(
+        return new PairingInfoDirsFlatten(
                 parentDirInfoPair,
                 accDirInfoPairs,
                 accDirComparisons);

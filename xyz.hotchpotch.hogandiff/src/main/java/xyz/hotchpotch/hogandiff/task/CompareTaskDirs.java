@@ -55,10 +55,10 @@ public final class CompareTaskDirs extends CompareTask {
             // 2. フォルダ同士の比較
             DirResult dResult = compareDirs(outputDirPair, 5, 93);
 
-            PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
             TreeResult tResult = new TreeResult(
-                    dirComparison.flatten(),
+                    pairingInfoDirs.flatten(),
                     Map.of(dirInfoPair, Optional.of(dResult)));
 
             Exception failed = null;
@@ -106,9 +106,9 @@ public final class CompareTaskDirs extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
 
-            PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
-            List<Pair<BookInfo>> bookInfoPairs = dirComparison.childBookInfoPairs();
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
+            List<Pair<BookInfo>> bookInfoPairs = pairingInfoDirs.childBookInfoPairs();
 
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareDirsTask.010"),
@@ -135,8 +135,8 @@ public final class CompareTaskDirs extends CompareTask {
     private Pair<Path> createOutputDirs(Path workDir)
             throws ApplicationException {
 
-        PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
-        Pair<DirInfo> dirInfoPair = dirComparison.parentDirInfoPair();
+        PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+        Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
 
         try {
@@ -160,23 +160,23 @@ public final class CompareTaskDirs extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
 
-            PairingInfoDirs dirComparison = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
 
-            if (0 < dirComparison.childBookInfoPairs().size()) {
+            if (0 < pairingInfoDirs.childBookInfoPairs().size()) {
                 str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",
                         "",
-                        dirComparison,
+                        pairingInfoDirs,
                         outputDirPair,
                         progressBefore,
                         progressAfter);
 
             } else {
                 return new DirResult(
-                        dirComparison,
-                        dirComparison.childBookInfoPairs().stream().collect(Collectors.toMap(
+                        pairingInfoDirs,
+                        pairingInfoDirs.childBookInfoPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
                                 name -> Optional.empty())),
                         "");

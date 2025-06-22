@@ -40,7 +40,7 @@ import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
 import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.FlattenDirComparison;
+import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -251,7 +251,7 @@ public class MainController extends VBox {
                 yield bookPathStream(dirComparison);
             }
             case COMPARE_TREES -> {
-                FlattenDirComparison flattenDirComparison = ar.settings()
+                PairingInfoDirsFlatten flattenDirComparison = ar.settings()
                         .get(SettingKeys.CURR_TREE_COMPARE_INFO)
                         .flatten();
                 yield flattenDirComparison.dirComparisons().values().stream()

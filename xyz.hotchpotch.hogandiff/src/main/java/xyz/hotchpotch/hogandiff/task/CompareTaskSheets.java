@@ -56,8 +56,8 @@ public final class CompareTaskSheets extends CompareTask {
 
             // 2. 差分箇所への着色と表示
             try {
-                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                paintSaveAndShowBook(workDir, bookComparison.parentBookInfoPair()
+                PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                paintSaveAndShowBook(workDir, pairingInfoBooks.parentBookInfoPair()
                         .map(BookInfo::bookPath), bResult, 75, 95);
             } catch (Exception e) {
                 failed = e;
@@ -110,9 +110,9 @@ public final class CompareTaskSheets extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
 
-            PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-            Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(0);
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            Pair<Path> bookPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::bookPath);
+            Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
 
             str.append(rb.getString("CompareSheetsTask.010")).append(BR);
             str.append(isSameBook()
@@ -140,9 +140,9 @@ public final class CompareTaskSheets extends CompareTask {
             str.append(rb.getString("CompareSheetsTask.020")).append(BR);
             updateMessage(str.toString());
 
-            PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<BookInfo> bookInfoPair = bookComparison.parentBookInfoPair();
-            Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(0);
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
+            Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
 
             Pair<CellsLoader> loaderPair = bookInfoPair.map(BookInfo::bookPath).unsafeMap(
                     bookPath -> Factory.cellsLoader(settings, bookPath));
@@ -165,7 +165,7 @@ public final class CompareTaskSheets extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
 
             return new BookResult(
-                    bookComparison,
+                    pairingInfoBooks,
                     Map.of(sheetNamePair, Optional.of(result)));
 
         } catch (Exception e) {

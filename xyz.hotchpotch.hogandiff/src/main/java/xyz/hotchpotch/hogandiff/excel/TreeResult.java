@@ -10,7 +10,7 @@ import java.util.function.Function;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.excel.SheetResult.SheetStats;
 import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.FlattenDirComparison;
+import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record TreeResult(
-        FlattenDirComparison flattenDirComparison,
+        PairingInfoDirsFlatten flattenDirComparison,
         Map<Pair<DirInfo>, Optional<DirResult>> dirResults)
         implements Result {
 
@@ -65,7 +65,7 @@ public record TreeResult(
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public TreeResult(
-            FlattenDirComparison flattenDirComparison,
+            PairingInfoDirsFlatten flattenDirComparison,
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults) {
 
         Objects.requireNonNull(flattenDirComparison);

@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.excel.DirInfo;
 import xyz.hotchpotch.hogandiff.excel.DirResult;
 import xyz.hotchpotch.hogandiff.excel.Result;
 import xyz.hotchpotch.hogandiff.excel.TreeResult;
-import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.FlattenDirComparison;
+import xyz.hotchpotch.hogandiff.task.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -96,16 +96,16 @@ public final class CompareTaskTrees extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
 
-            FlattenDirComparison flattenDirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
+            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
                     .flatten();
 
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
                     rb.getString("CompareTreesTask.010"),
-                    flattenDirComparison.parentDirInfoPair().a().dirPath(),
-                    flattenDirComparison.parentDirInfoPair().b().dirPath()));
+                    pairingInfoDirsFlatten.parentDirInfoPair().a().dirPath(),
+                    pairingInfoDirsFlatten.parentDirInfoPair().b().dirPath()));
 
-            for (int i = 0; i < flattenDirComparison.dirInfoPairs().size(); i++) {
-                Pair<DirInfo> dirInfoPair = flattenDirComparison.dirInfoPairs().get(i);
+            for (int i = 0; i < pairingInfoDirsFlatten.dirInfoPairs().size(); i++) {
+                Pair<DirInfo> dirInfoPair = pairingInfoDirsFlatten.dirInfoPairs().get(i);
                 str.append(TreeResult.formatDirInfoPair(Integer.toString(i + 1), dirInfoPair)).append(BR);
                 updateMessage(str.toString());
             }
@@ -130,23 +130,23 @@ public final class CompareTaskTrees extends CompareTask {
             str.append(rb.getString("CompareTreesTask.040")).append(BR);
             updateMessage(str.toString());
 
-            FlattenDirComparison flattenDirComparison = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
+            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
                     .flatten();
 
             Map<Pair<DirInfo>, Optional<DirResult>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
 
             double progressDelta = (progressAfter - progressBefore)
-                    / (double) flattenDirComparison.dirInfoPairs().size();
+                    / (double) pairingInfoDirsFlatten.dirInfoPairs().size();
 
-            for (int i = 0; i < flattenDirComparison.dirInfoPairs().size(); i++) {
+            for (int i = 0; i < pairingInfoDirsFlatten.dirInfoPairs().size(); i++) {
                 int ii = i;
 
-                Pair<DirInfo> dirInfoPair = flattenDirComparison.dirInfoPairs().get(i);
-                PairingInfoDirs dirComparison = flattenDirComparison.dirComparisons().get(dirInfoPair).get();
+                Pair<DirInfo> dirInfoPair = pairingInfoDirsFlatten.dirInfoPairs().get(i);
+                PairingInfoDirs pairingInfoDirs = pairingInfoDirsFlatten.dirComparisons().get(dirInfoPair).get();
 
                 str.append(
-                        TreeResult.formatDirInfoPair(Integer.toString(i + 1), dirComparison.parentDirInfoPair()));
+                        TreeResult.formatDirInfoPair(Integer.toString(i + 1), pairingInfoDirs.parentDirInfoPair()));
                 updateMessage(str.toString());
 
                 Pair<Path> outputDirPair = null;
@@ -157,7 +157,7 @@ public final class CompareTaskTrees extends CompareTask {
                         if (dirInfoPair.has(side)) {
                             Path targetDirPath = dirInfoPair.get(side).dirPath();
                             Path parentDir = targetDirPath
-                                    .equals(flattenDirComparison.parentDirInfoPair().get(side).dirPath())
+                                    .equals(pairingInfoDirsFlatten.parentDirInfoPair().get(side).dirPath())
                                             ? workDir
                                             : outputDirsPair.get(side).get(targetDirPath.getParent());
 
@@ -184,7 +184,7 @@ public final class CompareTaskTrees extends CompareTask {
                     DirResult dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
-                            dirComparison,
+                            pairingInfoDirs,
                             outputDirPair,
                             progressBefore + (int) progressDelta * i,
                             progressBefore + (int) progressDelta * (i + 1));
@@ -201,7 +201,7 @@ public final class CompareTaskTrees extends CompareTask {
 
             updateProgress(progressAfter, PROGRESS_MAX);
 
-            return new TreeResult(flattenDirComparison, dirResults);
+            return new TreeResult(pairingInfoDirsFlatten, dirResults);
 
         } catch (Exception e) {
             throw getApplicationException(e, "CompareTreesTask.110", "");
