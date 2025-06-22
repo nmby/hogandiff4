@@ -18,7 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialogPane.ItemType;
-import xyz.hotchpotch.hogandiff.task.BookInfo;
+import xyz.hotchpotch.hogandiff.models.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

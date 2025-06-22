@@ -14,9 +14,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.DirInfo;
-import xyz.hotchpotch.hogandiff.task.PairingInfo;
+import xyz.hotchpotch.hogandiff.models.BookInfo;
+import xyz.hotchpotch.hogandiff.models.DirInfo;
+import xyz.hotchpotch.hogandiff.models.PairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

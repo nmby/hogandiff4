@@ -9,9 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.task.Factory;
+import xyz.hotchpotch.hogandiff.loaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.models.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 

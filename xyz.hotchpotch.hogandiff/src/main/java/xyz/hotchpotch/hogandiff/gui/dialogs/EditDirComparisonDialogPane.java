@@ -10,15 +10,15 @@ import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Factory;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.task.BookInfo;
-import xyz.hotchpotch.hogandiff.task.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.task.DirInfo;
-import xyz.hotchpotch.hogandiff.task.Factory;
-import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.task.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.task.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.loaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.models.BookInfo;
+import xyz.hotchpotch.hogandiff.models.DirInfo;
+import xyz.hotchpotch.hogandiff.models.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.models.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 

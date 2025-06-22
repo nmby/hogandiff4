@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.io.IOException;
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.task.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.models.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**
