@@ -16,7 +16,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.CellsUtil;
+import xyz.hotchpotch.hogandiff.main.CellsUtil;
 import xyz.hotchpotch.hogandiff.main.painters.StaxUtil;
 import xyz.hotchpotch.hogandiff.main.painters.PainterWithStax.StylesManager;
 import xyz.hotchpotch.hogandiff.main.painters.StaxUtil.NONS_QNAME;

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.common;
+package xyz.hotchpotch.hogandiff.main;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,9 +6,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import xyz.hotchpotch.hogandiff.main.BookHandler;
-import xyz.hotchpotch.hogandiff.main.CommonUtil;
-import xyz.hotchpotch.hogandiff.main.SheetHandler;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.SheetType;
 

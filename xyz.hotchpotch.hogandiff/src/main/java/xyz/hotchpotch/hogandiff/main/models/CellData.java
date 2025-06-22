@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.main.models;
 import java.util.Comparator;
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.CellsUtil;
+import xyz.hotchpotch.hogandiff.main.CellsUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel;
+package xyz.hotchpotch.hogandiff.main;
 
 /**
  * Excelファイルに対する処理に失敗したことを表す例外です。<br>

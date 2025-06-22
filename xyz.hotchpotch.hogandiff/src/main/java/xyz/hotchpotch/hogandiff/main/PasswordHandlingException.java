@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel;
+package xyz.hotchpotch.hogandiff.main;
 
 /**
  * Excelブック／シートのパスワードにまつわる例外を著します。<br>

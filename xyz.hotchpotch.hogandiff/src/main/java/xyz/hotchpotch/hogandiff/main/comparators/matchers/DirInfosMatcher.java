@@ -1,8 +1,7 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel;
+package xyz.hotchpotch.hogandiff.main.comparators.matchers;
 
 import java.util.List;
 
-import xyz.hotchpotch.hogandiff.main.comparators.matchers.VerticallyStrictDirInfosMatcher;
 import xyz.hotchpotch.hogandiff.main.models.DirInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 

@@ -25,10 +25,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import xyz.hotchpotch.hogandiff.main.BookHandler;
 import xyz.hotchpotch.hogandiff.main.CommonUtil;
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.SheetHandler;
 import xyz.hotchpotch.hogandiff.main.loaders.SaxUtil.IgnoreCloseInputStream;
 import xyz.hotchpotch.hogandiff.main.loaders.SaxUtil.SheetInfo;
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.SheetType;

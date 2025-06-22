@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel;
+package xyz.hotchpotch.hogandiff.main;
 
 import static org.junit.jupiter.api.Assertions.*;
 

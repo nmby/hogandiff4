@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.Factory;
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.models.BookInfo;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.DirInfo;

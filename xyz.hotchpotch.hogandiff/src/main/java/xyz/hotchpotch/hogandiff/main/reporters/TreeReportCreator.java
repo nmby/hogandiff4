@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel;
+package xyz.hotchpotch.hogandiff.main.reporters;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,7 +23,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.main.PoiUtil;
 import xyz.hotchpotch.hogandiff.main.models.BookInfo;
 import xyz.hotchpotch.hogandiff.main.models.DirInfo;
 import xyz.hotchpotch.hogandiff.main.models.PairingInfoDirs;

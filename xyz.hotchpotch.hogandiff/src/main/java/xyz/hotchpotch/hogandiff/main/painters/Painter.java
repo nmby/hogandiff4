@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfSheets.Piece;
 

@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.main.CellsUtil;
 import xyz.hotchpotch.hogandiff.main.comparators.matchers.RCMatcher;
-import xyz.hotchpotch.hogandiff.main.misc.excel.CellsUtil;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 import xyz.hotchpotch.hogandiff.main.models.ResultOfSheets;
 import xyz.hotchpotch.hogandiff.util.IntPair;

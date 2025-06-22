@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.main.BookHandler;
 import xyz.hotchpotch.hogandiff.main.CommonUtil;
-import xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.main.PoiUtil;
 import xyz.hotchpotch.hogandiff.main.models.BookInfo;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.SheetType;

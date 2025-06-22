@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.main.loaders;
 
 import java.nio.file.Path;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.main.models.DirInfo;
 
 /**

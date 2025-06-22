@@ -8,8 +8,8 @@ import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import xyz.hotchpotch.hogandiff.main.misc.excel.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.main.misc.excel.poi.usermodel.PoiUtil;
+import xyz.hotchpotch.hogandiff.main.ExcelHandlingException;
+import xyz.hotchpotch.hogandiff.main.PoiUtil;
 import xyz.hotchpotch.hogandiff.main.models.BookType;
 import xyz.hotchpotch.hogandiff.main.models.CellData;
 

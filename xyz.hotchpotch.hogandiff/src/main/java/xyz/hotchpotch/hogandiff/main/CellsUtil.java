@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.main.misc.excel;
+package xyz.hotchpotch.hogandiff.main;
 
 import java.util.Objects;
 
