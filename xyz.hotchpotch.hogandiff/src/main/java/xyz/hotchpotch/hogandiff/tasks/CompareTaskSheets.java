@@ -9,7 +9,7 @@ import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.loaders.LoaderForCells;
+import xyz.hotchpotch.hogandiff.logic.cellloaders.LoaderForCells;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.Result;
 import xyz.hotchpotch.hogandiff.logic.models.ResultOfBooks;
