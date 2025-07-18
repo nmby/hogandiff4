@@ -37,12 +37,12 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
-import xyz.hotchpotch.hogandiff.main.Factory;
-import xyz.hotchpotch.hogandiff.main.loaders.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.main.loaders.LoaderForDirs;
-import xyz.hotchpotch.hogandiff.main.models.BookInfo;
-import xyz.hotchpotch.hogandiff.main.models.DirInfo;
-import xyz.hotchpotch.hogandiff.main.models.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.loaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.loaders.LoaderForDirs;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**

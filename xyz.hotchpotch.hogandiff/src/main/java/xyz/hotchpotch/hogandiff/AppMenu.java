@@ -5,12 +5,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.main.tasks.CompareTaskBooks;
-import xyz.hotchpotch.hogandiff.main.tasks.CompareTaskDirs;
-import xyz.hotchpotch.hogandiff.main.tasks.CompareTaskSheets;
-import xyz.hotchpotch.hogandiff.main.tasks.CompareTaskTrees;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooks;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskDirs;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskSheets;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskTrees;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**

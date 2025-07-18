@@ -35,12 +35,12 @@ import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
-import xyz.hotchpotch.hogandiff.main.Factory;
-import xyz.hotchpotch.hogandiff.main.models.BookInfo;
-import xyz.hotchpotch.hogandiff.main.models.DirInfo;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoDirs.PairingInfoDirsFlatten;
+import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 

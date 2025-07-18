@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import xyz.hotchpotch.hogandiff.main.models.BookInfo;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.main.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
