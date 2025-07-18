@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.painters;
+package xyz.hotchpotch.hogandiff.logic;
 
 import java.util.Objects;
 

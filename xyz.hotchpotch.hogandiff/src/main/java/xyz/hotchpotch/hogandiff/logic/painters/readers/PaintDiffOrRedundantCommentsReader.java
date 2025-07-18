@@ -17,10 +17,10 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import xyz.hotchpotch.hogandiff.logic.CellsUtil;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil.NONS_QNAME;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil.V_QNAME;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil.X_QNAME;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil.NONS_QNAME;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil.V_QNAME;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil.X_QNAME;
 
 /**
  * 差分セルコメントおよび余剰セルコメントに色を付ける {@link XMLEventReader} の実装です。<br>

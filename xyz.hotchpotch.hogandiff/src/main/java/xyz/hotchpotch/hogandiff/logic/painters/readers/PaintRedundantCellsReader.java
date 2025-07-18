@@ -17,10 +17,10 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import xyz.hotchpotch.hogandiff.logic.CellsUtil;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil;
 import xyz.hotchpotch.hogandiff.logic.painters.PainterWithStax.StylesManager;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil.NONS_QNAME;
-import xyz.hotchpotch.hogandiff.logic.painters.StaxUtil.QNAME;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil.NONS_QNAME;
+import xyz.hotchpotch.hogandiff.logic.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**

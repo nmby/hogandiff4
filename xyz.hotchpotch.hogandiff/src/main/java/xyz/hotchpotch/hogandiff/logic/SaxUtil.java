@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.cellloaders;
+package xyz.hotchpotch.hogandiff.logic;
 
 import java.io.IOException;
 import java.io.InputStream;
