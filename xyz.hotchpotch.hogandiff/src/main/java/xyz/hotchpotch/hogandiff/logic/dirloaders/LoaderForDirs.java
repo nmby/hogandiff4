@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.loaders;
+package xyz.hotchpotch.hogandiff.logic.dirloaders;
 
 import java.nio.file.Path;
 

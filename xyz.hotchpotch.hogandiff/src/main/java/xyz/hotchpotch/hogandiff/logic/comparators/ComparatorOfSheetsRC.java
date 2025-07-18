@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  *
  * @author nmby
  */
-public class ComparatorOfSheetsRC implements ComparatorOfSheets {
+/* package */ class ComparatorOfSheetsRC implements ComparatorOfSheets {
 
         // [static members] ********************************************************
 

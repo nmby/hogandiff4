@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.loaders;
+package xyz.hotchpotch.hogandiff.logic.dirloaders;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,6 +11,7 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
