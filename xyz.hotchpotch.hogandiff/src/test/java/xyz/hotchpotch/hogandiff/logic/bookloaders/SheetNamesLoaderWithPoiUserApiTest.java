@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 
-class LoaderForBooksWithPoiUserApiTest {
+class SheetNamesLoaderWithPoiUserApiTest {
 
         // [static members] ********************************************************
 
@@ -35,7 +35,7 @@ class LoaderForBooksWithPoiUserApiTest {
         private static Path bookPwTest4_xls;
         private static Path bookPwTest4_xlsx;
 
-        private static Class<?> me = LoaderForBooksWithPoiUserApiTest.class;
+        private static Class<?> me = SheetNamesLoaderWithPoiUserApiTest.class;
 
         @BeforeAll
         static void beforeAll() throws URISyntaxException {
@@ -63,20 +63,20 @@ class LoaderForBooksWithPoiUserApiTest {
                 // 異常系
                 assertThrows(
                                 NullPointerException.class,
-                                () -> LoaderForBooksWithPoiUserApi.of(null));
+                                () -> SheetNamesLoaderWithPoiUserApi.of(null));
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> LoaderForBooksWithPoiUserApi.of(Set.of()));
+                                () -> SheetNamesLoaderWithPoiUserApi.of(Set.of()));
 
                 // 正常系
                 assertTrue(
-                                LoaderForBooksWithPoiUserApi.of(
-                                                EnumSet.allOf(SheetType.class)) instanceof LoaderForBooksWithPoiUserApi);
+                                SheetNamesLoaderWithPoiUserApi.of(
+                                                EnumSet.allOf(SheetType.class)) instanceof SheetNamesLoaderWithPoiUserApi);
         }
 
         @Test
         void testLoadSheetNames_例外系_非チェック例外() {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
 
                 // null パラメータ
                 assertThrows(
@@ -91,7 +91,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_例外系_チェック例外() {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(Set.of(SheetType.WORKSHEET));
 
                 // 存在しないファイル
                 assertEquals(
@@ -109,7 +109,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_全てのシート種別が対象の場合() throws ExcelHandlingException {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
 
                 assertEquals(
                                 BookInfo.ofLoadCompleted(
@@ -141,7 +141,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.of(SheetType.WORKSHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.WORKSHEET));
 
                 // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
                 // どうしようもないのかしら？？
@@ -171,7 +171,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.of(SheetType.CHART_SHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.CHART_SHEET));
 
                 // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
                 // どうしようもないのかしら？？
@@ -199,7 +199,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
 
                 // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
                 // どうしようもないのかしら？？
@@ -229,7 +229,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.of(SheetType.MACRO_SHEET));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.of(SheetType.MACRO_SHEET));
 
                 // FIXME: [No.01 シート識別不正 - usermodel] .xls 形式の場合はシート種別を見分けられない。
                 // どうしようもないのかしら？？
@@ -265,7 +265,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_読み取りPW指定なしの場合() {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
 
                 // 開ける
                 assertDoesNotThrow(
@@ -298,7 +298,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_読み取りPW指定ありの場合() {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
 
                 assertDoesNotThrow(
                                 () -> testee.loadBookInfo(bookPwTest1_xls, "123"));
@@ -334,7 +334,7 @@ class LoaderForBooksWithPoiUserApiTest {
 
         @Test
         void testLoadSheetNames_誤った読み取りPW指定ありの場合() {
-                LoaderForBooks testee = LoaderForBooksWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
+                SheetNamesLoader testee = SheetNamesLoaderWithPoiUserApi.of(EnumSet.allOf(SheetType.class));
 
                 assertDoesNotThrow(
                                 () -> testee.loadBookInfo(bookPwTest1_xls, "456"));

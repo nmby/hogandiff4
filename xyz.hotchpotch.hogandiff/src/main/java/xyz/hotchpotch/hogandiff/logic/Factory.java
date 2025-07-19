@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.bookloaders.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
@@ -37,10 +37,10 @@ public class Factory {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static LoaderForBooks bookLoader(Path bookPath) {
+    public static SheetNamesLoader bookLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
-        return LoaderForBooks.of(bookPath);
+        return SheetNamesLoader.of(bookPath);
     }
 
     /**

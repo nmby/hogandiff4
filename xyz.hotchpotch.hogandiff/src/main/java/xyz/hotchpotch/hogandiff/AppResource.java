@@ -14,7 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.bookloaders.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -203,7 +203,7 @@ public class AppResource {
     }
 
     private BookInfo loadBookInfo(Path bookPath) {
-        LoaderForBooks loader = Factory.bookLoader(bookPath);
+        SheetNamesLoader loader = Factory.bookLoader(bookPath);
         return loader.loadBookInfo(bookPath, null);
     }
 }

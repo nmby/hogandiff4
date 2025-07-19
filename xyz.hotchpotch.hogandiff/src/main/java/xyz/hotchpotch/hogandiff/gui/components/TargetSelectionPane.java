@@ -38,7 +38,7 @@ import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.bookloaders.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
@@ -428,7 +428,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
 
         try {
             String readPassword = readPasswords.get(newBookPath);
-            LoaderForBooks loader = Factory.bookLoader(newBookPath);
+            SheetNamesLoader loader = Factory.bookLoader(newBookPath);
 
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);

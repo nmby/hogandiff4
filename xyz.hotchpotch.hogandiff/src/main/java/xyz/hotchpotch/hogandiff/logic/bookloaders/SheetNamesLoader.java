@@ -17,7 +17,7 @@ import xyz.hotchpotch.hogandiff.logic.models.SheetType;
  * @author nmby
  */
 @FunctionalInterface
-public interface LoaderForBooks {
+public interface SheetNamesLoader {
 
     // [static members] ********************************************************
 
@@ -29,19 +29,19 @@ public interface LoaderForBooks {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static LoaderForBooks of(Path bookPath) {
+    public static SheetNamesLoader of(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
         Set<SheetType> targetSheetTypes = EnumSet.of(SheetType.WORKSHEET);
 
         return switch (BookType.of(bookPath)) {
-            case XLS -> LoaderForBooksCombined.of(List.of(
-                    () -> LoaderForBooksWithPoiEventApi.of(targetSheetTypes),
-                    () -> LoaderForBooksWithPoiUserApi.of(targetSheetTypes)));
+            case XLS -> SheetNamesLoaderCombined.of(List.of(
+                    () -> SheetNamesLoaderWithPoiEventApi.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
 
-            case XLSX, XLSM -> LoaderForBooksCombined.of(List.of(
-                    () -> LoaderForBooksWithSax.of(targetSheetTypes),
-                    () -> LoaderForBooksWithPoiUserApi.of(targetSheetTypes)));
+            case XLSX, XLSM -> SheetNamesLoaderCombined.of(List.of(
+                    () -> SheetNamesLoaderWithSax.of(targetSheetTypes),
+                    () -> SheetNamesLoaderWithPoiUserApi.of(targetSheetTypes)));
 
             // FIXME: [No.02 .xlsbのサポート]
             case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);

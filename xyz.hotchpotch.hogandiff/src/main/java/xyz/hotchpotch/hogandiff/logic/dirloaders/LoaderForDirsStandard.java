@@ -11,7 +11,7 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.bookloaders.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
@@ -80,7 +80,7 @@ public class LoaderForDirsStandard implements LoaderForDirs {
                     .filter(LoaderForDirsStandard::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
-                        LoaderForBooks bookLoader = Factory.bookLoader(bookPath);
+                        SheetNamesLoader bookLoader = Factory.bookLoader(bookPath);
                         return bookLoader.loadBookInfo(bookPath, null);
                     })
                     .toList();
