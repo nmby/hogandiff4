@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.bookloaders;
+package xyz.hotchpotch.hogandiff.logic.sheetnamesloader;
 
 import static org.junit.jupiter.api.Assertions.*;
 

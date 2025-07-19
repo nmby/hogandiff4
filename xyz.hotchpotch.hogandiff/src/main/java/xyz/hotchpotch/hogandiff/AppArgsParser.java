@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
