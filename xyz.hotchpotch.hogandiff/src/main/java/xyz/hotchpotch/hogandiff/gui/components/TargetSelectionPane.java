@@ -39,7 +39,7 @@ import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.dirloaders.DirsLoader;
+import xyz.hotchpotch.hogandiff.logic.dirsloader.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo.Status;

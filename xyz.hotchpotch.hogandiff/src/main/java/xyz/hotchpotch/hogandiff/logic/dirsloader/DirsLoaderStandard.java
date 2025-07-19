@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.dirloaders;
+package xyz.hotchpotch.hogandiff.logic.dirsloader;
 
 import java.io.IOException;
 import java.nio.file.Files;
