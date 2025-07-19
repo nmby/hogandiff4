@@ -19,11 +19,11 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
 /**
- * {@link LoaderForDirs} の標準的な実装です。<br>
+ * {@link DirsLoader} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class LoaderForDirsStandard implements LoaderForDirs {
+public class DirsLoaderStandard implements DirsLoader {
 
     // [static members] ********************************************************
 
@@ -46,7 +46,7 @@ public class LoaderForDirsStandard implements LoaderForDirs {
      * 
      * @param recursively 子フォルダの情報も再帰的にロードするか
      */
-    public LoaderForDirsStandard(boolean recursively) {
+    public DirsLoaderStandard(boolean recursively) {
         this.recursively = recursively;
     }
 
@@ -77,7 +77,7 @@ public class LoaderForDirsStandard implements LoaderForDirs {
 
             List<BookInfo> childBookPaths = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(LoaderForDirsStandard::isHandleableExcelBook)
+                    .filter(DirsLoaderStandard::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
                         SheetNamesLoader bookLoader = Factory.bookLoader(bookPath);

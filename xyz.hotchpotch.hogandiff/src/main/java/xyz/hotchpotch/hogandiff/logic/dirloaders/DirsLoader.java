@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
  * @author nmby
  */
 @FunctionalInterface
-public interface LoaderForDirs {
+public interface DirsLoader {
 
     // [static members] ********************************************************
 
@@ -22,8 +22,8 @@ public interface LoaderForDirs {
      * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダ情報を抽出するローダー
      */
-    public static LoaderForDirs of(boolean recursively) {
-        return new LoaderForDirsStandard(recursively);
+    public static DirsLoader of(boolean recursively) {
+        return new DirsLoaderStandard(recursively);
     }
 
     // [instance members] ******************************************************

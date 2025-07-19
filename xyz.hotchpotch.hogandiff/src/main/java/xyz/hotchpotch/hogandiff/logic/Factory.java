@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
-import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
+import xyz.hotchpotch.hogandiff.logic.dirloaders.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.painters.Painter;
@@ -73,11 +73,11 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static LoaderForDirs dirLoader(Settings settings) {
+    public static DirsLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings);
 
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return LoaderForDirs.of(recursively);
+        return DirsLoader.of(recursively);
     }
 
     /**
