@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -88,14 +88,14 @@ public class AppArgsParser {
             return Optional.empty();
         }
         try {
-            LoaderForBooks bookLoaderA = Factory.bookLoader(bookPathA);
+            SheetNamesLoader bookLoaderA = Factory.bookLoader(bookPathA);
             bookInfoA = bookLoaderA.loadBookInfo(bookPathA, null);
         } catch (Exception e) {
             e.printStackTrace();
             // nop. Excelブックのロードに失敗した場合は、処理継続とする。
         }
         try {
-            LoaderForBooks bookLoaderB = Factory.bookLoader(bookPathB);
+            SheetNamesLoader bookLoaderB = Factory.bookLoader(bookPathB);
             bookInfoB = bookLoaderB.loadBookInfo(bookPathB, null);
         } catch (Exception e) {
             e.printStackTrace();

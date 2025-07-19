@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.cellloaders;
+package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 
-class LoaderForCellsWithPoiEventApiTest {
+class CellsLoaderWithPoiEventApiTest {
 
         // [static members] ********************************************************
 
@@ -29,16 +29,16 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @BeforeAll
         static void beforeAll() throws URISyntaxException {
-                test1_xls = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
-                test1_xlsb = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
-                test1_xlsm = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
-                test1_xlsx = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
+                test1_xls = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
+                test1_xlsb = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
+                test1_xlsm = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
+                test1_xlsx = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
                 test2_xls = Path.of(
-                                LoaderForCellsWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
+                                CellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
                 test2_xlsx = Path.of(
-                                LoaderForCellsWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-                test3_xls = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
-                test5_xls = Path.of(LoaderForCellsWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
+                                CellsLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
+                test3_xls = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test3.xls").toURI());
+                test5_xls = Path.of(CellsLoaderWithPoiEventApiTest.class.getResource("Test5.xls").toURI());
         }
 
         // [instance members] ******************************************************
@@ -46,14 +46,14 @@ class LoaderForCellsWithPoiEventApiTest {
         @Test
         void testOf() {
                 assertTrue(
-                                new LoaderForCellsWithPoiEventApi(true) instanceof LoaderForCellsWithPoiEventApi);
+                                new CellsLoaderWithPoiEventApi(true) instanceof CellsLoaderWithPoiEventApi);
                 assertTrue(
-                                new LoaderForCellsWithPoiEventApi(false) instanceof LoaderForCellsWithPoiEventApi);
+                                new CellsLoaderWithPoiEventApi(false) instanceof CellsLoaderWithPoiEventApi);
         }
 
         @Test
         void testLoadCells_例外系_非チェック例外() {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(true);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(true);
 
                 // 対照群
                 assertDoesNotThrow(
@@ -89,7 +89,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_例外系_チェック例外1() {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(true);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(true);
 
                 // 存在しないファイル
                 assertThrows(
@@ -123,7 +123,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_例外系_チェック例外2() {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(false);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(false);
 
                 // FIXME: [No.04 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
                 assertThrows(
@@ -137,7 +137,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_正常系1() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(true);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(true);
 
                 assertEquals(
                                 Set.of(
@@ -153,7 +153,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(true);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(true);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xls, null, "A_バリエーション"));
@@ -258,7 +258,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_正常系3_バリエーション_数式抽出() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(false);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(false);
 
                 // FIXME: [No.04 数式サポート改善] 現時点では、.xls 形式からの数式文字列抽出はサポート対象外。
                 assertThrows(
@@ -268,7 +268,7 @@ class LoaderForCellsWithPoiEventApiTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithPoiEventApi(true);
+                CellsLoader testee = new CellsLoaderWithPoiEventApi(true);
 
                 assertEquals(
                                 Set.of(

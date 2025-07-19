@@ -38,8 +38,8 @@ import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
+import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.dirsloader.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo.Status;
@@ -357,7 +357,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
 
         try {
-            LoaderForDirs dirLoader = Factory.dirLoader(
+            DirsLoader dirLoader = Factory.dirLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
@@ -428,7 +428,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
 
         try {
             String readPassword = readPasswords.get(newBookPath);
-            LoaderForBooks loader = Factory.bookLoader(newBookPath);
+            SheetNamesLoader loader = Factory.bookLoader(newBookPath);
 
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);

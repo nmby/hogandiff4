@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.bookloaders;
+package xyz.hotchpotch.hogandiff.logic.sheetnamesloader;
 
 import java.nio.file.Path;
 import java.util.EnumSet;
@@ -23,12 +23,12 @@ import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link LoaderForBooks} の実装です。<br>
+ * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
-public class LoaderForBooksWithPoiUserApi implements LoaderForBooks {
+public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
 
     // [static members] ********************************************************
 
@@ -40,20 +40,20 @@ public class LoaderForBooksWithPoiUserApi implements LoaderForBooks {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static LoaderForBooks of(Set<SheetType> targetTypes) {
+    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes);
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
 
-        return new LoaderForBooksWithPoiUserApi(targetTypes);
+        return new SheetNamesLoaderWithPoiUserApi(targetTypes);
     }
 
     // [instance members] ******************************************************
 
     private final Set<SheetType> targetTypes;
 
-    private LoaderForBooksWithPoiUserApi(Set<SheetType> targetTypes) {
+    private SheetNamesLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
 
         this.targetTypes = EnumSet.copyOf(targetTypes);

@@ -10,7 +10,7 @@ import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.LoaderForCells;
+import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.Result;
 import xyz.hotchpotch.hogandiff.logic.models.ResultOfBooks;
@@ -145,7 +145,7 @@ public final class CompareTaskBooks extends CompareTask {
 
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
-            Pair<LoaderForCells> loaderPair = bookInfoPair
+            Pair<CellsLoader> loaderPair = bookInfoPair
                     .map(BookInfo::bookPath)
                     .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
 

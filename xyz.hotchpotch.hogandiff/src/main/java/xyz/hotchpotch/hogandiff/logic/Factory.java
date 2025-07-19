@@ -11,9 +11,9 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.LoaderForCells;
-import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
+import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
+import xyz.hotchpotch.hogandiff.logic.dirsloader.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.painters.Painter;
@@ -37,10 +37,10 @@ public class Factory {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static LoaderForBooks bookLoader(Path bookPath) {
+    public static SheetNamesLoader bookLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
-        return LoaderForBooks.of(bookPath);
+        return SheetNamesLoader.of(bookPath);
     }
 
     /**
@@ -53,7 +53,7 @@ public class Factory {
      *                                       のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static LoaderForCells cellsLoader(Settings settings, Path bookPath) {
+    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
 
@@ -63,7 +63,7 @@ public class Factory {
 
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
 
-        return LoaderForCells.of(bookPath, useCachedValue);
+        return CellsLoader.of(bookPath, useCachedValue);
     }
 
     /**
@@ -73,11 +73,11 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static LoaderForDirs dirLoader(Settings settings) {
+    public static DirsLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings);
 
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return LoaderForDirs.of(recursively);
+        return DirsLoader.of(recursively);
     }
 
     /**

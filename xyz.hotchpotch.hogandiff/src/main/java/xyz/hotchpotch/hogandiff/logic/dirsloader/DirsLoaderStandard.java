@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.dirloaders;
+package xyz.hotchpotch.hogandiff.logic.dirsloader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
+import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
@@ -19,11 +19,11 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
 /**
- * {@link LoaderForDirs} の標準的な実装です。<br>
+ * {@link DirsLoader} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class LoaderForDirsStandard implements LoaderForDirs {
+public class DirsLoaderStandard implements DirsLoader {
 
     // [static members] ********************************************************
 
@@ -46,7 +46,7 @@ public class LoaderForDirsStandard implements LoaderForDirs {
      * 
      * @param recursively 子フォルダの情報も再帰的にロードするか
      */
-    public LoaderForDirsStandard(boolean recursively) {
+    public DirsLoaderStandard(boolean recursively) {
         this.recursively = recursively;
     }
 
@@ -77,10 +77,10 @@ public class LoaderForDirsStandard implements LoaderForDirs {
 
             List<BookInfo> childBookPaths = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(LoaderForDirsStandard::isHandleableExcelBook)
+                    .filter(DirsLoaderStandard::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
-                        LoaderForBooks bookLoader = Factory.bookLoader(bookPath);
+                        SheetNamesLoader bookLoader = Factory.bookLoader(bookPath);
                         return bookLoader.loadBookInfo(bookPath, null);
                     })
                     .toList();

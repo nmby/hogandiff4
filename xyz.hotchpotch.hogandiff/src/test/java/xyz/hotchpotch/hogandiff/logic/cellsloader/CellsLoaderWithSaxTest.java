@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.cellloaders;
+package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 
-class LoaderForCellsWithSaxTest {
+class CellsLoaderWithSaxTest {
 
         // [static members] ********************************************************
 
@@ -28,13 +28,13 @@ class LoaderForCellsWithSaxTest {
 
         @BeforeAll
         static void beforeAll() throws URISyntaxException {
-                test1_xls = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test1.xls").toURI());
-                test1_xlsb = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test1.xlsb").toURI());
-                test1_xlsm = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test1.xlsm").toURI());
-                test1_xlsx = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test1.xlsx").toURI());
-                test2_xlsm = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
-                test3_xlsx = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test3.xlsx").toURI());
-                test4_xlsx = Path.of(LoaderForCellsWithSaxTest.class.getResource("Test4a.xlsx").toURI());
+                test1_xls = Path.of(CellsLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
+                test1_xlsb = Path.of(CellsLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
+                test1_xlsm = Path.of(CellsLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
+                test1_xlsx = Path.of(CellsLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
+                test2_xlsm = Path.of(CellsLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsm").toURI());
+                test3_xlsx = Path.of(CellsLoaderWithSaxTest.class.getResource("Test3.xlsx").toURI());
+                test4_xlsx = Path.of(CellsLoaderWithSaxTest.class.getResource("Test4a.xlsx").toURI());
         }
 
         // [instance members] ******************************************************
@@ -45,34 +45,34 @@ class LoaderForCellsWithSaxTest {
                 // null パラメータ
                 assertThrows(
                                 NullPointerException.class,
-                                () -> new LoaderForCellsWithSax(true, null));
+                                () -> new CellsLoaderWithSax(true, null));
 
                 // サポート対象外のブック形式
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> new LoaderForCellsWithSax(true, test1_xls));
+                                () -> new CellsLoaderWithSax(true, test1_xls));
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> new LoaderForCellsWithSax(true, test1_xlsb));
+                                () -> new CellsLoaderWithSax(true, test1_xlsb));
 
                 // ■正常系
                 assertTrue(
-                                new LoaderForCellsWithSax(true, test1_xlsx) instanceof LoaderForCellsWithSax);
+                                new CellsLoaderWithSax(true, test1_xlsx) instanceof CellsLoaderWithSax);
                 assertTrue(
-                                new LoaderForCellsWithSax(false, test1_xlsm) instanceof LoaderForCellsWithSax);
+                                new CellsLoaderWithSax(false, test1_xlsm) instanceof CellsLoaderWithSax);
 
                 // 存在しないファイル
                 assertTrue(
-                                new LoaderForCellsWithSax(true,
-                                                Path.of("dummy\\dummy.xlsx")) instanceof LoaderForCellsWithSax);
+                                new CellsLoaderWithSax(true,
+                                                Path.of("dummy\\dummy.xlsx")) instanceof CellsLoaderWithSax);
                 // 暗号化ファイル
                 assertTrue(
-                                new LoaderForCellsWithSax(true, test2_xlsm) instanceof LoaderForCellsWithSax);
+                                new CellsLoaderWithSax(true, test2_xlsm) instanceof CellsLoaderWithSax);
         }
 
         @Test
         void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(true, test1_xlsm);
+                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsm);
 
                 // 対照
                 assertDoesNotThrow(
@@ -97,7 +97,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(true, test1_xlsm);
+                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsm);
 
                 // 存在しないシート
                 assertThrows(
@@ -118,7 +118,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_正常系1() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(true, test1_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsx);
 
                 assertEquals(
                                 Set.of(
@@ -134,7 +134,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(true, test3_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true, test3_xlsx);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -244,7 +244,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(false, test3_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(false, test3_xlsx);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -349,7 +349,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(true, test4_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true, test4_xlsx);
 
                 assertEquals(
                                 Set.of(
@@ -365,7 +365,7 @@ class LoaderForCellsWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-                LoaderForCells testee = new LoaderForCellsWithSax(false, test4_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(false, test4_xlsx);
 
                 assertEquals(
                                 Set.of(
