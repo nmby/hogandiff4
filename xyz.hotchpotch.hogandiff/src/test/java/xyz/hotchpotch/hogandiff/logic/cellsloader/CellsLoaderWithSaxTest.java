@@ -42,37 +42,17 @@ class CellsLoaderWithSaxTest {
         @Test
         void testOf() throws ExcelHandlingException {
                 // ■非チェック例外
-                // null パラメータ
-                assertThrows(
-                                NullPointerException.class,
-                                () -> new CellsLoaderWithSax(true, null));
-
-                // サポート対象外のブック形式
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> new CellsLoaderWithSax(true, test1_xls));
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> new CellsLoaderWithSax(true, test1_xlsb));
 
                 // ■正常系
                 assertTrue(
-                                new CellsLoaderWithSax(true, test1_xlsx) instanceof CellsLoaderWithSax);
+                                new CellsLoaderWithSax(true) instanceof CellsLoaderWithSax);
                 assertTrue(
-                                new CellsLoaderWithSax(false, test1_xlsm) instanceof CellsLoaderWithSax);
-
-                // 存在しないファイル
-                assertTrue(
-                                new CellsLoaderWithSax(true,
-                                                Path.of("dummy\\dummy.xlsx")) instanceof CellsLoaderWithSax);
-                // 暗号化ファイル
-                assertTrue(
-                                new CellsLoaderWithSax(true, test2_xlsm) instanceof CellsLoaderWithSax);
+                                new CellsLoaderWithSax(false) instanceof CellsLoaderWithSax);
         }
 
         @Test
         void testLoadCells_例外系_非チェック例外() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsm);
+                CellsLoader testee = new CellsLoaderWithSax(true);
 
                 // 対照
                 assertDoesNotThrow(
@@ -88,16 +68,11 @@ class CellsLoaderWithSaxTest {
                 assertThrows(
                                 NullPointerException.class,
                                 () -> testee.loadCells(null, null, null));
-
-                // 構成時と異なるブック
-                assertThrows(
-                                IllegalArgumentException.class,
-                                () -> testee.loadCells(test3_xlsx, null, "A1_ワークシート"));
         }
 
         @Test
         void testLoadCells_例外系_チェック例外() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsm);
+                CellsLoader testee = new CellsLoaderWithSax(true);
 
                 // 存在しないシート
                 assertThrows(
@@ -118,7 +93,7 @@ class CellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系1() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(true, test1_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true);
 
                 assertEquals(
                                 Set.of(
@@ -134,7 +109,7 @@ class CellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系2_バリエーション_値抽出() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(true, test3_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -244,7 +219,7 @@ class CellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系3_数式抽出() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(false, test3_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(false);
 
                 List<CellData> actual = new ArrayList<>(
                                 testee.loadCells(test3_xlsx, null, "A_バリエーション"));
@@ -349,7 +324,7 @@ class CellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連a() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(true, test4_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(true);
 
                 assertEquals(
                                 Set.of(
@@ -365,7 +340,7 @@ class CellsLoaderWithSaxTest {
 
         @Test
         void testLoadCells_正常系4_コメント関連b() throws ExcelHandlingException {
-                CellsLoader testee = new CellsLoaderWithSax(false, test4_xlsx);
+                CellsLoader testee = new CellsLoaderWithSax(false);
 
                 assertEquals(
                                 Set.of(

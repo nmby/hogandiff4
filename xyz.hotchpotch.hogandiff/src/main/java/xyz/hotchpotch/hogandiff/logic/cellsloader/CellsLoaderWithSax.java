@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.EnumSet;
@@ -30,6 +29,7 @@ import xyz.hotchpotch.hogandiff.logic.SheetHandler;
 import xyz.hotchpotch.hogandiff.logic.SaxUtil;
 import xyz.hotchpotch.hogandiff.logic.SaxUtil.IgnoreCloseInputStream;
 import xyz.hotchpotch.hogandiff.logic.SaxUtil.SheetInfo;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.SheetType;
@@ -230,7 +230,6 @@ public class CellsLoaderWithSax implements CellsLoader {
     // [instance members] ******************************************************
 
     private final boolean extractCachedValue;
-    private final Path bookPath;
     // private final String readPassword;
 
     private Map<String, SheetInfo> nameToInfo;
@@ -242,33 +241,19 @@ public class CellsLoaderWithSax implements CellsLoader {
      * @param extractCachedValue
      *                           数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *                           数式文字列を抽出する場合は {@code false}
-     * @param bookPath           Excepブックのパス
-     * @throws NullPointerException     パラメータが {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      */
-    public CellsLoaderWithSax(
-            boolean extractCachedValue,
-            Path bookPath) {
-
-        Objects.requireNonNull(bookPath);
-        CommonUtil.ifNotSupportedBookTypeThenThrow(
-                CellsLoaderWithSax.class,
-                BookType.of(bookPath));
-
+    public CellsLoaderWithSax(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
-        this.bookPath = bookPath;
     }
 
     /**
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code bookInfo}, {@code sheetName} のいずれかが
      *                                  {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  {@code bookPath} が構成時に指定されたExcelブックと異なる場合
-     * @throws IllegalArgumentException
-     *                                  {@code bookPath} がサポート対象外の形式の場合
+     *                                  {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *                                  処理に失敗した場合
      */
@@ -279,22 +264,17 @@ public class CellsLoaderWithSax implements CellsLoader {
     // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            Path bookPath,
+            BookInfo bookInfo,
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
 
-        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(bookInfo);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
-        if (!Objects.equals(this.bookPath, bookPath)) {
-            throw new IllegalArgumentException(
-                    "This loader is configured for %s. Not available for another book (%s)."
-                            .formatted(this.bookPath, bookPath));
-        }
 
         if (nameToInfo == null) {
-            nameToInfo = SaxUtil.loadSheetInfos(bookPath, readPassword).stream()
+            nameToInfo = SaxUtil.loadSheetInfos(bookInfo.bookPath(), readPassword).stream()
                     .collect(Collectors.toMap(
                             SheetInfo::sheetName,
                             Function.identity()));
@@ -302,16 +282,16 @@ public class CellsLoaderWithSax implements CellsLoader {
 
         if (!nameToInfo.containsKey(sheetName)) {
             throw new ExcelHandlingException(
-                    "Processing failed. No such sheet : %s - %s".formatted(bookPath, sheetName));
+                    "Processing failed. No such sheet : %s - %s".formatted(bookInfo.bookPath(), sheetName));
         }
         SheetInfo info = nameToInfo.get(sheetName);
         if (!CommonUtil.isSupportedSheetType(getClass(), EnumSet.of(info.type()))) {
             throw new ExcelHandlingException(
-                    "Processing failed. Unsupported sheet type : %s - %s".formatted(bookPath, sheetName));
+                    "Processing failed. Unsupported sheet type : %s - %s".formatted(bookInfo.bookPath(), sheetName));
         }
 
         if (sst == null) {
-            sst = SaxUtil.loadSharedStrings(bookPath, readPassword);
+            sst = SaxUtil.loadSharedStrings(bookInfo.bookPath(), readPassword);
         }
 
         UnsafeFunction<ZipInputStream, Set<CellData>, Exception> processor = zis -> {
@@ -357,6 +337,6 @@ public class CellsLoaderWithSax implements CellsLoader {
             }
         };
 
-        return SaxUtil.processExcelAsZip(bookPath, readPassword, processor);
+        return SaxUtil.processExcelAsZip(bookInfo.bookPath(), readPassword, processor);
     }
 }

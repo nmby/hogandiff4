@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,6 +20,7 @@ import xyz.hotchpotch.hogandiff.logic.CommonUtil;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.PoiUtil;
 import xyz.hotchpotch.hogandiff.logic.SheetHandler;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.SheetType;
@@ -58,10 +58,10 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code bookInfo}, {@code sheetName} のいずれかが
      *                                  {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  {@code bookPath} がサポート対象外の形式の場合
+     *                                  {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *                                  処理に失敗した場合
      */
@@ -72,18 +72,18 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
     // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            Path bookPath,
+            BookInfo bookInfo,
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
 
-        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(bookInfo);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookInfo.bookPath()));
 
         try (Workbook wb = WorkbookFactory.create(
-                bookPath.toFile(),
+                bookInfo.bookPath().toFile(),
                 readPassword,
                 true)) {
 
@@ -93,7 +93,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
                 // 後続の catch でさらに ExcelHandlingException にラップする。
                 // ちょっと気持ち悪い気もするけど。
                 throw new NoSuchElementException(
-                        "no such sheet : %s - %s".formatted(bookPath, sheetName));
+                        "no such sheet : %s - %s".formatted(bookInfo.bookPath(), sheetName));
             }
 
             Set<SheetType> possibleTypes = PoiUtil.possibleTypes(sheet);
@@ -129,7 +129,7 @@ public class CellsLoaderWithPoiUserApi implements CellsLoader {
 
         } catch (Exception e) {
             throw new ExcelHandlingException(
-                    "processing failed : %s - %s".formatted(bookPath, sheetName),
+                    "processing failed : %s - %s".formatted(bookInfo.bookPath(), sheetName),
                     e);
         }
     }

@@ -47,15 +47,15 @@ public class Factory {
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
      * @param settings 設定
-     * @param bookPath Excepブックのパス
+     * @param bookInfo Excelブック情報
      * @return Excelシートからセルデータを抽出するローダー
-     * @throws NullPointerException          {@code settings}, {@code bookPath}
+     * @throws NullPointerException          {@code settings}, {@code bookInfo}
      *                                       のいずれかが {@code null} の場合
-     * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
+     * @throws UnsupportedOperationException {@code bookInfo} がサポート対象外の形式の場合
      */
-    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
+    public static CellsLoader cellsLoader(Settings settings, BookInfo bookInfo) {
         Objects.requireNonNull(settings);
-        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(bookInfo);
 
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
@@ -63,7 +63,7 @@ public class Factory {
 
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
 
-        return CellsLoader.of(bookPath, useCachedValue);
+        return CellsLoader.of(bookInfo, useCachedValue);
     }
 
     /**
