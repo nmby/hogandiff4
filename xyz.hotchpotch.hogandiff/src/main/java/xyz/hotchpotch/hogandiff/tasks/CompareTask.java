@@ -458,8 +458,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 
         updateProgress(progressBefore, PROGRESS_MAX);
 
-        Pair<CellsLoader> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
-                bookPath -> Factory.cellsLoader(settings, bookPath));
+        Pair<CellsLoader> cellsLoaderPair = bookComparison.parentBookInfoPair().unsafeMap(
+                bookInfo -> Factory.cellsLoader(settings, bookInfo));
         ComparatorOfSheets sheetComparator = Factory.sheetComparator(settings);
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
         Map<Pair<String>, Optional<ResultOfSheets>> results = new HashMap<>();
@@ -468,13 +468,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<String> sheetNamePair = bookComparison.childSheetNamePairs().get(i);
 
             if (sheetNamePair.isPaired()) {
-
-                Path bookPathA = bookComparison.parentBookInfoPair().a().bookPath();
-                Path bookPathB = bookComparison.parentBookInfoPair().b().bookPath();
+                BookInfo bookInfoA = bookComparison.parentBookInfoPair().a();
+                BookInfo bookInfoB = bookComparison.parentBookInfoPair().b();
                 Set<CellData> cellsSetA = cellsLoaderPair.a().loadCells(
-                        bookPathA, readPasswords.get(bookPathA), sheetNamePair.a());
+                    bookInfoA, readPasswords.get(bookInfoA.bookPath()), sheetNamePair.a());
                 Set<CellData> cellsSetB = cellsLoaderPair.b().loadCells(
-                        bookPathB, readPasswords.get(bookPathB), sheetNamePair.b());
+                    bookInfoB, readPasswords.get(bookInfoB.bookPath()), sheetNamePair.b());
 
                 ResultOfSheets result = sheetComparator.compare(Pair.of(cellsSetA, cellsSetB));
                 results.put(sheetNamePair, Optional.of(result));

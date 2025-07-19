@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +9,7 @@ import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.CommonUtil;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.SheetHandler;
+import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
@@ -62,10 +62,10 @@ public class CellsLoaderCombined implements CellsLoader {
      * 全てのローダーで処理が失敗したら例外をスローします。<br>
      * 
      * @throws NullPointerException
-     *                                  {@code bookPath}, {@code sheetName} のいずれかが
+     *                                  {@code bookInfo}, {@code sheetName} のいずれかが
      *                                  {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  {@code bookPath} がサポート対象外の形式の場合
+     *                                  {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
      *                                  処理に失敗した場合
      */
@@ -76,24 +76,24 @@ public class CellsLoaderCombined implements CellsLoader {
     // 例えば、ブックやシートが見つからないとか、シート種類がサポート対象外とか。
     @Override
     public Set<CellData> loadCells(
-            Path bookPath,
+            BookInfo bookInfo,
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
 
-        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(bookInfo);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
-        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
+        CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookInfo.bookPath()));
 
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s - %s".formatted(bookPath, sheetName));
+                "processiong failed : %s - %s".formatted(bookInfo.bookPath(), sheetName));
 
         Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
                 CellsLoader loader = itr.next().get();
-                return loader.loadCells(bookPath, readPassword, sheetName);
+                return loader.loadCells(bookInfo, readPassword, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();
                 failed.addSuppressed(e);

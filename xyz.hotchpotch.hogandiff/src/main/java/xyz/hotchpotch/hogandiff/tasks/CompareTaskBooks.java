@@ -146,8 +146,7 @@ public final class CompareTaskBooks extends CompareTask {
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
             Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
             Pair<CellsLoader> loaderPair = bookInfoPair
-                    .map(BookInfo::bookPath)
-                    .unsafeMap(bookPath -> Factory.cellsLoader(settings, bookPath));
+                    .unsafeMap(bookInfo -> Factory.cellsLoader(settings, bookInfo));
 
             ComparatorOfSheets sheetComparator = Factory.sheetComparator(settings);
             Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);
@@ -167,7 +166,7 @@ public final class CompareTaskBooks extends CompareTask {
 
                         Pair<Set<CellData>> cellsSetPair = Side.unsafeMap(
                                 side -> loaderPair.get(side).loadCells(
-                                        bookInfoPair.get(side).bookPath(),
+                                        bookInfoPair.get(side),
                                         readPasswords.get(bookInfoPair.get(side).bookPath()),
                                         sheetNamePair.get(side)));
 
