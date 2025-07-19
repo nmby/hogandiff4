@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.LoaderForCells;
+import xyz.hotchpotch.hogandiff.logic.cellloaders.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
@@ -53,7 +53,7 @@ public class Factory {
      *                                       のいずれかが {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static LoaderForCells cellsLoader(Settings settings, Path bookPath) {
+    public static CellsLoader cellsLoader(Settings settings, Path bookPath) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
 
@@ -63,7 +63,7 @@ public class Factory {
 
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
 
-        return LoaderForCells.of(bookPath, useCachedValue);
+        return CellsLoader.of(bookPath, useCachedValue);
     }
 
     /**

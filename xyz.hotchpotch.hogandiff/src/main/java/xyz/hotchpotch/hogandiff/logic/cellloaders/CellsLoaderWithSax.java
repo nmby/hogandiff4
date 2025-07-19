@@ -38,13 +38,13 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 /**
  * SAX (Simple API for XML) を利用して、
  * .xlsx/.xlsm 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link LoaderForCells} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class LoaderForCellsWithSax implements LoaderForCells {
+public class CellsLoaderWithSax implements CellsLoader {
 
     // [static members] ********************************************************
 
@@ -246,13 +246,13 @@ public class LoaderForCellsWithSax implements LoaderForCells {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
      */
-    public LoaderForCellsWithSax(
+    public CellsLoaderWithSax(
             boolean extractCachedValue,
             Path bookPath) {
 
         Objects.requireNonNull(bookPath);
         CommonUtil.ifNotSupportedBookTypeThenThrow(
-                LoaderForCellsWithSax.class,
+                CellsLoaderWithSax.class,
                 BookType.of(bookPath));
 
         this.extractCachedValue = extractCachedValue;

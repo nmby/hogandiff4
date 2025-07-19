@@ -28,13 +28,13 @@ import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 /**
  * Apache POI のユーザーモデル API を利用して
  * .xlsx/.xlsm/.xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link LoaderForCells} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS, BookType.XLSX, BookType.XLSM })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class LoaderForCellsWithPoiUserApi implements LoaderForCells {
+public class CellsLoaderWithPoiUserApi implements CellsLoader {
 
     // [static members] ********************************************************
 
@@ -48,7 +48,7 @@ public class LoaderForCellsWithPoiUserApi implements LoaderForCells {
      * @param converter セル変換関数
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public LoaderForCellsWithPoiUserApi(Function<Cell, CellData> converter) {
+    public CellsLoaderWithPoiUserApi(Function<Cell, CellData> converter) {
         Objects.requireNonNull(converter);
 
         this.converter = converter;

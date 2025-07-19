@@ -15,13 +15,13 @@ import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
 /**
- * 処理が成功するまで複数のローダーで順に処理を行う {@link LoaderForCells} の実装です。<br>
+ * 処理が成功するまで複数のローダーで順に処理を行う {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler
 @SheetHandler
-public class LoaderForCellsCombined implements LoaderForCells {
+public class CellsLoaderCombined implements CellsLoader {
 
     // [static members] ********************************************************
 
@@ -33,20 +33,20 @@ public class LoaderForCellsCombined implements LoaderForCells {
      * @throws NullPointerException     {@code suppliers} が {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static LoaderForCells of(List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers) {
+    public static CellsLoader of(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
 
-        return new LoaderForCellsCombined(suppliers);
+        return new CellsLoaderCombined(suppliers);
     }
 
     // [instance members] ******************************************************
 
-    private final List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers;
+    private final List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers;
 
-    private LoaderForCellsCombined(List<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> suppliers) {
+    private CellsLoaderCombined(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
 
         this.suppliers = List.copyOf(suppliers);
@@ -89,10 +89,10 @@ public class LoaderForCellsCombined implements LoaderForCells {
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s - %s".formatted(bookPath, sheetName));
 
-        Iterator<UnsafeSupplier<LoaderForCells, ExcelHandlingException>> itr = suppliers.iterator();
+        Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {
-                LoaderForCells loader = itr.next().get();
+                CellsLoader loader = itr.next().get();
                 return loader.loadCells(bookPath, readPassword, sheetName);
             } catch (Exception e) {
                 e.printStackTrace();

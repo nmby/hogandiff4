@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.LoaderForCells;
+import xyz.hotchpotch.hogandiff.logic.cellloaders.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.Result;
 import xyz.hotchpotch.hogandiff.logic.models.ResultOfBooks;
@@ -458,7 +458,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 
         updateProgress(progressBefore, PROGRESS_MAX);
 
-        Pair<LoaderForCells> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
+        Pair<CellsLoader> cellsLoaderPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath).unsafeMap(
                 bookPath -> Factory.cellsLoader(settings, bookPath));
         ComparatorOfSheets sheetComparator = Factory.sheetComparator(settings);
         Map<Path, String> readPasswords = settings.get(SettingKeys.CURR_READ_PASSWORDS);

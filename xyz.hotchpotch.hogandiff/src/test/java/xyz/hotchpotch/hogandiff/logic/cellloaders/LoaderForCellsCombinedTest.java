@@ -12,15 +12,15 @@ import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 
-class LoaderForCellsCombinedTest {
+class CellsLoaderCombinedTest {
 
         // [static members] ********************************************************
 
         private static final CellData cell1 = new CellData(1, 2, "success", null);
 
-        private static final LoaderForCells successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
+        private static final CellsLoader successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
 
-        private static final LoaderForCells failLoader = (bookPath, readPassword, sheetName) -> {
+        private static final CellsLoader failLoader = (bookPath, readPassword, sheetName) -> {
                 throw new RuntimeException("fail");
         };
 
@@ -31,26 +31,26 @@ class LoaderForCellsCombinedTest {
                 // 異常系
                 assertThrows(
                                 NullPointerException.class,
-                                () -> LoaderForCellsCombined.of(null));
+                                () -> CellsLoaderCombined.of(null));
                 assertThrows(
                                 IllegalArgumentException.class,
-                                () -> LoaderForCellsCombined.of(List.of()));
+                                () -> CellsLoaderCombined.of(List.of()));
 
                 // 正常系
                 assertTrue(
-                                LoaderForCellsCombined.of(List.of(
+                                CellsLoaderCombined.of(List.of(
                                                 UnsafeSupplier.from(
-                                                                () -> successLoader))) instanceof LoaderForCellsCombined);
+                                                                () -> successLoader))) instanceof CellsLoaderCombined);
                 assertTrue(
-                                LoaderForCellsCombined.of(List.of(
+                                CellsLoaderCombined.of(List.of(
                                                 UnsafeSupplier.from(() -> successLoader),
                                                 UnsafeSupplier.from(
-                                                                () -> failLoader))) instanceof LoaderForCellsCombined);
+                                                                () -> failLoader))) instanceof CellsLoaderCombined);
         }
 
         @Test
         void testLoadCells_パラメータチェック() {
-                LoaderForCells testee = LoaderForCellsCombined.of(List.of(
+                CellsLoader testee = CellsLoaderCombined.of(List.of(
                                 UnsafeSupplier.from(() -> successLoader)));
 
                 // null パラメータ
@@ -66,9 +66,9 @@ class LoaderForCellsCombinedTest {
 
         @Test
         void testLoadCells_失敗系() {
-                LoaderForCells testeeF = LoaderForCellsCombined.of(List.of(
+                CellsLoader testeeF = CellsLoaderCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader)));
-                LoaderForCells testeeFFF = LoaderForCellsCombined.of(List.of(
+                CellsLoader testeeFFF = CellsLoaderCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader)));
@@ -86,9 +86,9 @@ class LoaderForCellsCombinedTest {
 
         @Test
         void testLoadSheetNames_成功系() throws ExcelHandlingException {
-                LoaderForCells testeeS = LoaderForCellsCombined.of(List.of(
+                CellsLoader testeeS = CellsLoaderCombined.of(List.of(
                                 UnsafeSupplier.from(() -> successLoader)));
-                LoaderForCells testeeFFSF = LoaderForCellsCombined.of(List.of(
+                CellsLoader testeeFFSF = CellsLoaderCombined.of(List.of(
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> failLoader),
                                 UnsafeSupplier.from(() -> successLoader),

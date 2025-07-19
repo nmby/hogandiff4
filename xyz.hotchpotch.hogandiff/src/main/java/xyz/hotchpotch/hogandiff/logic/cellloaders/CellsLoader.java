@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.logic.models.CellData;
  * @author nmby
  */
 @FunctionalInterface
-public interface LoaderForCells {
+public interface CellsLoader {
 
         // [static members] ********************************************************
 
@@ -33,7 +33,7 @@ public interface LoaderForCells {
          * @throws NullPointerException          {@code bookPath} が {@code null} の場合
          * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
          */
-        public static LoaderForCells of(Path bookPath, boolean useCachedValue) {
+        public static CellsLoader of(Path bookPath, boolean useCachedValue) {
                 Objects.requireNonNull(bookPath);
 
                 Function<Cell, CellData> converter = cell -> {
@@ -49,16 +49,16 @@ public interface LoaderForCells {
 
                 return switch (BookType.of(bookPath)) {
                         case XLS -> useCachedValue
-                                        ? LoaderForCellsCombined.of(List.of(
-                                                        () -> new LoaderForCellsWithPoiEventApi(useCachedValue),
-                                                        () -> new LoaderForCellsWithPoiUserApi(converter)))
-                                        : new LoaderForCellsWithPoiUserApi(converter);
+                                        ? CellsLoaderCombined.of(List.of(
+                                                        () -> new CellsLoaderWithPoiEventApi(useCachedValue),
+                                                        () -> new CellsLoaderWithPoiUserApi(converter)))
+                                        : new CellsLoaderWithPoiUserApi(converter);
 
                         case XLSX, XLSM -> useCachedValue
-                                        ? LoaderForCellsCombined.of(List.of(
-                                                        () -> new LoaderForCellsWithSax(useCachedValue, bookPath),
-                                                        () -> new LoaderForCellsWithPoiUserApi(converter)))
-                                        : new LoaderForCellsWithPoiUserApi(converter);
+                                        ? CellsLoaderCombined.of(List.of(
+                                                        () -> new CellsLoaderWithSax(useCachedValue, bookPath),
+                                                        () -> new CellsLoaderWithPoiUserApi(converter)))
+                                        : new CellsLoaderWithPoiUserApi(converter);
 
                         // FIXME: [No.02 .xlsbのサポート]
                         case XLSB -> throw new UnsupportedOperationException("unsupported book type: " + BookType.XLSB);

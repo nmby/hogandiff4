@@ -50,13 +50,13 @@ import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 /**
  * Apache POI イベントモデル API を利用して、
  * .xls 形式のExcelブックのワークシートから
- * セルデータを抽出する {@link LoaderForCells} の実装です。<br>
+ * セルデータを抽出する {@link CellsLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
-public class LoaderForCellsWithPoiEventApi implements LoaderForCells {
+public class CellsLoaderWithPoiEventApi implements CellsLoader {
 
     // [static members] ********************************************************
 
@@ -429,7 +429,7 @@ public class LoaderForCellsWithPoiEventApi implements LoaderForCells {
      *                           数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
      *                           数式文字列を抽出する場合は {@code false}
      */
-    public LoaderForCellsWithPoiEventApi(boolean extractCachedValue) {
+    public CellsLoaderWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
     }
 

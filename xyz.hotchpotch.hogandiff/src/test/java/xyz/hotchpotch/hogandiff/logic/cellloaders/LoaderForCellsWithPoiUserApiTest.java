@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.PoiUtil;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 
-class LoaderForCellsWithPoiUserApiTest {
+class CellsLoaderWithPoiUserApiTest {
 
         // [static members] ********************************************************
 
@@ -36,16 +36,16 @@ class LoaderForCellsWithPoiUserApiTest {
 
         @BeforeAll
         static void beforeAll() throws URISyntaxException {
-                test1_xls = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test1.xls").toURI());
-                test1_xlsb = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI());
-                test1_xlsm = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI());
-                test1_xlsx = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI());
+                test1_xls = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xls").toURI());
+                test1_xlsb = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsb").toURI());
+                test1_xlsm = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsm").toURI());
+                test1_xlsx = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test1.xlsx").toURI());
                 test2_xls = Path.of(
-                                LoaderForCellsWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
+                                CellsLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
                 test2_xlsx = Path.of(
-                                LoaderForCellsWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
-                test4_xls = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test4.xls").toURI());
-                test4_xlsx = Path.of(LoaderForCellsWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI());
+                                CellsLoaderWithPoiUserApiTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
+                test4_xls = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test4.xls").toURI());
+                test4_xlsx = Path.of(CellsLoaderWithPoiUserApiTest.class.getResource("Test4.xlsx").toURI());
         }
 
         // [instance members] ******************************************************
@@ -54,15 +54,15 @@ class LoaderForCellsWithPoiUserApiTest {
         void testOf() {
                 assertThrows(
                                 NullPointerException.class,
-                                () -> new LoaderForCellsWithPoiUserApi(null));
+                                () -> new CellsLoaderWithPoiUserApi(null));
 
                 assertTrue(
-                                new LoaderForCellsWithPoiUserApi(converter) instanceof LoaderForCellsWithPoiUserApi);
+                                new CellsLoaderWithPoiUserApi(converter) instanceof CellsLoaderWithPoiUserApi);
         }
 
         @Test
         void testLoadCells_例外系_非チェック例外() {
-                LoaderForCells testee = new LoaderForCellsWithPoiUserApi(converter);
+                CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
 
                 // 対照群
                 assertDoesNotThrow(
@@ -91,7 +91,7 @@ class LoaderForCellsWithPoiUserApiTest {
 
         @Test
         void testLoadCells_例外系_チェック例外() {
-                LoaderForCells testee = new LoaderForCellsWithPoiUserApi(converter);
+                CellsLoader testee = new CellsLoaderWithPoiUserApi(converter);
 
                 // 存在しないファイル
                 assertThrows(
@@ -133,7 +133,7 @@ class LoaderForCellsWithPoiUserApiTest {
 
         @Test
         void testLoadCells_セル内容抽出1() throws ExcelHandlingException {
-                LoaderForCells testee1 = new LoaderForCellsWithPoiUserApi(converter);
+                CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
 
                 assertEquals(
                                 Set.of(
@@ -169,7 +169,7 @@ class LoaderForCellsWithPoiUserApiTest {
 
         @Test
         void testLoadCells_コメント抽出1() throws ExcelHandlingException {
-                LoaderForCells testee1 = new LoaderForCellsWithPoiUserApi(converter);
+                CellsLoader testee1 = new CellsLoaderWithPoiUserApi(converter);
 
                 assertEquals(
                                 Set.of(
