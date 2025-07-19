@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.logic.models;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 
 class SheetTypeTest {
 

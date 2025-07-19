@@ -24,10 +24,6 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import xyz.hotchpotch.hogandiff.logic.BookHandler;
-import xyz.hotchpotch.hogandiff.logic.CommonUtil;
-import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.logic.PasswordHandlingException;
 import xyz.hotchpotch.hogandiff.logic.models.BookType;
 import xyz.hotchpotch.hogandiff.logic.models.SheetType;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;

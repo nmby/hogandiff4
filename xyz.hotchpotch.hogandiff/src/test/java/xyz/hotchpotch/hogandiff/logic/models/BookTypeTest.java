@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
-import xyz.hotchpotch.hogandiff.logic.models.BookType;
 
 class BookTypeTest {
 
