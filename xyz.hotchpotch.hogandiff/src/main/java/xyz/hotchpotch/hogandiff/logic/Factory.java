@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
 import xyz.hotchpotch.hogandiff.logic.bookloaders.LoaderForBooks;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.CellsLoader;
+import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.dirloaders.LoaderForDirs;
 import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.models.DirInfo;

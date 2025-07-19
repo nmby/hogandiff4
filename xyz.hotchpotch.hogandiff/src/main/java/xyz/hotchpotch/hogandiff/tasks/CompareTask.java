@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.cellloaders.CellsLoader;
+import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
 import xyz.hotchpotch.hogandiff.logic.models.CellData;
 import xyz.hotchpotch.hogandiff.logic.models.Result;
 import xyz.hotchpotch.hogandiff.logic.models.ResultOfBooks;

@@ -1,4 +1,4 @@
-package xyz.hotchpotch.hogandiff.logic.cellloaders;
+package xyz.hotchpotch.hogandiff.logic.cellsloader;
 
 import java.io.FileInputStream;
 import java.nio.file.Path;
