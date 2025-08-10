@@ -86,6 +86,9 @@ public class SettingsPane2 extends VBox implements ChildController {
     private final ResourceBundle rb = ar.get();
     
     @FXML
+    private GooglePane googlePane;
+    
+    @FXML
     private ComboBox<LocaleItem> localeComboBox;
     
     @FXML
@@ -117,6 +120,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
+        googlePane.init(parent);
         localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
         localeComboBox.setButtonCell(cellFactory(false).call(null));
         localeComboBox.setCellFactory(cellFactory(true));
@@ -125,11 +129,6 @@ public class SettingsPane2 extends VBox implements ChildController {
         changeWorkDirButton.setOnAction(changeDir);
         deleteWorkDirButton.setOnAction(deleteDir);
         
-        // 3.初期値の設定
-        Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
-        localeComboBox.setValue(LocaleItem.of(locale));
-        
-        // 4.値変更時のイベントハンドラの設定
         localeComboBox.setOnAction(event -> {
             if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
                 new Alert(
@@ -142,6 +141,13 @@ public class SettingsPane2 extends VBox implements ChildController {
                                 .showAndWait();
             }
         });
+        
+        // 3.初期値の設定
+        Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
+        localeComboBox.setValue(LocaleItem.of(locale));
+        
+        // 4.値変更時のイベントハンドラの設定
+        // nop
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {
@@ -237,7 +243,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                         }
                     });
                 } catch (Exception e) {
-                    //nop
+                    // nop
                 }
             });
         }
