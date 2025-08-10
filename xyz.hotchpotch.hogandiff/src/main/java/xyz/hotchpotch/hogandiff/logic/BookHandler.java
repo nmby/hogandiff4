@@ -6,8 +6,6 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import xyz.hotchpotch.hogandiff.logic.models.BookType;
-
 /**
  * そのクラスがExcelブックを処理することを表す注釈です。<br>
  *

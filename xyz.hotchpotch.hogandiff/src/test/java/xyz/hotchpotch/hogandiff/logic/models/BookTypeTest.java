@@ -6,6 +6,8 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.logic.BookType;
+
 class BookTypeTest {
 
     // [static members] ********************************************************

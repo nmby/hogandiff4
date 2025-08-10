@@ -22,10 +22,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
-import xyz.hotchpotch.hogandiff.google.GoogleCredential;
-import xyz.hotchpotch.hogandiff.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.logic._google.GoogleCredential;
+import xyz.hotchpotch.hogandiff.logic._google.GoogleHandlingException;
 
 /**
  * Googleドライブ連携設定部分の部品です。<br>

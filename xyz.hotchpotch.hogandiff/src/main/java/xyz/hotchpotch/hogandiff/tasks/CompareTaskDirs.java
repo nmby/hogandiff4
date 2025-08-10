@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic.models.Result;
-import xyz.hotchpotch.hogandiff.logic.models.ResultOfTrees;
-import xyz.hotchpotch.hogandiff.logic.models.ResultOtDirs;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.Result;
+import xyz.hotchpotch.hogandiff.logic.ResultOfTrees;
+import xyz.hotchpotch.hogandiff.logic.ResultOtDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;

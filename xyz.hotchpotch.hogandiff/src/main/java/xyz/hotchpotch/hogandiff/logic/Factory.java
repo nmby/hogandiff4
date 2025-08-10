@@ -10,13 +10,6 @@ import java.util.function.Predicate;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.core.StringDiffUtil;
-import xyz.hotchpotch.hogandiff.logic.comparators.ComparatorOfSheets;
-import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.cellsloader.CellsLoader;
-import xyz.hotchpotch.hogandiff.logic.dirsloader.DirsLoader;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.painters.Painter;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 

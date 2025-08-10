@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import xyz.hotchpotch.hogandiff.logic.SheetType;
+
 class SheetTypeTest {
 
     // [static members] ********************************************************

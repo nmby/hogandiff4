@@ -8,9 +8,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfo;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.PairingInfo;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
