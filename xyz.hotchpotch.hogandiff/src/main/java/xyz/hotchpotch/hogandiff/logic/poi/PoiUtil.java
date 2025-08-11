@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.logic.poi;
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -62,12 +63,12 @@ import xyz.hotchpotch.hogandiff.logic.SheetType;
  * @author nmby
  */
 public class PoiUtil {
-
+    
     // [static members] ********************************************************
-
+    
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
             .ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
-
+    
     /**
      * セルの形式が何であれ、セルの格納値を表す文字列を返します。<br>
      * セルの形式が数式であり {@code useCachedValue} が {@code true} の場合は、
@@ -100,41 +101,41 @@ public class PoiUtil {
      */
     public static String getCellContentAsString(Cell cell, boolean useCachedValue) {
         Objects.requireNonNull(cell);
-
+        
         CellType type = useCachedValue && cell.getCellType() == CellType.FORMULA
                 ? cell.getCachedFormulaResultType()
                 : cell.getCellType();
-
+        
         return switch (type) {
-            case STRING -> cell.getStringCellValue();
-            case FORMULA -> cell.getCellFormula();
-            case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
-
-            case NUMERIC -> {
-                // 日付セルや独自書式セルの値の扱いは甚だ不完全なものの、
-                // diffツールとしては内容の比較を行えればよいのだと割り切り、
-                // これ以上に凝ったコーディングは行わないこととする。
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    Date date = cell.getDateCellValue();
-                    LocalDateTime localDateTime = LocalDateTime
-                            .ofInstant(date.toInstant(), ZoneId.systemDefault());
-                    yield dateTimeFormatter.format(localDateTime);
-
-                } else {
-                    String val = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
-                    if (val.endsWith(".0")) {
-                        val = val.substring(0, val.length() - 2);
-                    }
-                    yield val;
+        case STRING -> cell.getStringCellValue();
+        case FORMULA -> cell.getCellFormula();
+        case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
+    
+        case NUMERIC -> {
+            // 日付セルや独自書式セルの値の扱いは甚だ不完全なものの、
+            // diffツールとしては内容の比較を行えればよいのだと割り切り、
+            // これ以上に凝ったコーディングは行わないこととする。
+            if (DateUtil.isCellDateFormatted(cell)) {
+                Date date = cell.getDateCellValue();
+                LocalDateTime localDateTime = LocalDateTime
+                        .ofInstant(date.toInstant(), ZoneId.systemDefault());
+                yield dateTimeFormatter.format(localDateTime);
+                
+            } else {
+                String val = BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
+                if (val.endsWith(".0")) {
+                    val = val.substring(0, val.length() - 2);
                 }
+                yield val;
             }
-
-            case ERROR -> ErrorEval.getText(cell.getErrorCellValue());
-            case BLANK -> "";
-            default -> throw new AssertionError("unknown cell type: " + type);
+        }
+        
+        case ERROR -> ErrorEval.getText(cell.getErrorCellValue());
+        case BLANK -> "";
+        default -> throw new AssertionError("unknown cell type: " + type);
         };
     }
-
+    
     /**
      * Excelシートの種類を推定して、可能性のある種類を返します。<br>
      * 
@@ -146,33 +147,33 @@ public class PoiUtil {
     // FIXME: [No.01 シート識別不正 - usermodel] 識別精度を上げたい...
     public static Set<SheetType> possibleTypes(Sheet sheet) {
         Objects.requireNonNull(sheet);
-
+        
         return switch (sheet) {
-            case XSSFChartSheet xcs -> EnumSet.of(SheetType.CHART_SHEET);
-            case XSSFDialogsheet xds -> EnumSet.of(SheetType.DIALOG_SHEET);
-            case XSSFSheet xs -> EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
-
-            case HSSFSheet hSheet -> {
-                try {
-                    if (hSheet.getDialog()) {
-                        // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
-                        yield EnumSet.of(SheetType.DIALOG_SHEET);
-                    }
-                } catch (NullPointerException e) {
-                    // HSSFSheet#getDialog() はたまにヌルポを吐くので受け止める。
+        case XSSFChartSheet xcs -> EnumSet.of(SheetType.CHART_SHEET);
+        case XSSFDialogsheet xds -> EnumSet.of(SheetType.DIALOG_SHEET);
+        case XSSFSheet xs -> EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
+    
+        case HSSFSheet hSheet -> {
+            try {
+                if (hSheet.getDialog()) {
+                    // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートであっても、どういう訳かここに入らない
+                    yield EnumSet.of(SheetType.DIALOG_SHEET);
                 }
-                // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートの場合もここに到達してしまうので、やむを得ず含めることにする。
-                yield EnumSet.of(
-                        SheetType.WORKSHEET,
-                        SheetType.CHART_SHEET,
-                        SheetType.MACRO_SHEET,
-                        SheetType.DIALOG_SHEET);
+            } catch (NullPointerException e) {
+                // HSSFSheet#getDialog() はたまにヌルポを吐くので受け止める。
             }
-
-            default -> throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
+            // FIXME: [No.01 シート識別不正 - usermodel] ダイアログシートの場合もここに到達してしまうので、やむを得ず含めることにする。
+            yield EnumSet.of(
+                    SheetType.WORKSHEET,
+                    SheetType.CHART_SHEET,
+                    SheetType.MACRO_SHEET,
+                    SheetType.DIALOG_SHEET);
+        }
+        
+        default -> throw new AssertionError("unknown sheet type: " + sheet.getClass().getName());
         };
     }
-
+    
     /**
      * 指定されたExcelブックに設定されているあらゆる色をクリアし、
      * セルコメントを非表示にします。<br>
@@ -182,22 +183,22 @@ public class PoiUtil {
      */
     public static void clearAllColors(Workbook book) {
         Objects.requireNonNull(book);
-
+        
         switch (book) {
-            case XSSFWorkbook xBook -> clearAllColors(xBook);
-            case HSSFWorkbook hBook -> clearAllColors(hBook);
-            default -> throw new AssertionError("unknown book type: " + book.getClass().getName());
+        case XSSFWorkbook xBook -> clearAllColors(xBook);
+        case HSSFWorkbook hBook -> clearAllColors(hBook);
+        default -> throw new AssertionError("unknown book type: " + book.getClass().getName());
         }
     }
-
+    
     private static void clearAllColors(XSSFWorkbook book) {
         assert book != null;
-
+        
         short automatic = IndexedColors.AUTOMATIC.getIndex();
-
+        
         // セルスタイルに対する処理
         IntStream.range(0, book.getNumCellStyles()).mapToObj(book::getCellStyleAt).forEach(style -> {
-
+            
             // 罫線の色
             style.setTopBorderColor(automatic);
             style.setBottomBorderColor(automatic);
@@ -206,24 +207,24 @@ public class PoiUtil {
             style.setBorderColor(BorderSide.DIAGONAL, null);
             style.setBorderColor(BorderSide.HORIZONTAL, null);
             style.setBorderColor(BorderSide.VERTICAL, null);
-
+            
             // パターンは残したまま、背景色＝白、前景色＝黒にする
             if (style.getFillPattern() == FillPatternType.SOLID_FOREGROUND) {
                 style.setFillPattern(FillPatternType.NO_FILL);
-
+                
             } else if (style.getFillPattern() != FillPatternType.NO_FILL) {
                 style.setFillForegroundColor(null);
                 style.setFillBackgroundColor(null);
             }
             // FIXME: [No.03 着色関連] グラデーション背景色の消し方が分からない
         });
-
+        
         // フォントに対する処理
         IntStream.range(0, book.getNumberOfFonts()).mapToObj(book::getFontAt).forEach(font -> {
             font.setColor(null);
             // FIXME: [No.03 着色関連] 文字列内の部分着色の消し方が分からない
         });
-
+        
         // 条件付き書式
         // 面倒なので、条件付き書式の色を消すのではなく条件付き書式そのものを消してしまうことにする。
         // FIXME: [No.03 着色関連] 条件付き書式の色を消す方式に変える
@@ -233,10 +234,10 @@ public class PoiUtil {
                 cfs.removeConditionalFormatting(0);
             }
         });
-
+        
         // シート見出し
         book.forEach(sheet -> ((XSSFSheet) sheet).setTabColor(new XSSFColor(new DefaultIndexedColorMap())));
-
+        
         // セルコメントに対する処理
         book.forEach(sheet -> ((XSSFSheet) sheet).getCellComments().values().forEach(comment -> {
             // FIXME: [No.07 POI関連] XSSFComment#setVisible(boolean)が機能しない
@@ -244,21 +245,21 @@ public class PoiUtil {
             // FIXME: [No.03 着色関連] セルコメントのスタイル変更方法が分からない
         }));
     }
-
+    
     private static void clearAllColors(HSSFWorkbook book) {
         assert book != null;
-
+        
         short automatic = IndexedColors.AUTOMATIC.getIndex();
-
+        
         // セルスタイルに対する処理
         IntStream.range(0, book.getNumCellStyles()).mapToObj(book::getCellStyleAt).forEach(style -> {
-
+            
             // 罫線の色
             style.setTopBorderColor(automatic);
             style.setBottomBorderColor(automatic);
             style.setLeftBorderColor(automatic);
             style.setRightBorderColor(automatic);
-
+            
             // 斜めの罫線の色
             // 参考：http://higehige0.blog.fc2.com/blog-entry-65.html
             try {
@@ -269,24 +270,24 @@ public class PoiUtil {
             } catch (Exception e) {
                 // nop
             }
-
+            
             // パターンは残したまま、背景色＝白、前景色＝黒にする
             if (style.getFillPattern() == FillPatternType.SOLID_FOREGROUND) {
                 style.setFillPattern(FillPatternType.NO_FILL);
-
+                
             } else if (style.getFillPattern() != FillPatternType.NO_FILL) {
                 style.setFillForegroundColor(automatic);
                 style.setFillBackgroundColor(automatic);
             }
             // FIXME: [No.03 着色関連] グラデーション背景色の消し方が分からない
         });
-
+        
         // フォントに対する処理
         IntStream.range(0, book.getNumberOfFonts()).mapToObj(book::getFontAt).forEach(font -> {
             font.setColor(HSSFFont.COLOR_NORMAL);
             // FIXME: [No.03 着色関連] 非インデックスフォント色の消し方が分からない
         });
-
+        
         // 条件付き書式
         // 面倒なので、条件付き書式の色を消すのではなく条件付き書式そのものを消してしまうことにする。
         // FIXME: [No.03 着色関連] 条件付き書式の色を消す方式に変える
@@ -296,10 +297,10 @@ public class PoiUtil {
                 cfs.removeConditionalFormatting(0);
             }
         });
-
+        
         // シート見出し
         // FIXME: [No.03 着色関連] シート見出しの色の消し方が分からない
-
+        
         // セルコメントに対する処理
         book.forEach(sheet -> ((HSSFSheet) sheet).getCellComments().values().forEach(comment -> {
             comment.setVisible(false);
@@ -309,7 +310,7 @@ public class PoiUtil {
             comment.setLineStyleColor(HSSFComment.LINESTYLE__COLOR_DEFAULT);
         }));
     }
-
+    
     /**
      * 指定されたExcelシート上の指定された行に指定された色を付けます。<br>
      * 
@@ -321,11 +322,11 @@ public class PoiUtil {
     public static void paintRows(Sheet sheet, List<Integer> rowIdxs, short color) {
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(rowIdxs);
-
+        
         if (rowIdxs.isEmpty()) {
             return;
         }
-
+        
         // まず、存在しない行を作成する。
         Set<Row> rows = new HashSet<>();
         for (int i : rowIdxs) {
@@ -334,7 +335,7 @@ public class PoiUtil {
             }
             rows.add(sheet.getRow(i));
         }
-
+        
         // 次に、着色前の現在のスタイルで行をグルーピングする。
         Map<CellStyle, Set<Row>> currStyles = rows.stream()
                 .filter(row -> row.getRowStyle() != null)
@@ -345,7 +346,7 @@ public class PoiUtil {
         currStyles.put(null, rows.stream()
                 .filter(row -> row.getRowStyle() == null)
                 .collect(Collectors.toSet()));
-
+        
         // 最後に、現行スタイルごとに着色スタイルを用意し、対象行に適用する。
         currStyles.forEach((currStyle, rs) -> {
             CellStyle newStyle = sheet.getWorkbook().createCellStyle();
@@ -356,7 +357,7 @@ public class PoiUtil {
             newStyle.setFillForegroundColor(color);
             rs.forEach(r -> r.setRowStyle(newStyle));
         });
-
+        
         // 対象行上のセルのアドレスを集め、着色する。
         Set<CellAddress> addresses = rows.stream()
                 .flatMap(row -> StreamSupport.stream(row.spliterator(), false))
@@ -364,7 +365,7 @@ public class PoiUtil {
                 .collect(Collectors.toSet());
         paintCells(sheet, addresses, color);
     }
-
+    
     /**
      * 指定されたExcelシートの指定された列に指定された色を付けます。<br>
      * 
@@ -376,11 +377,11 @@ public class PoiUtil {
     public static void paintColumns(Sheet sheet, List<Integer> columnIdxs, short color) {
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(columnIdxs);
-
+        
         if (columnIdxs.isEmpty()) {
             return;
         }
-
+        
         // まず、着色前の現行スタイルで列をグルーピングする。
         Map<CellStyle, Set<Integer>> currStyles = columnIdxs.stream()
                 .filter(i -> sheet.getColumnStyle(i) != null)
@@ -391,7 +392,7 @@ public class PoiUtil {
         currStyles.put(null, columnIdxs.stream()
                 .filter(i -> sheet.getColumnStyle(i) == null)
                 .collect(Collectors.toSet()));
-
+        
         // そして、現行スタイルごとに着色スタイルを用意し、対象列に適用する。
         currStyles.forEach((currStyle, idxs) -> {
             CellStyle newStyle = sheet.getWorkbook().createCellStyle();
@@ -402,7 +403,7 @@ public class PoiUtil {
             newStyle.setFillForegroundColor(color);
             idxs.forEach(i -> sheet.setDefaultColumnStyle(i, newStyle));
         });
-
+        
         // 対象列上のセルのアドレスを集め、着色する。
         Set<Integer> idxs = Set.copyOf(columnIdxs);
         Set<CellAddress> addresses = StreamSupport.stream(sheet.spliterator(), true)
@@ -412,7 +413,7 @@ public class PoiUtil {
                 .collect(Collectors.toSet());
         paintCells(sheet, addresses, color);
     }
-
+    
     /**
      * 指定されたExcelシート上の指定された位置のセルに指定された色を付けます。<br>
      * 
@@ -425,15 +426,15 @@ public class PoiUtil {
             Sheet sheet,
             Set<CellAddress> addresses,
             short color) {
-
+        
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(addresses);
-
+        
         // まず、存在しないセルを作成する。
         Set<Cell> cells = new HashSet<>();
         Map<Integer, List<CellAddress>> grouped = addresses.stream()
                 .collect(Collectors.groupingBy(CellAddress::getRow));
-
+        
         grouped.forEach((rowIdx, as) -> {
             Row row = sheet.getRow(rowIdx);
             if (row == null) {
@@ -448,7 +449,7 @@ public class PoiUtil {
                 cells.add(cell);
             });
         });
-
+        
         // 次に、着色前の現行スタイルでセルをグルーピングする。
         Map<CellStyle, Set<Cell>> currStyles = cells.stream()
                 .filter(cell -> cell.getCellStyle() != null)
@@ -459,12 +460,12 @@ public class PoiUtil {
         currStyles.put(null, cells.stream()
                 .filter(cell -> cell.getCellStyle() == null)
                 .collect(Collectors.toSet()));
-
+        
         // 最後に、現行スタイルごとに着色スタイルを用意し、対象セルに適用する。
         Map<CellPropertyType, Object> newProperties = Map.of(
                 CellPropertyType.FILL_PATTERN, FillPatternType.SOLID_FOREGROUND,
                 CellPropertyType.FILL_FOREGROUND_COLOR, color);
-
+        
         currStyles.forEach((currStyle, cs) -> {
             Iterator<Cell> itr = cs.iterator();
             if (itr.hasNext()) {
@@ -475,7 +476,7 @@ public class PoiUtil {
             }
         });
     }
-
+    
     /**
      * 指定されたExcelシート上の指定された位置のセルに付されているコメントに
      * 指定された色を付け、表示状態にします。<br>
@@ -489,34 +490,34 @@ public class PoiUtil {
             Sheet sheet,
             Set<CellAddress> addresses,
             Color color) {
-
+        
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(addresses);
         Objects.requireNonNull(color);
-
+        
         Map<CellAddress, ? extends Comment> comments = sheet.getCellComments();
-
+        
         addresses.forEach(addr -> {
             Comment c = comments.get(addr);
-
+            
             switch (c) {
-                case XSSFComment comment:
-                    // FIXME: [No.07 POI関連] XSSFComment#setVisible(boolean)が機能しない
-                    comment.setVisible(true);
-                    // FIXME: [No.03 着色関連] セルコメントのスタイル変更方法が分からない
-                    break;
-
-                case HSSFComment comment:
-                    comment.setVisible(true);
-                    comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
-                    break;
-
-                default:
-                    throw new AssertionError("unknown comment type: " + c.getClass().getName());
+            case XSSFComment comment:
+                // FIXME: [No.07 POI関連] XSSFComment#setVisible(boolean)が機能しない
+                comment.setVisible(true);
+                // FIXME: [No.03 着色関連] セルコメントのスタイル変更方法が分からない
+                break;
+            
+            case HSSFComment comment:
+                comment.setVisible(true);
+                comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
+                break;
+            
+            default:
+                throw new AssertionError("unknown comment type: " + c.getClass().getName());
             }
         });
     }
-
+    
     /**
      * 指定されたExcelシートの見出しに指定された色を付けます。<br>
      * 
@@ -527,26 +528,26 @@ public class PoiUtil {
     public static void paintSheetTab(
             Sheet sheet,
             Color color) {
-
+        
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(color);
-
+        
         switch (sheet) {
-            case XSSFSheet xSheet:
-                xSheet.setTabColor(new XSSFColor(
-                        new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
-                        new DefaultIndexedColorMap()));
-                break;
-
-            case HSSFSheet hSheet:
-                // FIXME: [No.03 着色関連] シート見出しの色の設定方法が分からない
-                break;
-
-            default:
-                // nop
+        case XSSFSheet xSheet:
+            xSheet.setTabColor(new XSSFColor(
+                    new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
+                    new DefaultIndexedColorMap()));
+            break;
+        
+        case HSSFSheet hSheet:
+            // FIXME: [No.03 着色関連] シート見出しの色の設定方法が分からない
+            break;
+        
+        default:
+            // nop
         }
     }
-
+    
     /**
      * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して返します。<br>
@@ -562,16 +563,16 @@ public class PoiUtil {
             Sheet sheet,
             int r,
             int c) {
-
+        
         Objects.requireNonNull(sheet);
         if (r < 0 || c < 0) {
             throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
         }
-
+        
         Row row = CellUtil.getRow(r, sheet);
         return CellUtil.getCell(row, c);
     }
-
+    
     /**
      * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は {@link Optional#empty} を返します。<br>
@@ -586,17 +587,17 @@ public class PoiUtil {
             Sheet sheet,
             int r,
             int c) {
-
+        
         Objects.requireNonNull(sheet);
         if (r < 0 || c < 0) {
             throw new IllegalArgumentException("(row:%d, column:%d)".formatted(r, c));
         }
-
+        
         return Optional
                 .ofNullable(sheet.getRow(r))
                 .map(row -> row.getCell(c));
     }
-
+    
     /**
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
@@ -613,7 +614,7 @@ public class PoiUtil {
         cell.setCellValue(value);
         return cell;
     }
-
+    
     /**
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
@@ -630,7 +631,7 @@ public class PoiUtil {
         cell.setCellValue(value);
         return cell;
     }
-
+    
     /**
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
@@ -647,7 +648,7 @@ public class PoiUtil {
         cell.setCellValue(value);
         return cell;
     }
-
+    
     /**
      * シート上の指定された行の内容を指定された行にコピーします。<br>
      * 現在のバージョンでは次の内容をコピーします。<br>
@@ -665,47 +666,47 @@ public class PoiUtil {
             Sheet sheet,
             int srcRowNo,
             int dstRowNo) {
-
+        
         Objects.requireNonNull(sheet);
-
+        
         Row srcRow = sheet.getRow(srcRowNo);
         Row dstRow = sheet.getRow(dstRowNo);
-
+        
         if (dstRow != null) {
             sheet.removeRow(dstRow);
         }
         dstRow = sheet.createRow(dstRowNo);
-
+        
         Iterator<Cell> itr = srcRow.cellIterator();
         while (itr.hasNext()) {
             Cell srcCell = itr.next();
             Cell dstCell = dstRow.createCell(srcCell.getColumnIndex(), srcCell.getCellType());
-
+            
             // スタイルの設定
             dstCell.setCellStyle(srcCell.getCellStyle());
-
+            
             // セル値の設定
             copyCellValue(srcCell, dstCell);
         }
         return null;
     }
-
+    
     private static void copyCellValue(Cell srcCell, Cell dstCell) {
         switch (srcCell.getCellType()) {
-            case BOOLEAN -> dstCell.setCellValue(srcCell.getBooleanCellValue());
-            case ERROR -> dstCell.setCellErrorValue(srcCell.getErrorCellValue());
-            case FORMULA -> dstCell.setCellFormula(srcCell.getCellFormula());
-            case NUMERIC -> dstCell.setCellValue(srcCell.getNumericCellValue());
-            case STRING -> dstCell.setCellValue(srcCell.getStringCellValue());
-            case BLANK, _NONE -> {
-                // nop
-            }
-            default -> {
-                // nop
-            }
+        case BOOLEAN -> dstCell.setCellValue(srcCell.getBooleanCellValue());
+        case ERROR -> dstCell.setCellErrorValue(srcCell.getErrorCellValue());
+        case FORMULA -> dstCell.setCellFormula(srcCell.getCellFormula());
+        case NUMERIC -> dstCell.setCellValue(srcCell.getNumericCellValue());
+        case STRING -> dstCell.setCellValue(srcCell.getStringCellValue());
+        case BLANK, _NONE -> {
+            // nop
+        }
+        default -> {
+            // nop
+        }
         }
     }
-
+    
     /**
      * 指定されたセルに指定されたパスへのハイパーリンクを設定します。<br>
      * 
@@ -717,25 +718,53 @@ public class PoiUtil {
     public static Cell setHyperlink(
             Cell cell,
             Path path) {
-
+        
         Objects.requireNonNull(cell);
         Objects.requireNonNull(path);
-
+        
         try {
             CreationHelper ch = cell.getSheet().getWorkbook().getCreationHelper();
             Hyperlink link = ch.createHyperlink(HyperlinkType.FILE);
             String pathStr = path.toUri().toString();
             link.setAddress(pathStr);
             cell.setHyperlink(link);
-
+            
         } catch (Exception e) {
             // nop
         }
         return cell;
     }
-
+    
+    /**
+     * 指定されたセルに指定されたURLへのハイパーリンクを設定します。<br>
+     * 
+     * @param cell ハイパーリンクを付与するセル
+     * @param url ハイパーリンク化するURL
+     * @return セル
+     * @throws NullPointerException パラメータが {@code null} の場合
+     */
+    public static Cell setHyperlink(
+            Cell cell,
+            URL url) {
+        
+        Objects.requireNonNull(cell);
+        Objects.requireNonNull(url);
+        
+        try {
+            CreationHelper ch = cell.getSheet().getWorkbook().getCreationHelper();
+            Hyperlink link = ch.createHyperlink(HyperlinkType.URL);
+            String pathStr = url.toString();
+            link.setAddress(pathStr);
+            cell.setHyperlink(link);
+            
+        } catch (Exception e) {
+            // nop
+        }
+        return cell;
+    }
+    
     // [instance members] ******************************************************
-
+    
     private PoiUtil() {
     }
 }

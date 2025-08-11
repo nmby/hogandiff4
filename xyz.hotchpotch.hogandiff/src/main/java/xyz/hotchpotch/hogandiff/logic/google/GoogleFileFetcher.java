@@ -85,8 +85,8 @@ public class GoogleFileFetcher {
                     lastModifier = lastModifyingUser.getEmailAddress();
                 }
             }
-            return "%s%s  [%s]".formatted(
-                    isLatest ? "[最新版] " : "",
+            return "%s%s  %s".formatted(
+                    isLatest ? "最新版  " : "",
                     original.getModifiedTime().toStringRfc3339(),
                     lastModifier);
         }
@@ -195,7 +195,15 @@ public class GoogleFileFetcher {
         
         String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + ".xlsx";
         Path filePath = dstDir.resolve(fileName);
-        GoogleFileInfo fileInfo = GoogleFileInfo.of(metadata.fileUrl, revisionId, filePath, metadata.fileName);
+        RevisionMapper revision = metadata.revisions.stream()
+                .filter(r -> r.getRevisionId().equals(revisionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Revision not found: " + revisionId));
+        GoogleFileInfo fileInfo = GoogleFileInfo.of(
+                metadata.fileUrl,
+                revisionId,
+                filePath,
+                "%s  [%s]".formatted(metadata.fileName, revision.toString()));
         
         if (Files.exists(filePath)) {
             // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。

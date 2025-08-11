@@ -126,6 +126,18 @@ public class BookInfo {
                 : googleFileInfo.fileName();
     }
     
+    public String dispName() {
+        return googleFileInfo == null
+                ? bookPath.toString()
+                : "GoogleDrive :  " + googleFileInfo.fileName();
+    }
+    
+    public String googleFileDesc() {
+        return "GoogleDrive: %s [%s]".formatted(
+                googleFileInfo.fileName(),
+                null);
+    }
+    
     /** @return Excelブックに含まれるシート名 */
     public List<String> sheetNames() {
         return sheetNames;
