@@ -38,13 +38,15 @@ public class GoogleFileInfo {
     public static GoogleFileInfo of(
             String fileUrl,
             String revisionId,
-            Path localPath) {
+            Path localPath,
+            String fileName) {
         
         Objects.requireNonNull(fileUrl);
         Objects.requireNonNull(revisionId);
         Objects.requireNonNull(localPath);
+        Objects.requireNonNull(fileName);
         
-        return new GoogleFileInfo(fileUrl, revisionId, localPath);
+        return new GoogleFileInfo(fileUrl, revisionId, localPath, fileName);
     }
     
     // [instance members] ******************************************************
@@ -52,19 +54,23 @@ public class GoogleFileInfo {
     private final String fileUrl;
     private final String revisionId;
     private final Path localPath;
+    private final String fileName;
     
     private GoogleFileInfo(
             String fileUrl,
             String revisionId,
-            Path localPath) {
+            Path localPath,
+            String fileName) {
         
         assert fileUrl != null;
         assert revisionId != null;
         assert localPath != null;
+        assert fileName != null;
         
         this.fileUrl = fileUrl;
         this.revisionId = revisionId;
         this.localPath = localPath;
+        this.fileName = fileName;
     }
     
     public String fileUrl() {
@@ -79,8 +85,8 @@ public class GoogleFileInfo {
         return localPath;
     }
     
-    public String desc() {
-        return null;
+    public String fileName() {
+        return fileName;
     }
     
     @Override

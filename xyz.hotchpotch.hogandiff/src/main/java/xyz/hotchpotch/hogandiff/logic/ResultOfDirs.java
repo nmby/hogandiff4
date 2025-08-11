@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @param bookResults   Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
  * @param dirId         フォルダの識別番号
  */
-public record ResultOtDirs(
+public record ResultOfDirs(
         PairingInfoDirs dirComparison,
         Map<Pair<BookInfo>, Optional<ResultOfBooks>> bookResults,
         String dirId)
@@ -72,7 +72,7 @@ public record ResultOtDirs(
      * @param dirId         フォルダの識別番号
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public ResultOtDirs(
+    public ResultOfDirs(
             PairingInfoDirs dirComparison,
             Map<Pair<BookInfo>, Optional<ResultOfBooks>> bookResults,
             String dirId) {

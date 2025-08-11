@@ -130,7 +130,7 @@ public class TreeReportCreator {
                                 rowNo++;
 
                                 // 4-3. フォルダ名と差分シンボルの出力
-                                Optional<ResultOtDirs> dirResult = treeResult.dirResults().get(dirInfoPair);
+                                Optional<ResultOfDirs> dirResult = treeResult.dirResults().get(dirInfoPair);
 
                                 Pair<String> dirRelNamePair = Side.map(
                                                 side -> dirInfoPair.has(side)
@@ -173,7 +173,7 @@ public class TreeReportCreator {
                                         // 4-6. Excelブック名と差分シンボルの出力
                                         Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
                                         Optional<ResultOfBooks> bookResult = dirResult
-                                                        .map(ResultOtDirs::bookResults)
+                                                        .map(ResultOfDirs::bookResults)
                                                         .flatMap(br -> br.get(bookInfoPair));
 
                                         outputFileLine(
@@ -248,7 +248,7 @@ public class TreeReportCreator {
                         Pair<Path> outputDirPair,
                         Pair<String> dirRelNamePair,
                         Pair<DirInfo> dirPair,
-                        Optional<ResultOtDirs> dirResult) {
+                        Optional<ResultOfDirs> dirResult) {
 
                 for (Side side : Side.values()) {
                         if (dirPair.has(side)) {

@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  */
 public record ResultOfTrees(
         PairingInfoDirsFlatten flattenDirComparison,
-        Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults)
+        Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults)
         implements Result {
 
     // [static members] ********************************************************
@@ -65,7 +65,7 @@ public record ResultOfTrees(
      */
     public ResultOfTrees(
             PairingInfoDirsFlatten flattenDirComparison,
-            Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults) {
+            Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults) {
 
         Objects.requireNonNull(flattenDirComparison);
         Objects.requireNonNull(dirResults);
@@ -97,13 +97,13 @@ public record ResultOfTrees(
                 : "        " + rb.getString("excel.TreeResult.050") + BR + BR);
     }
 
-    private String getDiffText(Function<Optional<ResultOtDirs>, String> diffDescriptor) {
+    private String getDiffText(Function<Optional<ResultOfDirs>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
 
         for (int i = 0; i < flattenDirComparison.dirInfoPairs().size(); i++) {
             Pair<DirInfo> dirInfoPair = flattenDirComparison.dirInfoPairs().get(i);
             PairingInfoDirs dirComparison = flattenDirComparison.dirComparisons().get(dirInfoPair).get();
-            Optional<ResultOtDirs> dirResult = dirResults.get(dirInfoPair);
+            Optional<ResultOfDirs> dirResult = dirResults.get(dirInfoPair);
 
             str.append(formatDirInfoPair(Integer.toString(i + 1), dirComparison.parentDirInfoPair()));
 
@@ -142,7 +142,7 @@ public record ResultOfTrees(
         return dirResults.values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(ResultOtDirs::sheetStats)
+                .map(ResultOfDirs::sheetStats)
                 .flatMap(List::stream)
                 .toList();
     }

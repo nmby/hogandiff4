@@ -195,7 +195,7 @@ public class GoogleFileFetcher {
         
         String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + ".xlsx";
         Path filePath = dstDir.resolve(fileName);
-        GoogleFileInfo fileInfo = GoogleFileInfo.of(metadata.fileUrl, revisionId, filePath);
+        GoogleFileInfo fileInfo = GoogleFileInfo.of(metadata.fileUrl, revisionId, filePath, metadata.fileName);
         
         if (Files.exists(filePath)) {
             // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。

@@ -13,7 +13,7 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.logic.Result;
 import xyz.hotchpotch.hogandiff.logic.ResultOfTrees;
-import xyz.hotchpotch.hogandiff.logic.ResultOtDirs;
+import xyz.hotchpotch.hogandiff.logic.ResultOfDirs;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -134,7 +134,7 @@ public final class CompareTaskTrees extends CompareTask {
             PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
                     .flatten();
 
-            Map<Pair<DirInfo>, Optional<ResultOtDirs>> dirResults = new HashMap<>();
+            Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults = new HashMap<>();
             Pair<Map<Path, Path>> outputDirsPair = new Pair<>(new HashMap<>(), new HashMap<>());
 
             double progressDelta = (progressAfter - progressBefore)
@@ -182,7 +182,7 @@ public final class CompareTaskTrees extends CompareTask {
 
                 if (dirInfoPair.isPaired()) {
                     // FIXME: [No.X 内部実装改善] この辺の見通しが非常に悪いので改善する
-                    ResultOtDirs dirResult = compareDirs(
+                    ResultOfDirs dirResult = compareDirs(
                             String.valueOf(i + 1),
                             "      ",
                             pairingInfoDirs,

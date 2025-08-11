@@ -184,7 +184,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                         parent.googleCredential.getValue());
                 Optional<GoogleFileInfo> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
-                    System.out.println(modified);
+                    validateAndSetTarget(modified.get().localPath(), null, modified.get());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -227,7 +227,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         // 3.初期値の設定
         if (ar.settings().containsKey(SettingKeys.CURR_BOOK_INFOS.get(side))) {
-            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null);
+            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null, null);
         }
     }
     
@@ -289,11 +289,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 }
                 
             } else {
-                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
+                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null, null);
                 event.setDropCompleted(dropCompleted);
                 
                 if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
-                    opposite.validateAndSetTarget(files.get(1).toPath(), null);
+                    opposite.validateAndSetTarget(files.get(1).toPath(), null, null);
                 }
             }
         } catch (RuntimeException e) {
@@ -360,7 +360,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             File selected = chooser.showOpenDialog(getScene().getWindow());
             
             if (selected != null) {
-                validateAndSetTarget(selected.toPath(), null);
+                validateAndSetTarget(selected.toPath(), null, null);
             }
             
         } catch (RuntimeException e) {
@@ -400,13 +400,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
     }
     
-    private boolean validateAndSetTarget(Path newBookPath, String sheetName) {
+    private boolean validateAndSetTarget(Path newBookPath, String sheetName, GoogleFileInfo googleFileInfo) {
         if (newBookPath == null) {
             parent.bookInfoPropPair.get(side).setValue(null);
             return true;
         }
         
-        BookInfo newBookInfo = readBookInfo(newBookPath);
+        BookInfo newBookInfo = readBookInfo(newBookPath, googleFileInfo);
         
         if (newBookInfo.status() == Status.LOAD_COMPLETED) {
             parent.bookInfoPropPair.get(side).setValue(newBookInfo);
@@ -445,7 +445,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         return true;
     }
     
-    private BookInfo readBookInfo(Path newBookPath) {
+    // TODO: overload版と統合する
+    private BookInfo readBookInfo(Path newBookPath, GoogleFileInfo googleFileInfo) {
         assert newBookPath != null;
         
         try {
@@ -453,7 +454,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             SheetNamesLoader loader = Factory.bookLoader(newBookPath);
             
             while (true) {
-                BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
+                BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword)
+                        .withGoogleFileInfo(googleFileInfo);
                 
                 switch (bookInfo.status()) {
                 case LOAD_COMPLETED:
@@ -464,7 +466,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     return bookInfo;
                 
                 case NEEDS_PASSWORD:
-                    PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
+                    PasswordDialog dialog = new PasswordDialog(bookInfo.bookName(), readPassword);
                     Optional<String> newPassword = dialog.showAndWait();
                     if (!newPassword.isPresent()) {
                         return bookInfo;

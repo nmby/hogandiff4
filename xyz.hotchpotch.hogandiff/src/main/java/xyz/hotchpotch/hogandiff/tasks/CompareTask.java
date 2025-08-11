@@ -33,7 +33,7 @@ import xyz.hotchpotch.hogandiff.logic.Result;
 import xyz.hotchpotch.hogandiff.logic.ResultOfBooks;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets;
 import xyz.hotchpotch.hogandiff.logic.ResultOfTrees;
-import xyz.hotchpotch.hogandiff.logic.ResultOtDirs;
+import xyz.hotchpotch.hogandiff.logic.ResultOfDirs;
 import xyz.hotchpotch.hogandiff.logic.TreeReportCreator;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -523,7 +523,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * @return 比較結果
      */
     // CompareDirsTask, CompareTreesTask
-    protected ResultOtDirs compareDirs(
+    protected ResultOfDirs compareDirs(
             String dirId,
             String indent,
             PairingInfoDirs dirComparison,
@@ -546,7 +546,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Pair<BookInfo> bookInfoPair = dirComparison.childBookInfoPairs().get(i);
 
             str.append(indent
-                    + ResultOtDirs.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
+                    + ResultOfDirs.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
             updateMessage(str.toString());
 
             if (bookInfoPair.isPaired()
@@ -598,7 +598,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         str.append(BR);
         updateMessage(str.toString());
 
-        return new ResultOtDirs(dirComparison, bookResults, dirId);
+        return new ResultOfDirs(dirComparison, bookResults, dirId);
     }
 
     private ResultOfBooks compareBooks(
