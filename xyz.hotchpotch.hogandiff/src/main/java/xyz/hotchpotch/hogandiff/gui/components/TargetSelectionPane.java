@@ -37,13 +37,15 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.dialogs.GoogleFilePickerDialog;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic._google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
@@ -149,11 +151,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         bookPathButton.managedProperty().bind(isDirOperation.not());
         
         googleDriveButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.googleCredential.getValue() != null,
-                parent.googleCredential));
+                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
+                parent.googleCredential, parent.menuProp));
         googleDriveButton.managedProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.googleCredential.getValue() != null,
-                parent.googleCredential));
+                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
+                parent.googleCredential, parent.menuProp));
         
         // 2.項目ごとの各種設定
         setOnDragOver(this::onDragOver);
@@ -176,18 +178,17 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         bookPathButton.setOnAction(this::chooseBook);
         
         googleDriveButton.setOnAction(event -> {
-            // TODO: coding
-            //try {
-            //    GDFilePickerDialog dialog = new GDFilePickerDialog(
-            //            null,
-            //            parent.googleCredential.getValue());
-            //    Optional<GDFileInfo> modified = dialog.showAndWait();
-            //    if (modified.isPresent()) {
-            //        System.out.println(modified);
-            //    }
-            //} catch (IOException e) {
-            //    e.printStackTrace();
-            //}
+            try {
+                GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
+                        null,
+                        parent.googleCredential.getValue());
+                Optional<GoogleFileInfo> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    System.out.println(modified);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             
         });
         
