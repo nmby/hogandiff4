@@ -18,12 +18,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleCredential;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileFetcher.GoogleFileMetadata;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileFetcher.RevisionMapper;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleHandlingException;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleUtil;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleUtil;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
 
 /**
  * ユーザーにGoogleドライブ上のファイル選択を求めるダイアログボックスの要素です。<br>

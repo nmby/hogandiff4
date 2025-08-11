@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic._plain.CellsUtil;
+import xyz.hotchpotch.hogandiff.logic.plain.CellsUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;

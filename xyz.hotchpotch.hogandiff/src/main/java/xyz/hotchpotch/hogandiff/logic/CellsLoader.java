@@ -8,11 +8,11 @@ import java.util.function.Function;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import xyz.hotchpotch.hogandiff.logic._plain.CellsLoaderCombined;
-import xyz.hotchpotch.hogandiff.logic._poi.CellsLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.logic._poi.CellsLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.logic._poi.PoiUtil;
-import xyz.hotchpotch.hogandiff.logic._sax.CellsLoaderWithSax;
+import xyz.hotchpotch.hogandiff.logic.plain.CellsLoaderCombined;
+import xyz.hotchpotch.hogandiff.logic.poi.CellsLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.logic.poi.CellsLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.logic.poi.PoiUtil;
+import xyz.hotchpotch.hogandiff.logic.sax.CellsLoaderWithSax;
 
 /**
  * Excelシートからセルデータを抽出するローダーを表します。<br>

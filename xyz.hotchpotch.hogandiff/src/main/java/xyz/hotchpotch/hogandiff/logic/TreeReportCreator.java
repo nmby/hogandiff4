@@ -23,7 +23,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic._poi.PoiUtil;
+import xyz.hotchpotch.hogandiff.logic.poi.PoiUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;

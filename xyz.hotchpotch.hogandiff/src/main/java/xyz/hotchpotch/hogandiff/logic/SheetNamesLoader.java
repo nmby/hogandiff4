@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.logic._plain.SheetNamesLoaderCombined;
-import xyz.hotchpotch.hogandiff.logic._poi.SheetNamesLoaderWithPoiEventApi;
-import xyz.hotchpotch.hogandiff.logic._poi.SheetNamesLoaderWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.logic._sax.SheetNamesLoaderWithSax;
+import xyz.hotchpotch.hogandiff.logic.plain.SheetNamesLoaderCombined;
+import xyz.hotchpotch.hogandiff.logic.poi.SheetNamesLoaderWithPoiEventApi;
+import xyz.hotchpotch.hogandiff.logic.poi.SheetNamesLoaderWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.logic.sax.SheetNamesLoaderWithSax;
 
 /**
  * Excelブック情報を抽出するローダーを表します。<br>

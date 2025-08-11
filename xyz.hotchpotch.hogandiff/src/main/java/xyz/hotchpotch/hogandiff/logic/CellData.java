@@ -3,7 +3,7 @@ package xyz.hotchpotch.hogandiff.logic;
 import java.util.Comparator;
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.logic._plain.CellsUtil;
+import xyz.hotchpotch.hogandiff.logic.plain.CellsUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
 /**

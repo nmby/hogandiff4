@@ -9,10 +9,10 @@ import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleCredential;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileInfo;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleHandlingException;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 /**
  * ユーザーにGoogleドライブ上のファイル選択を求めるダイアログボックスです。<br>

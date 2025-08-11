@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.logic;
 
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.logic._plain.ComparatorOfSheetsRC;
+import xyz.hotchpotch.hogandiff.logic.plain.ComparatorOfSheetsRC;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
 /**

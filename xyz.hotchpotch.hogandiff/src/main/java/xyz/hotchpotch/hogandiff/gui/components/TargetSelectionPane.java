@@ -41,11 +41,11 @@ import xyz.hotchpotch.hogandiff.gui.dialogs.GoogleFilePickerDialog;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**

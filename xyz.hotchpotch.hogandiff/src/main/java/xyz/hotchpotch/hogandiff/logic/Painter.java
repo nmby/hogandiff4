@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
-import xyz.hotchpotch.hogandiff.logic._plain.PainterCombined;
-import xyz.hotchpotch.hogandiff.logic._poi.PainterWithPoiUserApi;
-import xyz.hotchpotch.hogandiff.logic._stax.PainterWithStax;
+import xyz.hotchpotch.hogandiff.logic.plain.PainterCombined;
+import xyz.hotchpotch.hogandiff.logic.poi.PainterWithPoiUserApi;
+import xyz.hotchpotch.hogandiff.logic.stax.PainterWithStax;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>

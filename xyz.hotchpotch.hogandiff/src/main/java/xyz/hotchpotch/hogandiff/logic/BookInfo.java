@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
-import xyz.hotchpotch.hogandiff.logic._google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 
 /**
  * Excelブック情報を表す不変クラスです。<br>

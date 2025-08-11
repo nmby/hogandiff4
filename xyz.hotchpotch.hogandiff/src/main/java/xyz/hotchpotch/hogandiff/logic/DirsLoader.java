@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.logic;
 
 import java.nio.file.Path;
 
-import xyz.hotchpotch.hogandiff.logic._plain.DirsLoaderStandard;
+import xyz.hotchpotch.hogandiff.logic.plain.DirsLoaderStandard;
 
 /**
  * フォルダ情報を抽出するローダーを表します。<br>
