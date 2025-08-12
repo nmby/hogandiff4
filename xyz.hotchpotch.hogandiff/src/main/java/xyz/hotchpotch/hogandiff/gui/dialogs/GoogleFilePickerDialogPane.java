@@ -155,6 +155,8 @@ public class GoogleFilePickerDialogPane extends VBox {
         // 3.初期値の設定
         if (googleFileInfo != null) {
             fileUrlTextField.setText(googleFileInfo.fileUrl());
+        } else {
+            fileUrlTextField.setText(null);
         }
     }
 }
