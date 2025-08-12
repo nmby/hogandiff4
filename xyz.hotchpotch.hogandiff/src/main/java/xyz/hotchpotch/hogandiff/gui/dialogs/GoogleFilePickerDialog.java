@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ButtonType;
@@ -26,7 +27,7 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
     // instance members ********************************************************
     
     private final AppResource ar = AppMain.appResource;
-    //private final ResourceBundle rb = ar.get();
+    private final ResourceBundle rb = ar.get();
     
     /**
      * 新しいダイアログを構成します。<br>
@@ -49,7 +50,7 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
                         () -> gdFilePickerDialogPane.fileMetadata.getValue() == null,
                         gdFilePickerDialogPane.fileMetadata));
         
-        this.setTitle("Googleドライブ ファイル選択");
+        this.setTitle(rb.getString("fx.GoogleFilePickerDialog.010"));
         this.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 try {
@@ -60,7 +61,6 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
                             ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
                     
                 } catch (GoogleHandlingException e) {
-                    // TODO 自動生成された catch ブロック
                     e.printStackTrace();
                     return null;
                 }

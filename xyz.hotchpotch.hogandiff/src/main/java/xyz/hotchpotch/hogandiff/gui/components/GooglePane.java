@@ -1,6 +1,8 @@
 package xyz.hotchpotch.hogandiff.gui.components;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -16,9 +18,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
@@ -112,10 +117,9 @@ public class GooglePane extends HBox implements ChildController {
         });
         
         disconnectGoogleButton.setOnAction(event -> {
-            // TODO: 多言語化する
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    "方眼DiffとGoogleドライブの連携を解除します。\nよろしいですか？")
+                    rb.getString("gui.component.GooglePane.010"))
                             .showAndWait();
             
             if (result.isEmpty() || result.get() != ButtonType.OK) {
@@ -126,30 +130,44 @@ public class GooglePane extends HBox implements ChildController {
                 parent.googleCredential.getValue().deleteCredential();
                 parent.googleCredential.setValue(null);
                 
+                Hyperlink link1 = new Hyperlink("https://★★★");
+                link1.setOnAction(event1 -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://★★★"));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                VBox content = new VBox(10);
+                content.getChildren().addAll(
+                        new Label(rb.getString("gui.component.GooglePane.030")),
+                        link1);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("方眼Diff");
-                alert.setHeaderText("資格情報を削除しました。");
-                alert.setContentText(""
-                        // TODO: 文言改善する
-                        + "このPCに保存されていたGoogleアカウント連携のための資格情報を削除しました。\n\n"
-                        + "Google側の設定では引き続き方眼Diffとの連携が許可されています。\n"
-                        + "連携許可を完全に取り消したい場合はGoogleアカウントのサイトから設定を行ってください。\n"
-                        + "参考：https://hogandiff.hotchpotch.xyz/");
+                alert.setTitle(rb.getString("AppMain.010"));
+                alert.setHeaderText(rb.getString("gui.component.GooglePane.020"));
+                alert.getDialogPane().setExpandableContent(content);
                 alert.showAndWait();
                 
             } catch (GoogleHandlingException e) {
                 parent.googleCredential.setValue(null);
                 e.printStackTrace();
                 
+                Hyperlink link2 = new Hyperlink("https://★★★");
+                link2.setOnAction(event2 -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://★★★"));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                VBox content = new VBox(10);
+                content.getChildren().addAll(
+                        new Label(rb.getString("gui.component.GooglePane.050")),
+                        link2);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("方眼Diff");
-                alert.setHeaderText("資格情報の削除に失敗しました。");
-                alert.setContentText(""
-                        // TODO: 文言改善する
-                        + "資格情報の削除に失敗しました。\n"
-                        + "時間をおいてから再度お試しください。\n\n"
-                        + "失敗し続ける場合はウェブサイトからお問い合わせください。\n"
-                        + "https://hogandiff.hotchpotch.xyz/");
+                alert.setTitle(rb.getString("AppMain.010"));
+                alert.setHeaderText(rb.getString("gui.component.GooglePane.040"));
+                alert.getDialogPane().setExpandableContent(content);
                 alert.showAndWait();
             }
         });
@@ -184,16 +202,23 @@ public class GooglePane extends HBox implements ChildController {
             exception.printStackTrace();
             
             Platform.runLater(() -> {
+                Hyperlink link = new Hyperlink("https://★★★");
+                link.setOnAction(event -> {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://★★★"));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                VBox content = new VBox(10);
+                content.getChildren().addAll(
+                        new Label(rb.getString("gui.component.GooglePane.080").formatted(exception.getMessage())),
+                        link);
                 // TODO: 既存のAlert利用箇所もこの書き方にする
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Google連携エラー");
-                alert.setHeaderText("Google連携処理中にエラーが発生しました。");
-                alert.setContentText(""
-                        // TODO: 文言改善する
-                        + "エラー：" + exception.getMessage() + "\n\n"
-                        + "時間をおいて再度お試しください。\n"
-                        + "失敗し続ける場合はウェブサイトからお問い合わせください。\n"
-                        + "https://hogandiff.hotchpotch.xyz/");
+                alert.setTitle(rb.getString("gui.component.GooglePane.060"));
+                alert.setHeaderText(rb.getString("gui.component.GooglePane.070"));
+                alert.getDialogPane().setExpandableContent(content);
                 alert.showAndWait();
             });
         }

@@ -95,7 +95,7 @@ public class GoogleFilePickerDialogPane extends VBox {
                 () -> fileUrlTextField.getText() == null
                         || GoogleUtil.isGDFileUrl(fileUrlTextField.getText())
                                 ? null
-                                : "サポートされない形式のURLです。",
+                                : rb.getString("fx.GoogleFilePickerDialogPane.010"),
                 fileUrlTextField.textProperty()));
         
         fileNameLabel.textProperty().bind(Bindings.createStringBinding(

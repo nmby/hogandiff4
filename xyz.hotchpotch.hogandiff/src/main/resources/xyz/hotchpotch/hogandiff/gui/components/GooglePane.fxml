@@ -6,15 +6,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<fx:root alignment="CENTER_RIGHT"
-	maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-	minHeight="-Infinity" minWidth="-Infinity" type="HBox"
-	xmlns="http://javafx.com/javafx/23.0.1"
-	xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" type="HBox" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<ImageView fx:id="googleImageView" fitHeight="36.0"
-			fitWidth="36.0" pickOnBounds="true" preserveRatio="true"
-			HBox.hgrow="NEVER">
+		<ImageView fx:id="googleImageView" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
 			<image>
 				<Image url="@GoogleDrive.png" />
 			</image>
@@ -22,23 +16,13 @@
 				<Insets bottom="1.0" left="3.0" right="3.0" top="5.0" />
 			</HBox.margin>
 		</ImageView>
-		<ImageView fx:id="profileImageView" fitHeight="42.0"
-			fitWidth="42.0" pickOnBounds="true" preserveRatio="true"
-			HBox.hgrow="NEVER" />
-		<Button fx:id="connectGoogleButton"
-			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-			text="Googleドライブ&#10;連携" textAlignment="CENTER" textOverrun="CLIP"
-			HBox.hgrow="ALWAYS">
+		<ImageView fx:id="profileImageView" fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+		<Button fx:id="connectGoogleButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.GooglePane.010" textAlignment="CENTER" textOverrun="CLIP" HBox.hgrow="ALWAYS">
 			<HBox.margin>
 				<Insets left="7.0" />
 			</HBox.margin>
 		</Button>
-		<Button fx:id="disconnectGoogleButton"
-			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-			text="Googleドライブ&#10;連携解除" textAlignment="CENTER" textFill="RED"
-			textOverrun="CLIP" HBox.hgrow="ALWAYS">
+		<Button fx:id="disconnectGoogleButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.GooglePane.020" textAlignment="CENTER" textFill="RED" textOverrun="CLIP" HBox.hgrow="ALWAYS">
 			<HBox.margin>
 				<Insets left="7.0" />
 			</HBox.margin>

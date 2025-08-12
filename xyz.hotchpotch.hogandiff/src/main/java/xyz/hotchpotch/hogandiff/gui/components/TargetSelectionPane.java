@@ -446,7 +446,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         return true;
     }
     
-    // TODO: overload版と統合する
     private BookInfo readBookInfo(Path newBookPath, GoogleFileInfo googleFileInfo) {
         assert newBookPath != null;
         

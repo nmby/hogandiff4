@@ -9,12 +9,15 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.RevisionList;
 import com.google.api.services.drive.model.User;
+
+import xyz.hotchpotch.hogandiff.AppMain;
 
 /**
  * Googleドライブから指定されたファイルを取得する機能を担います。<br>
@@ -55,6 +58,8 @@ public class GoogleFileFetcher {
         
         // [instance members] --------------------------------------------------
         
+        private final ResourceBundle rb = AppMain.appResource.get();
+        
         private final Revision original;
         private boolean isLatest;
         
@@ -75,7 +80,7 @@ public class GoogleFileFetcher {
         @Override
         public String toString() {
             User lastModifyingUser = original.getLastModifyingUser();
-            String lastModifier = "更新者不明";
+            String lastModifier = rb.getString("google.GoogleFileFetcher.010");
             if (lastModifyingUser != null) {
                 if (lastModifyingUser.getDisplayName() != null
                         && !lastModifyingUser.getDisplayName().isEmpty()) {
@@ -86,7 +91,7 @@ public class GoogleFileFetcher {
                 }
             }
             return "%s%s  %s".formatted(
-                    isLatest ? "最新版  " : "",
+                    isLatest ? "%s  ".formatted(rb.getString("google.GoogleFileFetcher.020")) : "",
                     original.getModifiedTime().toStringRfc3339(),
                     lastModifier);
         }
