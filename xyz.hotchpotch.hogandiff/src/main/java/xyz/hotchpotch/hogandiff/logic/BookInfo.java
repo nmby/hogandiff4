@@ -126,10 +126,21 @@ public class BookInfo {
                 : googleFileInfo.fileName();
     }
     
+    public String bookNameWithExtension() {
+        // FIXME: メンバメソッドを整理する・糞な実装を直す
+        String bookName = bookName();
+        try {
+            BookType.of(Path.of(bookName));
+            return bookName;
+        } catch (IllegalArgumentException e) {
+            return bookName + ".xlsx";
+        }
+    }
+    
     public String dispName() {
         return googleFileInfo == null
                 ? bookPath.toString()
-                : "GoogleDrive :  " + googleFileInfo.fileName();
+                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileName(), googleFileInfo.revisionName());
     }
     
     public String googleFileDesc() {

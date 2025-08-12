@@ -203,7 +203,8 @@ public class GoogleFileFetcher {
                 metadata.fileUrl,
                 revisionId,
                 filePath,
-                "%s  [%s]".formatted(metadata.fileName, revision.toString()));
+                metadata.fileName,
+                revision.toString());
         
         if (Files.exists(filePath)) {
             // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。
