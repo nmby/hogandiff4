@@ -179,8 +179,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         googleDriveButton.setOnAction(event -> {
             try {
+                BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
                 GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
-                        null,
+                        bookInfo != null ? bookInfo.googleFileInfo() : null,
                         parent.googleCredential.getValue());
                 Optional<GoogleFileInfo> modified = dialog.showAndWait();
                 if (modified.isPresent()) {

@@ -20,10 +20,11 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleUtil;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleUtil;
 
 /**
  * ユーザーにGoogleドライブ上のファイル選択を求めるダイアログボックスの要素です。<br>
@@ -78,7 +79,7 @@ public class GoogleFilePickerDialogPane extends VBox {
      */
     /* package */ void init(
             GoogleFilePickerDialog parent,
-            String fileUrl,
+            GoogleFileInfo googleFileInfo,
             GoogleCredential credential) {
         
         // 1.プロパティのバインディング
@@ -152,6 +153,8 @@ public class GoogleFilePickerDialogPane extends VBox {
         });
         
         // 3.初期値の設定
-        fileUrlTextField.setText(fileUrl);
+        if (googleFileInfo != null) {
+            fileUrlTextField.setText(googleFileInfo.fileUrl());
+        }
     }
 }

@@ -32,12 +32,12 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
      * 新しいダイアログを構成します。<br>
      */
     public GoogleFilePickerDialog(
-            String fileUrl,
+            GoogleFileInfo googleFileInfo,
             GoogleCredential credential)
             throws IOException {
         
         GoogleFilePickerDialogPane gdFilePickerDialogPane = new GoogleFilePickerDialogPane();
-        gdFilePickerDialogPane.init(this, fileUrl, credential);
+        gdFilePickerDialogPane.init(this, googleFileInfo, credential);
         
         DialogPane me = getDialogPane();
         me.setContent(gdFilePickerDialogPane);
