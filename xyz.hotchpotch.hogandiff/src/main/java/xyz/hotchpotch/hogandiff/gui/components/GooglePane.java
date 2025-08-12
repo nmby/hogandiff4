@@ -29,6 +29,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.UIUtil;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
@@ -130,44 +131,30 @@ public class GooglePane extends HBox implements ChildController {
                 parent.googleCredential.getValue().deleteCredential();
                 parent.googleCredential.setValue(null);
                 
-                Hyperlink link1 = new Hyperlink("https://★★★");
-                link1.setOnAction(event1 -> {
-                    try {
-                        Desktop.getDesktop().browse(new URI("https://★★★"));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                Hyperlink link = UIUtil.createHyperlink("https://★★★");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
                         new Label(rb.getString("gui.component.GooglePane.030")),
-                        link1);
+                        link);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(rb.getString("AppMain.010"));
                 alert.setHeaderText(rb.getString("gui.component.GooglePane.020"));
-                alert.getDialogPane().setExpandableContent(content);
+                alert.getDialogPane().setContent(content);
                 alert.showAndWait();
                 
             } catch (GoogleHandlingException e) {
                 parent.googleCredential.setValue(null);
                 e.printStackTrace();
                 
-                Hyperlink link2 = new Hyperlink("https://★★★");
-                link2.setOnAction(event2 -> {
-                    try {
-                        Desktop.getDesktop().browse(new URI("https://★★★"));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                Hyperlink link = UIUtil.createHyperlink("https://★★★");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
                         new Label(rb.getString("gui.component.GooglePane.050")),
-                        link2);
+                        link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(rb.getString("AppMain.010"));
                 alert.setHeaderText(rb.getString("gui.component.GooglePane.040"));
-                alert.getDialogPane().setExpandableContent(content);
+                alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             }
         });
@@ -218,7 +205,7 @@ public class GooglePane extends HBox implements ChildController {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(rb.getString("gui.component.GooglePane.060"));
                 alert.setHeaderText(rb.getString("gui.component.GooglePane.070"));
-                alert.getDialogPane().setExpandableContent(content);
+                alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             });
         }
