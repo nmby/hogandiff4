@@ -31,12 +31,14 @@ final def log4jBin = project['myprop.log4j.bin']
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
+    + 'java.logging,' \
     + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
     + 'javafx.graphics,' \
     + 'jdk.charsets,' \
+    + 'jdk.httpserver,' \
     + 'jdk.zipfs'
 
 task pickupAndExpandFatJar(type: Copy) {
