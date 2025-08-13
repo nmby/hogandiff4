@@ -13,7 +13,7 @@ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
 <https://openjdk.java.net/legal/gplv2+ce.html>
 
 This product contains parts of Apache POI libraries.
-Copyright 2003-2022 The Apache Software Foundation.
+Copyright 2003-2025 The Apache Software Foundation
 <https://www.apache.org/>
     
     Apache POI includes software developed at
@@ -51,7 +51,7 @@ Copyright 2003-2022 The Apache Software Foundation.
     Lightbend, Inc. (https://www.lightbend.com/).
 
 This product contains parts of Apache Log4j 2 libraries.
-Copyright 1999-2021 The Apache Software Foundation.
+Copyright 1999-2024 Apache Software Foundation
 <https://www.apache.org/>
     
     Apache Log4j 2 includes software developed at
@@ -71,3 +71,10 @@ Copyright 1999-2021 The Apache Software Foundation.
     
     TimeoutBlockingWaitStrategy.java and parts of Util.java
     Copyright 2011 LMAX Ltd.
+
+This product contains parts of Google APIs Client Library for Java.
+Copyright Google Inc.
+<https://github.com/googleapis/google-api-java-client>
+
+    Google APIs Client Library for Java includes software developed by
+    Google Inc. (https://www.google.com/).

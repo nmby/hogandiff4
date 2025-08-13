@@ -421,7 +421,7 @@ Eclipse Temurin Java SE and OpenJFX:
     and/or involve the use of third party software.
 
 
-Apache POI and Apache Log4j 2:
+Apache POI, Apache Log4j 2, and Google APIs Client Library for Java:
 
                                      Apache License
                                Version 2.0, January 2004
@@ -632,6 +632,7 @@ Apache POI and Apache Log4j 2:
     license terms. Your use of these subcomponents is subject to the terms
     and conditions of the following licenses:
     
+    
     Office Open XML schemas (poi-ooxml-full-*.jar)
     
         The Office Open XML schema definitions used by Apache POI are
@@ -652,6 +653,7 @@ Apache POI and Apache Log4j 2:
             Patent%20statements%20ok/ECMA-376%20Edition%202%20Microsoft%20Patent%20Declaration.pdf
         [5] https://www.ecma-international.org/publications/files/ECMA-ST/Ecma%20PATENT/
             Patent%20statements%20ok/ECMA-376%20Adobe%20Patent%20Declaration.pdf
+    
     
     org.apache.poi.util.ReplacingInputStream is based on code from
     inbot-utils (https://github.com/Inbot/inbot-utils)
