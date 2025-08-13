@@ -12,7 +12,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -137,6 +140,13 @@ public class GoogleFilePickerDialogPane extends VBox {
                     this.fileMetadata.setValue(fileMetadata);
                     
                 } catch (GoogleHandlingException e) {
+                    new Alert(
+                            AlertType.ERROR,
+                            rb.getString("fx.GoogleFilePickerDialogPane.070")
+                                    .formatted(fileUrlTextField.getText()),
+                            ButtonType.OK)
+                                    .showAndWait();
+                    
                     e.printStackTrace();
                     return;
                     
