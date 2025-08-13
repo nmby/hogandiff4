@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -36,13 +37,15 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
+import xyz.hotchpotch.hogandiff.gui.dialogs.GoogleFilePickerDialog;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.DirsLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.dirsloader.DirsLoader;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
@@ -51,55 +54,58 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @author nmby
  */
 public class TargetSelectionPane extends GridPane implements ChildController {
-
+    
     // [static members] ********************************************************
-
+    
     private static Path prevSelectedBookPath;
-
+    
     private static boolean isDirOperation(AppMenu menu) {
         return menu == AppMenu.COMPARE_DIRS || menu == AppMenu.COMPARE_TREES;
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final AppResource ar = AppMain.appResource;
     private final ResourceBundle rb = ar.get();
-
+    
     @FXML
     private Label titleLabel;
-
+    
     @FXML
     private Label dirPathLabel;
-
+    
     @FXML
     private TextField dirPathTextField;
-
+    
     @FXML
     private Button dirPathButton;
-
+    
     @FXML
     private Label bookPathLabel;
-
+    
     @FXML
     private TextField bookPathTextField;
-
+    
     @FXML
     private Button bookPathButton;
-
+    
+    @FXML
+    private Button googleDriveButton;
+    
     @FXML
     private Label sheetNameLabel;
-
+    
     @FXML
     private ChoiceBox<String> sheetNameChoiceBox;
-
+    
     private final BooleanProperty isReady = new SimpleBooleanProperty();
     private final BooleanProperty isBusy = new SimpleBooleanProperty();
-
+    
     private TargetSelectionPane opposite;
     private MainController parent;
     private Side side;
     private Map<Path, String> readPasswords;
-
+    
     /**
      * コンストラクタ<br>
      * 
@@ -111,17 +117,17 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         loader.setController(this);
         loader.load();
     }
-
+    
     @Override
     public void init(MainController parent, Object... params) {
         Objects.requireNonNull(parent);
-
+        
         this.parent = parent;
         this.side = (Side) params[0];
         opposite = (TargetSelectionPane) params[1];
         readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-
-        // 1.disableプロパティとvisibleプロパティのバインディング
+        
+        // 1.disable, visible, managedプロパティのバインディング
         disableProperty().bind(parent.isRunning().or(isBusy));
         sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> parent.menuProp.getValue() != AppMenu.COMPARE_SHEETS,
@@ -129,63 +135,80 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> parent.menuProp.getValue() != AppMenu.COMPARE_SHEETS,
                 parent.menuProp));
-
-        dirPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
+        
+        BooleanBinding isDirOperation = Bindings.createBooleanBinding(
                 () -> isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-        dirPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-        dirPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-
-        bookPathLabel.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-        bookPathTextField.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-        bookPathButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> !isDirOperation(parent.menuProp.getValue()),
-                parent.menuProp));
-
+                parent.menuProp);
+        
+        dirPathLabel.visibleProperty().bind(isDirOperation);
+        dirPathTextField.visibleProperty().bind(isDirOperation);
+        dirPathButton.visibleProperty().bind(isDirOperation);
+        dirPathButton.managedProperty().bind(isDirOperation);
+        
+        bookPathLabel.visibleProperty().bind(isDirOperation.not());
+        bookPathTextField.visibleProperty().bind(isDirOperation.not());
+        bookPathButton.visibleProperty().bind(isDirOperation.not());
+        bookPathButton.managedProperty().bind(isDirOperation.not());
+        
+        googleDriveButton.visibleProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
+                parent.googleCredential, parent.menuProp));
+        googleDriveButton.managedProperty().bind(Bindings.createBooleanBinding(
+                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
+                parent.googleCredential, parent.menuProp));
+        
         // 2.項目ごとの各種設定
         setOnDragOver(this::onDragOver);
         setOnDragDropped(this::onDragDropped);
-
+        
         titleLabel.setText(side.name());
-
+        
         dirPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> parent.dirInfoPropPair.get(side).getValue() != null
                         ? parent.dirInfoPropPair.get(side).getValue().dirPath().toString()
                         : null,
                 parent.dirInfoPropPair.get(side)));
         dirPathButton.setOnAction(this::chooseDir);
-
+        
         bookPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> parent.bookInfoPropPair.get(side).getValue() != null
-                        ? parent.bookInfoPropPair.get(side).getValue().bookPath().toString()
+                        ? parent.bookInfoPropPair.get(side).getValue().dispName()
                         : null,
                 parent.bookInfoPropPair.get(side)));
         bookPathButton.setOnAction(this::chooseBook);
-
+        
+        googleDriveButton.setOnAction(event -> {
+            try {
+                BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
+                GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
+                        bookInfo != null ? bookInfo.googleFileInfo() : null,
+                        parent.googleCredential.getValue());
+                Optional<GoogleFileInfo> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    validateAndSetTarget(modified.get().localPath(), null, modified.get());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+        });
+        
         parent.sheetNamePropPair.get(side).bind(sheetNameChoiceBox.valueProperty());
-
+        
         isReady.bind(Bindings.createBooleanBinding(
                 () -> switch (parent.menuProp.getValue()) {
-                    case COMPARE_BOOKS -> parent.bookInfoPropPair.get(side).getValue() != null;
-                    case COMPARE_SHEETS -> parent.bookInfoPropPair.get(side).getValue() != null
-                            && parent.sheetNamePropPair.get(side).getValue() != null;
-                    case COMPARE_DIRS -> parent.dirInfoPropPair.get(side).getValue() != null;
-                    case COMPARE_TREES -> parent.dirInfoPropPair.get(side).getValue() != null;
-                    default -> throw new AssertionError();
+                case COMPARE_BOOKS -> parent.bookInfoPropPair.get(side).getValue() != null;
+                case COMPARE_SHEETS -> parent.bookInfoPropPair.get(side).getValue() != null
+                        && parent.sheetNamePropPair.get(side).getValue() != null;
+                case COMPARE_DIRS -> parent.dirInfoPropPair.get(side).getValue() != null;
+                case COMPARE_TREES -> parent.dirInfoPropPair.get(side).getValue() != null;
+                default -> throw new AssertionError();
                 },
                 parent.menuProp,
                 parent.dirInfoPropPair.get(side),
                 parent.bookInfoPropPair.get(side),
                 parent.sheetNamePropPair.get(side)));
-
+        
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
         parent.menuProp.addListener((target, oldValue, newValue) -> {
@@ -202,25 +225,25 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 sheetNameChoiceBox.setItems(FXCollections.observableList(newValue.sheetNames()));
             }
         });
-
+        
         // 3.初期値の設定
         if (ar.settings().containsKey(SettingKeys.CURR_BOOK_INFOS.get(side))) {
-            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null);
+            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null, null);
         }
     }
-
+    
     @Override
     public BooleanExpression isReady() {
         return isReady;
     }
-
+    
     private void onDragOver(DragEvent event) {
         try {
             event.consume();
             Predicate<File> isAcceptableType = isDirOperation(parent.menuProp.getValue())
                     ? File::isDirectory
                     : File::isFile;
-
+            
             if (!event.getDragboard().hasFiles()) {
                 return;
             }
@@ -229,25 +252,25 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 return;
             }
             // ファイルの拡張子は確認しないことにする。
-
+            
             event.acceptTransferModes(TransferMode.LINK);
-
+            
         } catch (RuntimeException e) {
             e.printStackTrace();
             // nop
         }
     }
-
+    
     private void onDragDropped(DragEvent event) {
         try {
             isBusy.set(true);
             event.consume();
-
+            
             AppMenu menu = parent.menuProp.getValue();
             Predicate<File> isAcceptableType = isDirOperation(menu)
                     ? File::isDirectory
                     : File::isFile;
-
+            
             if (!event.getDragboard().hasFiles()) {
                 event.setDropCompleted(false);
                 return;
@@ -257,112 +280,112 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 event.setDropCompleted(false);
                 return;
             }
-
+            
             if (isDirOperation(menu)) {
                 setDirPath(files.get(0).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 event.setDropCompleted(true);
-
+                
                 if (1 < files.size() && isAcceptableType.test(files.get(1))) {
                     opposite.setDirPath(files.get(1).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 }
-
+                
             } else {
-                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null);
+                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null, null);
                 event.setDropCompleted(dropCompleted);
-
+                
                 if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
-                    opposite.validateAndSetTarget(files.get(1).toPath(), null);
+                    opposite.validateAndSetTarget(files.get(1).toPath(), null, null);
                 }
             }
         } catch (RuntimeException e) {
             e.printStackTrace();
             event.setDropCompleted(false);
             // nop
-
+            
         } finally {
             isBusy.set(false);
         }
     }
-
+    
     private void chooseDir(ActionEvent event) {
         try {
             isBusy.set(true);
-
+            
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
-
+            
             DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
             if (dirInfo != null) {
                 chooser.setInitialDirectory(dirInfo.dirPath().toFile());
-
+                
             } else if (prevSelectedBookPath != null) {
                 chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
             }
-
+            
             File selected = chooser.showDialog(getScene().getWindow());
-
+            
             if (selected != null) {
                 setDirPath(selected.toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             }
-
+            
         } catch (RuntimeException e) {
             e.printStackTrace();
             // nop
-
+            
         } finally {
             isBusy.set(false);
         }
     }
-
+    
     private void chooseBook(ActionEvent event) {
         try {
             isBusy.set(true);
-
+            
             FileChooser chooser = new FileChooser();
             chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.020"));
-
+            
             BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
             if (bookInfo != null) {
                 File book = bookInfo.bookPath().toFile();
                 chooser.setInitialDirectory(book.getParentFile());
                 chooser.setInitialFileName(book.getName());
-
+                
             } else if (prevSelectedBookPath != null) {
                 chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
             }
-
+            
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
                     rb.getString("gui.component.TargetSelectionPane.030"),
                     "*.xls", "*.xlsx", "*.xlsm"));
-
+            
             File selected = chooser.showOpenDialog(getScene().getWindow());
-
+            
             if (selected != null) {
-                validateAndSetTarget(selected.toPath(), null);
+                validateAndSetTarget(selected.toPath(), null, null);
             }
-
+            
         } catch (RuntimeException e) {
             e.printStackTrace();
             // nop
-
+            
         } finally {
             isBusy.set(false);
         }
     }
-
+    
     private void setDirPath(Path newDirPath, boolean recursively) {
         if (newDirPath == null) {
             parent.dirInfoPropPair.get(side).setValue(null);
             return;
         }
-
+        
         try {
             DirsLoader dirLoader = Factory.dirLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
             prevSelectedBookPath = newDirPath;
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             parent.dirInfoPropPair.get(side).setValue(null);
@@ -372,24 +395,24 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                             rb.getString("gui.component.TargetSelectionPane.060"),
                             newDirPath),
                     ButtonType.OK)
-                    .showAndWait();
+                            .showAndWait();
             return;
         }
-
+        
     }
-
-    private boolean validateAndSetTarget(Path newBookPath, String sheetName) {
+    
+    private boolean validateAndSetTarget(Path newBookPath, String sheetName, GoogleFileInfo googleFileInfo) {
         if (newBookPath == null) {
             parent.bookInfoPropPair.get(side).setValue(null);
             return true;
         }
-
-        BookInfo newBookInfo = readBookInfo(newBookPath);
-
+        
+        BookInfo newBookInfo = readBookInfo(newBookPath, googleFileInfo);
+        
         if (newBookInfo.status() == Status.LOAD_COMPLETED) {
             parent.bookInfoPropPair.get(side).setValue(newBookInfo);
             prevSelectedBookPath = newBookPath;
-
+            
         } else {
             parent.bookInfoPropPair.get(side).setValue(null);
             readPasswords.remove(newBookPath);
@@ -399,16 +422,16 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                             rb.getString("gui.component.TargetSelectionPane.040"),
                             newBookPath),
                     ButtonType.OK)
-                    .showAndWait();
+                            .showAndWait();
             return false;
         }
-
+        
         if (sheetName == null) {
             sheetNameChoiceBox.setValue(null);
-
+            
         } else if (sheetNameChoiceBox.getItems().contains(sheetName)) {
             sheetNameChoiceBox.setValue(sheetName);
-
+            
         } else {
             sheetNameChoiceBox.setValue(null);
             new Alert(
@@ -417,37 +440,38 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                             rb.getString("gui.component.TargetSelectionPane.050"),
                             sheetName),
                     ButtonType.OK)
-                    .showAndWait();
+                            .showAndWait();
             return false;
         }
         return true;
     }
-
-    private BookInfo readBookInfo(Path newBookPath) {
+    
+    private BookInfo readBookInfo(Path newBookPath, GoogleFileInfo googleFileInfo) {
         assert newBookPath != null;
-
+        
         try {
             String readPassword = readPasswords.get(newBookPath);
             SheetNamesLoader loader = Factory.bookLoader(newBookPath);
-
+            
             while (true) {
-                BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword);
-
+                BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword)
+                        .withGoogleFileInfo(googleFileInfo);
+                
                 switch (bookInfo.status()) {
-                    case LOAD_COMPLETED:
-                        readPasswords.put(newBookPath, readPassword);
+                case LOAD_COMPLETED:
+                    readPasswords.put(newBookPath, readPassword);
+                    return bookInfo;
+                
+                case LOAD_FAILED:
+                    return bookInfo;
+                
+                case NEEDS_PASSWORD:
+                    PasswordDialog dialog = new PasswordDialog(bookInfo.bookName(), readPassword);
+                    Optional<String> newPassword = dialog.showAndWait();
+                    if (!newPassword.isPresent()) {
                         return bookInfo;
-
-                    case LOAD_FAILED:
-                        return bookInfo;
-
-                    case NEEDS_PASSWORD:
-                        PasswordDialog dialog = new PasswordDialog(newBookPath, readPassword);
-                        Optional<String> newPassword = dialog.showAndWait();
-                        if (!newPassword.isPresent()) {
-                            return bookInfo;
-                        }
-                        readPassword = newPassword.get();
+                    }
+                    readPassword = newPassword.get();
                 }
             }
         } catch (Exception e) {

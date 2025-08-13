@@ -13,10 +13,10 @@ import java.util.ResourceBundle;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.sheetnamesloader.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -33,31 +33,35 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
  * @author nmby
  */
 public class AppResource {
-
+    
     // static members **********************************************************
-
-    /** プロパティファイルの相対パス */
-    private static Path APP_PROP_PATH;
+    
+    /** ユーザーディレクトリ */
+    public static final Path USER_HOME;
     static {
         String osName = System.getProperty("os.name").toLowerCase();
         String userHome = System.getProperty("user.home");
-
+        
         Path dir = osName.startsWith("mac")
                 ? Path.of(userHome, AppMain.APP_DOMAIN)
                 : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
-
-        try {
-            if (Files.notExists(dir)) {
+        
+        if (Files.notExists(dir)) {
+            try {
                 Files.createDirectory(dir);
+            } catch (Exception e) {
+                e.printStackTrace();
+                dir = null;
             }
-            APP_PROP_PATH = dir.resolve("hogandiff.properties");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            APP_PROP_PATH = null;
         }
+        USER_HOME = dir;
     }
-
+    
+    /** プロパティファイルの相対パス */
+    private static Path APP_PROP_PATH = USER_HOME != null
+            ? USER_HOME.resolve("hogandiff.properties")
+            : null;
+    
     /**
      * プロパティファイルを読み込み、プロパティセットを返します。<br>
      * プロパティファイルが存在しない場合は、空のプロパティセットを返します。<br>
@@ -76,7 +80,7 @@ public class AppResource {
         }
         return new Properties();
     }
-
+    
     /**
      * このアプリケーションで利用するリソースを構成して返します。<br>
      * 
@@ -85,36 +89,36 @@ public class AppResource {
     public static AppResource fromProperties() {
         Properties properties = loadProperties();
         Settings settings;
-
+        
         try {
             settings = Settings.builder(properties, SettingKeys.storableKeys).build();
         } catch (RuntimeException e) {
             settings = Settings.builder().build();
         }
-
+        
         return new AppResource(properties, settings);
     }
-
+    
     // instance members ********************************************************
-
+    
     private Properties properties;
     private Settings settings;
     private ResourceBundle rb;
-
+    
     private AppResource(
             Properties properties,
             Settings settings) {
-
+        
         assert properties != null;
         assert settings != null;
-
+        
         this.properties = properties;
         this.settings = settings;
-
+        
         Locale appLocale = settings.get(SettingKeys.APP_LOCALE);
         this.rb = ResourceBundle.getBundle("messages", appLocale);
     }
-
+    
     /**
      * 設定セットを返します。<br>
      * 
@@ -123,7 +127,7 @@ public class AppResource {
     public Settings settings() {
         return settings;
     }
-
+    
     /**
      * リソースバンドルを返します。<br>
      * 
@@ -132,7 +136,7 @@ public class AppResource {
     public ResourceBundle get() {
         return rb;
     }
-
+    
     private boolean storeProperties() {
         if (APP_PROP_PATH == null) {
             return false;
@@ -140,18 +144,18 @@ public class AppResource {
         try (Writer w = Files.newBufferedWriter(APP_PROP_PATH)) {
             properties.store(w, null);
             return true;
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             new Alert(
                     AlertType.ERROR,
                     "%s%n%s".formatted(rb.getString("AppResource.010"), APP_PROP_PATH),
                     ButtonType.OK)
-                    .showAndWait();
+                            .showAndWait();
             return false;
         }
     }
-
+    
     /**
      * 設定値を変更しプロパティファイルに記録します。<br>
      * 
@@ -163,9 +167,9 @@ public class AppResource {
      */
     public <T> boolean changeSetting(Key<T> key, T value) {
         Objects.requireNonNull(key);
-
+        
         settings = settings.getAltered(key, value);
-
+        
         if (key.storable()) {
             properties.setProperty(key.name(), key.encoder().apply(value));
             return storeProperties();
@@ -173,7 +177,7 @@ public class AppResource {
             return true;
         }
     }
-
+    
     /**
      * このリソースセットにアプリケーション実行時引数から得られる内容を上書きで反映します。<br>
      * 
@@ -182,14 +186,14 @@ public class AppResource {
      */
     public void reflectArgs(String[] args) {
         Objects.requireNonNull(args);
-
+        
         Optional<Settings> fromArgs = AppArgsParser.parseArgs(args);
-
+        
         if (fromArgs.isPresent()) {
             settings = Settings.builder().setAll(settings).setAll(fromArgs.get()).build();
             properties = settings.toProperties();
             storeProperties();
-
+            
             // コンソールから起動した際は CURR_BOOK_COMPARE_INFO が未設定のため、
             // ここで処理を行うこととする。
             // FIXME: [No.X 内部実装改善] より適した位置を見つけて整理する。
@@ -201,7 +205,7 @@ public class AppResource {
             settings = settings.getAltered(SettingKeys.CURR_BOOK_COMPARE_INFO, bookComparison);
         }
     }
-
+    
     private BookInfo loadBookInfo(Path bookPath) {
         SheetNamesLoader loader = Factory.bookLoader(bookPath);
         return loader.loadBookInfo(bookPath, null);

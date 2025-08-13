@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic.models.Result;
-import xyz.hotchpotch.hogandiff.logic.models.ResultOfTrees;
-import xyz.hotchpotch.hogandiff.logic.models.ResultOtDirs;
-import xyz.hotchpotch.hogandiff.logic.models.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.models.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.Result;
+import xyz.hotchpotch.hogandiff.logic.ResultOfTrees;
+import xyz.hotchpotch.hogandiff.logic.ResultOfDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -54,7 +54,7 @@ public final class CompareTaskDirs extends CompareTask {
             Pair<Path> outputDirPair = createOutputDirs(workDir);
 
             // 2. フォルダ同士の比較
-            ResultOtDirs dResult = compareDirs(outputDirPair, 5, 93);
+            ResultOfDirs dResult = compareDirs(outputDirPair, 5, 93);
 
             PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
@@ -121,7 +121,7 @@ public final class CompareTaskDirs extends CompareTask {
             }
             for (int i = 0; i < bookInfoPairs.size(); i++) {
                 Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);
-                str.append(ResultOtDirs.formatBookNamesPair("", Integer.toString(i + 1), bookInfoPair)).append(BR);
+                str.append(ResultOfDirs.formatBookNamesPair("", Integer.toString(i + 1), bookInfoPair)).append(BR);
             }
 
             updateMessage(str.toString());
@@ -152,7 +152,7 @@ public final class CompareTaskDirs extends CompareTask {
     }
 
     // 5. フォルダ同士の比較
-    private ResultOtDirs compareDirs(
+    private ResultOfDirs compareDirs(
             Pair<Path> outputDirPair,
             int progressBefore,
             int progressAfter)
@@ -175,7 +175,7 @@ public final class CompareTaskDirs extends CompareTask {
                         progressAfter);
 
             } else {
-                return new ResultOtDirs(
+                return new ResultOfDirs(
                         pairingInfoDirs,
                         pairingInfoDirs.childBookInfoPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),

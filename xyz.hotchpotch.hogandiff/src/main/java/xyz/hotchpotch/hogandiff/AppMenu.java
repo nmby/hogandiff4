@@ -5,8 +5,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooks;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskSheets;

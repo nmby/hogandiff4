@@ -20,8 +20,8 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.logic.models.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 
 /**
  * 組み合わせ変更ボタン部分の画面部品です。<br>
