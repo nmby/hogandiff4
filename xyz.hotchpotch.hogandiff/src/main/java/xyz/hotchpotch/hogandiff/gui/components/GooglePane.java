@@ -1,8 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui.components;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -131,7 +129,7 @@ public class GooglePane extends HBox implements ChildController {
                 parent.googleCredential.getValue().deleteCredential();
                 parent.googleCredential.setValue(null);
                 
-                Hyperlink link = UIUtil.createHyperlink("https://★★★");
+                Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
                         new Label(rb.getString("gui.component.GooglePane.030")),
@@ -146,7 +144,7 @@ public class GooglePane extends HBox implements ChildController {
                 parent.googleCredential.setValue(null);
                 e.printStackTrace();
                 
-                Hyperlink link = UIUtil.createHyperlink("https://★★★");
+                Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
                         new Label(rb.getString("gui.component.GooglePane.050")),
@@ -189,19 +187,11 @@ public class GooglePane extends HBox implements ChildController {
             exception.printStackTrace();
             
             Platform.runLater(() -> {
-                Hyperlink link = new Hyperlink("https://★★★");
-                link.setOnAction(event -> {
-                    try {
-                        Desktop.getDesktop().browse(new URI("https://★★★"));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
                         new Label(rb.getString("gui.component.GooglePane.080").formatted(exception.getMessage())),
                         link);
-                // TODO: 既存のAlert利用箇所もこの書き方にする
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(rb.getString("gui.component.GooglePane.060"));
                 alert.setHeaderText(rb.getString("gui.component.GooglePane.070"));

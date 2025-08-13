@@ -42,18 +42,23 @@ public record GoogleCredential(
     // TODO: ポート番号の取得方法をもっとスマートにする
     private static volatile int lastUsedPort = 8887;
     
-    private static LocalServerReceiver createReceiver() {
+    private static Credential getCredential(GoogleAuthorizationCodeFlow flow) throws IOException {
+        LocalServerReceiver receiver = null;
         for (int port = lastUsedPort + 1; port < 10000; port++) {
             try {
-                return new LocalServerReceiver.Builder()
+                receiver = new LocalServerReceiver.Builder()
                         .setPort(port)
                         .build();
+                return new AuthorizationCodeInstalledApp(flow, receiver).authorize(CREDENTIAL_KEY);
                 
             } catch (Exception e) {
                 continue;
                 
             } finally {
                 lastUsedPort = port;
+                if (receiver != null) {
+                    receiver.stop();
+                }
             }
         }
         throw new RuntimeException("利用可能なポートが見つかりません");
@@ -93,15 +98,7 @@ public record GoogleCredential(
             Credential credential = flow.loadCredential(CREDENTIAL_KEY);
             
             if (credential == null && withOAuth) {
-                LocalServerReceiver receiver = null;
-                try {
-                    receiver = createReceiver();
-                    credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize(CREDENTIAL_KEY);
-                } finally {
-                    if (receiver != null) {
-                        receiver.stop();
-                    }
-                }
+                credential = getCredential(flow);
             }
             
             if (credential != null) {
