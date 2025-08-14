@@ -198,7 +198,7 @@ public class GoogleFileFetcher {
             throw new IllegalArgumentException("dstDir must be a directory: " + dstDir);
         }
         
-        String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + ".xlsx";
+        String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + metadata.fileType.ext();
         Path filePath = dstDir.resolve(fileName);
         RevisionMapper revision = metadata.revisions.stream()
                 .filter(r -> r.getRevisionId().equals(revisionId))
