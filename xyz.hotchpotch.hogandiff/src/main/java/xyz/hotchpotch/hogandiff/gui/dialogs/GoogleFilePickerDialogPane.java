@@ -142,8 +142,7 @@ public class GoogleFilePickerDialogPane extends VBox {
                 } catch (GoogleHandlingException e) {
                     new Alert(
                             AlertType.ERROR,
-                            rb.getString("fx.GoogleFilePickerDialogPane.070")
-                                    .formatted(fileUrlTextField.getText()),
+                            rb.getString("fx.GoogleFilePickerDialogPane.070"),
                             ButtonType.OK)
                                     .showAndWait();
                     
