@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -50,21 +49,21 @@ public class PasswordDialogPane extends VBox {
      * このダイアログボックス要素を初期化します。<br>
      * 
      * @param parent 親要素
-     * @param bookPath 開こうとしているExcelブックのパス
+     * @param bookName 開こうとしているExcelブックの名前
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      */
     /*package*/ void init(
             PasswordDialog parent,
-            Path bookPath,
+            String bookName,
             String readPassword) {
         
         assert parent != null;
-        assert bookPath != null;
+        assert bookName != null;
         // readPassword may be null.
         
         errorMsgLabel.setVisible(readPassword != null);
         mainMsgLabel.setText(
-                rb.getString("gui.PasswordDialogPane.010").formatted(bookPath.getFileName()));
+                rb.getString("gui.PasswordDialogPane.010").formatted(bookName));
         passwordField.textProperty().setValue(readPassword);
     }
 }

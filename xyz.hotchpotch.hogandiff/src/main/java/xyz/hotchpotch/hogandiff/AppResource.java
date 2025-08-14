@@ -13,10 +13,10 @@ import java.util.ResourceBundle;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -25,9 +25,9 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
  * アプリケーションのリソースを保持するクラスです。<br>
  * ここで言うリソースとは、以下の3つを含みます。<br>
  * <ul>
- *   <li>実行時引数から得た設定</li>
- *   <li>プロパティファイルから得た設定</li>
- *   <li>リソースバンドルファイルから得られたメッセージリソース</li>
+ * <li>実行時引数から得た設定</li>
+ * <li>プロパティファイルから得た設定</li>
+ * <li>リソースバンドルファイルから得られたメッセージリソース</li>
  * </ul>
  * 
  * @author nmby
@@ -36,8 +36,8 @@ public class AppResource {
     
     // static members **********************************************************
     
-    /** プロパティファイルの相対パス */
-    private static Path APP_PROP_PATH;
+    /** ユーザーディレクトリ */
+    public static final Path USER_HOME;
     static {
         String osName = System.getProperty("os.name").toLowerCase();
         String userHome = System.getProperty("user.home");
@@ -46,17 +46,21 @@ public class AppResource {
                 ? Path.of(userHome, AppMain.APP_DOMAIN)
                 : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
         
-        try {
-            if (Files.notExists(dir)) {
+        if (Files.notExists(dir)) {
+            try {
                 Files.createDirectory(dir);
+            } catch (Exception e) {
+                e.printStackTrace();
+                dir = null;
             }
-            APP_PROP_PATH = dir.resolve("hogandiff.properties");
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            APP_PROP_PATH = null;
         }
+        USER_HOME = dir;
     }
+    
+    /** プロパティファイルの相対パス */
+    private static Path APP_PROP_PATH = USER_HOME != null
+            ? USER_HOME.resolve("hogandiff.properties")
+            : null;
     
     /**
      * プロパティファイルを読み込み、プロパティセットを返します。<br>
@@ -155,8 +159,8 @@ public class AppResource {
     /**
      * 設定値を変更しプロパティファイルに記録します。<br>
      * 
-     * @param <T> 設定値の型
-     * @param key 設定キー
+     * @param <T>   設定値の型
+     * @param key   設定キー
      * @param value 設定値（{@code null} 許容）
      * @return 保存に成功した場合は {@code true}
      * @throws NullPointerException {@code key} が {@code null} の場合
@@ -195,7 +199,7 @@ public class AppResource {
             // FIXME: [No.X 内部実装改善] より適した位置を見つけて整理する。
             BookInfo bookInfoA = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath());
             BookInfo bookInfoB = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
-            BookComparison bookComparison = BookComparison.calculate(
+            PairingInfoBooks bookComparison = PairingInfoBooks.calculate(
                     Pair.of(bookInfoA, bookInfoB),
                     Factory.sheetNamesMatcher(settings));
             settings = settings.getAltered(SettingKeys.CURR_BOOK_COMPARE_INFO, bookComparison);
@@ -203,7 +207,7 @@ public class AppResource {
     }
     
     private BookInfo loadBookInfo(Path bookPath) {
-        BookLoader loader = Factory.bookLoader(bookPath);
+        SheetNamesLoader loader = Factory.bookLoader(bookPath);
         return loader.loadBookInfo(bookPath, null);
     }
 }

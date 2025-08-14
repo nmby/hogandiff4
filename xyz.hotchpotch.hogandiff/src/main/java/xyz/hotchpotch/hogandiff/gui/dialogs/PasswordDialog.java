@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -26,20 +25,20 @@ public class PasswordDialog extends Dialog<String> {
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param bookPath 開こうとしているExcelブックのパス
+     * @param bookName 開こうとしているExcelブックの名前
      * @param readPassword 開こうとしているExcelブックの読み取りパスワード
      * @throws IOException 子要素の構成に失敗した場合
      */
     public PasswordDialog(
-            Path bookPath,
+            String bookName,
             String readPassword)
             throws IOException {
         
-        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(bookName);
         // readPassword may be null.
         
         PasswordDialogPane passwordDialogPane = new PasswordDialogPane();
-        passwordDialogPane.init(this, bookPath, readPassword);
+        passwordDialogPane.init(this, bookName, readPassword);
         
         DialogPane me = getDialogPane();
         me.setContent(passwordDialogPane);

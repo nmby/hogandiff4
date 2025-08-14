@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.24.0'
+final def version = '0.25.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 final def baseDir = projectDir.toPath()
@@ -31,12 +31,14 @@ final def log4jBin = project['myprop.log4j.bin']
 final def requiredMods = '' \
     + 'java.base,' \
     + 'java.desktop,' \
+    + 'java.logging,' \
     + 'java.xml,' \
     + 'javafx.base,' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
     + 'javafx.graphics,' \
     + 'jdk.charsets,' \
+    + 'jdk.httpserver,' \
     + 'jdk.zipfs'
 
 task pickupAndExpandFatJar(type: Copy) {
@@ -209,6 +211,6 @@ task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
     commandLine project['myprop.cmd.jdeps'],
             // 直近の LTS-version とする。
             '--multi-release', 21,
-            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.lib.win.x64']};${outputDirTmpJars}",
+            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.sdk.win.x64']};${outputDirTmpJars}",
             '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
 }

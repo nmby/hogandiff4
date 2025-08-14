@@ -12,13 +12,13 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
-import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.BookInfo.Status;
-import xyz.hotchpotch.hogandiff.excel.BookLoader;
-import xyz.hotchpotch.hogandiff.excel.DirComparison;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.Factory;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -27,7 +27,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirComparison> {
+public class EditDirComparisonDialogPane extends EditComparisonDialogPane<PairingInfoDirs> {
     
     // static members **********************************************************
     
@@ -35,11 +35,11 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
     
     private final AppResource ar = AppMain.appResource;
     
-    private final DirComparison dirComparison;
+    private final PairingInfoDirs dirComparison;
     private final List<Pair<DirInfo>> currChildDirInfoPairs;
     private final List<Pair<BookInfo>> currChildBookInfoPairs;
-    private final Map<Pair<DirInfo>, Optional<DirComparison>> currChildDirComparisons;
-    private final Map<Pair<BookInfo>, Optional<BookComparison>> currChildBookComparisons;
+    private final Map<Pair<DirInfo>, Optional<PairingInfoDirs>> currChildDirComparisons;
+    private final Map<Pair<BookInfo>, Optional<PairingInfoBooks>> currChildBookComparisons;
     
     /**
      * コンストラクタ<br>
@@ -47,7 +47,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
      * @param dirComparison フォルダ比較情報
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
-    public EditDirComparisonDialogPane(DirComparison dirComparison) throws IOException {
+    public EditDirComparisonDialogPane(PairingInfoDirs dirComparison) throws IOException {
         super();
         this.dirComparison = dirComparison;
         this.currChildDirInfoPairs = new ArrayList<>(dirComparison.childDirInfoPairs());
@@ -56,7 +56,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
         this.currChildBookComparisons = new HashMap<>(dirComparison.childBookComparisons());
     }
     
-    /*package*/ void init() throws IOException {
+    /* package */ void init() throws IOException {
         super.init(dirComparison.parentDirInfoPair());
         
         updateChildren();
@@ -69,9 +69,9 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
         drawGrid();
     }
     
-    private Optional<DirComparison> createDirComparison(Pair<DirInfo> dirInfoPair) {
+    private Optional<PairingInfoDirs> createDirComparison(Pair<DirInfo> dirInfoPair) {
         return Optional.of(
-                DirComparison.calculate(
+                PairingInfoDirs.calculate(
                         dirInfoPair,
                         Factory.dirInfosMatcher(ar.settings()),
                         Factory.bookInfosMatcher(ar.settings()),
@@ -79,13 +79,13 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
                         ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
     }
     
-    private Optional<BookComparison> createBookComparison(Pair<BookInfo> bookInfoPair) {
-        return Optional.of(BookComparison.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
+    private Optional<PairingInfoBooks> createBookComparison(Pair<BookInfo> bookInfoPair) {
+        return Optional.of(PairingInfoBooks.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
     }
     
     @Override
-    public DirComparison getResult() {
-        return new DirComparison(
+    public PairingInfoDirs getResult() {
+        return new PairingInfoDirs(
                 dirComparison.parentDirInfoPair(),
                 currChildDirInfoPairs,
                 currChildDirComparisons,
@@ -127,8 +127,8 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
             currChildBookInfoPairs.remove(idx2);
             
             Matcher<String> sheetNamesMatcher = Factory.sheetNamesMatcher(ar.settings());
-            BookComparison bookComparisonA = BookComparison.calculate(unpairedA, sheetNamesMatcher);
-            BookComparison bookComparisonB = BookComparison.calculate(unpairedA, sheetNamesMatcher);
+            PairingInfoBooks bookComparisonA = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
+            PairingInfoBooks bookComparisonB = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
             
             currChildBookComparisons.remove(paired);
             currChildBookComparisons.put(unpairedA, Optional.of(bookComparisonA));
@@ -216,9 +216,9 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
                 Pair<DirInfo> paired = currChildDirInfoPairs.get(idx);
                 assert paired.isPaired();
                 
-                DirComparison comparison = currChildDirComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<DirComparison> dialog = new EditComparisonDialog<>(comparison);
-                Optional<DirComparison> modified = dialog.showAndWait();
+                PairingInfoDirs comparison = currChildDirComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
+                Optional<PairingInfoDirs> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildDirComparisons.put(paired, modified);
                 }
@@ -229,9 +229,9 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
                 Pair<BookInfo> paired = currChildBookInfoPairs.get(j);
                 assert paired.isPaired();
                 
-                BookComparison comparison = currChildBookComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<BookComparison> dialog = new EditComparisonDialog<>(comparison);
-                Optional<BookComparison> modified = dialog.showAndWait();
+                PairingInfoBooks comparison = currChildBookComparisons.get(paired).orElseThrow();
+                EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);
+                Optional<PairingInfoBooks> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildBookComparisons.put(paired, modified);
                 }
@@ -263,7 +263,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
         
         try {
             String readPassword = readPasswords.get(bookPath);
-            BookLoader loader = Factory.bookLoader(bookPath);
+            SheetNamesLoader loader = Factory.bookLoader(bookPath);
             BookInfo newBookInfo = null;
             
             while (true) {
@@ -273,7 +273,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
                     break;
                 }
                 
-                PasswordDialog dialog = new PasswordDialog(bookPath, readPassword);
+                PasswordDialog dialog = new PasswordDialog(currBookInfoPair.get(side).bookName(), readPassword);
                 Optional<String> newPassword = dialog.showAndWait();
                 if (newPassword.isPresent()) {
                     readPassword = newPassword.get();
@@ -289,7 +289,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<DirCom
             Pair<BookInfo> newBookInfoPair = Pair.of(
                     side == Side.A ? newBookInfo : currBookInfoPair.a(),
                     side == Side.B ? newBookInfo : currBookInfoPair.b());
-            BookComparison newBookComparison = BookComparison.calculate(
+            PairingInfoBooks newBookComparison = PairingInfoBooks.calculate(
                     newBookInfoPair,
                     Factory.sheetNamesMatcher(ar.settings()));
             

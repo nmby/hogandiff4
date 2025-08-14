@@ -14,6 +14,7 @@
 出来ること：
 
 - Excelシート同士を比較し、内容の異なるセルを検出できます。
+- PC上のExcelファイルに加えて、Googleドライブ上のExcelファイル、Googleスプレッドシートも比較することができます。
 - 特定のシート同士、ブック同士、フォルダ同士を比較することができます。
 - 行や列の挿入や削除によるギャップを自動で検出できます。
 - セルの内容が数式の場合、数式文字列／計算結果の値のどちらで比較を行うかを指定できます。
@@ -128,6 +129,9 @@ Web上の各種情報を参考に、ご自身の責任でご実施ください�
 - Apache Log4j 2
     - Apache License, Version 2.0 ライセンスにより提供されています。
     - 詳細は LICENSE.txt, NOTICE.txt 両ファイルおよび[Apache Log4j 2のWebサイト](https://logging.apache.org/log4j/2.x/license.html)をご参照ください。
+- Google APIs Client Library for Java
+    - Apache License, Version 2.0 ライセンスにより提供されています。
+    - 詳細は LICENSE.txt, NOTICE.txt 両ファイルおよび[Google APIs Client Library for JavaのWebサイト](https://github.com/googleapis/google-api-java-client)をご参照ください。
 
 あなたが方眼Diffを利用する場合は以上の全てのライセンスに従う必要があります。
 

@@ -9,56 +9,110 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane2" type="VBox" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="BOTTOM_RIGHT"
+	maxHeight="1.7976931348623157E308" maxWidth="-Infinity"
+	minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane2"
+	type="VBox" xmlns="http://javafx.com/javafx/23"
+	xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<GridPane alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+		<xyz.hotchpotch.hogandiff.gui.components.GooglePane
+			fx:id="googlePane" alignment="CENTER_RIGHT"
+			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+			minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER" />
+		<GridPane alignment="BOTTOM_RIGHT" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER">
 			<columnConstraints>
-				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-				<ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+				<ColumnConstraints halignment="RIGHT"
+					hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+				<ColumnConstraints hgrow="NEVER"
+					maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+				<RowConstraints maxHeight="-Infinity"
+					minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="%fx.SettingsPane2.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" />
-            <ComboBox fx:id="localeComboBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="localeComboBox" GridPane.columnIndex="1">
-               <GridPane.margin>
-                  <Insets bottom="1.0" left="5.0" right="7.0" top="1.0" />
-               </GridPane.margin>
-            </ComboBox>
+				<Label alignment="CENTER_RIGHT"
+					maxHeight="1.7976931348623157E308"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" styleClass="settingsTitleLabel2"
+					text="%fx.SettingsPane2.010" textAlignment="RIGHT"
+					textOverrun="CLIP" wrapText="true" />
+				<ComboBox fx:id="localeComboBox" maxHeight="-Infinity"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" styleClass="localeComboBox"
+					GridPane.columnIndex="1">
+					<GridPane.margin>
+						<Insets bottom="1.0" left="5.0" top="1.0" />
+					</GridPane.margin>
+				</ComboBox>
 			</children>
+			<VBox.margin>
+				<Insets top="7.0" />
+			</VBox.margin>
 		</GridPane>
-		<GridPane alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+		<GridPane alignment="BOTTOM_RIGHT" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER">
 			<columnConstraints>
-				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-				<ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+				<ColumnConstraints halignment="RIGHT"
+					hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+				<ColumnConstraints hgrow="NEVER"
+					maxWidth="-Infinity" minWidth="-Infinity" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+				<RowConstraints maxHeight="-Infinity"
+					minHeight="-Infinity" vgrow="NEVER" />
+				<RowConstraints maxHeight="-Infinity"
+					minHeight="-Infinity" vgrow="NEVER" />
+				<RowConstraints maxHeight="-Infinity"
+					minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
 			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="%fx.SettingsPane2.020" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin></Label>
-				<Button fx:id="openWorkDirButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="workDirButton" text="%fx.SettingsPane2.workDir.010" textAlignment="CENTER" GridPane.columnIndex="1">
+				<Label alignment="CENTER_RIGHT"
+					maxHeight="1.7976931348623157E308"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" styleClass="settingsTitleLabel2"
+					text="%fx.SettingsPane2.020" textAlignment="RIGHT"
+					textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3">
 					<GridPane.margin>
-						<Insets bottom="1.0" left="5.0" right="7.0" top="1.0" />
+						<Insets />
+					</GridPane.margin>
+				</Label>
+				<Button fx:id="openWorkDirButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.010"
+					textAlignment="CENTER" GridPane.columnIndex="1">
+					<GridPane.margin>
+						<Insets bottom="1.0" left="5.0" top="1.0" />
 					</GridPane.margin>
 				</Button>
-				<Button fx:id="changeWorkDirButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="workDirButton" text="%fx.SettingsPane2.workDir.020" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+				<Button fx:id="changeWorkDirButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.020"
+					textAlignment="CENTER" GridPane.columnIndex="1"
+					GridPane.rowIndex="1">
 					<GridPane.margin>
-						<Insets bottom="1.0" left="5.0" right="7.0" top="1.0" />
+						<Insets bottom="1.0" left="5.0" top="1.0" />
 					</GridPane.margin>
 				</Button>
-				<Button fx:id="deleteWorkDirButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="workDirButton" text="%fx.SettingsPane2.workDir.030" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
+				<Button fx:id="deleteWorkDirButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
+					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.030"
+					textAlignment="CENTER" GridPane.columnIndex="1"
+					GridPane.rowIndex="2">
 					<GridPane.margin>
-						<Insets bottom="3.0" left="5.0" right="7.0" top="1.0" />
+						<Insets bottom="3.0" left="5.0" top="1.0" />
 					</GridPane.margin>
 				</Button>
 			</children>
 		</GridPane>
 	</children>
+	<padding>
+		<Insets right="7.0" />
+	</padding>
 </fx:root>

@@ -31,16 +31,17 @@ import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.excel.BookComparison;
-import xyz.hotchpotch.hogandiff.excel.BookInfo;
-import xyz.hotchpotch.hogandiff.excel.DirComparison;
-import xyz.hotchpotch.hogandiff.excel.DirComparison.FlattenDirComparison;
-import xyz.hotchpotch.hogandiff.excel.DirInfo;
-import xyz.hotchpotch.hogandiff.excel.Factory;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row3Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row4Pane;
+import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.DirInfo;
+import xyz.hotchpotch.hogandiff.logic.Factory;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -91,6 +92,9 @@ public class MainController extends VBox {
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
+    /** Googleアカウント資格情報 */
+    public final Property<GoogleCredential> googleCredential = new SimpleObjectProperty<>();
+    
     /**
      * このコントローラオブジェクトを初期化します。<br>
      */
@@ -113,10 +117,10 @@ public class MainController extends VBox {
         row3Pane.showSettings().addListener((target, oldValue, newValue) -> {
             if (newValue) {
                 row4Pane.setVisible2(true);
-                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight() + 3);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight());
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_OPEN);
             } else {
-                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight() - 3);
+                AppMain.stage.setHeight(AppMain.stage.getHeight() - row4Pane.originalHeight());
                 AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
                 row4Pane.setVisible2(false);
             }
@@ -139,11 +143,11 @@ public class MainController extends VBox {
     
     public void updateActiveComparison() {
         switch (menuProp.getValue()) {
-            case COMPARE_SHEETS -> updateSheetComparison();
-            case COMPARE_BOOKS -> updateBookComparison();
-            case COMPARE_DIRS -> updateDirComparison();
-            case COMPARE_TREES -> updateTreeComparison();
-            default -> throw new AssertionError();
+        case COMPARE_SHEETS -> updateSheetComparison();
+        case COMPARE_BOOKS -> updateBookComparison();
+        case COMPARE_DIRS -> updateDirComparison();
+        case COMPARE_TREES -> updateTreeComparison();
+        default -> throw new AssertionError();
         }
     }
     
@@ -152,7 +156,7 @@ public class MainController extends VBox {
         Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
                 bookInfoPair.isPaired() && sheetNamePair.isPaired()
-                        ? new BookComparison(bookInfoPair, List.of(sheetNamePair))
+                        ? new PairingInfoBooks(bookInfoPair, List.of(sheetNamePair))
                         : null);
     }
     
@@ -160,7 +164,7 @@ public class MainController extends VBox {
         Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
                 bookInfoPair.isPaired()
-                        ? BookComparison.calculate(
+                        ? PairingInfoBooks.calculate(
                                 bookInfoPair,
                                 Factory.sheetNamesMatcher(ar.settings()))
                         : null);
@@ -170,7 +174,7 @@ public class MainController extends VBox {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
                 dirInfoPair.isPaired()
-                        ? DirComparison.calculate(
+                        ? PairingInfoDirs.calculate(
                                 dirInfoPair,
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
@@ -183,7 +187,7 @@ public class MainController extends VBox {
         Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
                 dirInfoPair.isPaired()
-                        ? DirComparison.calculate(
+                        ? PairingInfoDirs.calculate(
                                 dirInfoPair,
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
@@ -234,38 +238,38 @@ public class MainController extends VBox {
         AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         Stream<Path> bookPathStream = switch (menu) {
-            case COMPARE_SHEETS -> {
-                BookComparison bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield bookPathPair.isIdentical()
-                        ? Stream.of(bookPathPair.a())
-                        : Stream.of(bookPathPair.a(), bookPathPair.b());
-            }
-            case COMPARE_BOOKS -> {
-                BookComparison bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-            }
-            case COMPARE_DIRS -> {
-                DirComparison dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                yield bookPathStream(dirComparison);
-            }
-            case COMPARE_TREES -> {
-                FlattenDirComparison flattenDirComparison = ar.settings()
-                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
-                        .flatten();
-                yield flattenDirComparison.dirComparisons().values().stream()
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .flatMap(this::bookPathStream);
-            }
+        case COMPARE_SHEETS -> {
+            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+            yield bookPathPair.isIdentical()
+                    ? Stream.of(bookPathPair.a())
+                    : Stream.of(bookPathPair.a(), bookPathPair.b());
+        }
+        case COMPARE_BOOKS -> {
+            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+            yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
+        }
+        case COMPARE_DIRS -> {
+            PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            yield bookPathStream(dirComparison);
+        }
+        case COMPARE_TREES -> {
+            PairingInfoDirsFlatten flattenDirComparison = ar.settings()
+                    .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                    .flatten();
+            yield flattenDirComparison.dirComparisons().values().stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .flatMap(this::bookPathStream);
+        }
         };
         
         Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
         return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
     }
     
-    private Stream<Path> bookPathStream(DirComparison dirComparison) {
+    private Stream<Path> bookPathStream(PairingInfoDirs dirComparison) {
         return dirComparison.childBookInfoPairs().stream()
                 .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
                 .filter(bookInfo -> bookInfo != null)

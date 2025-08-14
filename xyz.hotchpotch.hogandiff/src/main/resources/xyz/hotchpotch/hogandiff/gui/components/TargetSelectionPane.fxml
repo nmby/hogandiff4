@@ -5,14 +5,17 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 	minHeight="-Infinity" minWidth="-Infinity"
 	styleClass="targetSelectionPane" type="GridPane"
-	xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+	xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
 	<columnConstraints>
 		<ColumnConstraints halignment="CENTER" hgrow="NEVER"
 			maxWidth="-Infinity" minWidth="-Infinity" />
@@ -40,6 +43,11 @@
 			minWidth="-Infinity" styleClass="targetItemLabel"
 			text="%fx.TargetSelectionPane.030" textAlignment="RIGHT"
 			textOverrun="CLIP" GridPane.columnIndex="1" />
+		<Label fx:id="bookPathLabel" alignment="CENTER_RIGHT"
+			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+			minWidth="-Infinity" styleClass="targetItemLabel"
+			text="%fx.TargetSelectionPane.010" textAlignment="RIGHT"
+			textOverrun="CLIP" GridPane.columnIndex="1" />
 		<TextField fx:id="dirPathTextField" editable="false"
 			maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
@@ -47,15 +55,6 @@
 				<Insets bottom="1.0" top="3.0" />
 			</GridPane.margin>
 		</TextField>
-		<Button fx:id="dirPathButton" alignment="CENTER"
-			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" mnemonicParsing="false" text="..."
-			textAlignment="CENTER" GridPane.columnIndex="3" />
-		<Label fx:id="bookPathLabel" alignment="CENTER_RIGHT"
-			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" styleClass="targetItemLabel"
-			text="%fx.TargetSelectionPane.010" textAlignment="RIGHT"
-			textOverrun="CLIP" GridPane.columnIndex="1" />
 		<TextField fx:id="bookPathTextField" editable="false"
 			maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
@@ -63,10 +62,39 @@
 				<Insets bottom="1.0" top="3.0" />
 			</GridPane.margin>
 		</TextField>
-		<Button fx:id="bookPathButton" alignment="CENTER"
-			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" mnemonicParsing="false" text="..."
-			textAlignment="CENTER" GridPane.columnIndex="3" />
+		<HBox alignment="CENTER" maxHeight="-Infinity"
+			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+			GridPane.columnIndex="3" GridPane.hgrow="NEVER"
+			GridPane.vgrow="NEVER">
+			<children>
+				<Button fx:id="dirPathButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+					minWidth="-Infinity" mnemonicParsing="false" text="..."
+					textAlignment="CENTER" />
+				<Button fx:id="bookPathButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+					minWidth="-Infinity" mnemonicParsing="false" text="..."
+					textAlignment="CENTER" />
+				<Button fx:id="googleDriveButton" alignment="CENTER"
+					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+					minWidth="-Infinity" mnemonicParsing="false" textAlignment="CENTER">
+					<graphic>
+						<ImageView fitHeight="17.0" fitWidth="17.0"
+							pickOnBounds="true" preserveRatio="true">
+							<image>
+								<Image url="@GoogleDrive.png" />
+							</image>
+						</ImageView>
+					</graphic>
+					<padding>
+						<Insets bottom="4.0" left="3.5" right="3.5" top="4.0" />
+					</padding>
+				</Button>
+			</children>
+			<GridPane.margin>
+				<Insets bottom="1.0" top="3.0" />
+			</GridPane.margin>
+		</HBox>
 		<Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT"
 			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 			minWidth="-Infinity" styleClass="targetItemLabel"
