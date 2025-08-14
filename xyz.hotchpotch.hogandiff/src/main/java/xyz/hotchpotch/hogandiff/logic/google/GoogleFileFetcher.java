@@ -198,7 +198,7 @@ public class GoogleFileFetcher {
             throw new IllegalArgumentException("dstDir must be a directory: " + dstDir);
         }
         
-        String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + ".xlsx";
+        String fileName = GoogleFileInfo.hashTag(metadata.fileUrl, revisionId) + metadata.fileType.ext();
         Path filePath = dstDir.resolve(fileName);
         RevisionMapper revision = metadata.revisions.stream()
                 .filter(r -> r.getRevisionId().equals(revisionId))
@@ -219,7 +219,7 @@ public class GoogleFileFetcher {
         String fileId = GoogleUtil.extractFileId(metadata.fileUrl);
         
         if (metadata.fileType == GoogleFileType.GOOGLE_SPREADSHEET) {
-            try (InputStream is = driveService.files().export(fileId, GoogleFileType.EXCEL_BOOK_NEW.mimeType())
+            try (InputStream is = driveService.files().export(fileId, GoogleFileType.EXCEL_XLSX.mimeType())
                     .executeMediaAsInputStream();
                     OutputStream os = new FileOutputStream(filePath.toFile(), false)) {
                 
