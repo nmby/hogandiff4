@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -42,7 +43,7 @@ public record GoogleCredential(
     // TODO: ポート番号の取得方法をもっとスマートにする
     private static volatile int lastUsedPort = 8887;
     
-    private static Credential getCredential(GoogleAuthorizationCodeFlow flow) throws IOException {
+    private static Credential getCredential(AuthorizationCodeFlow flow) throws IOException {
         LocalServerReceiver receiver = null;
         for (int port = lastUsedPort + 1; port < 10000; port++) {
             try {
@@ -85,13 +86,14 @@ public record GoogleCredential(
             
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(GoogleUtil.JSON_FACTORY, reader);
             
-            GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            AuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                     GoogleUtil.HTTP_TRANSPORT,
                     GoogleUtil.JSON_FACTORY,
                     clientSecrets,
                     OAUTH_SCOPES)
                             .setDataStoreFactory(new FileDataStoreFactory(AppResource.USER_HOME.toFile()))
                             .setAccessType("offline")
+                            .enablePKCE()
                             .build();
             
             DataStore<StoredCredential> dataStore = flow.getCredentialDataStore();
