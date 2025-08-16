@@ -227,8 +227,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         });
         
         // 3.初期値の設定
-        if (ar.settings().containsKey(SettingKeys.CURR_BOOK_INFOS.get(side))) {
-            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null, null);
+        if (ar.settings().containsKey(SettingKeys.CURR_ARG_PATHS.get(side))) {
+            Path path = ar.settings().get(SettingKeys.CURR_ARG_PATHS.get(side));
+            if (isDirOperation(parent.menuProp.getValue())) {
+                setDirPath(path, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
+            } else {
+                validateAndSetTarget(path, null, null);
+            }
         }
     }
     

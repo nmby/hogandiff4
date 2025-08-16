@@ -58,5 +58,6 @@ run {
     //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
     
     // for console-launching test
-    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックA.xlsx", "--enable-fuzzy-matching=true"]
+    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックB.xlsx", "--enable-fuzzy-matching=true"]
+    //args = ["C:\\テストA", "C:\\テストB", "--enable-fuzzy-matching=true"]
 }

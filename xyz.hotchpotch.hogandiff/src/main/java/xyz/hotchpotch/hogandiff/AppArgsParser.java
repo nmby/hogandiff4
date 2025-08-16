@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.logic.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -86,31 +83,19 @@ public class AppArgsParser {
             // パスの評価に失敗した場合は解析失敗とする。
             return Optional.empty();
         }
-        
-        Settings.Builder builder = Settings.builder()
-                .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS);
-        BookInfo bookInfoA = null;
-        BookInfo bookInfoB = null;
-        
-        if (Files.isRegularFile(pathA) && Files.isRegularFile(pathB)) {
-            // 第一・第二引数で指定されたExcelブックのロードを試みる。
-            try {
-                SheetNamesLoader sheetNamesLoaderA = Factory.sheetNamesLoader(pathA);
-                bookInfoA = sheetNamesLoaderA.loadBookInfo(pathA, null);
-                builder.set(SettingKeys.CURR_BOOK_INFO1, bookInfoA);
-            } catch (Exception e) {
-                e.printStackTrace();
-                // nop. Excelブックのロードに失敗した場合は、処理継続とする。
-            }
-            try {
-                SheetNamesLoader sheetNamesLoaderB = Factory.sheetNamesLoader(pathB);
-                bookInfoB = sheetNamesLoaderB.loadBookInfo(pathB, null);
-                builder.set(SettingKeys.CURR_BOOK_INFO2, bookInfoB);
-            } catch (Exception e) {
-                e.printStackTrace();
-                // nop. Excelブックのロードに失敗した場合は、処理継続とする。
-            }
+        if (Files.notExists(pathA) || Files.notExists(pathB)
+                || Files.isRegularFile(pathA) != Files.isRegularFile(pathB)
+                || Files.isDirectory(pathA) != Files.isDirectory(pathB)
+                || !Files.isRegularFile(pathA) && !Files.isDirectory(pathA)) {
+            return Optional.empty();
         }
+        
+        Settings.Builder builder = Settings.builder().set(
+                SettingKeys.CURR_MENU,
+                Files.isDirectory(pathA) ? AppMenu.COMPARE_DIRS : AppMenu.COMPARE_BOOKS);
+        
+        builder.set(SettingKeys.CURR_ARG_PATH1, pathA);
+        builder.set(SettingKeys.CURR_ARG_PATH2, pathB);
         
         // 次に、第三以降の引数を解析する。
         try {
