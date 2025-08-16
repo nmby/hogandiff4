@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -9,9 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import xyz.hotchpotch.hogandiff.logic.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -21,11 +19,11 @@ import xyz.hotchpotch.hogandiff.util.Settings.Key;
  * @author nmby
  */
 public class AppArgsParser {
-
+    
     // [static members] ********************************************************
-
+    
     private static final String BR = System.lineSeparator();
-
+    
     /** このアプリケーションのコマンドライン起動時の使い方 */
     public static final String USAGE = ""
             + "方眼Diff.exe bookPath1 bookPath2 <OPTIONS>" + BR
@@ -48,7 +46,7 @@ public class AppArgsParser {
             + "    --prioritize-speed=[true|false]      : default value is "
             + SettingKeys.PRIORITIZE_SPEED.ifNotSetSupplier().get() + BR
             + BR;
-
+    
     private static final Map<String, Key<Boolean>> OPTIONS = Map.of(
             "--consider-row-gaps", SettingKeys.CONSIDER_ROW_GAPS,
             "--consider-column-gaps", SettingKeys.CONSIDER_COLUMN_GAPS,
@@ -58,7 +56,7 @@ public class AppArgsParser {
             "--show-result-text", SettingKeys.SHOW_RESULT_REPORT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
             "--prioritize-speed", SettingKeys.PRIORITIZE_SPEED);
-
+    
     /**
      * アプリケーション実行時引数を解析してアプリケーション設定に変換します。<br>
      * アプリケーション実行時引数の一部でも解析できない部分がある場合は、
@@ -70,60 +68,47 @@ public class AppArgsParser {
      */
     public static Optional<Settings> parseArgs(String[] args) {
         Objects.requireNonNull(args);
-
+        
         if (args.length < 2) {
             return Optional.empty();
         }
-
-        // まず、第一・第二引数で指定されたExcelブックのロードを試みる。
-        Path bookPathA = null;
-        Path bookPathB = null;
-        BookInfo bookInfoA = null;
-        BookInfo bookInfoB = null;
+        
+        // まず、第一・第二引数の評価を行う。
+        Path pathA = null;
+        Path pathB = null;
         try {
-            bookPathA = Path.of(args[0]);
-            bookPathB = Path.of(args[1]);
+            pathA = Path.of(args[0]);
+            pathB = Path.of(args[1]);
         } catch (Exception e) {
             // パスの評価に失敗した場合は解析失敗とする。
             return Optional.empty();
         }
-        try {
-            SheetNamesLoader bookLoaderA = Factory.bookLoader(bookPathA);
-            bookInfoA = bookLoaderA.loadBookInfo(bookPathA, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // nop. Excelブックのロードに失敗した場合は、処理継続とする。
+        if (Files.notExists(pathA) || Files.notExists(pathB)
+                || Files.isRegularFile(pathA) != Files.isRegularFile(pathB)
+                || Files.isDirectory(pathA) != Files.isDirectory(pathB)
+                || !Files.isRegularFile(pathA) && !Files.isDirectory(pathA)) {
+            return Optional.empty();
         }
-        try {
-            SheetNamesLoader bookLoaderB = Factory.bookLoader(bookPathB);
-            bookInfoB = bookLoaderB.loadBookInfo(bookPathB, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // nop. Excelブックのロードに失敗した場合は、処理継続とする。
-        }
-
+        
+        Settings.Builder builder = Settings.builder().set(
+                SettingKeys.CURR_MENU,
+                Files.isDirectory(pathA) ? AppMenu.COMPARE_DIRS : AppMenu.COMPARE_BOOKS);
+        
+        builder.set(SettingKeys.CURR_ARG_PATH1, pathA);
+        builder.set(SettingKeys.CURR_ARG_PATH2, pathB);
+        
         // 次に、第三以降の引数を解析する。
         try {
-            Settings.Builder builder = Settings.builder()
-                    .set(SettingKeys.CURR_MENU, AppMenu.COMPARE_BOOKS);
-
-            if (bookInfoA != null) {
-                builder.set(SettingKeys.CURR_BOOK_INFO1, bookInfoA);
-            }
-            if (bookInfoB != null) {
-                builder.set(SettingKeys.CURR_BOOK_INFO2, bookInfoB);
-            }
-
             Deque<String> remainingParams = new ArrayDeque<String>(List.of(args));
             // 第一・第二引数はパース済みのため読み飛ばす
             remainingParams.remove();
             remainingParams.remove();
-
+            
             // 廃止した --save-memory オプションは無視する。
             remainingParams.removeIf(p -> p.startsWith("--save-memory="));
-
+            
             Map<String, Key<Boolean>> remainingOptions = new HashMap<>(OPTIONS);
-
+            
             while (!remainingParams.isEmpty() && !remainingOptions.isEmpty()) {
                 String[] keyValue = remainingParams.removeFirst().split("=", 2);
                 if (!remainingOptions.containsKey(keyValue[0])) {
@@ -134,21 +119,21 @@ public class AppArgsParser {
                 }
                 builder.set(remainingOptions.remove(keyValue[0]), Boolean.valueOf(keyValue[1]));
             }
-
+            
             // 解析不能なパラメータが残っている場合はエラー（解析失敗）とする。
             if (!remainingParams.isEmpty()) {
                 return Optional.empty();
             }
-
+            
             return Optional.of(builder.build());
-
+            
         } catch (RuntimeException e) {
             return Optional.empty();
         }
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private AppArgsParser() {
     }
 }

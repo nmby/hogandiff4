@@ -123,6 +123,7 @@ public class AppMain extends Application {
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
+            controller.updateActiveComparison();
             controller.execute();
         }
     }
