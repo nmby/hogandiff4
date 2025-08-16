@@ -30,7 +30,7 @@ public class Factory {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static SheetNamesLoader bookLoader(Path bookPath) {
+    public static SheetNamesLoader sheetNamesLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
 
         return SheetNamesLoader.of(bookPath);
@@ -66,11 +66,11 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirsLoader dirLoader(Settings settings) {
+    public static DirLoader dirLoader(Settings settings) {
         Objects.requireNonNull(settings);
 
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return DirsLoader.of(recursively);
+        return DirLoader.of(recursively);
     }
 
     /**

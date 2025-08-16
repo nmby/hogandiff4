@@ -263,7 +263,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
         
         try {
             String readPassword = readPasswords.get(bookPath);
-            SheetNamesLoader loader = Factory.bookLoader(bookPath);
+            SheetNamesLoader loader = Factory.sheetNamesLoader(bookPath);
             BookInfo newBookInfo = null;
             
             while (true) {

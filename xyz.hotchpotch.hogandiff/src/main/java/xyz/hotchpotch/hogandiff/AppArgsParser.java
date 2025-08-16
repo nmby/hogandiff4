@@ -95,16 +95,16 @@ public class AppArgsParser {
         if (Files.isRegularFile(pathA) && Files.isRegularFile(pathB)) {
             // 第一・第二引数で指定されたExcelブックのロードを試みる。
             try {
-                SheetNamesLoader bookLoaderA = Factory.bookLoader(pathA);
-                bookInfoA = bookLoaderA.loadBookInfo(pathA, null);
+                SheetNamesLoader sheetNamesLoaderA = Factory.sheetNamesLoader(pathA);
+                bookInfoA = sheetNamesLoaderA.loadBookInfo(pathA, null);
                 builder.set(SettingKeys.CURR_BOOK_INFO1, bookInfoA);
             } catch (Exception e) {
                 e.printStackTrace();
                 // nop. Excelブックのロードに失敗した場合は、処理継続とする。
             }
             try {
-                SheetNamesLoader bookLoaderB = Factory.bookLoader(pathB);
-                bookInfoB = bookLoaderB.loadBookInfo(pathB, null);
+                SheetNamesLoader sheetNamesLoaderB = Factory.sheetNamesLoader(pathB);
+                bookInfoB = sheetNamesLoaderB.loadBookInfo(pathB, null);
                 builder.set(SettingKeys.CURR_BOOK_INFO2, bookInfoB);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -2,7 +2,7 @@ package xyz.hotchpotch.hogandiff.logic;
 
 import java.nio.file.Path;
 
-import xyz.hotchpotch.hogandiff.logic.plain.DirsLoaderStandard;
+import xyz.hotchpotch.hogandiff.logic.plain.DirLoaderStandard;
 
 /**
  * フォルダ情報を抽出するローダーを表します。<br>
@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.logic.plain.DirsLoaderStandard;
  * @author nmby
  */
 @FunctionalInterface
-public interface DirsLoader {
+public interface DirLoader {
     
     // [static members] ********************************************************
     
@@ -21,8 +21,8 @@ public interface DirsLoader {
      * @param recursively 子フォルダも再帰的に抽出するか
      * @return フォルダ情報を抽出するローダー
      */
-    public static DirsLoader of(boolean recursively) {
-        return new DirsLoaderStandard(recursively);
+    public static DirLoader of(boolean recursively) {
+        return new DirLoaderStandard(recursively);
     }
     
     // [instance members] ******************************************************

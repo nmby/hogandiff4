@@ -16,7 +16,6 @@ import javafx.scene.control.ButtonType;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -197,17 +196,12 @@ public class AppResource {
             // コンソールから起動した際は CURR_BOOK_COMPARE_INFO が未設定のため、
             // ここで処理を行うこととする。
             // FIXME: [No.X 内部実装改善] より適した位置を見つけて整理する。
-            BookInfo bookInfoA = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO1).bookPath());
-            BookInfo bookInfoB = loadBookInfo(settings.get(SettingKeys.CURR_BOOK_INFO2).bookPath());
+            BookInfo bookInfoA = settings.get(SettingKeys.CURR_BOOK_INFO1);
+            BookInfo bookInfoB = settings.get(SettingKeys.CURR_BOOK_INFO2);
             PairingInfoBooks bookComparison = PairingInfoBooks.calculate(
                     Pair.of(bookInfoA, bookInfoB),
                     Factory.sheetNamesMatcher(settings));
             settings = settings.getAltered(SettingKeys.CURR_BOOK_COMPARE_INFO, bookComparison);
         }
-    }
-    
-    private BookInfo loadBookInfo(Path bookPath) {
-        SheetNamesLoader loader = Factory.bookLoader(bookPath);
-        return loader.loadBookInfo(bookPath, null);
     }
 }
