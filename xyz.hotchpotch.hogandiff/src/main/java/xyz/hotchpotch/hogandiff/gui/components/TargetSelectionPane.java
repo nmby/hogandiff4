@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
@@ -37,7 +38,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.GoogleFilePickerDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.GooglePicker;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
@@ -45,6 +46,7 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.DirLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -178,6 +180,23 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         bookPathButton.setOnAction(this::chooseBook);
         
         googleDriveButton.setOnAction(event -> {
+            GooglePicker picker = new GooglePicker();
+            picker.openPicker(GoogleCredential.get(false))
+                    .thenAccept(fileId -> {
+                        Platform.runLater(() -> {
+                            if (fileId != null) {
+                                System.out.println("Selected file: " + fileId);
+                            }
+                        });
+                    })
+                    .exceptionally(throwable -> {
+                        Platform.runLater(() -> {
+                            // エラー処理をUIスレッドで実行
+                            throwable.printStackTrace();
+                        });
+                        return null;
+                    });
+            /*
             try {
                 BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
                 GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
@@ -190,6 +209,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
             
         });
         

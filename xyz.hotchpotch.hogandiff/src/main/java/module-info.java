@@ -22,4 +22,7 @@ module xyz.hotchpotch.hogandiff {
     requires com.google.api.client.extensions.java6.auth;
     requires com.google.api.client.json.gson;
     requires org.apache.commons.codec;
+    requires org.apache.httpcomponents.httpcore;
+    requires jdk.httpserver;
+    requires org.json;
 }
