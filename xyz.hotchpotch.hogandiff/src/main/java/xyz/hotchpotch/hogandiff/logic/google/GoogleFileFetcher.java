@@ -18,6 +18,7 @@ import com.google.api.services.drive.model.RevisionList;
 import com.google.api.services.drive.model.User;
 
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.gui.dialogs.GooglePicker.GoogleFileId;
 
 /**
  * Googleドライブから指定されたファイルを取得する機能を担います。<br>
@@ -40,6 +41,22 @@ public class GoogleFileFetcher {
             String fileUrl,
             String fileName,
             GoogleFileType fileType,
+            List<RevisionMapper> revisions) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+    }
+    
+    /**
+     * Googleドライブ上のファイルのメタデータを表します。<br>
+     * 
+     * @author nmby
+     * @param fileId Googleドライブ上のファイル識別情報
+     * @param revisions 履歴リスト
+     */
+    public static record GoogleFileMetadata2(
+            GoogleFileId fileId,
             List<RevisionMapper> revisions) {
         
         // [static members] ----------------------------------------------------
@@ -109,6 +126,39 @@ public class GoogleFileFetcher {
                 credential.credential())
                         .setApplicationName("方眼Diff")
                         .build();
+    }
+    
+    /**
+     * ファイルのメタデータをGoogleドライブから取得します。<br>
+     * 
+     * @param fileId 取得対象ファイルのGoogleドライブ上のID
+     * @return メタデータ
+     * @throws GoogleHandlingException メタデータ取得に失敗した場合
+     */
+    public GoogleFileMetadata2 fetchMetadata2(
+            GoogleFileId fileId)
+            throws GoogleHandlingException {
+        
+        Objects.requireNonNull(fileId);
+        
+        try {
+            RevisionList revisionList = driveService.revisions().list(fileId.id())
+                    .setFields("revisions(id,modifiedTime,lastModifyingUser)")
+                    .execute();
+            
+            List<RevisionMapper> revisions = revisionList.getRevisions().stream()
+                    .sorted(Comparator.<Revision, String> comparing(r -> r.getModifiedTime().toStringRfc3339())
+                            .reversed())
+                    .map(RevisionMapper::new)
+                    .toList();
+            
+            revisions.get(0).setLatest(true);
+            
+            return new GoogleFileMetadata2(fileId, revisions);
+            
+        } catch (Exception e) {
+            throw new GoogleHandlingException(e);
+        }
     }
     
     /**

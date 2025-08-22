@@ -13,6 +13,9 @@ import org.json.JSONObject;
 import com.sun.net.httpserver.HttpServer;
 
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 public class GooglePicker {
     
@@ -100,6 +103,26 @@ public class GooglePicker {
     
     private HttpServer server;
     private CompletableFuture<String> fileSelectionFuture;
+    
+    public CompletableFuture<GoogleFileMetadata2> getMetadata() {
+        return openPicker()
+                .thenApply(fileId -> {
+                    if (fileId == null) {
+                        return null;
+                    }
+                    GoogleFileFetcher fetcher = new GoogleFileFetcher();
+                    try {
+                        return fetcher.fetchMetadata2(fileId);
+                    } catch (GoogleHandlingException e) {
+                        throw new RuntimeException("Failed to fetch file metadata", e);
+                    }
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+        
+    }
     
     /**
      * Google Pickerを開いてファイル選択結果を取得

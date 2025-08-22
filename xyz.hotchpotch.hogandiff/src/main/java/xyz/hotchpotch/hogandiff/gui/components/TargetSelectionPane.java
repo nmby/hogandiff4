@@ -180,11 +180,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         googleDriveButton.setOnAction(event -> {
             GooglePicker picker = new GooglePicker();
-            picker.openPicker()
-                    .thenAccept(fileId -> {
+            picker.getMetadata()
+                    .thenAccept(metadata -> {
                         Platform.runLater(() -> {
-                            if (fileId != null) {
-                                System.out.println("Selected file: " + fileId);
+                            if (metadata != null) {
+                                System.out.println("Selected file: " + metadata);
                             }
                         });
                     })
