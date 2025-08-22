@@ -97,23 +97,12 @@ public class GoogleFileFetcher {
         }
     }
     
-    /**
-     * {@link GoogleFileFetcher} インスタンスを生成して返します。<br>
-     * 
-     * @param credential Googleドライブ認証情報
-     * @return 新しいインスタンス
-     */
-    public static GoogleFileFetcher of(GoogleCredential credential) {
-        Objects.requireNonNull(credential);
-        
-        return new GoogleFileFetcher(credential);
-    }
-    
     // [instance members] ******************************************************
     
     private final Drive driveService;
     
-    private GoogleFileFetcher(GoogleCredential credential) {
+    public GoogleFileFetcher() {
+        GoogleCredential credential = GoogleCredential.get(false);
         driveService = new Drive.Builder(
                 GoogleUtil.HTTP_TRANSPORT,
                 GoogleUtil.JSON_FACTORY,

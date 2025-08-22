@@ -106,7 +106,7 @@ public class GooglePicker {
      * @param credential Google認証情報
      * @return 選択されたファイルの情報
      */
-    public CompletableFuture<GoogleFileId> openPicker(GoogleCredential credential) {
+    public CompletableFuture<GoogleFileId> openPicker() {
         if (fileSelectionFuture != null && !fileSelectionFuture.isDone()) {
             return CompletableFuture.failedFuture(
                     new IllegalStateException("Picker is already open."));
@@ -116,7 +116,7 @@ public class GooglePicker {
         return CompletableFuture
                 .runAsync(() -> {
                     try {
-                        startServer(credential);
+                        startServer();
                         Desktop.getDesktop().browse(new URI("http://localhost:" + server.getAddress().getPort()));
                     } catch (Exception e) {
                         fileSelectionFuture.completeExceptionally(e);
@@ -142,10 +142,11 @@ public class GooglePicker {
                 });
     }
     
-    private void startServer(GoogleCredential credential) throws IOException {
+    private void startServer() throws IOException {
         if (server != null) {
             throw new IllegalStateException("Server is already running.");
         }
+        GoogleCredential credential = GoogleCredential.get(false);
         server = HttpServer.create(new InetSocketAddress(0), 0);
         
         server.createContext("/", exchange -> {

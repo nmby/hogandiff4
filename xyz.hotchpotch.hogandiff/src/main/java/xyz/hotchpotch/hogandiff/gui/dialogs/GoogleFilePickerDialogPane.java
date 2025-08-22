@@ -21,7 +21,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
@@ -82,8 +81,7 @@ public class GoogleFilePickerDialogPane extends VBox {
      */
     /* package */ void init(
             GoogleFilePickerDialog parent,
-            GoogleFileInfo googleFileInfo,
-            GoogleCredential credential) {
+            GoogleFileInfo googleFileInfo) {
         
         // 1.プロパティのバインディング
         fileUrlTextField.disableProperty().bind(processing);
@@ -120,7 +118,7 @@ public class GoogleFilePickerDialogPane extends VBox {
         // 2.イベントハンドラの設定
         fileUrlTextField.textProperty().addListener((target, oldValue, newValue) -> fileMetadata.setValue(null));
         
-        GoogleFileFetcher fetcher = GoogleFileFetcher.of(credential);
+        GoogleFileFetcher fetcher = new GoogleFileFetcher();
         
         fetchFileInfoButton.setOnAction(event -> {
             processing.set(true);

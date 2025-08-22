@@ -10,7 +10,6 @@ import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
@@ -32,13 +31,9 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
     /**
      * 新しいダイアログを構成します。<br>
      */
-    public GoogleFilePickerDialog(
-            GoogleFileInfo googleFileInfo,
-            GoogleCredential credential)
-            throws IOException {
-        
+    public GoogleFilePickerDialog(GoogleFileInfo googleFileInfo) throws IOException {
         GoogleFilePickerDialogPane gdFilePickerDialogPane = new GoogleFilePickerDialogPane();
-        gdFilePickerDialogPane.init(this, googleFileInfo, credential);
+        gdFilePickerDialogPane.init(this, googleFileInfo);
         
         DialogPane me = getDialogPane();
         me.setContent(gdFilePickerDialogPane);
@@ -54,7 +49,7 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
         this.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 try {
-                    GoogleFileFetcher fetcher = GoogleFileFetcher.of(credential);
+                    GoogleFileFetcher fetcher = new GoogleFileFetcher();
                     return fetcher.downloadFile(
                             gdFilePickerDialogPane.fileMetadata.getValue(),
                             gdFilePickerDialogPane.revisionChoiceBox.getValue().getRevisionId(),

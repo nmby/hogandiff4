@@ -46,7 +46,6 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.DirLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -181,7 +180,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         googleDriveButton.setOnAction(event -> {
             GooglePicker picker = new GooglePicker();
-            picker.openPicker(GoogleCredential.get(false))
+            picker.openPicker()
                     .thenAccept(fileId -> {
                         Platform.runLater(() -> {
                             if (fileId != null) {
