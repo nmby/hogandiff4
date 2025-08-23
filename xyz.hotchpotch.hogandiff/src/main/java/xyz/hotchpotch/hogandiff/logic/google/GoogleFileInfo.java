@@ -13,7 +13,11 @@ import org.apache.commons.codec.binary.Hex;
  * 
  * @author nmby
  */
-public class GoogleFileInfo {
+public record GoogleFileInfo(
+        GoogleFileId fileId,
+        Path dirPath,
+        String revisionId,
+        String revisionName) {
     
     // [static members] ********************************************************
     
@@ -38,7 +42,7 @@ public class GoogleFileInfo {
         }
     }
     
-    public static String hashTag(String id, String revisionId) {
+    private static String hashTag(String id, String revisionId) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(revisionId);
         
@@ -47,66 +51,22 @@ public class GoogleFileInfo {
         return Hex.encodeHexString(result);
     }
     
-    public static GoogleFileInfo of(
-            GoogleFileId fileId,
-            Path dirPath,
-            String revisionId,
-            String revisionName) {
-        
+    // [instance members] ******************************************************
+    
+    public GoogleFileInfo {
         Objects.requireNonNull(fileId);
         Objects.requireNonNull(dirPath);
         Objects.requireNonNull(revisionId);
         Objects.requireNonNull(revisionName);
-        
-        GoogleFileType fileType = GoogleFileType.of(fileId.mimeType());
-        String fileName = hashTag(fileId.id(), revisionId) + fileType.ext();
-        Path localPath = dirPath.resolve(fileName);
-        
-        return new GoogleFileInfo(fileId, localPath, revisionId, revisionName);
-    }
-    
-    // [instance members] ******************************************************
-    
-    private final GoogleFileId fileId;
-    private final String revisionId;
-    private final Path localPath;
-    private final String revisionName;
-    
-    private GoogleFileInfo(
-            GoogleFileId fileId,
-            Path localPath,
-            String revisionId,
-            String revisionName) {
-        
-        assert fileId != null;
-        assert localPath != null;
-        assert revisionId != null;
-        assert revisionName != null;
-        
-        this.fileId = fileId;
-        this.localPath = localPath;
-        this.revisionId = revisionId;
-        this.revisionName = revisionName;
-    }
-    
-    public GoogleFileId fileId() {
-        return fileId;
-    }
-    
-    public Path localPath() {
-        return localPath;
-    }
-    
-    public String revisionId() {
-        return revisionId;
-    }
-    
-    public String revisionName() {
-        return revisionName;
     }
     
     public GoogleFileType fileType() {
         return GoogleFileType.of(fileId.mimeType());
+    }
+    
+    public Path localPath() {
+        String fileName = hashTag(fileId.id(), revisionId) + fileType().ext();
+        return dirPath.resolve(fileName);
     }
     
     @Override

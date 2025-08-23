@@ -175,7 +175,7 @@ public class GoogleFileFetcher {
                 .filter(r -> r.getRevisionId().equals(revisionId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Revision not found: " + revisionId));
-        GoogleFileInfo fileInfo = GoogleFileInfo.of(
+        GoogleFileInfo fileInfo = new GoogleFileInfo(
                 metadata.fileId(),
                 dstDir,
                 revisionId,
