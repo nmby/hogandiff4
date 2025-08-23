@@ -3,36 +3,40 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<fx:root alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="450.0" spacing="7.0" type="VBox" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
-	<children>
-		<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-			<children>
-				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.050" HBox.hgrow="NEVER">
-					<HBox.margin>
-						<Insets right="5.0" />
-					</HBox.margin>
-				</Label>
-				<Label fx:id="fileNameLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-			</children>
-			<VBox.margin>
-				<Insets />
-			</VBox.margin>
-		</HBox>
-		<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-			<children>
-				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.060" HBox.hgrow="NEVER">
-					<HBox.margin>
-						<Insets right="5.0" />
-					</HBox.margin>
-				</Label>
-				<ChoiceBox fx:id="revisionChoiceBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
-			</children>
-			<VBox.margin>
-				<Insets />
-			</VBox.margin>
-		</HBox>
-	</children>
+<fx:root type="GridPane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+    <ColumnConstraints hgrow="ALWAYS" minWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="NEVER" />
+    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="NEVER" />
+  </rowConstraints>
+   <children>
+      <Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.030" />
+      <Label fx:id="fileUrlLabel" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="NEVER">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+      </Label>
+				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.050" GridPane.rowIndex="1" />
+      <Label fx:id="fileNameLabel" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="NEVER">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+      </Label>
+      <Separator GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
+				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.060" GridPane.rowIndex="3" />
+				<ChoiceBox fx:id="revisionChoiceBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="NEVER">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin></ChoiceBox>
+   </children>
 </fx:root>

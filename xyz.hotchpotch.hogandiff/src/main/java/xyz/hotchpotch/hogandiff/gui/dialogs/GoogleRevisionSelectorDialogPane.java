@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
@@ -17,13 +17,16 @@ import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
  * 
  * @author nmby
  */
-public class GoogleRevisionSelectorDialogPane extends VBox {
+public class GoogleRevisionSelectorDialogPane extends GridPane {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
     private final ResourceBundle rb = AppMain.appResource.get();
+    
+    @FXML
+    private Label fileUrlLabel;
     
     @FXML
     private Label fileNameLabel;
@@ -57,6 +60,7 @@ public class GoogleRevisionSelectorDialogPane extends VBox {
         // nop
         
         // 3.初期値の設定
+        fileUrlLabel.setText(metadata.fileId().url());
         fileNameLabel.setText(metadata.fileId().name());
         revisionChoiceBox.getItems().setAll(metadata.revisions());
         revisionChoiceBox.getSelectionModel().selectFirst();

@@ -42,6 +42,8 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                 ButtonType.CANCEL);
         
         this.setTitle(rb.getString("fx.GoogleFilePickerDialog.010"));
+        this.setResizable(true);
+        
         this.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 try {
