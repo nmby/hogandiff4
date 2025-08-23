@@ -17,6 +17,18 @@ public class GoogleFileInfo {
     
     // [static members] ********************************************************
     
+    public static record GoogleFileId(
+            String id,
+            String url,
+            String name,
+            String mimeType) {
+        
+        // [static members] ----------------------------------------------------
+        
+        // [instance members] --------------------------------------------------
+        
+    }
+    
     private static final MessageDigest digest;
     static {
         try {
@@ -26,77 +38,75 @@ public class GoogleFileInfo {
         }
     }
     
-    public static String hashTag(String fileUrl, String revisionId) {
-        Objects.requireNonNull(fileUrl);
+    public static String hashTag(String id, String revisionId) {
+        Objects.requireNonNull(id);
         Objects.requireNonNull(revisionId);
         
-        String str = "%s|%s".formatted(fileUrl, revisionId);
+        String str = "%s|%s".formatted(id, revisionId);
         byte[] result = digest.digest(str.getBytes(StandardCharsets.UTF_8));
         return Hex.encodeHexString(result);
     }
     
     public static GoogleFileInfo of(
-            String fileUrl,
+            GoogleFileId fileId,
+            Path dirPath,
             String revisionId,
-            Path localPath,
-            String fileName,
             String revisionName) {
         
-        Objects.requireNonNull(fileUrl);
+        Objects.requireNonNull(fileId);
+        Objects.requireNonNull(dirPath);
         Objects.requireNonNull(revisionId);
-        Objects.requireNonNull(localPath);
-        Objects.requireNonNull(fileName);
         Objects.requireNonNull(revisionName);
         
-        return new GoogleFileInfo(fileUrl, revisionId, localPath, fileName, revisionName);
+        GoogleFileType fileType = GoogleFileType.of(fileId.mimeType());
+        String fileName = hashTag(fileId.id(), revisionId) + fileType.ext();
+        Path localPath = dirPath.resolve(fileName);
+        
+        return new GoogleFileInfo(fileId, localPath, revisionId, revisionName);
     }
     
     // [instance members] ******************************************************
     
-    private final String fileUrl;
+    private final GoogleFileId fileId;
     private final String revisionId;
     private final Path localPath;
-    private final String fileName;
     private final String revisionName;
     
     private GoogleFileInfo(
-            String fileUrl,
-            String revisionId,
+            GoogleFileId fileId,
             Path localPath,
-            String fileName,
+            String revisionId,
             String revisionName) {
         
-        assert fileUrl != null;
-        assert revisionId != null;
+        assert fileId != null;
         assert localPath != null;
-        assert fileName != null;
+        assert revisionId != null;
         assert revisionName != null;
         
-        this.fileUrl = fileUrl;
-        this.revisionId = revisionId;
+        this.fileId = fileId;
         this.localPath = localPath;
-        this.fileName = fileName;
+        this.revisionId = revisionId;
         this.revisionName = revisionName;
     }
     
-    public String fileUrl() {
-        return fileUrl;
-    }
-    
-    public String revisionId() {
-        return revisionId;
+    public GoogleFileId fileId() {
+        return fileId;
     }
     
     public Path localPath() {
         return localPath;
     }
     
-    public String fileName() {
-        return fileName;
+    public String revisionId() {
+        return revisionId;
     }
     
     public String revisionName() {
         return revisionName;
+    }
+    
+    public GoogleFileType fileType() {
+        return GoogleFileType.of(fileId.mimeType());
     }
     
     @Override
@@ -105,7 +115,7 @@ public class GoogleFileInfo {
             return true;
         }
         if (o instanceof GoogleFileInfo other) {
-            return fileUrl.equals(other.fileUrl)
+            return fileId.id().equals(other.fileId.id())
                     && revisionId.equals(other.revisionId);
         }
         return false;
@@ -113,6 +123,6 @@ public class GoogleFileInfo {
     
     @Override
     public int hashCode() {
-        return Objects.hash(fileUrl, revisionId);
+        return Objects.hash(fileId.id(), revisionId);
     }
 }

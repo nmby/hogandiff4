@@ -17,7 +17,7 @@ import com.google.api.services.drive.model.RevisionList;
 import com.google.api.services.drive.model.User;
 
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.gui.dialogs.GooglePicker.GoogleFileId;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleFileId;
 
 /**
  * Googleドライブから指定されたファイルを取得する機能を担います。<br>
@@ -35,7 +35,7 @@ public class GoogleFileFetcher {
      * @param fileId Googleドライブ上のファイル識別情報
      * @param revisions 履歴リスト
      */
-    public static record GoogleFileMetadata2(
+    public static record GoogleFileMetadata(
             GoogleFileId fileId,
             List<RevisionMapper> revisions) {
         
@@ -115,8 +115,7 @@ public class GoogleFileFetcher {
      * @return メタデータ
      * @throws GoogleHandlingException メタデータ取得に失敗した場合
      */
-    public GoogleFileMetadata2 fetchMetadata2(
-            GoogleFileId fileId)
+    public GoogleFileMetadata fetchMetadata(GoogleFileId fileId)
             throws GoogleHandlingException {
         
         Objects.requireNonNull(fileId);
@@ -134,7 +133,7 @@ public class GoogleFileFetcher {
             
             revisions.get(0).setLatest(true);
             
-            return new GoogleFileMetadata2(fileId, revisions);
+            return new GoogleFileMetadata(fileId, revisions);
             
         } catch (Exception e) {
             throw new GoogleHandlingException(e);
@@ -145,13 +144,13 @@ public class GoogleFileFetcher {
      * Googleドライブから指定されたファイルの指定されたリビジョンをダウンロードします。<br>
      * 
      * @param metadata メタデータ
-     * @param revisionId リビジョン
+     * @param revisionId リビジョンID
      * @param dstDir ダウンロード先ディレクトリ
      * @return ファイル情報
      * @throws GoogleHandlingException 処理に失敗した場合
      */
-    public GoogleFileInfo downloadFile2(
-            GoogleFileMetadata2 metadata,
+    public GoogleFileInfo downloadFile(
+            GoogleFileMetadata metadata,
             String revisionId,
             Path dstDir)
             throws GoogleHandlingException {
@@ -172,30 +171,26 @@ public class GoogleFileFetcher {
             throw new IllegalArgumentException("dstDir must be a directory: " + dstDir);
         }
         
-        GoogleFileId fileId = metadata.fileId();
-        GoogleFileType fileType = GoogleFileType.of(fileId.mimeType());
-        String fileName = GoogleFileInfo.hashTag(fileId.url(), revisionId) + fileType.ext();
-        Path filePath = dstDir.resolve(fileName);
         RevisionMapper revision = metadata.revisions.stream()
                 .filter(r -> r.getRevisionId().equals(revisionId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Revision not found: " + revisionId));
         GoogleFileInfo fileInfo = GoogleFileInfo.of(
-                fileId.url(),
+                metadata.fileId(),
+                dstDir,
                 revisionId,
-                filePath,
-                fileId.name(),
                 revision.toString());
         
-        if (Files.exists(filePath)) {
+        if (Files.exists(fileInfo.localPath())) {
             // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。
             return fileInfo;
         }
         
-        if (fileType == GoogleFileType.GOOGLE_SPREADSHEET) {
-            try (InputStream is = driveService.files().export(fileId.id(), GoogleFileType.EXCEL_XLSX.mimeType())
+        if (fileInfo.fileType() == GoogleFileType.GOOGLE_SPREADSHEET) {
+            try (InputStream is = driveService.files()
+                    .export(fileInfo.fileId().id(), GoogleFileType.EXCEL_XLSX.mimeType())
                     .executeMediaAsInputStream();
-                    OutputStream os = new FileOutputStream(filePath.toFile(), false)) {
+                    OutputStream os = new FileOutputStream(fileInfo.localPath().toFile(), false)) {
                 
                 is.transferTo(os);
                 
@@ -204,8 +199,10 @@ public class GoogleFileFetcher {
             }
             
         } else {
-            try (InputStream is = driveService.files().get(fileId.id()).executeMediaAsInputStream();
-                    OutputStream os = new FileOutputStream(filePath.toFile(), false)) {
+            try (InputStream is = driveService.files()
+                    .get(fileInfo.fileId().id())
+                    .executeMediaAsInputStream();
+                    OutputStream os = new FileOutputStream(fileInfo.localPath().toFile(), false)) {
                 
                 is.transferTo(os);
                 

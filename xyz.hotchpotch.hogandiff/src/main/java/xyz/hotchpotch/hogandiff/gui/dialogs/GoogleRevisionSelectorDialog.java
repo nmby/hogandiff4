@@ -10,7 +10,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
@@ -31,7 +31,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
     /**
      * 新しいダイアログを構成します。<br>
      */
-    public GoogleRevisionSelectorDialog(GoogleFileMetadata2 metadata) throws IOException {
+    public GoogleRevisionSelectorDialog(GoogleFileMetadata metadata) throws IOException {
         GoogleRevisionSelectorDialogPane dialogPane = new GoogleRevisionSelectorDialogPane();
         dialogPane.init(metadata);
         
@@ -46,7 +46,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
             if (buttonType == ButtonType.OK) {
                 try {
                     GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                    return fetcher.downloadFile2(
+                    return fetcher.downloadFile(
                             metadata,
                             dialogPane.revisionChoiceBox.getValue().getRevisionId(),
                             ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));

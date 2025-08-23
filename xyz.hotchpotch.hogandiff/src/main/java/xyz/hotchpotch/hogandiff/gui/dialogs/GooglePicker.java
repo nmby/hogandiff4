@@ -17,25 +17,14 @@ import com.sun.net.httpserver.HttpServer;
 import javafx.application.Platform;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleFileId;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 public class GooglePicker {
     
     // [static members] ********************************************************
-    
-    public static record GoogleFileId(
-            String id,
-            String url,
-            String name,
-            String mimeType) {
-        
-        // [static members] ----------------------------------------------------
-        
-        // [instance members] --------------------------------------------------
-        
-    }
     
     private static final String API_KEY = "AIzaSyBR3oJ2VekRl3NlmoXVmE9KXyXA1zEIDVk";
     private static final int PICKER_TIMEOUT_SECONDS = 300;
@@ -126,10 +115,10 @@ public class GooglePicker {
                         }
                         
                         // メタデータ取得（バックグラウンドスレッドで実行可能）
-                        CompletableFuture<GoogleFileMetadata2> metadataFuture = CompletableFuture.supplyAsync(() -> {
+                        CompletableFuture<GoogleFileMetadata> metadataFuture = CompletableFuture.supplyAsync(() -> {
                             try {
                                 GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                                return fetcher.fetchMetadata2(fileId);
+                                return fetcher.fetchMetadata(fileId);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

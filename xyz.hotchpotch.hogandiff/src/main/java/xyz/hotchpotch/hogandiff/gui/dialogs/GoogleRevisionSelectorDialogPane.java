@@ -9,7 +9,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
 
 /**
@@ -49,7 +49,7 @@ public class GoogleRevisionSelectorDialogPane extends VBox {
      * @param parent   親要素
      * @param metadata  Googleドライブファイルのメタデータ
      */
-    /* package */ void init(GoogleFileMetadata2 metadata) {
+    /* package */ void init(GoogleFileMetadata metadata) {
         // 1.プロパティのバインディング
         // nop
         
