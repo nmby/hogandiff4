@@ -8,11 +8,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.json.JSONObject;
 
 import com.sun.net.httpserver.HttpServer;
 
+import javafx.application.Platform;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
@@ -36,6 +38,7 @@ public class GooglePicker {
     }
     
     private static final String API_KEY = "AIzaSyBR3oJ2VekRl3NlmoXVmE9KXyXA1zEIDVk";
+    private static final int PICKER_TIMEOUT_SECONDS = 300;
     
     private static final String HTML = """
             <!DOCTYPE html>
@@ -84,7 +87,6 @@ public class GooglePicker {
                                 })
                             }).then(() => window.close());
                         } else if (data.action == google.picker.Action.CANCEL) {
-                            // キャンセル時もサーバーに通知
                             fetch('/callback', {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/json'},
@@ -94,6 +96,13 @@ public class GooglePicker {
                             }).then(() => window.close());
                         }
                     }
+            
+                    // ブラウザが閉じられる前にサーバーに通知
+                    window.addEventListener('beforeunload', function(event) {
+                        navigator.sendBeacon('/callback', JSON.stringify({
+                            cancelled: true
+                        }));
+                    });
             
                     window.onload = function() {
                         gapi.load('picker', {'callback': onPickerApiLoad});
@@ -110,20 +119,40 @@ public class GooglePicker {
     
     public CompletableFuture<GoogleFileInfo> downloadAndGetFileInfo() throws GoogleHandlingException {
         try {
-            GoogleFileId fileId = openPicker().join();
-            if (fileId == null) {
-                return CompletableFuture.completedFuture(null);
-            }
+            return openPicker()
+                    .thenCompose(fileId -> {
+                        if (fileId == null) {
+                            return CompletableFuture.completedFuture(null);
+                        }
+                        
+                        // メタデータ取得（バックグラウンドスレッドで実行可能）
+                        CompletableFuture<GoogleFileMetadata2> metadataFuture = CompletableFuture.supplyAsync(() -> {
+                            try {
+                                GoogleFileFetcher fetcher = new GoogleFileFetcher();
+                                return fetcher.fetchMetadata2(fileId);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        
+                        // ダイアログ表示（JavaFXアプリケーションスレッドで実行）
+                        return metadataFuture.thenCompose(metadata -> {
+                            CompletableFuture<GoogleFileInfo> dialogFuture = new CompletableFuture<>();
+                            
+                            Platform.runLater(() -> {
+                                try {
+                                    GoogleRevisionSelectorDialog dialog = new GoogleRevisionSelectorDialog(metadata);
+                                    Optional<GoogleFileInfo> modified = dialog.showAndWait();
+                                    dialogFuture.complete(modified.orElse(null));
+                                } catch (Exception e) {
+                                    dialogFuture.completeExceptionally(e);
+                                }
+                            });
+                            
+                            return dialogFuture;
+                        });
+                    });
             
-            GoogleFileFetcher fetcher = new GoogleFileFetcher();
-            GoogleFileMetadata2 metadata = fetcher.fetchMetadata2(fileId);
-            
-            GoogleRevisionSelectorDialog dialog = new GoogleRevisionSelectorDialog(metadata);
-            Optional<GoogleFileInfo> modified = dialog.showAndWait();
-            return CompletableFuture.completedFuture(modified.orElse(null));
-            
-        } catch (GoogleHandlingException e) {
-            throw e;
         } catch (Exception e) {
             throw new GoogleHandlingException(e);
         }
@@ -151,12 +180,25 @@ public class GooglePicker {
                         throw new RuntimeException(e);
                     }
                 })
-                .thenCompose(v -> fileSelectionFuture)
+                .thenCompose(v -> fileSelectionFuture
+                        .orTimeout(PICKER_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        .handle((result, throwable) -> {
+                            if (throwable instanceof TimeoutException) {
+                                // タイムアウト時はキャンセル扱い
+                                return null;
+                            } else if (throwable != null) {
+                                throw new RuntimeException(throwable);
+                            }
+                            return result;
+                        }))
                 .whenComplete((result, error) -> {
                     stopServer();
                     fileSelectionFuture = null;
                 })
                 .thenApply(jsonResult -> {
+                    if (jsonResult == null) {
+                        return null;
+                    }
                     JSONObject jsonObject = new JSONObject(jsonResult);
                     
                     if (jsonObject.has("cancelled")) {

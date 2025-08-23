@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
@@ -183,29 +184,21 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             try {
                 picker.downloadAndGetFileInfo()
                         .thenAccept(fileInfo -> {
-                            if (fileInfo != null) {
-                                validateAndSetTarget(fileInfo.localPath(), null, fileInfo);
-                            }
+                            Platform.runLater(() -> {
+                                if (fileInfo != null) {
+                                    validateAndSetTarget(fileInfo.localPath(), null, fileInfo);
+                                }
+                            });
+                        })
+                        .exceptionally(throwable -> {
+                            Platform.runLater(() -> {
+                                throwable.printStackTrace();
+                            });
+                            return null;
                         });
             } catch (GoogleHandlingException e) {
-                // TODO 自動生成された catch ブロック
                 e.printStackTrace();
             }
-            /*
-            try {
-                BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
-                GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
-                        bookInfo != null ? bookInfo.googleFileInfo() : null,
-                        parent.googleCredential.getValue());
-                Optional<GoogleFileInfo> modified = dialog.showAndWait();
-                if (modified.isPresent()) {
-                    validateAndSetTarget(modified.get().localPath(), null, modified.get());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            */
-            
         });
         
         parent.sheetNamePropPair.get(side).bind(sheetNameChoiceBox.valueProperty());
