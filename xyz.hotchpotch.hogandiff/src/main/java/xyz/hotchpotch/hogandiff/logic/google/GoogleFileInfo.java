@@ -31,6 +31,13 @@ public record GoogleFileInfo(
         
         // [instance members] --------------------------------------------------
         
+        public GoogleFileId {
+            Objects.requireNonNull(id);
+            Objects.requireNonNull(url);
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(mimeType);
+        }
+        
     }
     
     private static final MessageDigest digest;
