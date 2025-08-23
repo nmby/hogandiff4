@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<fx:root alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="450.0" spacing="7.0" type="VBox" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+			<children>
+				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.050" HBox.hgrow="NEVER">
+					<HBox.margin>
+						<Insets right="5.0" />
+					</HBox.margin>
+				</Label>
+				<Label fx:id="fileNameLabel" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+			</children>
+			<VBox.margin>
+				<Insets />
+			</VBox.margin>
+		</HBox>
+		<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+			<children>
+				<Label maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="%fx.GoogleFilePickerDialogPane.060" HBox.hgrow="NEVER">
+					<HBox.margin>
+						<Insets right="5.0" />
+					</HBox.margin>
+				</Label>
+				<ChoiceBox fx:id="revisionChoiceBox" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" HBox.hgrow="ALWAYS" />
+			</children>
+			<VBox.margin>
+				<Insets />
+			</VBox.margin>
+		</HBox>
+	</children>
+</fx:root>

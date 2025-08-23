@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
@@ -47,6 +46,7 @@ import xyz.hotchpotch.hogandiff.logic.DirLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
@@ -180,21 +180,17 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         googleDriveButton.setOnAction(event -> {
             GooglePicker picker = new GooglePicker();
-            picker.getMetadata()
-                    .thenAccept(metadata -> {
-                        Platform.runLater(() -> {
-                            if (metadata != null) {
-                                System.out.println("Selected file: " + metadata);
+            try {
+                picker.downloadAndGetFileInfo()
+                        .thenAccept(fileInfo -> {
+                            if (fileInfo != null) {
+                                validateAndSetTarget(fileInfo.localPath(), null, fileInfo);
                             }
                         });
-                    })
-                    .exceptionally(throwable -> {
-                        Platform.runLater(() -> {
-                            // エラー処理をUIスレッドで実行
-                            throwable.printStackTrace();
-                        });
-                        return null;
-                    });
+            } catch (GoogleHandlingException e) {
+                // TODO 自動生成された catch ブロック
+                e.printStackTrace();
+            }
             /*
             try {
                 BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();

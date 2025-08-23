@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +16,7 @@ import com.sun.net.httpserver.HttpServer;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata2;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 public class GooglePicker {
@@ -23,6 +25,7 @@ public class GooglePicker {
     
     public static record GoogleFileId(
             String id,
+            String url,
             String name,
             String mimeType) {
         
@@ -75,6 +78,7 @@ public class GooglePicker {
                                 headers: {'Content-Type': 'application/json'},
                                 body: JSON.stringify({
                                     id: file.id,
+                                    url: file.url,
                                     name: file.name,
                                     mimeType: file.mimeType
                                 })
@@ -104,24 +108,25 @@ public class GooglePicker {
     private HttpServer server;
     private CompletableFuture<String> fileSelectionFuture;
     
-    public CompletableFuture<GoogleFileMetadata2> getMetadata() {
-        return openPicker()
-                .thenApply(fileId -> {
-                    if (fileId == null) {
-                        return null;
-                    }
-                    GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                    try {
-                        return fetcher.fetchMetadata2(fileId);
-                    } catch (GoogleHandlingException e) {
-                        throw new RuntimeException("Failed to fetch file metadata", e);
-                    }
-                })
-                .exceptionally(e -> {
-                    e.printStackTrace();
-                    return null;
-                });
-        
+    public CompletableFuture<GoogleFileInfo> downloadAndGetFileInfo() throws GoogleHandlingException {
+        try {
+            GoogleFileId fileId = openPicker().join();
+            if (fileId == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+            
+            GoogleFileFetcher fetcher = new GoogleFileFetcher();
+            GoogleFileMetadata2 metadata = fetcher.fetchMetadata2(fileId);
+            
+            GoogleRevisionSelectorDialog dialog = new GoogleRevisionSelectorDialog(metadata);
+            Optional<GoogleFileInfo> modified = dialog.showAndWait();
+            return CompletableFuture.completedFuture(modified.orElse(null));
+            
+        } catch (GoogleHandlingException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GoogleHandlingException(e);
+        }
     }
     
     /**
@@ -129,7 +134,7 @@ public class GooglePicker {
      * @param credential Google認証情報
      * @return 選択されたファイルの情報
      */
-    public CompletableFuture<GoogleFileId> openPicker() {
+    private CompletableFuture<GoogleFileId> openPicker() {
         if (fileSelectionFuture != null && !fileSelectionFuture.isDone()) {
             return CompletableFuture.failedFuture(
                     new IllegalStateException("Picker is already open."));
@@ -158,9 +163,10 @@ public class GooglePicker {
                         return null;
                     } else {
                         String id = jsonObject.get("id").toString();
+                        String url = jsonObject.get("url").toString();
                         String name = jsonObject.get("name").toString();
                         String mimeType = jsonObject.get("mimeType").toString();
-                        return new GoogleFileId(id, name, mimeType);
+                        return new GoogleFileId(id, url, name, mimeType);
                     }
                 });
     }

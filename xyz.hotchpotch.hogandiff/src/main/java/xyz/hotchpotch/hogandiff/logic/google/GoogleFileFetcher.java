@@ -280,4 +280,79 @@ public class GoogleFileFetcher {
         }
         return fileInfo;
     }
+    
+    /**
+     * Googleドライブから指定されたファイルの指定されたリビジョンをダウンロードします。<br>
+     * 
+     * @param metadata メタデータ
+     * @param revisionId リビジョン
+     * @param dstDir ダウンロード先ディレクトリ
+     * @return ファイル情報
+     * @throws GoogleHandlingException 処理に失敗した場合
+     */
+    public GoogleFileInfo downloadFile2(
+            GoogleFileMetadata2 metadata,
+            String revisionId,
+            Path dstDir)
+            throws GoogleHandlingException {
+        
+        Objects.requireNonNull(metadata);
+        Objects.requireNonNull(revisionId);
+        Objects.requireNonNull(dstDir);
+        
+        if (!Files.exists(dstDir)) {
+            try {
+                Files.createDirectories(dstDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new GoogleHandlingException(e);
+            }
+            
+        } else if (!Files.isDirectory(dstDir)) {
+            throw new IllegalArgumentException("dstDir must be a directory: " + dstDir);
+        }
+        
+        GoogleFileId fileId = metadata.fileId();
+        GoogleFileType fileType = GoogleFileType.of(fileId.mimeType());
+        String fileName = GoogleFileInfo.hashTag(fileId.url(), revisionId) + fileType.ext();
+        Path filePath = dstDir.resolve(fileName);
+        RevisionMapper revision = metadata.revisions.stream()
+                .filter(r -> r.getRevisionId().equals(revisionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Revision not found: " + revisionId));
+        GoogleFileInfo fileInfo = GoogleFileInfo.of(
+                fileId.url(),
+                revisionId,
+                filePath,
+                fileId.name(),
+                revision.toString());
+        
+        if (Files.exists(filePath)) {
+            // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。
+            return fileInfo;
+        }
+        
+        if (fileType == GoogleFileType.GOOGLE_SPREADSHEET) {
+            try (InputStream is = driveService.files().export(fileId.id(), GoogleFileType.EXCEL_XLSX.mimeType())
+                    .executeMediaAsInputStream();
+                    OutputStream os = new FileOutputStream(filePath.toFile(), false)) {
+                
+                is.transferTo(os);
+                
+            } catch (Exception e) {
+                throw new GoogleHandlingException(e);
+            }
+            
+        } else {
+            try (InputStream is = driveService.files().get(fileId.id()).executeMediaAsInputStream();
+                    OutputStream os = new FileOutputStream(filePath.toFile(), false)) {
+                
+                is.transferTo(os);
+                
+            } catch (Exception e) {
+                throw new GoogleHandlingException(e);
+            }
+        }
+        return fileInfo;
+    }
 }
