@@ -22,7 +22,12 @@ module xyz.hotchpotch.hogandiff {
     
     requires org.json;
     
-    requires com.google.api.client.auth;
     requires com.google.api.client;
+    requires com.google.api.client.auth;
+    requires com.google.api.client.extensions.java6.auth;
+    requires com.google.api.client.extensions.jetty.auth;
+    requires com.google.api.client.json.gson;
     requires com.google.api.services.drive;
+    
+    requires google.api.client;
 }
