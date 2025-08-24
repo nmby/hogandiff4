@@ -25,13 +25,12 @@ hs_err_pid*
 # manually added
 */bin/
 /build/
+/products/
+
 # Ignore Gradle project-specific cache directory
 .gradle
 
 # Ignore Gradle build output directory
-build
-
-!/products/*
 .DS_Store
 
 gradle.properties
