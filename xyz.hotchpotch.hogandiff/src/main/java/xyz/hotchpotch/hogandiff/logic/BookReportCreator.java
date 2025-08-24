@@ -152,7 +152,7 @@ public class BookReportCreator {
             try {
                 PoiUtil.setHyperlink(
                         PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispName()),
-                        URI.create(bookInfoA.googleFileInfo().fileUrl()).toURL());
+                        URI.create(bookInfoA.googleFileInfo().fileId().url()).toURL());
             } catch (MalformedURLException e) {
                 PoiUtil.setHyperlink(
                         PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispName()),
@@ -169,7 +169,7 @@ public class BookReportCreator {
             try {
                 PoiUtil.setHyperlink(
                         PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispName()),
-                        URI.create(bookInfoB.googleFileInfo().fileUrl()).toURL());
+                        URI.create(bookInfoB.googleFileInfo().fileId().url()).toURL());
             } catch (MalformedURLException e) {
                 PoiUtil.setHyperlink(
                         PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispName()),

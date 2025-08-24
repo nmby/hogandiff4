@@ -3,24 +3,23 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 /**
- * ユーザーにGoogleドライブ上のファイル選択を求めるダイアログボックスです。<br>
+ * ユーザーにGoogleドライブ上のファイルのバージョン選択を求めるダイアログボックスです。<br>
  * 
  * @author nmby
  */
-public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
+public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
     
     // static members **********************************************************
     
@@ -32,32 +31,26 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
     /**
      * 新しいダイアログを構成します。<br>
      */
-    public GoogleFilePickerDialog(
-            GoogleFileInfo googleFileInfo,
-            GoogleCredential credential)
-            throws IOException {
-        
-        GoogleFilePickerDialogPane gdFilePickerDialogPane = new GoogleFilePickerDialogPane();
-        gdFilePickerDialogPane.init(this, googleFileInfo, credential);
+    public GoogleRevisionSelectorDialog(GoogleFileMetadata metadata) throws IOException {
+        GoogleRevisionSelectorDialogPane dialogPane = new GoogleRevisionSelectorDialogPane();
+        dialogPane.init(metadata);
         
         DialogPane me = getDialogPane();
-        me.setContent(gdFilePickerDialogPane);
+        me.setContent(dialogPane);
         me.getButtonTypes().setAll(
                 ButtonType.OK,
                 ButtonType.CANCEL);
-        me.lookupButton(ButtonType.OK).disableProperty()
-                .bind(Bindings.createBooleanBinding(
-                        () -> gdFilePickerDialogPane.fileMetadata.getValue() == null,
-                        gdFilePickerDialogPane.fileMetadata));
         
         this.setTitle(rb.getString("fx.GoogleFilePickerDialog.010"));
+        this.setResizable(true);
+        
         this.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 try {
-                    GoogleFileFetcher fetcher = GoogleFileFetcher.of(credential);
+                    GoogleFileFetcher fetcher = new GoogleFileFetcher();
                     return fetcher.downloadFile(
-                            gdFilePickerDialogPane.fileMetadata.getValue(),
-                            gdFilePickerDialogPane.revisionChoiceBox.getValue().getRevisionId(),
+                            metadata,
+                            dialogPane.revisionChoiceBox.getValue().getRevisionId(),
                             ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
                     
                 } catch (GoogleHandlingException e) {
@@ -68,7 +61,5 @@ public class GoogleFilePickerDialog extends Dialog<GoogleFileInfo> {
                 return null;
             }
         });
-        
-        gdFilePickerDialogPane.fileUrlTextField.requestFocus();
     }
 }
