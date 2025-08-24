@@ -123,7 +123,7 @@ public class BookInfo {
     public String bookName() {
         return googleFileInfo == null
                 ? bookPath.getFileName().toString()
-                : googleFileInfo.fileName();
+                : googleFileInfo.fileId().name();
     }
     
     public String bookNameWithExtension() {
@@ -140,12 +140,12 @@ public class BookInfo {
     public String dispName() {
         return googleFileInfo == null
                 ? bookPath.toString()
-                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileName(), googleFileInfo.revisionName());
+                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileId().name(), googleFileInfo.revisionName());
     }
     
     public String googleFileDesc() {
         return "GoogleDrive: %s [%s]".formatted(
-                googleFileInfo.fileName(),
+                googleFileInfo.fileId().name(),
                 null);
     }
     

@@ -26,7 +26,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    public static final String VERSION = "v0.25.0";
+    public static final String VERSION = "v0.26.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -123,6 +123,7 @@ public class AppMain extends Application {
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
+            controller.updateActiveComparison();
             controller.execute();
         }
     }
@@ -138,12 +139,14 @@ public class AppMain extends Application {
         String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
             
-            assert VERSION.equals("v0.25.0");
-            // v0.25.0 では次を行う。
+            assert VERSION.equals("v0.26.0");
+            // v0.26.0 では次を行う。
             //  ・新機能紹介ページの表示
+            //  ・設定エリアの強制展開
             
             try {
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-25-0/"));
+                appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-26-0/"));
             } catch (IOException e) {
                 e.printStackTrace();
                 // nop

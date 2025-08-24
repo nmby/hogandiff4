@@ -15,6 +15,8 @@ dependencies {
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.39.0'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20250723-2.0.0'
     implementation 'com.google.apis:google-api-services-oauth2:v2-rev20200213-2.0.0'
+    implementation 'org.json:json:20250517'
+    implementation 'io.github.cdimascio:dotenv-java:3.2.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.4'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.4'
@@ -38,7 +40,7 @@ tasks.withType(JavaCompile) {
 javafx {
 	// 直近の LTS-version とする。
     version = 21
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
 }
 
 application {
@@ -58,5 +60,6 @@ run {
     //jvmArgs = ["-XX:StartFlightRecording=dumponexit=true"]
     
     // for console-launching test
-    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックA.xlsx", "--enable-fuzzy-matching=true"]
+    //args = ["C:\\テストA\\ExcelブックA.xlsx", "C:\\テストB\\ExcelブックB.xlsx", "--enable-fuzzy-matching=true"]
+    //args = ["C:\\テストA", "C:\\テストB", "--enable-fuzzy-matching=true"]
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
@@ -37,15 +38,16 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.dialogs.GoogleFilePickerDialog;
+import xyz.hotchpotch.hogandiff.gui.dialogs.GooglePicker;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.DirsLoader;
+import xyz.hotchpotch.hogandiff.logic.DirLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
@@ -178,19 +180,25 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         bookPathButton.setOnAction(this::chooseBook);
         
         googleDriveButton.setOnAction(event -> {
+            GooglePicker picker = new GooglePicker();
             try {
-                BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
-                GoogleFilePickerDialog dialog = new GoogleFilePickerDialog(
-                        bookInfo != null ? bookInfo.googleFileInfo() : null,
-                        parent.googleCredential.getValue());
-                Optional<GoogleFileInfo> modified = dialog.showAndWait();
-                if (modified.isPresent()) {
-                    validateAndSetTarget(modified.get().localPath(), null, modified.get());
-                }
-            } catch (IOException e) {
+                picker.downloadAndGetFileInfo()
+                        .thenAccept(fileInfo -> {
+                            Platform.runLater(() -> {
+                                if (fileInfo != null) {
+                                    validateAndSetTarget(fileInfo.localPath(), null, fileInfo);
+                                }
+                            });
+                        })
+                        .exceptionally(throwable -> {
+                            Platform.runLater(() -> {
+                                throwable.printStackTrace();
+                            });
+                            return null;
+                        });
+            } catch (GoogleHandlingException e) {
                 e.printStackTrace();
             }
-            
         });
         
         parent.sheetNamePropPair.get(side).bind(sheetNameChoiceBox.valueProperty());
@@ -227,8 +235,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         });
         
         // 3.初期値の設定
-        if (ar.settings().containsKey(SettingKeys.CURR_BOOK_INFOS.get(side))) {
-            validateAndSetTarget(ar.settings().get(SettingKeys.CURR_BOOK_INFOS.get(side)).bookPath(), null, null);
+        if (ar.settings().containsKey(SettingKeys.CURR_ARG_PATHS.get(side))) {
+            Path path = ar.settings().get(SettingKeys.CURR_ARG_PATHS.get(side));
+            if (isDirOperation(parent.menuProp.getValue())) {
+                setDirPath(path, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
+            } else {
+                validateAndSetTarget(path, null, null);
+            }
         }
     }
     
@@ -380,7 +393,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirsLoader dirLoader = Factory.dirLoader(
+            DirLoader dirLoader = Factory.dirLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
@@ -451,7 +464,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         try {
             String readPassword = readPasswords.get(newBookPath);
-            SheetNamesLoader loader = Factory.bookLoader(newBookPath);
+            SheetNamesLoader loader = Factory.sheetNamesLoader(newBookPath);
             
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword)

@@ -6,3 +6,5 @@ build
 
 gradle.properties
 hogandiff.properties
+
+.env

@@ -15,10 +15,10 @@
         <string>xyz.hotchpotch.hogandiff</string>
         
         <key>CFBundleShortVersionString</key>
-        <string>0.25.0</string>
+        <string>0.26.0</string>
         
         <key>CFBundleVersion</key>
-        <string>0.25.0</string>
+        <string>0.26.0</string>
         
         <key>CFBundleExecutable</key>
         <string>Launcher.sh</string>
