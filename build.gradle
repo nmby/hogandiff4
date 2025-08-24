@@ -37,6 +37,7 @@ final def requiredMods = '' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
     + 'javafx.graphics,' \
+    + 'javafx.web,' \
     + 'jdk.charsets,' \
     + 'jdk.httpserver,' \
     + 'jdk.zipfs'
@@ -55,7 +56,7 @@ task jlinkForWinX64(type: Exec) {
     commandLine project['myprop.cmd.jlink'],
             '--no-header-files',
             '--no-man-pages',
-            '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.mod.win.x64']}",
+            '--module-path', "${project['myprop.jfx.mod.win.x64']};${project['myprop.jre.mod.win.x64']}",
             '--add-modules', requiredMods,
             '--output', outputDir.resolve('tmp/jre-min-win-x64'),
             '--strip-debug',
@@ -69,7 +70,7 @@ task jlinkForMacX64(type: Exec) {
     commandLine project['myprop.cmd.jlink'],
             '--no-header-files',
             '--no-man-pages',
-            '--module-path', "${project['myprop.jre.mod.mac.x64']};${project['myprop.jfx.mod.mac.x64']}",
+            '--module-path', "${project['myprop.jfx.mod.mac.x64']};${project['myprop.jre.mod.mac.x64']}",
             '--add-modules', requiredMods,
             '--output', outputDir.resolve('tmp/jre-min-mac-x64'),
             '--strip-debug',
