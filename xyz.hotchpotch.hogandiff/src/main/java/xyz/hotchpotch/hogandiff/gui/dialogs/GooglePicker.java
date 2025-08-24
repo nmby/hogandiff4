@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -15,6 +16,10 @@ import org.json.JSONObject;
 import com.sun.net.httpserver.HttpServer;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
@@ -26,6 +31,9 @@ import xyz.hotchpotch.hogandiff.util.EnvConfig;
 public class GooglePicker {
     
     // [static members] ********************************************************
+    
+    private final AppResource ar = AppMain.appResource;
+    private final ResourceBundle rb = ar.get();
     
     private static final String API_KEY = EnvConfig.get("GOOGLE_PICKER_API_KEY");
     private static final String APP_ID = EnvConfig.get("GOOGLE_CLOUD_PROJECT_ID");
@@ -144,6 +152,26 @@ public class GooglePicker {
                             
                             return dialogFuture;
                         });
+                    })
+                    .thenApply(future -> {
+                        if (ar.settings().get(SettingKeys.SHOW_GOOGLE_DL_NOTICE)) {
+                            Platform.runLater(() -> {
+                                try {
+                                    GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
+                                    content.init();
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle(rb.getString("AppMain.010"));
+                                    alert.setHeaderText(rb.getString("gui.component.GooglePane.090"));
+                                    alert.getDialogPane().setContent(content);
+                                    alert.showAndWait();
+                                    
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    // nop
+                                }
+                            });
+                        }
+                        return future;
                     });
             
         } catch (Exception e) {
