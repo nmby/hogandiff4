@@ -21,6 +21,7 @@ import com.google.api.services.drive.model.About;
 import com.google.api.services.drive.model.User;
 
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.util.EnvConfig;
 
 /**
  * Googleアカウント連携情報を保持するクラスです。<br>
@@ -37,7 +38,7 @@ public record GoogleCredential(
     
     // [static members] ********************************************************
     
-    private static final String CREDENTIAL_KEY = "user";
+    private static final String CREDENTIAL_KEY = EnvConfig.get("GOOGLE_OAUTH_CREDENTIAL_KEY");
     private static final List<String> OAUTH_SCOPES = List.of(DriveScopes.DRIVE_FILE);
     
     private static volatile int lastUsedPort = 8887;

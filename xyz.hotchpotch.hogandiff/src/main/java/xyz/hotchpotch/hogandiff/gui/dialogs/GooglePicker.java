@@ -21,85 +21,89 @@ import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadat
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleFileId;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
+import xyz.hotchpotch.hogandiff.util.EnvConfig;
 
 public class GooglePicker {
     
     // [static members] ********************************************************
     
-    private static final String API_KEY = "AIzaSyBR3oJ2VekRl3NlmoXVmE9KXyXA1zEIDVk";
+    private static final String API_KEY = EnvConfig.get("GOOGLE_PICKER_API_KEY");
+    private static final String APP_ID = EnvConfig.get("GOOGLE_CLOUD_PROJECT_ID");
     private static final int PICKER_TIMEOUT_SECONDS = 300;
     
-    private static final String HTML = """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <script src="https://apis.google.com/js/api.js"></script>
-            </head>
-            <body>
-                <script>
-                    let pickerApiLoaded = false;
-            
-                    function onApiLoad() {
-                        gapi.load('picker', {'callback': onPickerApiLoad});
-                    }
-            
-                    function onPickerApiLoad() {
-                        pickerApiLoaded = true;
-                        createPicker();
-                    }
-            
-                    function createPicker() {
-                        if (pickerApiLoaded) {
-                            const picker = new google.picker.PickerBuilder()
-                                .setOAuthToken('%s')
-                                .addView(new google.picker.DocsView())
-                                .setDeveloperKey('%s')
-                                .setCallback(pickerCallback)
-                                .build();
-                            picker.setVisible(true);
+    private static String getHtml(String accessToken) {
+        return """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <script src="https://apis.google.com/js/api.js"></script>
+                </head>
+                <body>
+                    <script>
+                        let pickerApiLoaded = false;
+                
+                        function onApiLoad() {
+                            gapi.load('picker', {'callback': onPickerApiLoad});
                         }
-                    }
-            
-                    function pickerCallback(data) {
-                        if (data.action == google.picker.Action.PICKED) {
-                            const file = data.docs[0];
-                            console.log('Selected file:', file);
-                            fetch('/callback', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({
-                                    id: file.id,
-                                    url: file.url,
-                                    name: file.name,
-                                    mimeType: file.mimeType
-                                })
-                            }).then(() => window.close());
-                        } else if (data.action == google.picker.Action.CANCEL) {
-                            fetch('/callback', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({
-                                    cancelled: true
-                                })
-                            }).then(() => window.close());
+                
+                        function onPickerApiLoad() {
+                            pickerApiLoaded = true;
+                            createPicker();
                         }
-                    }
-            
-                    // ブラウザが閉じられる前にサーバーに通知
-                    window.addEventListener('beforeunload', function(event) {
-                        navigator.sendBeacon('/callback', JSON.stringify({
-                            cancelled: true
-                        }));
-                    });
-            
-                    window.onload = function() {
-                        gapi.load('picker', {'callback': onPickerApiLoad});
-                    };
-                </script>
-            </body>
-            </html>
-            """;
+                
+                        function createPicker() {
+                            if (pickerApiLoaded) {
+                                const picker = new google.picker.PickerBuilder()
+                                    .setOAuthToken('%s')
+                                    .setDeveloperKey('%s')
+                                    .setAppId('%s')
+                                    .addView(new google.picker.DocsView())
+                                    .setCallback(pickerCallback)
+                                    .build();
+                                picker.setVisible(true);
+                            }
+                        }
+                
+                        function pickerCallback(data) {
+                            if (data.action == google.picker.Action.PICKED) {
+                                const file = data.docs[0];
+                                console.log('Selected file:', file);
+                                fetch('/callback', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        id: file.id,
+                                        url: file.url,
+                                        name: file.name,
+                                        mimeType: file.mimeType
+                                    })
+                                }).then(() => window.close());
+                            } else if (data.action == google.picker.Action.CANCEL) {
+                                fetch('/callback', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        cancelled: true
+                                    })
+                                }).then(() => window.close());
+                            }
+                        }
+                
+                        window.addEventListener('beforeunload', function(event) {
+                            navigator.sendBeacon('/callback', JSON.stringify({
+                                cancelled: true
+                            }));
+                        });
+                
+                        window.onload = function() {
+                            gapi.load('picker', {'callback': onPickerApiLoad});
+                        };
+                    </script>
+                </body>
+                </html>
+                """.formatted(accessToken, API_KEY, APP_ID);
+    }
     
     // [instance members] ******************************************************
     
@@ -210,10 +214,7 @@ public class GooglePicker {
         server = HttpServer.create(new InetSocketAddress(0), 0);
         
         server.createContext("/", exchange -> {
-            String html = HTML.formatted(
-                    credential.credential().getAccessToken(),
-                    API_KEY);
-            
+            String html = getHtml(credential.credential().getAccessToken());
             byte[] response = html.getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(200, response.length);
             exchange.getResponseBody().write(response);

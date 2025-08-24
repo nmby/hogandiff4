@@ -30,4 +30,5 @@ module xyz.hotchpotch.hogandiff {
     requires com.google.api.services.drive;
     
     requires google.api.client;
+    requires io.github.cdimascio.dotenv.java;
 }
