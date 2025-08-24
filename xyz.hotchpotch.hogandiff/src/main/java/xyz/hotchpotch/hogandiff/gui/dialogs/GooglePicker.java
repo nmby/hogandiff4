@@ -153,8 +153,8 @@ public class GooglePicker {
                             return dialogFuture;
                         });
                     })
-                    .thenApply(future -> {
-                        if (ar.settings().get(SettingKeys.SHOW_GOOGLE_DL_NOTICE)) {
+                    .thenApply(fileInfo -> {
+                        if (fileInfo != null & ar.settings().get(SettingKeys.SHOW_GOOGLE_DL_NOTICE)) {
                             Platform.runLater(() -> {
                                 try {
                                     GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
@@ -171,7 +171,7 @@ public class GooglePicker {
                                 }
                             });
                         }
-                        return future;
+                        return fileInfo;
                     });
             
         } catch (Exception e) {
