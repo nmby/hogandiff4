@@ -11,7 +11,8 @@ class UnsafeConsumerTest {
     
     // [static members] ********************************************************
     
-    private static final UnsafeConsumer<String, Exception> unsafe1 = x -> {};
+    private static final UnsafeConsumer<String, Exception> unsafe1 = x -> {
+    };
     private static final UnsafeConsumer<String, IOException> unsafe2 = x -> {
         throw new IOException("unsafe2");
     };
@@ -28,7 +29,8 @@ class UnsafeConsumerTest {
                 () -> UnsafeConsumer.from(null));
         
         assertTrue(
-                UnsafeConsumer.from(x -> {}) instanceof UnsafeConsumer);
+                UnsafeConsumer.from(x -> {
+                }) instanceof UnsafeConsumer);
     }
     
     @Test
@@ -67,7 +69,7 @@ class UnsafeConsumerTest {
         try {
             transformed2.accept("abcde");
             fail();
-        } catch(Exception e) {
+        } catch (Exception e) {
             thrown = e;
         }
         
@@ -92,7 +94,7 @@ class UnsafeConsumerTest {
         try {
             transformed3.accept("abcde");
             fail();
-        } catch(Exception e) {
+        } catch (Exception e) {
             thrown = e;
         }
         
@@ -113,7 +115,7 @@ class UnsafeConsumerTest {
         try {
             transformed2.accept("abcde");
             fail();
-        } catch(Exception e) {
+        } catch (Exception e) {
             thrown = e;
         }
         
@@ -138,7 +140,7 @@ class UnsafeConsumerTest {
         try {
             transformed3.accept("abcde");
             fail();
-        } catch(Exception e) {
+        } catch (Exception e) {
             thrown = e;
         }
         
