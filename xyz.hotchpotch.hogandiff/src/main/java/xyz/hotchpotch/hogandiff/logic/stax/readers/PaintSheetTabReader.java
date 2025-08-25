@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.stax.readers;
 
-import java.awt.Color;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -14,6 +13,7 @@ import javax.xml.stream.events.XMLEvent;
 import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.QNAME;
+import xyz.hotchpotch.hogandiff.util.RGB;
 
 /**
  * シートの見出しに色を付ける {@link XMLEventReader} の実装です。<br>
@@ -40,7 +40,7 @@ public class PaintSheetTabReader extends BufferingReader {
      */
     public static XMLEventReader of(
             XMLEventReader source,
-            Color color) {
+            RGB color) {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(color);
@@ -55,13 +55,13 @@ public class PaintSheetTabReader extends BufferingReader {
     
     private PaintSheetTabReader(
             XMLEventReader source,
-            Color color) {
+            RGB color) {
         
         super(source);
         
         assert color != null;
         
-        this.rgb = "FF%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue())
+        this.rgb = "FF%02x%02x%02x".formatted(color.red(), color.green(), color.blue())
                 .toUpperCase();
     }
     

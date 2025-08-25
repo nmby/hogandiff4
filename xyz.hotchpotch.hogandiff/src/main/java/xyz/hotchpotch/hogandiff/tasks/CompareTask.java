@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.tasks;
 
-import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -265,7 +264,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dstBookPath.toFile());
+                AppMain.showDocument(dstBookPath.toUri().toString());
             }
             
             updateProgress(progressAfter, PROGRESS_MAX);
@@ -329,8 +328,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
                 str.append(BR).append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(dstBookPathPair.a().toFile());
-                Desktop.getDesktop().open(dstBookPathPair.b().toFile());
+                AppMain.showDocument(dstBookPathPair.a().toUri().toString());
+                AppMain.showDocument(dstBookPathPair.b().toUri().toString());
             } else {
                 str.append(BR);
             }
@@ -382,7 +381,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
                 str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(resultBookPath.toFile());
+                AppMain.showDocument(resultBookPath.toUri().toString());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
@@ -428,7 +427,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
                 str.append(rb.getString("CompareBooksTask.080")).append(BR).append(BR);
                 updateMessage(str.toString());
-                Desktop.getDesktop().open(resultBookPath.toFile());
+                AppMain.showDocument(resultBookPath.toUri().toString());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             

@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.gui.components;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +33,6 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
 
 /**
  * 比較メニュー部分の画面部品です。<br>
@@ -157,7 +155,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             if (!Files.isDirectory(workDirBase)) {
                 Files.createDirectories(workDirBase);
             }
-            Desktop.getDesktop().open(workDirBase.toFile());
+            AppMain.showDocument(workDirBase.toUri().toString());
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,16 +224,18 @@ public class SettingsPane2 extends VBox implements ChildController {
                                 .showAndWait();
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            Desktop desktop = Desktop.getDesktop();
-            UnsafeConsumer<Path, Exception> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
-                    ? path -> desktop.moveToTrash(path.toFile())
-                    : Files::deleteIfExists;
+            // TODO: 代替方法を見つける
+            //Desktop desktop = Desktop.getDesktop();
+            //UnsafeConsumer<Path, Exception> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
+            //        ? path -> desktop.moveToTrash(path.toFile())
+            //        : Files::deleteIfExists;
             
             Thread.startVirtualThread(() -> {
                 try (Stream<Path> children = Files.list(workDirBase)) {
                     children.forEach(path -> {
                         try {
-                            deleteAction.accept(path);
+                            // TODO: 代替方法を見つける
+                            //deleteAction.accept(path);
                         } catch (Exception e) {
                             // nop
                             // 使用中などの理由で削除できないファイルがある場合は

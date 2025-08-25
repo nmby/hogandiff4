@@ -4,7 +4,7 @@
  * @author nmby
  */
 module xyz.hotchpotch.hogandiff {
-    requires java.desktop;
+    //requires java.desktop;
     requires java.xml;
     
     requires javafx.base;

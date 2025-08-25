@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.poi;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -56,6 +55,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
 import xyz.hotchpotch.hogandiff.logic.SheetType;
+import xyz.hotchpotch.hogandiff.util.RGB;
 
 /**
  * Apache POI と組み合わせて利用すると便利な機能を集めたユーティリティクラスです。<br>
@@ -483,17 +483,17 @@ public class PoiUtil {
      * 
      * @param sheet     Excelシート
      * @param addresses 色を付けるセルコメントの位置
-     * @param color     着色する色
+     * @param rgb       着色する色
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintComments(
             Sheet sheet,
             Set<CellAddress> addresses,
-            Color color) {
+            RGB rgb) {
         
         Objects.requireNonNull(sheet);
         Objects.requireNonNull(addresses);
-        Objects.requireNonNull(color);
+        Objects.requireNonNull(rgb);
         
         Map<CellAddress, ? extends Comment> comments = sheet.getCellComments();
         
@@ -509,7 +509,7 @@ public class PoiUtil {
             
             case HSSFComment comment:
                 comment.setVisible(true);
-                comment.setFillColor(color.getRed(), color.getGreen(), color.getBlue());
+                comment.setFillColor(rgb.red(), rgb.green(), rgb.blue());
                 break;
             
             default:
@@ -522,20 +522,20 @@ public class PoiUtil {
      * 指定されたExcelシートの見出しに指定された色を付けます。<br>
      * 
      * @param sheet Excelシート
-     * @param color 着色する色
+     * @param rgb 着色する色
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static void paintSheetTab(
             Sheet sheet,
-            Color color) {
+            RGB rgb) {
         
         Objects.requireNonNull(sheet);
-        Objects.requireNonNull(color);
+        Objects.requireNonNull(rgb);
         
         switch (sheet) {
         case XSSFSheet xSheet:
             xSheet.setTabColor(new XSSFColor(
-                    new byte[] { (byte) color.getRed(), (byte) color.getGreen(), (byte) color.getBlue() },
+                    new byte[] { (byte) rgb.red(), (byte) rgb.green(), (byte) rgb.blue() },
                     new DefaultIndexedColorMap()));
             break;
         

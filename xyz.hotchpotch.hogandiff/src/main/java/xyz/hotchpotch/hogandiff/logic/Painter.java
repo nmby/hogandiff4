@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic;
 
-import java.awt.Color;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.plain.PainterCombined;
 import xyz.hotchpotch.hogandiff.logic.poi.PainterWithPoiUserApi;
 import xyz.hotchpotch.hogandiff.logic.stax.PainterWithStax;
+import xyz.hotchpotch.hogandiff.util.RGB;
 
 /**
  * Excelブックの差分個所に色を付けて新しいファイルとして保存するペインターを表します。<br>
@@ -48,13 +48,13 @@ public interface Painter {
             String readPassword,
             short redundantColor,
             short diffColor,
-            Color redundantCommentColor,
-            Color diffCommentColor,
+            RGB redundantCommentColor,
+            RGB diffCommentColor,
             String redundantCommentHex,
             String diffCommentHex,
-            Color redundantSheetColor,
-            Color diffSheetColor,
-            Color sameSheetColor) {
+            RGB redundantSheetColor,
+            RGB diffSheetColor,
+            RGB sameSheetColor) {
         
         Objects.requireNonNull(bookPath);
         

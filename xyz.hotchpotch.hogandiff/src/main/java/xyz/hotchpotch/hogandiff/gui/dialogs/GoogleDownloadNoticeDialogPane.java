@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
@@ -56,8 +55,8 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
         Path localDir = ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive");
         localDirHyperlink.setOnAction(e -> {
             try {
-                Desktop.getDesktop().open(localDir.toFile());
-            } catch (IOException e1) {
+                AppMain.showDocument(localDir.toUri().toString());
+            } catch (RuntimeException e1) {
                 e1.printStackTrace();
                 // nop
             }

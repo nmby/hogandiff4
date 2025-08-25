@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -16,6 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.RGB;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
 /**
@@ -237,43 +237,43 @@ public class SettingKeys {
             false);
     
     /** 比較結果レポートにおける、余剰セルコメントに着ける色 */
-    public static final Key<Color> REDUNDANT_COMMENT_COLOR = new Key<>(
+    public static final Key<RGB> REDUNDANT_COMMENT_COLOR = new Key<>(
             "report.redundantCommentColor",
-            () -> new Color(255, 128, 128),
-            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
-            Color::decode,
+            () -> new RGB(255, 128, 128),
+            RGB::toHex,
+            RGB::fromHex,
             false);
     
     /** 比較結果レポートにおける、差分セルコメントに着ける色 */
-    public static final Key<Color> DIFF_COMMENT_COLOR = new Key<>(
+    public static final Key<RGB> DIFF_COMMENT_COLOR = new Key<>(
             "report.diffCommentColor",
-            () -> Color.YELLOW,
-            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
-            Color::decode,
+            () -> new RGB(255, 255, 0),
+            RGB::toHex,
+            RGB::fromHex,
             false);
     
     /** 比較結果レポートにおける、余剰シートの見出しに着ける色 */
-    public static final Key<Color> REDUNDANT_SHEET_COLOR = new Key<>(
+    public static final Key<RGB> REDUNDANT_SHEET_COLOR = new Key<>(
             "report.redundantSheetColor",
-            () -> Color.RED,
-            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
-            Color::decode,
+            () -> new RGB(255, 0, 0),
+            RGB::toHex,
+            RGB::fromHex,
             false);
     
     /** 比較結果レポートにおける、差分シートの見出しに着ける色 */
-    public static final Key<Color> DIFF_SHEET_COLOR = new Key<>(
+    public static final Key<RGB> DIFF_SHEET_COLOR = new Key<>(
             "report.diffSheetColor",
-            () -> Color.YELLOW,
-            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
-            Color::decode,
+            () -> new RGB(255, 255, 0),
+            RGB::toHex,
+            RGB::fromHex,
             false);
     
     /** 比較結果レポートにおける、差分無しシートの見出しに着ける色 */
-    public static final Key<Color> SAME_SHEET_COLOR = new Key<>(
+    public static final Key<RGB> SAME_SHEET_COLOR = new Key<>(
             "report.sameSheetColor",
-            () -> Color.CYAN,
-            color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
-            Color::decode,
+            () -> new RGB(0, 255, 255),
+            RGB::toHex,
+            RGB::fromHex,
             false);
     
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
