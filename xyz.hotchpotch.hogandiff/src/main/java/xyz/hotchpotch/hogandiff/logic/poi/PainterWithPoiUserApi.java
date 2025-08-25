@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.poi;
 
-import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -24,6 +23,7 @@ import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.SheetHandler;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
+import xyz.hotchpotch.hogandiff.util.RGB;
 
 /**
  * Apache POI のユーザーモデル API を利用して
@@ -42,11 +42,11 @@ public class PainterWithPoiUserApi implements Painter {
     
     private final short redundantColor;
     private final short diffColor;
-    private final Color redundantCommentColor;
-    private final Color diffCommentColor;
-    private final Color redundantSheetColor;
-    private final Color diffSheetColor;
-    private final Color sameSheetColor;
+    private final RGB redundantCommentColor;
+    private final RGB diffCommentColor;
+    private final RGB redundantSheetColor;
+    private final RGB diffSheetColor;
+    private final RGB sameSheetColor;
     
     /**
      * コンストラクタ
@@ -62,11 +62,11 @@ public class PainterWithPoiUserApi implements Painter {
     public PainterWithPoiUserApi(
             short redundantColor,
             short diffColor,
-            Color redundantCommentColor,
-            Color diffCommentColor,
-            Color redundantSheetColor,
-            Color diffSheetColor,
-            Color sameSheetColor) {
+            RGB redundantCommentColor,
+            RGB diffCommentColor,
+            RGB redundantSheetColor,
+            RGB diffSheetColor,
+            RGB sameSheetColor) {
         
         Objects.requireNonNull(redundantCommentColor);
         Objects.requireNonNull(diffCommentColor);

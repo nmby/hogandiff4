@@ -1,6 +1,5 @@
 package xyz.hotchpotch.hogandiff.logic.stax;
 
-import java.awt.Color;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
@@ -53,6 +52,7 @@ import xyz.hotchpotch.hogandiff.logic.stax.readers.PaintRedundantCellsReader;
 import xyz.hotchpotch.hogandiff.logic.stax.readers.PaintRowsReader;
 import xyz.hotchpotch.hogandiff.logic.stax.readers.PaintSheetTabReader;
 import xyz.hotchpotch.hogandiff.util.IntPair;
+import xyz.hotchpotch.hogandiff.util.RGB;
 
 /**
  * StAX (Streaming API for XML) を利用して
@@ -192,9 +192,9 @@ public class PainterWithStax implements Painter {
     private final short diffColor;
     private final String redundantCommentColor;
     private final String diffCommentColor;
-    private final Color redundantSheetColor;
-    private final Color diffSheetColor;
-    private final Color sameSheetColor;
+    private final RGB redundantSheetColor;
+    private final RGB diffSheetColor;
+    private final RGB sameSheetColor;
     
     /**
      * コンストラクタ
@@ -212,9 +212,9 @@ public class PainterWithStax implements Painter {
             short diffColor,
             String redundantCommentColor,
             String diffCommentColor,
-            Color redundantSheetColor,
-            Color diffSheetColor,
-            Color sameSheetColor) {
+            RGB redundantSheetColor,
+            RGB diffSheetColor,
+            RGB sameSheetColor) {
         
         Objects.requireNonNull(redundantCommentColor);
         Objects.requireNonNull(diffCommentColor);
