@@ -16,11 +16,11 @@ public record DirInfo(
         Path dirPath,
         List<DirInfo> childDirInfos,
         List<BookInfo> childBookInfos) {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * コンストラクタ
      * 
@@ -29,20 +29,15 @@ public record DirInfo(
      * @param childBookInfos このフォルダに含まれるExcelブック名
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public DirInfo(
-            Path dirPath,
-            List<DirInfo> childDirInfos,
-            List<BookInfo> childBookInfos) {
-
+    public DirInfo {
         Objects.requireNonNull(dirPath);
         Objects.requireNonNull(childDirInfos);
         Objects.requireNonNull(childBookInfos);
-
-        this.dirPath = dirPath;
-        this.childDirInfos = List.copyOf(childDirInfos);
-        this.childBookInfos = List.copyOf(childBookInfos);
+        
+        childDirInfos = List.copyOf(childDirInfos);
+        childBookInfos = List.copyOf(childBookInfos);
     }
-
+    
     @Override
     public String toString() {
         return dirPath.getFileName().toString();

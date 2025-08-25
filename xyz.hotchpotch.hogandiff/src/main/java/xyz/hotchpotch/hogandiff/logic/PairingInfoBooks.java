@@ -18,9 +18,9 @@ public final record PairingInfoBooks(
         Pair<BookInfo> parentBookInfoPair,
         List<Pair<String>> childSheetNamePairs)
         implements PairingInfo {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 与えられたマッチャーを使用して新たな {@link PairingInfoBooks} インスタンスを生成します。<br>
      * 
@@ -33,35 +33,35 @@ public final record PairingInfoBooks(
     public static PairingInfoBooks calculate(
             Pair<BookInfo> parentBookInfoPair,
             Matcher<String> sheetNamesMatcher) {
-
+        
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(sheetNamesMatcher);
-
+        
         if (parentBookInfoPair.isPaired()) {
             List<Pair<String>> sheetNamePairs = sheetNamesMatcher.makeItemPairs(
                     parentBookInfoPair.a().sheetNames(),
                     parentBookInfoPair.b().sheetNames());
             return new PairingInfoBooks(parentBookInfoPair, sheetNamePairs);
-
+            
         } else if (parentBookInfoPair.hasA()) {
             List<Pair<String>> sheetNamePairs = parentBookInfoPair.a().sheetNames().stream()
                     .map(sheetName -> Pair.ofOnly(Side.A, sheetName))
                     .toList();
             return new PairingInfoBooks(parentBookInfoPair, sheetNamePairs);
-
+            
         } else if (parentBookInfoPair.hasB()) {
             List<Pair<String>> sheetNamePairs = parentBookInfoPair.b().sheetNames().stream()
                     .map(sheetName -> Pair.ofOnly(Side.B, sheetName))
                     .toList();
             return new PairingInfoBooks(parentBookInfoPair, sheetNamePairs);
-
+            
         } else {
             return new PairingInfoBooks(parentBookInfoPair, List.of());
         }
     }
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * コンストラクタ
      * 
@@ -69,14 +69,10 @@ public final record PairingInfoBooks(
      * @param childSheetNamePairs シート名の組み合わせ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public PairingInfoBooks(
-            Pair<BookInfo> parentBookInfoPair,
-            List<Pair<String>> childSheetNamePairs) {
-
+    public PairingInfoBooks {
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(childSheetNamePairs);
-
-        this.parentBookInfoPair = parentBookInfoPair;
-        this.childSheetNamePairs = List.copyOf(childSheetNamePairs);
+        
+        childSheetNamePairs = List.copyOf(childSheetNamePairs);
     }
 }
