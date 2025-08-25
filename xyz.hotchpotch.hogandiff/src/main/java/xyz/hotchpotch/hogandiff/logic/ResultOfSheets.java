@@ -17,12 +17,12 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @author nmby
  */
 public final class ResultOfSheets implements Result {
-
+    
     // [static members] ********************************************************
-
+    
     private static final String BR = System.lineSeparator();
     private static final ResourceBundle rb = AppMain.appResource.get();
-
+    
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
@@ -39,11 +39,11 @@ public final class ResultOfSheets implements Result {
             List<CellData> diffCellContents,
             List<CellData> diffCellComments,
             List<CellData> redundantCellComments) {
-
+        
         // [static members] ----------------------------------------------------
-
+        
         // [instance members] --------------------------------------------------
-
+        
         /**
          * コンストラクタ<br>
          * 
@@ -64,7 +64,7 @@ public final class ResultOfSheets implements Result {
             Objects.requireNonNull(diffCellComments);
             Objects.requireNonNull(redundantCellComments);
         }
-
+        
         /**
          * ひとつでも差分があるかを返します。<br>
          * 
@@ -78,7 +78,7 @@ public final class ResultOfSheets implements Result {
                     || !redundantCellComments.isEmpty();
         }
     }
-
+    
     /**
      * 比較処理の統計情報<br>
      * 
@@ -96,11 +96,11 @@ public final class ResultOfSheets implements Result {
             IntPair redundantRows,
             IntPair redundantColumns,
             int diffCells) {
-
+        
         // [static members] ----------------------------------------------------
-
+        
         // [instance members] --------------------------------------------------
-
+        
         /**
          * コンストラクタ
          * 
@@ -120,14 +120,14 @@ public final class ResultOfSheets implements Result {
             Objects.requireNonNull(redundantColumns);
         }
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final Pair<List<Integer>> redundantRows;
     private final Pair<List<Integer>> redundantColumns;
     private final List<Pair<CellData>> diffCells;
     private final SheetStats stats;
-
+    
     /**
      * コンストラクタ<br>
      * 
@@ -144,16 +144,16 @@ public final class ResultOfSheets implements Result {
             Pair<List<Integer>> redundantRows,
             Pair<List<Integer>> redundantColumns,
             List<Pair<CellData>> diffCells) {
-
+        
         Objects.requireNonNull(cellsSetPair);
         Objects.requireNonNull(redundantRows);
         Objects.requireNonNull(redundantColumns);
         Objects.requireNonNull(diffCells);
-
+        
         if (!redundantRows.isPaired() || !redundantColumns.isPaired()) {
             throw new IllegalArgumentException("illegal result");
         }
-
+        
         this.redundantRows = redundantRows.map(List::copyOf);
         this.redundantColumns = redundantColumns.map(List::copyOf);
         this.diffCells = List.copyOf(diffCells);
@@ -165,7 +165,7 @@ public final class ResultOfSheets implements Result {
                 IntPair.from(redundantColumns.map(List::size)),
                 diffCells.size());
     }
-
+    
     /**
      * 指定された側のシートに関する差分内容を返します。<br>
      * 
@@ -175,22 +175,22 @@ public final class ResultOfSheets implements Result {
      */
     public Piece getPiece(Side side) {
         Objects.requireNonNull(side);
-
+        
         List<CellData> diffCellContents = diffCells.stream()
                 .filter(p -> !p.a().contentEquals(p.b()))
                 .map(p -> p.get(side))
                 .toList();
-
+        
         List<CellData> diffCellComments = diffCells.stream()
                 .filter(p -> p.a().hasComment() && p.b().hasComment() && !p.a().commentEquals(p.b()))
                 .map(p -> p.get(side))
                 .toList();
-
+        
         List<CellData> redundantCellComments = diffCells.stream()
                 .filter(p -> p.get(side).hasComment() && !p.get(side.opposite()).hasComment())
                 .map(p -> p.get(side))
                 .toList();
-
+        
         return new Piece(
                 redundantRows.get(side),
                 redundantColumns.get(side),
@@ -198,7 +198,7 @@ public final class ResultOfSheets implements Result {
                 diffCellComments,
                 redundantCellComments);
     }
-
+    
     /**
      * この比較結果における差分の有無を返します。<br>
      * 
@@ -211,7 +211,7 @@ public final class ResultOfSheets implements Result {
                 || !redundantColumns.b().isEmpty()
                 || !diffCells.isEmpty();
     }
-
+    
     /**
      * 比較結果の差分サマリを返します。<br>
      * 
@@ -221,11 +221,11 @@ public final class ResultOfSheets implements Result {
         if (!hasDiff()) {
             return rb.getString("excel.SResult.010");
         }
-
+        
         int rows = redundantRows.a().size() + redundantRows.b().size();
         int cols = redundantColumns.a().size() + redundantColumns.b().size();
         int cells = diffCells.size();
-
+        
         StringBuilder str = new StringBuilder();
         if (0 < rows) {
             str.append(rb.getString("excel.SResult.020").formatted(rows));
@@ -242,10 +242,10 @@ public final class ResultOfSheets implements Result {
             }
             str.append(rb.getString("excel.SResult.040").formatted(cells));
         }
-
+        
         return str.toString();
     }
-
+    
     /**
      * 比較結果の差分詳細を返します。<br>
      * 
@@ -255,9 +255,9 @@ public final class ResultOfSheets implements Result {
         if (!hasDiff()) {
             return rb.getString("excel.SResult.010");
         }
-
+        
         StringBuilder str = new StringBuilder();
-
+        
         if (!redundantRows.a().isEmpty() || !redundantRows.b().isEmpty()) {
             for (Side side : Side.values()) {
                 List<Integer> rows = redundantRows.get(side);
@@ -294,20 +294,20 @@ public final class ResultOfSheets implements Result {
                 str.append("    [B] ").append(pair.b()).append(BR);
             });
         }
-
+        
         return str.toString();
     }
-
+    
     @Override
     public String toString() {
         return getDiffDetail();
     }
-
+    
     @Override
     public List<SheetStats> sheetStats() {
         return List.of(stats);
     }
-
+    
     /**
      * 余剰行を返します。<br>
      * 
@@ -316,7 +316,7 @@ public final class ResultOfSheets implements Result {
     public Pair<List<Integer>> redundantRows() {
         return redundantRows;
     }
-
+    
     /**
      * 余剰列を返します。<br>
      * 
@@ -325,7 +325,7 @@ public final class ResultOfSheets implements Result {
     public Pair<List<Integer>> redundantColumns() {
         return redundantColumns;
     }
-
+    
     /**
      * 差分セルを返します。<br>
      * 

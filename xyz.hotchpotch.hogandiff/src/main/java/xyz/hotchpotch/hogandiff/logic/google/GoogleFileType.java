@@ -2,6 +2,11 @@ package xyz.hotchpotch.hogandiff.logic.google;
 
 import java.util.stream.Stream;
 
+/**
+ * Googleドライブ上のファイル種別を表します。<br>
+ * 
+ * @author nmby
+ */
 public enum GoogleFileType {
     
     // [static members] ********************************************************

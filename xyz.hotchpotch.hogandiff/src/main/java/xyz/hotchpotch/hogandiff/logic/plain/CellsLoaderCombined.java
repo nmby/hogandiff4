@@ -22,9 +22,9 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeSupplier;
 @BookHandler
 @SheetHandler
 public class CellsLoaderCombined implements CellsLoader {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
@@ -38,20 +38,20 @@ public class CellsLoaderCombined implements CellsLoader {
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
-
+        
         return new CellsLoaderCombined(suppliers);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers;
-
+    
     private CellsLoaderCombined(List<UnsafeSupplier<CellsLoader, ExcelHandlingException>> suppliers) {
         assert suppliers != null;
-
+        
         this.suppliers = List.copyOf(suppliers);
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -80,15 +80,15 @@ public class CellsLoaderCombined implements CellsLoader {
             String readPassword,
             String sheetName)
             throws ExcelHandlingException {
-
+        
         Objects.requireNonNull(bookInfo);
         // readPassword may be null.
         Objects.requireNonNull(sheetName);
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookInfo.bookPath()));
-
+        
         ExcelHandlingException failed = new ExcelHandlingException(
                 "processiong failed : %s - %s".formatted(bookInfo.bookPath(), sheetName));
-
+        
         Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {
             try {

@@ -31,11 +31,11 @@ import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.X_QNAME;
  * @author nmby
  */
 public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
-
+    
     // [static members] ********************************************************
-
+    
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-
+    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -56,7 +56,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             Set<String> redundantCommentAddrs,
             String diffCommentColor,
             String redundantCommentColor) {
-
+        
         Objects.requireNonNull(source);
         Objects.requireNonNull(diffCommentAddrs);
         Objects.requireNonNull(redundantCommentAddrs);
@@ -65,7 +65,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
         if (diffCommentAddrs.isEmpty() && redundantCommentAddrs.isEmpty()) {
             throw new IllegalArgumentException("no target comments");
         }
-
+        
         return new PaintDiffOrRedundantCommentsReader(
                 source,
                 diffCommentAddrs,
@@ -73,76 +73,76 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
                 diffCommentColor,
                 redundantCommentColor);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final Set<String> diffCommentAddrs;
     private final Set<String> redundantCommentAddrs;
     private final String diffCommentColor;
     private final String redundantCommentColor;
-
+    
     private int row;
     private int column;
     private boolean inRow;
     private boolean inColumn;
-
+    
     private PaintDiffOrRedundantCommentsReader(
             XMLEventReader source,
             Set<String> diffCommentAddrs,
             Set<String> redundantCommentAddrs,
             String diffCommentColor,
             String redundantCommentColor) {
-
+        
         super(source);
-
+        
         assert diffCommentAddrs != null;
         assert redundantCommentAddrs != null;
         assert diffCommentColor != null;
         assert redundantCommentColor != null;
         assert !diffCommentAddrs.isEmpty() || !redundantCommentAddrs.isEmpty();
-
+        
         this.diffCommentAddrs = diffCommentAddrs;
         this.redundantCommentAddrs = redundantCommentAddrs;
         this.diffCommentColor = diffCommentColor;
         this.redundantCommentColor = redundantCommentColor;
     }
-
+    
     @Override
     protected void seekNext() throws XMLStreamException {
         if (!source.hasNext()) {
             return;
         }
-
+        
         XMLEvent event = source.peek();
         if (StaxUtil.isStart(event, V_QNAME.SHAPE)
                 && "#_x0000_t202".equals(
                         event.asStartElement().getAttributeByName(NONS_QNAME.TYPE).getValue())) {
-
+            
             row = -1;
             column = -1;
             inRow = false;
             inColumn = false;
             Queue<XMLEvent> queue = new ArrayDeque<>();
-
+            
             while (!StaxUtil.isEnd(source.peek(), V_QNAME.SHAPE)) {
                 XMLEvent ev = source.nextEvent();
                 queue.add(ev);
-
+                
                 if (StaxUtil.isStart(ev, X_QNAME.ROW)) {
                     inRow = true;
-
+                    
                 } else if (StaxUtil.isEnd(ev, X_QNAME.ROW)) {
                     inRow = false;
-
+                    
                 } else if (StaxUtil.isStart(ev, X_QNAME.COLUMN)) {
                     inColumn = true;
-
+                    
                 } else if (StaxUtil.isEnd(ev, X_QNAME.COLUMN)) {
                     inColumn = false;
-
+                    
                 } else if (ev.isCharacters()) {
                     Characters cs = ev.asCharacters();
-
+                    
                     if (inRow) {
                         row = Integer.parseInt(cs.getData());
                     } else if (inColumn) {
@@ -151,12 +151,12 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
                 }
             }
             queue.add(source.nextEvent());
-
+            
             if (row < 0 || column < 0) {
                 throw new AssertionError("no row or column element.");
             }
             String address = CellsUtil.idxToAddress(row, column);
-
+            
             if (diffCommentAddrs.contains(address)) {
                 processCommentShape(queue, diffCommentColor);
             } else if (redundantCommentAddrs.contains(address)) {
@@ -166,32 +166,32 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             }
         }
     }
-
+    
     private void processCommentShape(Queue<XMLEvent> events, String color) {
         XMLEvent first = events.poll();
         assert StaxUtil.isStart(first, V_QNAME.SHAPE);
         buffer.add(createNewShape(first.asStartElement(), color));
-
+        
         while (!StaxUtil.isEnd(events.peek(), X_QNAME.CLIENT_DATA)) {
             buffer.add(events.poll());
         }
-
+        
         buffer.add(eventFactory.createStartElement(X_QNAME.VISIBLE, null, null));
         buffer.add(eventFactory.createEndElement(X_QNAME.VISIBLE, null));
-
+        
         buffer.addAll(events);
     }
-
+    
     private StartElement createNewShape(StartElement originalShape, String color) {
         Map<QName, Attribute> attrs = new HashMap<>();
         originalShape.getAttributes().forEachRemaining(attr -> attrs.put(attr.getName(), attr));
-
+        
         String orgStyle = attrs.get(NONS_QNAME.STYLE).getValue();
         String newStyle = orgStyle.replace("visibility:hidden", "visibility:visible");
         attrs.put(NONS_QNAME.STYLE, eventFactory.createAttribute(NONS_QNAME.STYLE, newStyle));
-
+        
         attrs.put(NONS_QNAME.FILL_COLOR, eventFactory.createAttribute(NONS_QNAME.FILL_COLOR, color));
-
+        
         return eventFactory.createStartElement(V_QNAME.SHAPE, attrs.values().iterator(), null);
     }
 }

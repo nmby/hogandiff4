@@ -6,18 +6,18 @@ package xyz.hotchpotch.hogandiff.logic;
  * @author nmby
  */
 public class PasswordHandlingException extends ExcelHandlingException {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * 新しい例外を生成します。<br>
      */
     public PasswordHandlingException() {
         super();
     }
-
+    
     /**
      * 新しい例外を生成します。<br>
      * 
@@ -26,7 +26,7 @@ public class PasswordHandlingException extends ExcelHandlingException {
     public PasswordHandlingException(String message) {
         super(message);
     }
-
+    
     /**
      * 新しい例外を生成します。<br>
      * 
@@ -35,7 +35,7 @@ public class PasswordHandlingException extends ExcelHandlingException {
     public PasswordHandlingException(Throwable cause) {
         super(cause);
     }
-
+    
     /**
      * 新しい例外を生成します。<br>
      * 

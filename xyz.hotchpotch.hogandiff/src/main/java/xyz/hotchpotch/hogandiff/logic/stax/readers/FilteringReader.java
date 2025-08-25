@@ -20,29 +20,29 @@ import javax.xml.stream.events.XMLEvent;
  * @author nmby
  */
 public class FilteringReader extends BufferingReader {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * {@link FilteringReader} のビルダーです。<br>
      *
      * @author nmby
      */
     public static class Builder {
-
+        
         // [static members] ----------------------------------------------------
-
+        
         // [instance members] --------------------------------------------------
-
+        
         private final XMLEventReader source;
         private final List<BiPredicate<? super Deque<QName>, ? super StartElement>> filters = new ArrayList<>();
-
+        
         private Builder(XMLEventReader source) {
             assert source != null;
-
+            
             this.source = source;
         }
-
+        
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
@@ -54,7 +54,7 @@ public class FilteringReader extends BufferingReader {
             if (qNames.length == 0) {
                 throw new IllegalArgumentException();
             }
-
+            
             filters.add((currTree, start) -> {
                 int i = qNames.length - 1;
                 if (!qNames[i].equals(start.getName())) {
@@ -63,7 +63,7 @@ public class FilteringReader extends BufferingReader {
                 if (currTree.size() + 1 < qNames.length) {
                     return false;
                 }
-
+                
                 Iterator<QName> itr = currTree.descendingIterator();
                 while (0 < i) {
                     i--;
@@ -73,10 +73,10 @@ public class FilteringReader extends BufferingReader {
                 }
                 return true;
             });
-
+            
             return this;
         }
-
+        
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
@@ -86,11 +86,11 @@ public class FilteringReader extends BufferingReader {
          */
         public Builder addFilter(Predicate<? super StartElement> filter) {
             Objects.requireNonNull(filter);
-
+            
             filters.add((currTree, start) -> filter.test(start));
             return this;
         }
-
+        
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
@@ -100,10 +100,10 @@ public class FilteringReader extends BufferingReader {
          */
         public Builder addFilter(BiPredicate<? super Deque<QName>, ? super StartElement> filter) {
             Objects.requireNonNull(filter);
-
+            
             return this;
         }
-
+        
         /**
          * このビルダーからリーダーを構成します。<br>
          * 
@@ -113,7 +113,7 @@ public class FilteringReader extends BufferingReader {
             return new FilteringReader(this);
         }
     }
-
+    
     /**
      * このクラスのビルダーを返します。<br>
      * 
@@ -123,20 +123,20 @@ public class FilteringReader extends BufferingReader {
      */
     public static Builder builder(XMLEventReader source) {
         Objects.requireNonNull(source);
-
+        
         return new Builder(source);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final List<BiPredicate<? super Deque<QName>, ? super StartElement>> filters;
-
+    
     private FilteringReader(Builder builder) {
         super(builder.source);
-
+        
         filters = builder.filters;
     }
-
+    
     /**
      * {@inheritDoc}
      * 

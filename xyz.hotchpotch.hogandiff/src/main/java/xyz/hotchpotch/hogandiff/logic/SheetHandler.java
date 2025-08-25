@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({ TYPE })
 public @interface SheetHandler {
-
+    
     /**
      * そのクラスが処理できるExcelシートの種類を表します。<br>
      * 

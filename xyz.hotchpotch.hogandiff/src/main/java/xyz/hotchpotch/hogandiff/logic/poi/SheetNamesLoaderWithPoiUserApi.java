@@ -29,9 +29,9 @@ import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
 public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
@@ -45,20 +45,20 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
-
+        
         return new SheetNamesLoaderWithPoiUserApi(targetTypes);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final Set<SheetType> targetTypes;
-
+    
     private SheetNamesLoaderWithPoiUserApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
-
+        
         this.targetTypes = EnumSet.copyOf(targetTypes);
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -81,23 +81,23 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
     public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword) {
-
+        
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-
+        
         try (Workbook wb = WorkbookFactory.create(
                 bookPath.toFile(),
                 readPassword,
                 true)) {
-
+            
             List<String> sheetNames = StreamSupport.stream(wb.spliterator(), false)
                     .filter(s -> PoiUtil.possibleTypes(s).stream().anyMatch(targetTypes::contains))
                     .map(Sheet::getSheetName)
                     .toList();
-
+            
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
-
+            
         } catch (LeftoverDataException e) {
             // FIXME: [No.09 書込PW対応] 書き込みpw付きのxlsファイルを開けない
             //
@@ -110,10 +110,10 @@ public class SheetNamesLoaderWithPoiUserApi implements SheetNamesLoader {
             // 書き込みpw付きxlsファイルであると見なしてしまい、
             // 読み取りパスワードが設定されている場合と同様に処理することとする。
             return BookInfo.ofNeedsPassword(bookPath);
-
+            
         } catch (EncryptedDocumentException e) {
             return BookInfo.ofNeedsPassword(bookPath);
-
+            
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
         }

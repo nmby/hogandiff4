@@ -19,22 +19,22 @@ import javax.xml.stream.events.XMLEvent;
  * @author nmby
  */
 public abstract class BufferingReader implements XMLEventReader {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     /** ソースリーダー */
     protected final XMLEventReader source;
-
+    
     /** 次のイベントを格納するバッファ */
     protected final Deque<XMLEvent> buffer = new ArrayDeque<>();
-
+    
     /** 現在の要素ツリー */
     protected final Deque<QName> currTree = new ArrayDeque<>();
-
+    
     private boolean isReady;
-
+    
     /**
      * 新しいリーダーを生成します。<br>
      * 
@@ -42,10 +42,10 @@ public abstract class BufferingReader implements XMLEventReader {
      */
     protected BufferingReader(XMLEventReader source) {
         assert source != null;
-
+        
         this.source = source;
     }
-
+    
     /**
      * このリーダーの現在の状態で {@link #hasNext()}, {@link #peek()}, {@link #nextEvent()},
      * {@link #next()}
@@ -74,7 +74,7 @@ public abstract class BufferingReader implements XMLEventReader {
      * @throws XMLStreamException XMLイベントの解析に失敗した場合
      */
     protected abstract void seekNext() throws XMLStreamException;
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -93,7 +93,7 @@ public abstract class BufferingReader implements XMLEventReader {
         }
         return !buffer.isEmpty() || source.hasNext();
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -112,7 +112,7 @@ public abstract class BufferingReader implements XMLEventReader {
                 ? source.peek()
                 : buffer.peek();
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -131,7 +131,7 @@ public abstract class BufferingReader implements XMLEventReader {
         XMLEvent next = buffer.isEmpty()
                 ? source.nextEvent()
                 : buffer.remove();
-
+        
         if (next.isStartElement()) {
             currTree.addLast(next.asStartElement().getName());
         } else if (next.isEndElement()) {
@@ -140,7 +140,7 @@ public abstract class BufferingReader implements XMLEventReader {
         isReady = false;
         return next;
     }
-
+    
     /**
      * {@link #nextEvent()} と同じ。<br>
      * 但し、チェック例外は {@link RuntimeException} にラップしてスローします。<br>
@@ -153,7 +153,7 @@ public abstract class BufferingReader implements XMLEventReader {
             throw new RuntimeException(e);
         }
     }
-
+    
     /**
      * ソースリーダーをクローズします。<br>
      */
@@ -161,7 +161,7 @@ public abstract class BufferingReader implements XMLEventReader {
     public void close() throws XMLStreamException {
         source.close();
     }
-
+    
     /**
      * このオペレーションはサポートされません。<br>
      * 
@@ -171,7 +171,7 @@ public abstract class BufferingReader implements XMLEventReader {
     public String getElementText() throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
      * このオペレーションはサポートされません。<br>
      * 
@@ -181,7 +181,7 @@ public abstract class BufferingReader implements XMLEventReader {
     public XMLEvent nextTag() throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
      * このオペレーションはサポートされません。<br>
      * 

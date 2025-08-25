@@ -11,6 +11,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import xyz.hotchpotch.hogandiff.AppMain;
 
+/**
+ * GUIに関するユーティリティクラスです。<br>
+ * 
+ * @author nmby
+ */
 public class UIUtil {
     
     // [static members] ********************************************************

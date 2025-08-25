@@ -84,11 +84,11 @@ public class MenuPane extends HBox implements ChildController {
         // 3.初期値の設定
         compareTarget.selectToggle(
                 switch (ar.settings().get(SettingKeys.CURR_MENU)) {
-                    case COMPARE_BOOKS -> compareBooksRadioButton;
-                    case COMPARE_SHEETS -> compareSheetsRadioButton;
-                    case COMPARE_DIRS -> compareDirsRadioButton;
-                    case COMPARE_TREES -> compareDirsRadioButton;
-                    default -> throw new AssertionError("unknown menu");
+                case COMPARE_BOOKS -> compareBooksRadioButton;
+                case COMPARE_SHEETS -> compareSheetsRadioButton;
+                case COMPARE_DIRS -> compareDirsRadioButton;
+                case COMPARE_TREES -> compareDirsRadioButton;
+                default -> throw new AssertionError("unknown menu");
                 });
         
         recursivelyCheckBox.setSelected(

@@ -18,9 +18,9 @@ import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
  */
 @BookHandler
 public class SheetNamesLoaderCombined implements SheetNamesLoader {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
@@ -34,20 +34,20 @@ public class SheetNamesLoaderCombined implements SheetNamesLoader {
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
-
+        
         return new SheetNamesLoaderCombined(suppliers);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final List<Supplier<SheetNamesLoader>> suppliers;
-
+    
     private SheetNamesLoaderCombined(List<Supplier<SheetNamesLoader>> suppliers) {
         assert suppliers != null;
-
+        
         this.suppliers = List.copyOf(suppliers);
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -70,29 +70,29 @@ public class SheetNamesLoaderCombined implements SheetNamesLoader {
     public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword) {
-
+        
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-
+        
         try {
             Iterator<Supplier<SheetNamesLoader>> itr = suppliers.iterator();
-
+            
             while (itr.hasNext()) {
                 SheetNamesLoader loader = itr.next().get();
                 BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
-
+                
                 switch (bookInfo.status()) {
-                    case LOAD_COMPLETED:
-                    case NEEDS_PASSWORD:
-                        return bookInfo;
-
-                    case LOAD_FAILED:
-                        // continue
+                case LOAD_COMPLETED:
+                case NEEDS_PASSWORD:
+                    return bookInfo;
+                
+                case LOAD_FAILED:
+                    // continue
                 }
             }
             return BookInfo.ofLoadFailed(bookPath);
-
+            
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
         }
