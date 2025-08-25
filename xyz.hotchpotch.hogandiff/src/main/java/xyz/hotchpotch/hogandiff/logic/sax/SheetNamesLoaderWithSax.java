@@ -24,9 +24,9 @@ import xyz.hotchpotch.hogandiff.logic.sax.SaxUtil.SheetInfo;
  */
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM })
 public class SheetNamesLoaderWithSax implements SheetNamesLoader {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
@@ -40,20 +40,20 @@ public class SheetNamesLoaderWithSax implements SheetNamesLoader {
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
-
+        
         return new SheetNamesLoaderWithSax(targetTypes);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final Set<SheetType> targetTypes;
-
+    
     private SheetNamesLoaderWithSax(Set<SheetType> targetTypes) {
         assert targetTypes != null;
-
+        
         this.targetTypes = EnumSet.copyOf(targetTypes);
     }
-
+    
     /**
      * {@inheritDoc}
      * 
@@ -70,24 +70,24 @@ public class SheetNamesLoaderWithSax implements SheetNamesLoader {
     public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword) {
-
+        
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-
+        
         try {
             List<SheetInfo> sheets = SaxUtil.loadSheetInfos(bookPath, readPassword);
-
+            
             List<String> sheetNames = sheets.stream()
                     .filter(info -> targetTypes.contains(info.type()))
                     .map(SheetInfo::sheetName)
                     .toList();
-
+            
             return BookInfo.ofLoadCompleted(bookPath, sheetNames);
-
+            
         } catch (PasswordHandlingException e) {
             return BookInfo.ofNeedsPassword(bookPath);
-
+            
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
         }

@@ -16,9 +16,9 @@ import xyz.hotchpotch.hogandiff.logic.SheetType;
  * @author nmby
  */
 public class CommonUtil {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 指定されたクラスが指定されたExcelブックの形式を扱えるかを返します。<br>
      * 
@@ -33,10 +33,10 @@ public class CommonUtil {
     public static boolean isSupportedBookType(
             Class<?> clazz,
             BookType bookType) {
-
+        
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(bookType);
-
+        
         BookHandler bookHandler = clazz.getAnnotation(BookHandler.class);
         if (bookHandler == null) {
             throw new IllegalArgumentException(
@@ -44,12 +44,12 @@ public class CommonUtil {
                             clazz.getSimpleName(),
                             BookHandler.class.getSimpleName()));
         }
-
+        
         // お行儀の悪い実装による重複にも耐えられるように Set ではなく List にしている。
         List<BookType> targetTypes = List.of(bookHandler.targetTypes());
         return targetTypes.contains(bookType);
     }
-
+    
     /**
      * 指定されたクラスが指定されたExcelブックの形式を扱えない場合に例外をスローします。<br>
      * 
@@ -67,12 +67,12 @@ public class CommonUtil {
     public static void ifNotSupportedBookTypeThenThrow(
             Class<?> clazz,
             BookType bookType) {
-
+        
         if (!isSupportedBookType(clazz, bookType)) {
             throw new IllegalArgumentException("unsupported book type : " + bookType);
         }
     }
-
+    
     /**
      * 指定されたクラスが指定されたExcelシートの種類を扱えそうかを返します。<br>
      * 
@@ -88,10 +88,10 @@ public class CommonUtil {
     public static boolean isSupportedSheetType(
             Class<?> clazz,
             Set<SheetType> possibleTypes) {
-
+        
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(possibleTypes);
-
+        
         SheetHandler sheetHandler = clazz.getAnnotation(SheetHandler.class);
         if (sheetHandler == null) {
             throw new IllegalArgumentException(
@@ -99,12 +99,12 @@ public class CommonUtil {
                             clazz.getSimpleName(),
                             SheetHandler.class.getSimpleName()));
         }
-
+        
         // お行儀の悪い実装による重複に耐えうるように Set ではなく List にしている。
         List<SheetType> targetTypes = List.of(sheetHandler.targetTypes());
         return possibleTypes.stream().anyMatch(targetTypes::contains);
     }
-
+    
     /**
      * 指定されたクラスが指定されたExcelシートの種類を扱えない場合に例外をスローします。<br>
      * 
@@ -122,7 +122,7 @@ public class CommonUtil {
     public static void ifNotSupportedSheetTypeThenThrow(
             Class<?> clazz,
             Set<SheetType> possibleTypes) {
-
+        
         if (!isSupportedSheetType(clazz, possibleTypes)) {
             throw new IllegalArgumentException("unsupported sheet type : "
                     + possibleTypes.stream()
@@ -130,9 +130,9 @@ public class CommonUtil {
                             .collect(Collectors.joining(", ")));
         }
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private CommonUtil() {
     }
 }

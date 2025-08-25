@@ -158,7 +158,12 @@ public class GooglePane extends HBox implements ChildController {
         });
         
         // 3.初期値の設定
-        parent.googleCredential.setValue(GoogleCredential.get(false));
+        new Thread(() -> {
+            GoogleCredential credential = GoogleCredential.get(false);
+            Platform.runLater(() -> {
+                parent.googleCredential.setValue(credential);
+            });
+        }).start();
         
         // 4.値変更時のイベントハンドラの設定
         // nop

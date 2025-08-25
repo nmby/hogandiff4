@@ -37,7 +37,6 @@ final def requiredMods = '' \
     + 'javafx.controls,' \
     + 'javafx.fxml,' \
     + 'javafx.graphics,' \
-    + 'javafx.web,' \
     + 'jdk.charsets,' \
     + 'jdk.httpserver,' \
     + 'jdk.zipfs'

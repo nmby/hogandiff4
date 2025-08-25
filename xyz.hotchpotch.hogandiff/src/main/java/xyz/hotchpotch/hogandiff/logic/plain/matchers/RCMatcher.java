@@ -15,9 +15,9 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  */
 @FunctionalInterface
 public interface RCMatcher {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 新たなマッチャーを返します。<br>
      * 
@@ -30,32 +30,32 @@ public interface RCMatcher {
             boolean considerRowGaps,
             boolean considerColumnGaps,
             boolean prioritizeSpeed) {
-
+        
         ItemMatcher rowsMatcher = ItemMatcher
                 .rowsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
         ItemMatcher columnsMatcher = ItemMatcher
                 .columnsMatcherOf(considerRowGaps, considerColumnGaps, prioritizeSpeed);
-
+        
         if (considerRowGaps && considerColumnGaps) {
             return cellsSetPair -> {
                 List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSetPair, null);
                 List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSetPair, columnPairs);
-
+                
                 return new Pair<>(rowPairs, columnPairs);
             };
-
+            
         } else {
             return cellsSetPair -> {
                 List<IntPair> columnPairs = columnsMatcher.makePairs(cellsSetPair, null);
                 List<IntPair> rowPairs = rowsMatcher.makePairs(cellsSetPair, null);
-
+                
                 return new Pair<>(rowPairs, columnPairs);
             };
         }
     }
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * 2つのシートに含まれるセルセット同士を比較し、行同士、列同士の対応関係を返します。<br>
      * 

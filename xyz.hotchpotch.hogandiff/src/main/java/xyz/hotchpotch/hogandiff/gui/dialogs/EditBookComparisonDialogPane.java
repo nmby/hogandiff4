@@ -12,13 +12,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  */
 public class EditBookComparisonDialogPane extends EditComparisonDialogPane<PairingInfoBooks> {
-
+    
     // static members **********************************************************
-
+    
     // instance members ********************************************************
-
+    
     private final PairingInfoBooks bookComparison;
-
+    
     /**
      * コンストラクタ<br>
      * 
@@ -29,14 +29,14 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<Pairi
         super();
         this.bookComparison = bookComparison;
     }
-
+    
     /* package */ void init() throws IOException {
         super.init(bookComparison.parentBookInfoPair());
-
+        
         currentChildPairs.addAll(bookComparison.childSheetNamePairs());
         drawGrid();
     }
-
+    
     @Override
     public PairingInfoBooks getResult() {
         // わざわざこんなことせにゃならんのか？？
@@ -46,28 +46,28 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<Pairi
                 .toList();
         return new PairingInfoBooks(bookComparison.parentBookInfoPair(), casted);
     }
-
+    
     @Override
     protected void unpair(int i) {
         Pair<?> paired = currentChildPairs.get(i);
         assert paired.isPaired();
-
+        
         Pair<?> unpairedA = Pair.of(paired.a(), null);
         Pair<?> unpairedB = Pair.of(null, paired.b());
-
+        
         currentChildPairs.add(i + 1, unpairedA);
         currentChildPairs.add(i + 2, unpairedB);
         currentChildPairs.remove(i);
-
+        
         drawGrid();
     }
-
+    
     @Override
     protected void makePair(int src, int dst) {
         assert src != dst;
         assert 0 <= src && src < currentChildPairs.size();
         assert 0 <= dst && dst < currentChildPairs.size();
-
+        
         Pair<?> srcPair = currentChildPairs.get(src);
         Pair<?> dstPair = currentChildPairs.get(dst);
         assert !srcPair.isPaired();
@@ -76,15 +76,15 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<Pairi
         assert dstPair.hasA() != dstPair.hasB();
         assert srcPair.hasA() == dstPair.hasB();
         assert srcPair.hasB() == dstPair.hasA();
-
+        
         Pair<?> paired = Pair.of(
                 srcPair.hasA() ? srcPair.a() : dstPair.a(),
                 srcPair.hasB() ? srcPair.b() : dstPair.b());
-
+        
         currentChildPairs.remove(dst);
         currentChildPairs.add(dst, paired);
         currentChildPairs.remove(src);
-
+        
         drawGrid();
     }
 }

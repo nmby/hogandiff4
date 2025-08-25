@@ -4,6 +4,11 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 
+/**
+ * Googleドライブ連携機能に関するユーティリティクラスです。<br>
+ * 
+ * @author nmby
+ */
 public class GoogleUtil {
     
     // [static members] ********************************************************

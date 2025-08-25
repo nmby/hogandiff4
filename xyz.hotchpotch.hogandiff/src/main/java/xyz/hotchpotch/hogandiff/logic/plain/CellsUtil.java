@@ -12,9 +12,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @author nmby
  */
 public class CellsUtil {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * 行・列のインデックス（{@code (0, 0)} 形式）を
      * セルアドレス（{@code "A1"} 形式）に変換します。<br>
@@ -30,7 +30,7 @@ public class CellsUtil {
         }
         return "%S%d".formatted(columnIdxToStr(column), row + 1);
     }
-
+    
     /**
      * セルアドレス（{@code "A1"} 形式）を
      * 行・列のインデックス（{@code (0, 0)} 形式）に変換します。<br>
@@ -41,7 +41,7 @@ public class CellsUtil {
      */
     public static IntPair addressToIdx(String address) {
         Objects.requireNonNull(address);
-
+        
         int i = 0;
         for (; i < address.length(); i++) {
             if (Character.isDigit(address.charAt(i))) {
@@ -51,15 +51,15 @@ public class CellsUtil {
         if (i == 0 || address.length() <= i) {
             throw new IllegalArgumentException(address);
         }
-
+        
         String colStr = address.substring(0, i);
         String rowStr = address.substring(i);
-
+        
         return IntPair.of(
                 Integer.parseInt(rowStr) - 1,
                 CellReference.convertColStringToIndex(colStr));
     }
-
+    
     /**
      * 列のインデックス（{@code 0} など）を記号（{@code "A"} など）に変換します。<br>
      * 
@@ -71,10 +71,10 @@ public class CellsUtil {
         if (column < 0) {
             throw new IndexOutOfBoundsException("column:%d".formatted(column));
         }
-
+        
         return CellReference.convertNumToColString(column);
     }
-
+    
     /**
      * 列の記号（{@code "A"} など）を列のインデックス（{@code 0} など）に変換します。<br>
      * 
@@ -84,12 +84,12 @@ public class CellsUtil {
      */
     public static int columnStrToIdx(String columnStr) {
         Objects.requireNonNull(columnStr);
-
+        
         return CellReference.convertColStringToIndex(columnStr);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private CellsUtil() {
     }
 }

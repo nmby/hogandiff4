@@ -17,8 +17,8 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import xyz.hotchpotch.hogandiff.logic.plain.CellsUtil;
-import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.logic.stax.PainterWithStax.StylesManager;
+import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil;
 import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.NONS_QNAME;
 import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.QNAME;
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -32,11 +32,11 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @author nmby
  */
 public class PaintRedundantCellsReader extends BufferingReader {
-
+    
     // [static members] ********************************************************
-
+    
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-
+    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -57,7 +57,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
             short colorIdx) {
-
+        
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
         Objects.requireNonNull(redundantRows);
@@ -65,7 +65,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
         if (redundantRows.isEmpty() && redundantColumns.isEmpty()) {
             throw new IllegalArgumentException("no target cells");
         }
-
+        
         return new PaintRedundantCellsReader(
                 source,
                 stylesManager,
@@ -73,34 +73,34 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 redundantColumns,
                 colorIdx);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final StylesManager stylesManager;
     private final Set<Integer> redundantRows;
     private final Set<Integer> redundantColumns;
     private final short colorIdx;
-
+    
     private PaintRedundantCellsReader(
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
             short colorIdx) {
-
+        
         super(source);
-
+        
         assert stylesManager != null;
         assert redundantRows != null;
         assert redundantColumns != null;
         assert !redundantRows.isEmpty() || !redundantColumns.isEmpty();
-
+        
         this.stylesManager = stylesManager;
         this.redundantRows = Set.copyOf(redundantRows);
         this.redundantColumns = Set.copyOf(redundantColumns);
         this.colorIdx = colorIdx;
     }
-
+    
     @Override
     protected void seekNext() throws XMLStreamException {
         if (!source.hasNext()) {
@@ -110,16 +110,16 @@ public class PaintRedundantCellsReader extends BufferingReader {
         if (!StaxUtil.isStart(event, QNAME.C)) {
             return;
         }
-
+        
         String address = event.asStartElement().getAttributeByName(NONS_QNAME.R).getValue();
         IntPair idx = CellsUtil.addressToIdx(address);
-
+        
         if (redundantRows.contains(idx.a()) || redundantColumns.contains(idx.b())) {
             buffer.add(paintCell(event.asStartElement()));
             source.nextEvent();
         }
     }
-
+    
     /**
      * c 要素開始イベントを受け取り、適用するスタイルを着色スタイルに変更して返します。<br>
      * 
@@ -133,12 +133,12 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 .map(Integer::parseInt)
                 .orElse(0);
         int newStyleIdx = stylesManager.getPaintedStyle(currStyleIdx, colorIdx);
-
+        
         Map<QName, Attribute> newAttrs = new HashMap<>();
         newAttrs.put(
                 NONS_QNAME.S,
                 eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyleIdx)));
-
+        
         Iterator<Attribute> itr = original.getAttributes();
         while (itr.hasNext()) {
             Attribute attr = itr.next();
@@ -146,7 +146,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
                 newAttrs.put(attr.getName(), attr);
             }
         }
-
+        
         return eventFactory.createStartElement(QNAME.C, newAttrs.values().iterator(), null);
     }
 }

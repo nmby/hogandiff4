@@ -25,11 +25,11 @@ import xyz.hotchpotch.hogandiff.logic.stax.StaxUtil.QNAME;
  * @author nmby
  */
 public class PaintSheetTabReader extends BufferingReader {
-
+    
     // [static members] ********************************************************
-
+    
     private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-
+    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -41,30 +41,30 @@ public class PaintSheetTabReader extends BufferingReader {
     public static XMLEventReader of(
             XMLEventReader source,
             Color color) {
-
+        
         Objects.requireNonNull(source);
         Objects.requireNonNull(color);
-
+        
         return new PaintSheetTabReader(source, color);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final String rgb;
     private boolean auto;
-
+    
     private PaintSheetTabReader(
             XMLEventReader source,
             Color color) {
-
+        
         super(source);
-
+        
         assert color != null;
-
+        
         this.rgb = "FF%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue())
                 .toUpperCase();
     }
-
+    
     @Override
     protected void seekNext() throws XMLStreamException {
         if (auto) {
@@ -73,21 +73,21 @@ public class PaintSheetTabReader extends BufferingReader {
         if (!source.hasNext()) {
             throw new XMLStreamException("file may be corrupted");
         }
-
+        
         XMLEvent event = source.peek();
         if (!StaxUtil.isStart(event, QNAME.WORKSHEET)) {
             return;
         }
-
+        
         buffer.add(source.nextEvent());
         buffer.add(eventFactory.createStartElement(QNAME.SHEET_PR, Collections.emptyIterator(), null));
-
+        
         Set<Attribute> attrs = Set.of(eventFactory.createAttribute(NONS_QNAME.RGB, rgb));
         buffer.add(eventFactory.createStartElement(QNAME.TAB_COLOR, attrs.iterator(), null));
         buffer.add(eventFactory.createEndElement(QNAME.TAB_COLOR, null));
-
+        
         buffer.add(eventFactory.createEndElement(QNAME.SHEET_PR, null));
-
+        
         auto = true;
     }
 }

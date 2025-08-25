@@ -12,11 +12,11 @@ import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
 // sealed を使ってみる
 public sealed interface Result
         permits ResultOfSheets, ResultOfBooks, ResultOfDirs, ResultOfTrees {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * 比較結果のシートごとの統計情報を返します。<br>
      * 

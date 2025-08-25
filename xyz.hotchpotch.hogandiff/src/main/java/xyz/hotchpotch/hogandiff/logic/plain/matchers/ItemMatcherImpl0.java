@@ -17,13 +17,13 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * @author nmby
  */
 /* package */ class ItemMatcherImpl0 implements ItemMatcher {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     private final ToIntFunction<CellData> vertical;
-
+    
     /**
      * コンストラクタ
      * 
@@ -31,10 +31,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
      */
     /* package */ ItemMatcherImpl0(ToIntFunction<CellData> vertical) {
         assert vertical != null;
-
+        
         this.vertical = vertical;
     }
-
+    
     /**
      * {@inheritDoc}
      * 
@@ -44,14 +44,14 @@ import xyz.hotchpotch.hogandiff.util.Pair;
     public List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
-
+        
         Objects.requireNonNull(cellsSetPair);
-
+        
         int min1 = cellsSetPair.a().parallelStream().mapToInt(vertical).min().orElse(0);
         int max1 = cellsSetPair.a().parallelStream().mapToInt(vertical).max().orElse(0);
         int min2 = cellsSetPair.b().parallelStream().mapToInt(vertical).min().orElse(0);
         int max2 = cellsSetPair.b().parallelStream().mapToInt(vertical).max().orElse(0);
-
+        
         return IntStream.rangeClosed(Math.min(min1, min2), Math.max(max1, max2))
                 .mapToObj(n -> IntPair.of(n, n))
                 .toList();

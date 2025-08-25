@@ -89,9 +89,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         default Direction direction() {
             return switch (this) {
-                case Upper from -> Direction.FROM_UPPER;
-                case Left from -> Direction.FROM_LEFT;
-                case UpperLeft from -> Direction.FROM_UPPER_LEFT;
+            case Upper from -> Direction.FROM_UPPER;
+            case Left from -> Direction.FROM_LEFT;
+            case UpperLeft from -> Direction.FROM_UPPER_LEFT;
             };
         }
         
@@ -273,21 +273,21 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         while (comeFrom != null) {
             switch (comeFrom.direction()) {
-                case FROM_UPPER_LEFT:
-                    a--;
-                    b--;
-                    bestRoute.addFirst(IntPair.of(a, b));
-                    break;
-                case FROM_UPPER:
-                    a--;
-                    bestRoute.addFirst(IntPair.onlyA(a));
-                    break;
-                case FROM_LEFT:
-                    b--;
-                    bestRoute.addFirst(IntPair.onlyB(b));
-                    break;
-                default:
-                    throw new AssertionError(comeFrom.direction());
+            case FROM_UPPER_LEFT:
+                a--;
+                b--;
+                bestRoute.addFirst(IntPair.of(a, b));
+                break;
+            case FROM_UPPER:
+                a--;
+                bestRoute.addFirst(IntPair.onlyA(a));
+                break;
+            case FROM_LEFT:
+                b--;
+                bestRoute.addFirst(IntPair.onlyB(b));
+                break;
+            default:
+                throw new AssertionError(comeFrom.direction());
             }
             comeFrom = comeFrom.prev();
         }
