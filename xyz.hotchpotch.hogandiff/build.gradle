@@ -40,7 +40,7 @@ tasks.withType(JavaCompile) {
 javafx {
 	// 直近の LTS-version とする。
     version = 21
-    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 application {
