@@ -1,13 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
 import java.util.UUID;
 
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -50,6 +48,12 @@ public class AppMain extends Application {
     /** メインステージの最小幅 */
     public static final double STAGE_WIDTH = 525d;
     
+    private static HostServices hostServices = null;
+    
+    public static void showDocument(String uri) {
+        hostServices.showDocument(uri);
+    }
+    
     /**
      * このアプリケーションのエントリポイントです。<br>
      * 
@@ -65,6 +69,7 @@ public class AppMain extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+        hostServices = getHostServices();
         stage = primaryStage;
         
         announceNewFeature();
@@ -146,8 +151,8 @@ public class AppMain extends Application {
             
             try {
                 appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-26-0/"));
-            } catch (IOException e) {
+                showDocument("https://hogandiff.hotchpotch.xyz/releasenotes/v0-26-0/");
+            } catch (RuntimeException e) {
                 e.printStackTrace();
                 // nop
             }

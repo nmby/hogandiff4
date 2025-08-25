@@ -1,8 +1,5 @@
 package xyz.hotchpotch.hogandiff.gui;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
@@ -31,8 +28,8 @@ public class UIUtil {
     public static void setupHyperlink(Hyperlink link, String url) {
         link.setOnAction(event -> {
             try {
-                Desktop.getDesktop().browse(URI.create(url));
-            } catch (IOException e) {
+                AppMain.showDocument(url);
+            } catch (RuntimeException e) {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,

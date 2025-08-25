@@ -1,9 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
-import java.awt.Desktop;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -195,7 +193,7 @@ public class GooglePicker {
                 .runAsync(() -> {
                     try {
                         startServer();
-                        Desktop.getDesktop().browse(new URI("http://localhost:" + server.getAddress().getPort()));
+                        AppMain.showDocument("http://localhost:" + server.getAddress().getPort());
                     } catch (Exception e) {
                         fileSelectionFuture.completeExceptionally(e);
                         throw new RuntimeException(e);

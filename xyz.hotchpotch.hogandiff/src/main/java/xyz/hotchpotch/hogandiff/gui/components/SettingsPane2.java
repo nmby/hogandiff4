@@ -157,7 +157,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             if (!Files.isDirectory(workDirBase)) {
                 Files.createDirectories(workDirBase);
             }
-            Desktop.getDesktop().open(workDirBase.toFile());
+            AppMain.showDocument(workDirBase.toUri().toString());
             
         } catch (Exception e) {
             e.printStackTrace();
