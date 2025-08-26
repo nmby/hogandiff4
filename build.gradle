@@ -112,6 +112,7 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
         copy {
             from outputDirTmpJars
             exclude "xyz.hotchpotch.hogandiff.jar"
+            exclude "javafx-*.jar"
             into outputDirWinX64.resolve("lib")
         }
         copy {
