@@ -112,6 +112,7 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
         copy {
             from outputDirTmpJars
             exclude "xyz.hotchpotch.hogandiff.jar"
+            exclude "javafx-*.jar"
             into outputDirWinX64.resolve("lib")
         }
         copy {
@@ -127,6 +128,14 @@ task gatherFilesForWinX64(dependsOn: [pickupAndExpandFatJar, jlinkForWinX64]) {
             from log4jBin
             include 'LICENSE.txt', 'NOTICE.txt'
             into outputDirWinX64.resolve("lib/legal/log4j")
+        }
+        
+        def javafxBinDir = outputDirWinX64.resolve("jre-min/bin/javafx")
+        delete fileTree(javafxBinDir) {
+            include 'api-ms-win-*.dll'
+            include 'msvcp*.dll'
+            include 'vcruntime*.dll'
+            include 'ucrtbase.dll'
         }
     }
 }
@@ -148,6 +157,7 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
         }
         copy {
             from outputDirTmpJars
+            exclude "javafx-*.jar"
             into outputDirMacX64.resolve('hogandiff.app/Contents/Java')
         }
         copy {
