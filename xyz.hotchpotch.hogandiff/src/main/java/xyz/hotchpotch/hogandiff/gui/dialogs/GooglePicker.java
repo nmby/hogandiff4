@@ -98,7 +98,12 @@ public class GooglePicker {
                                         name: file.name,
                                         mimeType: file.mimeType
                                     })
-                                }).then(() => window.close());
+                                }).then(() => {
+                                    if (window.opener) {
+                                        window.opener.focus();
+                                    }
+                                    setTimeout(() => window.close(), 100);
+                                });
                             } else if (data.action == google.picker.Action.CANCEL) {
                                 fetch('/callback', {
                                     method: 'POST',
@@ -106,7 +111,12 @@ public class GooglePicker {
                                     body: JSON.stringify({
                                         cancelled: true
                                     })
-                                }).then(() => window.close());
+                                }).then(() => {
+                                    if (window.opener) {
+                                        window.opener.focus();
+                                    }
+                                    setTimeout(() => window.close(), 100);
+                                });
                             }
                         }
                 
@@ -123,9 +133,9 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
-                        accessToken,
-                        API_KEY, APP_ID,
-                        rb.getString("fx.GoogleFilePickerDialog.020"));
+                accessToken,
+                API_KEY, APP_ID,
+                rb.getString("fx.GoogleFilePickerDialog.020"));
     }
     
     // [instance members] ******************************************************
@@ -230,6 +240,11 @@ public class GooglePicker {
                 .whenComplete((result, error) -> {
                     stopServer();
                     fileSelectionFuture = null;
+                    
+                    Platform.runLater(() -> {
+                        AppMain.stage.toFront();
+                        AppMain.stage.requestFocus();
+                    });
                 })
                 .thenApply(jsonResult -> {
                     if (jsonResult == null) {
