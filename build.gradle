@@ -157,6 +157,7 @@ task gatherFilesForMacX64(dependsOn: [pickupAndExpandFatJar, jlinkForMacX64]) {
         }
         copy {
             from outputDirTmpJars
+            exclude "javafx-*.jar"
             into outputDirMacX64.resolve('hogandiff.app/Contents/Java')
         }
         copy {
