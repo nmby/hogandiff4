@@ -32,8 +32,8 @@ public class GooglePicker {
     
     // [static members] ********************************************************
     
-    private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
+    private static final AppResource ar = AppMain.appResource;
+    private static final ResourceBundle rb = ar.get();
     
     private static final String API_KEY = EnvConfig.get("GOOGLE_PICKER_API_KEY");
     private static final String APP_ID = EnvConfig.get("GOOGLE_CLOUD_PROJECT_ID");
@@ -62,13 +62,25 @@ public class GooglePicker {
                 
                         function createPicker() {
                             if (pickerApiLoaded) {
+                                const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setIncludeFolders(true)
+                                    .setMimeTypes(
+                                        'application/vnd.google-apps.spreadsheet,' +
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+                                        'application/vnd.ms-excel,' +
+                                        'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    )
+                                    .setMode(google.picker.DocsViewMode.LIST);
+                
                                 const picker = new google.picker.PickerBuilder()
                                     .setOAuthToken('%s')
                                     .setDeveloperKey('%s')
                                     .setAppId('%s')
-                                    .addView(new google.picker.DocsView())
+                                    .addView(docsView)
+                                    .setTitle('%s')
                                     .setCallback(pickerCallback)
                                     .build();
+                
                                 picker.setVisible(true);
                             }
                         }
@@ -110,7 +122,10 @@ public class GooglePicker {
                     </script>
                 </body>
                 </html>
-                """.formatted(accessToken, API_KEY, APP_ID);
+                """.formatted(
+                        accessToken,
+                        API_KEY, APP_ID,
+                        rb.getString("fx.GoogleFilePickerDialog.020"));
     }
     
     // [instance members] ******************************************************
