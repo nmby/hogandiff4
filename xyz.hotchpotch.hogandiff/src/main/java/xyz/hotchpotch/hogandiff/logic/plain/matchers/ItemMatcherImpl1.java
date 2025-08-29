@@ -24,12 +24,12 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * @author nmby
  */
 public class ItemMatcherImpl1 implements ItemMatcher {
-
+    
     // [static members] ********************************************************
-
+    
     /** 余剰評価関数 */
     private static final ToIntFunction<List<CellData>> gapEvaluator = List::size;
-
+    
     /**
      * 差分評価関数を返します。<br>
      * 
@@ -38,9 +38,9 @@ public class ItemMatcherImpl1 implements ItemMatcher {
      */
     private static ToIntBiFunction<List<CellData>, List<CellData>> diffEvaluator(
             Comparator<CellData> horizontalComparator) {
-
+        
         assert horizontalComparator != null;
-
+        
         return (list1, list2) -> {
             int idx1 = 0;
             int idx2 = 0;
@@ -48,7 +48,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
             int cost = 0;
             CellData cell1 = null;
             CellData cell2 = null;
-
+            
             while (idx1 < list1.size() && idx2 < list2.size()) {
                 if (comp <= 0) {
                     cell1 = list1.get(idx1);
@@ -58,9 +58,9 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                     cell2 = list2.get(idx2);
                     idx2++;
                 }
-
+                
                 comp = horizontalComparator.compare(cell1, cell2);
-
+                
                 if (comp < 0) {
                     cost++;
                 } else if (0 < comp) {
@@ -69,7 +69,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                     cost += 2;
                 }
             }
-
+            
             if (idx1 < list1.size()) {
                 cost += list1.size() - idx1;
             }
@@ -79,14 +79,14 @@ public class ItemMatcherImpl1 implements ItemMatcher {
             return cost;
         };
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final ToIntFunction<CellData> vertical;
     private final ToIntFunction<CellData> horizontal;
     private final Comparator<CellData> horizontalComparator;
     private final Matcher<List<CellData>> matcher;
-
+    
     /**
      * コンストラクタ
      * 
@@ -98,11 +98,11 @@ public class ItemMatcherImpl1 implements ItemMatcher {
             ToIntFunction<CellData> vertical,
             ToIntFunction<CellData> horizontal,
             Comparator<CellData> horizontalComparator) {
-
+        
         assert vertical != null;
         assert horizontal != null;
         assert horizontalComparator != null;
-
+        
         this.vertical = vertical;
         this.horizontal = horizontal;
         this.horizontalComparator = horizontalComparator;
@@ -110,7 +110,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                 gapEvaluator,
                 diffEvaluator(horizontalComparator));
     }
-
+    
     /**
      * {@inheritDoc}
      * 
@@ -120,22 +120,22 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     public List<IntPair> makePairs(
             Pair<Set<CellData>> cellsSetPair,
             List<IntPair> horizontalPairs) {
-
+        
         Objects.requireNonNull(cellsSetPair);
-
+        
         Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
                 ? new Pair<>(Set.of(), Set.of())
                 : Side.map(side -> horizontalPairs.stream()
                         .filter(pair -> pair.isOnly(side))
                         .map(pair -> pair.get(side))
                         .collect(Collectors.toSet()));
-
+        
         List<List<CellData>> listA = convert(cellsSetPair.a(), horizontalRedundants.a());
         List<List<CellData>> listB = convert(cellsSetPair.b(), horizontalRedundants.b());
-
+        
         return matcher.makeIdxPairs(listA, listB);
     }
-
+    
     /**
      * セルセットを横方向リストを要素に持つ縦方向リストに変換します。<br>
      * 
@@ -146,16 +146,16 @@ public class ItemMatcherImpl1 implements ItemMatcher {
     private List<List<CellData>> convert(
             Set<CellData> cells,
             Set<Integer> horizontalRedundants) {
-
+        
         assert cells != null;
         assert horizontalRedundants != null;
-
+        
         Map<Integer, List<CellData>> map = cells.parallelStream()
                 .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
                 .collect(Collectors.groupingBy(vertical::applyAsInt));
-
+        
         int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
-
+        
         return IntStream.rangeClosed(0, max).parallel()
                 .mapToObj(i -> {
                     if (map.containsKey(i)) {
@@ -163,7 +163,7 @@ public class ItemMatcherImpl1 implements ItemMatcher {
                         list.sort(horizontalComparator);
                         return list;
                     } else {
-                        return List.<CellData>of();
+                        return List.<CellData> of();
                     }
                 })
                 .toList();

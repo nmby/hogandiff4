@@ -35,99 +35,99 @@ import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
  */
 @BookHandler(targetTypes = { BookType.XLS })
 public class SheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
-
+    
     // [static members] ********************************************************
-
+    
     private static class SheetInfo {
-
+        
         // [static members] ----------------------------------------------------
-
+        
         // [instance members] --------------------------------------------------
-
+        
         private final String sheetName;
         private Set<SheetType> possibleTypes;
-
+        
         private SheetInfo(String sheetName) {
             assert sheetName != null;
-
+            
             this.sheetName = sheetName;
         }
     }
-
+    
     private static class Listener1 implements HSSFListener {
-
+        
         // [static members] ----------------------------------------------------
-
+        
         // [instance members] --------------------------------------------------
-
+        
         private List<SheetInfo> sheets = new ArrayList<>();
         private int idx = -1;
-
+        
         @Override
         public void processRecord(Record record) {
             assert record != null;
-
+            
             switch (record) {
-                case BoundSheetRecord bsRec:
-                    sheets.add(new SheetInfo(bsRec.getSheetname()));
-                    break;
-
-                case BOFRecord bof:
-                    switch (bof.getType()) {
-                        case BOFRecord.TYPE_WORKBOOK:
-                        case BOFRecord.TYPE_WORKSPACE_FILE:
-                            // nop
-                            break;
-
-                        case BOFRecord.TYPE_WORKSHEET:
-                            ++idx;
-                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.WORKSHEET, SheetType.DIALOG_SHEET);
-                            break;
-
-                        case BOFRecord.TYPE_CHART:
-                            ++idx;
-                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.CHART_SHEET);
-                            break;
-
-                        case BOFRecord.TYPE_EXCEL_4_MACRO:
-                            ++idx;
-                            sheets.get(idx).possibleTypes = EnumSet.of(SheetType.MACRO_SHEET);
-                            break;
-
-                        case BOFRecord.TYPE_VB_MODULE:
-                            ++idx;
-                            sheets.get(idx).possibleTypes = Set.of();
-                            break;
-
-                        default:
-                            throw new AssertionError("unknown BOF type: " + bof.getType());
-                    }
-                    break;
-
-                case WSBoolRecord wsbRec:
-                    if (wsbRec.getDialog()) {
-                        // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
-                        sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
-                    } else {
-                        sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
-                    }
-                    break;
-
-                default:
+            case BoundSheetRecord bsRec:
+                sheets.add(new SheetInfo(bsRec.getSheetname()));
+                break;
+            
+            case BOFRecord bof:
+                switch (bof.getType()) {
+                case BOFRecord.TYPE_WORKBOOK:
+                case BOFRecord.TYPE_WORKSPACE_FILE:
                     // nop
+                    break;
+                
+                case BOFRecord.TYPE_WORKSHEET:
+                    ++idx;
+                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.WORKSHEET, SheetType.DIALOG_SHEET);
+                    break;
+                
+                case BOFRecord.TYPE_CHART:
+                    ++idx;
+                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.CHART_SHEET);
+                    break;
+                
+                case BOFRecord.TYPE_EXCEL_4_MACRO:
+                    ++idx;
+                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.MACRO_SHEET);
+                    break;
+                
+                case BOFRecord.TYPE_VB_MODULE:
+                    ++idx;
+                    sheets.get(idx).possibleTypes = Set.of();
+                    break;
+                
+                default:
+                    throw new AssertionError("unknown BOF type: " + bof.getType());
+                }
+                break;
+            
+            case WSBoolRecord wsbRec:
+                if (wsbRec.getDialog()) {
+                    // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートであっても何故かここに入ってくれない
+                    sheets.get(idx).possibleTypes = EnumSet.of(SheetType.DIALOG_SHEET);
+                } else {
+                    sheets.get(idx).possibleTypes.remove(SheetType.DIALOG_SHEET);
+                }
+                break;
+            
+            default:
+                // nop
             }
         }
-
+        
         private List<String> getSheetNames(Set<SheetType> targetTypes) {
             assert targetTypes != null;
-
+            
             return sheets.stream()
                     .filter(s -> s.possibleTypes.stream().anyMatch(targetTypes::contains))
                     .map(s -> s.sheetName)
                     .toList();
         }
     }
-
+    
     /**
      * 新しいローダーを構成します。<br>
      * 
@@ -141,20 +141,20 @@ public class SheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
-
+        
         return new SheetNamesLoaderWithPoiEventApi(targetTypes);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private final Set<SheetType> targetTypes;
-
+    
     private SheetNamesLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
-
+        
         this.targetTypes = EnumSet.copyOf(targetTypes);
     }
-
+    
     /**
      * {@inheritDoc}
      * <br>
@@ -177,31 +177,31 @@ public class SheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
     public BookInfo loadBookInfo(
             Path bookPath,
             String readPassword) {
-
+        
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
-
+        
         Biff8EncryptionKey.setCurrentUserPassword(readPassword);
         try (FileInputStream fin = new FileInputStream(bookPath.toFile());
                 POIFSFileSystem poifs = new POIFSFileSystem(fin)) {
-
+            
             HSSFRequest req = new HSSFRequest();
             Listener1 listener1 = new Listener1();
             req.addListenerForAllRecords(listener1);
             HSSFEventFactory factory = new HSSFEventFactory();
             factory.abortableProcessWorkbookEvents(req, poifs);
-
+            
             return BookInfo.ofLoadCompleted(
                     bookPath,
                     listener1.getSheetNames(targetTypes));
-
+            
         } catch (EncryptedDocumentException e) {
             return BookInfo.ofNeedsPassword(bookPath);
-
+            
         } catch (Exception e) {
             return BookInfo.ofLoadFailed(bookPath);
-
+            
         } finally {
             Biff8EncryptionKey.setCurrentUserPassword(null);
         }

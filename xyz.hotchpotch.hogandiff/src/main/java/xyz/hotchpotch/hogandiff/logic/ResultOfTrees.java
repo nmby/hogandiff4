@@ -24,12 +24,12 @@ public record ResultOfTrees(
         PairingInfoDirsFlatten flattenDirComparison,
         Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults)
         implements Result {
-
+    
     // [static members] ********************************************************
-
+    
     private static final String BR = System.lineSeparator();
     private static final ResourceBundle rb = AppMain.appResource.get();
-
+    
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
@@ -41,10 +41,10 @@ public record ResultOfTrees(
     public static String formatDirInfoPair(
             String id,
             Pair<DirInfo> dirInfoPair) {
-
+        
         Objects.requireNonNull(id);
         Objects.requireNonNull(dirInfoPair);
-
+        
         return "    - %s%n    - %s%n".formatted(
                 dirInfoPair.hasA()
                         ? "【A%s】 %s".formatted(id, dirInfoPair.a().dirPath())
@@ -53,9 +53,9 @@ public record ResultOfTrees(
                         ? "【B%s】 %s".formatted(id, dirInfoPair.b().dirPath())
                         : rb.getString("excel.TreeResult.010"));
     }
-
+    
     // [instance members] ******************************************************
-
+    
     /**
      * コンストラクタ<br>
      * 
@@ -63,17 +63,13 @@ public record ResultOfTrees(
      * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public ResultOfTrees(
-            PairingInfoDirsFlatten flattenDirComparison,
-            Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults) {
-
+    public ResultOfTrees {
         Objects.requireNonNull(flattenDirComparison);
         Objects.requireNonNull(dirResults);
-
-        this.flattenDirComparison = flattenDirComparison;
-        this.dirResults = Map.copyOf(dirResults);
+        
+        dirResults = Map.copyOf(dirResults);
     }
-
+    
     /**
      * この比較結果における差分の有無を返します。<br>
      * 
@@ -84,59 +80,59 @@ public record ResultOfTrees(
                 .map(dirResults::get)
                 .anyMatch(r -> r.isEmpty() || r.get().hasDiff());
     }
-
+    
     private String getDiffSummary() {
         return getDiffText(dirResult -> "        - %s%n%n".formatted(dirResult.isPresent()
                 ? dirResult.get().getDiffSimpleSummary()
                 : rb.getString("excel.TreeResult.050")));
     }
-
+    
     private String getDiffDetail() {
         return getDiffText(dirResult -> dirResult.isPresent()
                 ? dirResult.get().getDiffDetail().indent(4).replace("\n", BR)
                 : "        " + rb.getString("excel.TreeResult.050") + BR + BR);
     }
-
+    
     private String getDiffText(Function<Optional<ResultOfDirs>, String> diffDescriptor) {
         StringBuilder str = new StringBuilder();
-
+        
         for (int i = 0; i < flattenDirComparison.dirInfoPairs().size(); i++) {
             Pair<DirInfo> dirInfoPair = flattenDirComparison.dirInfoPairs().get(i);
             PairingInfoDirs dirComparison = flattenDirComparison.dirComparisons().get(dirInfoPair).get();
             Optional<ResultOfDirs> dirResult = dirResults.get(dirInfoPair);
-
+            
             str.append(formatDirInfoPair(Integer.toString(i + 1), dirComparison.parentDirInfoPair()));
-
+            
             if (dirComparison.parentDirInfoPair().isPaired()) {
                 str.append(diffDescriptor.apply(dirResult));
             } else {
                 str.append(BR);
             }
         }
-
+        
         return str.toString();
     }
-
+    
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-
+        
         str.append(rb.getString("excel.TreeResult.020").formatted("A"))
                 .append(flattenDirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
         str.append(rb.getString("excel.TreeResult.020").formatted("B"))
                 .append(flattenDirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
-
+        
         str.append(BR);
         str.append(rb.getString("excel.TreeResult.030")).append(BR);
         str.append(getDiffSummary());
         str.append(rb.getString("excel.TreeResult.040")).append(BR);
         str.append(getDiffDetail());
-
+        
         return str.toString();
     }
-
+    
     @Override
     public List<SheetStats> sheetStats() {
         return dirResults.values().stream()

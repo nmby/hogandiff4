@@ -20,9 +20,9 @@ import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.BookType;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Painter;
+import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.SheetHandler;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
-import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
 
 /**
@@ -35,11 +35,11 @@ import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
 @BookHandler(targetTypes = { BookType.XLSX, BookType.XLSM, BookType.XLS })
 @SheetHandler(targetTypes = { SheetType.WORKSHEET })
 public class PainterWithPoiUserApi implements Painter {
-
+    
     // [static members] ********************************************************
-
+    
     // [instance members] ******************************************************
-
+    
     private final short redundantColor;
     private final short diffColor;
     private final Color redundantCommentColor;
@@ -47,7 +47,7 @@ public class PainterWithPoiUserApi implements Painter {
     private final Color redundantSheetColor;
     private final Color diffSheetColor;
     private final Color sameSheetColor;
-
+    
     /**
      * コンストラクタ
      * 
@@ -67,13 +67,13 @@ public class PainterWithPoiUserApi implements Painter {
             Color redundantSheetColor,
             Color diffSheetColor,
             Color sameSheetColor) {
-
+        
         Objects.requireNonNull(redundantCommentColor);
         Objects.requireNonNull(diffCommentColor);
         Objects.requireNonNull(redundantSheetColor);
         Objects.requireNonNull(diffSheetColor);
         Objects.requireNonNull(sameSheetColor);
-
+        
         this.redundantColor = redundantColor;
         this.diffColor = diffColor;
         this.redundantCommentColor = redundantCommentColor;
@@ -82,7 +82,7 @@ public class PainterWithPoiUserApi implements Painter {
         this.diffSheetColor = diffSheetColor;
         this.sameSheetColor = sameSheetColor;
     }
-
+    
     /**
      * {@inheritDoc}
      * 
@@ -111,7 +111,7 @@ public class PainterWithPoiUserApi implements Painter {
             String readPassword,
             Map<String, Optional<Piece>> diffs)
             throws ExcelHandlingException {
-
+        
         Objects.requireNonNull(srcBookPath);
         Objects.requireNonNull(dstBookPath);
         // readPassword may be null.
@@ -125,26 +125,26 @@ public class PainterWithPoiUserApi implements Painter {
             throw new IllegalArgumentException(
                     "extentions must be the same : %s -> %s".formatted(srcBookPath, dstBookPath));
         }
-
+        
         // 1. 目的のブックをコピーする。
         try {
             Files.copy(srcBookPath, dstBookPath);
             dstBookPath.toFile().setReadable(true, false);
             dstBookPath.toFile().setWritable(true, false);
-
+            
         } catch (Exception e) {
             throw new ExcelHandlingException(
                     "failed to copy the book : %s -> %s".formatted(srcBookPath, dstBookPath),
                     e);
         }
-
+        
         // 2. コピーしたファイルをExcelブックとしてロードする。
         try (InputStream is = Files.newInputStream(dstBookPath);
                 Workbook book = WorkbookFactory.create(is, readPassword)) {
-
+            
             // 例外が発生した場合もその部分だけをスキップして処理継続した方が
             // ユーザーにとっては有益であると考え、小刻みに try-catch で囲うことにする。
-
+            
             try {
                 // 3. まず、全ての色をクリアする。
                 PoiUtil.clearAllColors(book);
@@ -152,35 +152,35 @@ public class PainterWithPoiUserApi implements Painter {
                 e.printStackTrace();
                 // nop
             }
-
+            
             // 4. 差分個所に色を付ける。
             diffs.forEach((sheetName, piece) -> {
                 try {
                     Sheet sheet = book.getSheet(sheetName);
-
+                    
                     if (piece.isPresent()) {
                         Piece p = piece.get();
-
+                        
                         PoiUtil.paintRows(sheet, p.redundantRows(), redundantColor);
                         PoiUtil.paintColumns(sheet, p.redundantColumns(), redundantColor);
-
+                        
                         Set<CellAddress> diffContents = p.diffCellContents().stream()
                                 .map(c -> new CellAddress(c.row(), c.column()))
                                 .collect(Collectors.toSet());
                         PoiUtil.paintCells(sheet, diffContents, diffColor);
-
+                        
                         Set<CellAddress> diffComments = p.diffCellComments().stream()
                                 .map(c -> new CellAddress(c.row(), c.column()))
                                 .collect(Collectors.toSet());
                         PoiUtil.paintComments(sheet, diffComments, diffCommentColor);
-
+                        
                         Set<CellAddress> redundantComments = p.redundantCellComments().stream()
                                 .map(c -> new CellAddress(c.row(), c.column()))
                                 .collect(Collectors.toSet());
                         PoiUtil.paintComments(sheet, redundantComments, redundantCommentColor);
-
+                        
                         PoiUtil.paintSheetTab(sheet, p.hasDiff() ? diffSheetColor : sameSheetColor);
-
+                        
                     } else {
                         PoiUtil.paintSheetTab(sheet, redundantSheetColor);
                     }
@@ -189,12 +189,12 @@ public class PainterWithPoiUserApi implements Painter {
                     // nop
                 }
             });
-
+            
             // 5. Excelブックを上書き保存する。
             try (OutputStream os = Files.newOutputStream(dstBookPath)) {
                 book.write(os);
             }
-
+            
         } catch (Exception e) {
             throw new ExcelHandlingException(
                     "failed to paint and save the book : %s".formatted(dstBookPath), e);

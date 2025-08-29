@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -94,6 +96,8 @@ public class MainController extends VBox {
     
     /** Googleアカウント資格情報 */
     public final Property<GoogleCredential> googleCredential = new SimpleObjectProperty<>();
+    
+    private Task<Void> currentTask = null;
     
     /**
      * このコントローラオブジェクトを初期化します。<br>
@@ -312,10 +316,10 @@ public class MainController extends VBox {
             return;
         }
         
-        Task<Void> task = menu.getTask(ar.settings());
-        row3Pane.bind(task);
+        currentTask = menu.getTask(ar.settings());
+        row3Pane.bind(currentTask);
         
-        task.setOnSucceeded(event -> {
+        currentTask.setOnSucceeded(event -> {
             row3Pane.unbind();
             
             alertPasswordUnlocked();
@@ -327,8 +331,8 @@ public class MainController extends VBox {
             }
         });
         
-        task.setOnFailed(event -> {
-            Throwable e = task.getException();
+        currentTask.setOnFailed(event -> {
+            Throwable e = currentTask.getException();
             e.printStackTrace();
             row3Pane.unbind();
             
@@ -357,10 +361,14 @@ public class MainController extends VBox {
             isRunning.set(false);
         });
         
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+        taskExecutor.submit(currentTask);
     }
+    
+    private final ExecutorService taskExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "ComparisonTask");
+        t.setDaemon(true);
+        return t;
+    });
     
     private Path createWorkDir(Settings settings) {
         final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
