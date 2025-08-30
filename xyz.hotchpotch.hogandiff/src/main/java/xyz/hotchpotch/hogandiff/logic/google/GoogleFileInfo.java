@@ -18,13 +18,37 @@ import xyz.hotchpotch.hogandiff.AppMain;
 /**
  * ローカルにダウンロードしたGoogleドライブ上のファイルを表します。<br>
  * 
+ * @param metadata Googleドライブ上のファイルのメタデータ
+ * @param dirPath 格納先ディレクトリのパス
+ * @param revision ファイルのリビジョン情報
  * @author nmby
  */
-public class GoogleFileInfo {
+public record GoogleFileInfo(
+        GoogleMetadata metadata,
+        Path dirPath,
+        GoogleRevision revision) {
     
     // [static members] ********************************************************
     
     private static final ResourceBundle rb = AppMain.appResource.get();
+    
+    private static final MessageDigest digest;
+    static {
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+    
+    private static String hashTag(String id, String revisionId) {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(revisionId);
+        
+        String str = "%s|%s".formatted(id, revisionId);
+        byte[] result = digest.digest(str.getBytes(StandardCharsets.UTF_8));
+        return Hex.encodeHexString(result);
+    }
     
     /**
      * Googleドライブ上のファイルのメタデータを表す不変クラスです。<br>
@@ -33,14 +57,14 @@ public class GoogleFileInfo {
      * @param id ファイルID
      * @param url ファイルのURL
      * @param name ファイル名
-     * @param mimeType MIMEタイプ
+     * @param type ファイルタイプ
      * @author nmby
      */
     public static record GoogleMetadata(
             String id,
             String url,
             String name,
-            String mimeType) {
+            GoogleFileType type) {
         
         // [static members] ----------------------------------------------------
         
@@ -52,14 +76,14 @@ public class GoogleFileInfo {
          * @param id ファイルID
          * @param url ファイルのURL
          * @param name ファイル名
-         * @param mimeType MIMEタイプ
+         * @param type MIMEタイプ
          * @throws NullPointerException パラメータに {@code null} が含まれる場合
          */
         public GoogleMetadata {
             Objects.requireNonNull(id);
             Objects.requireNonNull(url);
             Objects.requireNonNull(name);
-            Objects.requireNonNull(mimeType);
+            Objects.requireNonNull(type);
         }
     }
     
@@ -131,78 +155,29 @@ public class GoogleFileInfo {
         }
     }
     
-    private static final MessageDigest digest;
-    static {
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
-    
-    private static String hashTag(String id, String revisionId) {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(revisionId);
-        
-        String str = "%s|%s".formatted(id, revisionId);
-        byte[] result = digest.digest(str.getBytes(StandardCharsets.UTF_8));
-        return Hex.encodeHexString(result);
-    }
-    
     // [instance members] ******************************************************
-    
-    private final GoogleMetadata fileId;
-    private final Path localPath;
-    private final String revisionId;
-    private final String revisionName;
     
     /**
      * コンストラクタ。<br>
      * 
-     * @param fileId Googleドライブ上のファイルの識別情報
+     * @param metadata Googleドライブ上のファイルのメタデータ
      * @param dirPath 格納先ディレクトリのパス
-     * @param revisionId ファイルのリビジョンID
-     * @param revisionName ファイルのリビジョン表示名
+     * @param revision ファイルのリビジョン情報
      * @throws NullPointerException パラメータに {@code null} が含まれる場合
      */
-    public GoogleFileInfo(
-            GoogleMetadata fileId,
-            Path dirPath,
-            String revisionId,
-            String revisionName) {
-        
-        Objects.requireNonNull(fileId);
+    public GoogleFileInfo {
+        Objects.requireNonNull(metadata);
         Objects.requireNonNull(dirPath);
-        Objects.requireNonNull(revisionId);
-        Objects.requireNonNull(revisionName);
-        
-        this.fileId = fileId;
-        this.localPath = dirPath.resolve(
-                hashTag(fileId.id(), revisionId) + fileType().ext());
-        this.revisionId = revisionId;
-        this.revisionName = revisionName;
-    }
-    
-    public GoogleMetadata fileId() {
-        return fileId;
-    }
-    
-    /** @return ローカルパス */
-    public Path localPath() {
-        return localPath;
-    }
-    
-    public String revisionDesc() {
-        return revisionName;
+        Objects.requireNonNull(revision);
     }
     
     /**
-     * このファイルの種類を返します。<br>
+     * このファイルのローカルパスを返します。<br>
      * 
-     * @return ファイルの種類
+     * @return ローカルパス
      */
-    public GoogleFileType fileType() {
-        return GoogleFileType.of(fileId.mimeType);
+    public Path localPath() {
+        return dirPath.resolve(hashTag(metadata.id(), revision.id()) + metadata.type().ext());
     }
     
     @Override
@@ -211,14 +186,14 @@ public class GoogleFileInfo {
             return true;
         }
         if (o instanceof GoogleFileInfo other) {
-            return fileId.id().equals(other.fileId.id())
-                    && revisionId.equals(other.revisionId);
+            return metadata.id().equals(other.metadata.id())
+                    && revision.id().equals(other.revision.id());
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(fileId.id(), revisionId);
+        return Objects.hash(metadata.id(), revision.id());
     }
 }

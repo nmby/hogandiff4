@@ -26,9 +26,15 @@ import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileType;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.EnvConfig;
 
+/**
+ * Google Pickerを操作するためのユーティリティクラスです。<br>
+ * 
+ * @author nmby
+ */
 public class GooglePicker {
     
     // [static members] ********************************************************
@@ -144,6 +150,12 @@ public class GooglePicker {
     private HttpServer server;
     private CompletableFuture<String> fileSelectionFuture;
     
+    /**
+     * Google Pickerを開き、選択されたファイルの情報を取得します。<br>
+     * 
+     * @return 選択されたファイルの情報。キャンセルされた場合は {@code null}
+     * @throws GoogleHandlingException ファイル情報の取得に失敗した場合
+     */
     public CompletableFuture<GoogleFileInfo> downloadAndGetFileInfo() throws GoogleHandlingException {
         try {
             return openPicker()
@@ -156,7 +168,7 @@ public class GooglePicker {
                         CompletableFuture<List<GoogleRevision>> metadataFuture = CompletableFuture.supplyAsync(() -> {
                             try {
                                 GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                                return fetcher.fetchMetadata(metadata);
+                                return fetcher.fetchRevisions(metadata.id());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -260,10 +272,19 @@ public class GooglePicker {
                         String id = jsonObject.get("id").toString();
                         String url = jsonObject.get("url").toString();
                         String name = jsonObject.get("name").toString();
-                        String mimeType = jsonObject.get("mimeType").toString();
-                        return new GoogleMetadata(id, url, name, mimeType);
+                        GoogleFileType type = calcType(jsonObject.get("mimeType").toString(), name);
+                        return new GoogleMetadata(id, url, name, type);
                     }
                 });
+    }
+    
+    private GoogleFileType calcType(String mimeType, String fileName) {
+        // .xlsm ファイルはGoogleドライブ上では GoogleFileType.EXCEL_XLSX として管理されるようなので
+        // ファイル名に基づいて補正する。
+        GoogleFileType candidateType = GoogleFileType.of(mimeType);
+        return candidateType == GoogleFileType.EXCEL_XLSX && fileName.endsWith(".xlsm")
+                ? GoogleFileType.EXCEL_XLSM
+                : candidateType;
     }
     
     private void startServer() throws IOException {

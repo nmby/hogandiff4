@@ -128,7 +128,7 @@ public record BookInfo(
     public String bookName() {
         return googleFileInfo == null
                 ? bookPath.getFileName().toString()
-                : googleFileInfo.fileId().name();
+                : googleFileInfo.metadata().name();
     }
     
     /**
@@ -156,7 +156,7 @@ public record BookInfo(
     public String dispPathInfo() {
         return googleFileInfo == null
                 ? bookPath.toString()
-                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileId().name(), googleFileInfo.revisionDesc());
+                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.metadata().name(), googleFileInfo.revision().desc());
     }
     
     /**
