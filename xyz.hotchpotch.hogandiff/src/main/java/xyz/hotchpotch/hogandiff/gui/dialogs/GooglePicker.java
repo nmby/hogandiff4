@@ -69,8 +69,30 @@ public class GooglePicker {
                 
                         function createPicker() {
                             if (pickerApiLoaded) {
-                                const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS)
-                                    .setIncludeFolders(true)
+                                const docsView1 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setEnableDrives(true)
+                                    .setMimeTypes(
+                                        'application/vnd.google-apps.spreadsheet,' +
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+                                        'application/vnd.ms-excel,' +
+                                        'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    )
+                                    .setMode(google.picker.DocsViewMode.LIST);
+                
+                                const docsView2 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setMimeTypes(
+                                        'application/vnd.google-apps.spreadsheet,' +
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+                                        'application/vnd.ms-excel,' +
+                                        'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    )
+                                    .setMode(google.picker.DocsViewMode.LIST);
+                
+                                const docsView3 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setStarred(true)
                                     .setMimeTypes(
                                         'application/vnd.google-apps.spreadsheet,' +
                                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
@@ -83,7 +105,9 @@ public class GooglePicker {
                                     .setOAuthToken('%s')
                                     .setDeveloperKey('%s')
                                     .setAppId('%s')
-                                    .addView(docsView)
+                                    .addView(docsView1)
+                                    .addView(docsView2)
+                                    .addView(docsView3)
                                     .setTitle('%s')
                                     .setCallback(pickerCallback)
                                     .build();
@@ -140,6 +164,9 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
+                rb.getString("fx.GoogleFilePickerDialogPane.070"),
+                rb.getString("fx.GoogleFilePickerDialogPane.080"),
+                rb.getString("fx.GoogleFilePickerDialogPane.090"),
                 accessToken,
                 API_KEY, APP_ID,
                 rb.getString("fx.GoogleFilePickerDialog.020"));
