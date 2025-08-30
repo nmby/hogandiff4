@@ -146,16 +146,16 @@ public class BookReportCreator {
         BookInfo bookInfoA = bookResult.bookComparison().parentBookInfoPair().a();
         if (bookInfoA.googleFileInfo() == null) {
             PoiUtil.setHyperlink(
-                    PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispName()),
+                    PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispPathInfo()),
                     bookInfoA.bookPath());
         } else {
             try {
                 PoiUtil.setHyperlink(
-                        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispName()),
-                        URI.create(bookInfoA.googleFileInfo().fileId().url()).toURL());
+                        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispPathInfo()),
+                        URI.create(bookInfoA.googleFileInfo().metadata().url()).toURL());
             } catch (MalformedURLException e) {
                 PoiUtil.setHyperlink(
-                        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispName()),
+                        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a() + 1, bookInfoA.dispPathInfo()),
                         bookInfoA.bookPath());
             }
         }
@@ -163,16 +163,16 @@ public class BookReportCreator {
         BookInfo bookInfoB = bookResult.bookComparison().parentBookInfoPair().b();
         if (bookInfoB.googleFileInfo() == null) {
             PoiUtil.setHyperlink(
-                    PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispName()),
+                    PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispPathInfo()),
                     bookInfoB.bookPath());
         } else {
             try {
                 PoiUtil.setHyperlink(
-                        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispName()),
-                        URI.create(bookInfoB.googleFileInfo().fileId().url()).toURL());
+                        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispPathInfo()),
+                        URI.create(bookInfoB.googleFileInfo().metadata().url()).toURL());
             } catch (MalformedURLException e) {
                 PoiUtil.setHyperlink(
-                        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispName()),
+                        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a() + 1, bookInfoB.dispPathInfo()),
                         bookInfoB.bookPath());
             }
         }

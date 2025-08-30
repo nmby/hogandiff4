@@ -15,6 +15,11 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 
+/**
+ * Googleドライブからのダウンロードに関する注意事項を表示するダイアログボックス要素です。<br>
+ * 
+ * @author hotchpotch
+ */
 public class GoogleDownloadNoticeDialogPane extends VBox {
     
     // [static members] ********************************************************

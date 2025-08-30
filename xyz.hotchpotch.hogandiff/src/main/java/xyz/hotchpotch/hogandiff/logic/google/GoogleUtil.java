@@ -13,8 +13,10 @@ public class GoogleUtil {
     
     // [static members] ********************************************************
     
+    /** JSONファクトリ */
     public static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     
+    /** HTTPトランスポート */
     public static final HttpTransport HTTP_TRANSPORT;
     static {
         try {
