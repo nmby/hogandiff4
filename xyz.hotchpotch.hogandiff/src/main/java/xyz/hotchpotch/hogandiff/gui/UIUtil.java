@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff.gui;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
@@ -22,13 +23,32 @@ public class UIUtil {
     
     private static final ResourceBundle rb = AppMain.appResource.get();
     
+    /**
+     * 指定されたURLを開くハイパーリンクを生成します。<br>
+     * 
+     * @param url URL
+     * @return ハイパーリンク
+     * @throws NullPointerException 引数がnullの場合
+     */
     public static Hyperlink createHyperlink(String url) {
+        Objects.requireNonNull(url);
+        
         Hyperlink link = new Hyperlink(url);
         setupHyperlink(link, url);
         return link;
     }
     
+    /**
+     * 指定されたハイパーリンクに、指定されたURLを開くアクションを設定します。<br>
+     * 
+     * @param link ハイパーリンク
+     * @param url URL
+     * @throws NullPointerException 引数がnullの場合
+     */
     public static void setupHyperlink(Hyperlink link, String url) {
+        Objects.requireNonNull(link);
+        Objects.requireNonNull(url);
+        
         link.setOnAction(event -> {
             try {
                 Desktop.getDesktop().browse(URI.create(url));

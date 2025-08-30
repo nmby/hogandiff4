@@ -63,6 +63,9 @@ public class AppMain extends Application {
     
     // [instance members] ******************************************************
     
+    /**
+     * このアプリケーションを開始します。<br>
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
@@ -128,6 +131,9 @@ public class AppMain extends Application {
         }
     }
     
+    /**
+     * ユーザーが現在のバージョンを初めて起動した際の処理を行います。<br>
+     */
     private void announceNewFeature() {
         // UUIDが未採番の場合は採番する。
         UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);

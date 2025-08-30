@@ -32,6 +32,10 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
     
     /**
      * 新しいダイアログを構成します。<br>
+     * 
+     * @param metadata Googleドライブ上のファイルのメタデータ
+     * @param revisions Googleドライブ上のファイルのバージョン一覧
+     * @throws IOException 処理に失敗した場合
      */
     public GoogleRevisionSelectorDialog(
             GoogleMetadata metadata,

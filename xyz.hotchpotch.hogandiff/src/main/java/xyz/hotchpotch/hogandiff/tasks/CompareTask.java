@@ -76,7 +76,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * コンストラクタ
      * 
      * @param settings 設定セット
-     * @param factory  ファクトリ
      */
     protected CompareTask(Settings settings) {
         assert settings != null;
