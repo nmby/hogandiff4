@@ -26,10 +26,10 @@ import xyz.hotchpotch.hogandiff.util.EnvConfig;
 /**
  * Googleアカウント連携情報を保持するクラスです。<br>
  * 
- * @author nmby
  * @param dataStore  ユーザー認証情報保存先
  * @param credential ユーザー認証情報
  * @param driveUser  Googleドライブのユーザー情報
+ * @author nmby
  */
 public record GoogleCredential(
         DataStore<StoredCredential> dataStore,
@@ -136,12 +136,25 @@ public record GoogleCredential(
     
     // [instance members] ******************************************************
     
+    /**
+     * コンストラクタ。<br>
+     * 
+     * @param dataStore  ユーザー認証情報保存先
+     * @param credential ユーザー認証情報
+     * @param driveUser  Googleドライブのユーザー情報
+     * @throws NullPointerException 引数に {@code null} が指定された場合
+     */
     public GoogleCredential {
         Objects.requireNonNull(dataStore);
         Objects.requireNonNull(credential);
         Objects.requireNonNull(driveUser);
     }
     
+    /**
+     * ユーザー認証情報を削除します。<br>
+     * 
+     * @throws GoogleHandlingException ユーザー認証情報の削除に失敗した場合
+     */
     public void deleteCredential() throws GoogleHandlingException {
         try {
             if (dataStore.containsKey(CREDENTIAL_KEY)) {

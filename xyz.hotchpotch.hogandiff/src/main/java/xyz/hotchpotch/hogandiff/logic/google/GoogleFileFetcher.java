@@ -1,23 +1,23 @@
 package xyz.hotchpotch.hogandiff.logic.google;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.RevisionList;
-import com.google.api.services.drive.model.User;
 
-import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleFileId;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
 
 /**
  * Googleドライブから指定されたファイルを取得する機能を担います。<br>
@@ -28,78 +28,18 @@ public class GoogleFileFetcher {
     
     // [static members] ********************************************************
     
-    /**
-     * Googleドライブ上のファイルのメタデータを表します。<br>
-     * 
-     * @author nmby
-     * @param fileId Googleドライブ上のファイル識別情報
-     * @param revisions 履歴リスト
-     */
-    public static record GoogleFileMetadata(
-            GoogleFileId fileId,
-            List<RevisionMapper> revisions) {
-        
-        // [static members] ----------------------------------------------------
-        
-        // [instance members] --------------------------------------------------
-    }
-    
-    /**
-     * {@link Revision} を扱い易くするためのマッパーです。<br>
-     * 
-     * @author nmby
-     */
-    public static class RevisionMapper {
-        
-        // [static members] ----------------------------------------------------
-        
-        // [instance members] --------------------------------------------------
-        
-        private final ResourceBundle rb = AppMain.appResource.get();
-        
-        private final Revision original;
-        private boolean isLatest;
-        
-        private RevisionMapper(Revision original) {
-            Objects.requireNonNull(original);
-            
-            this.original = original;
-        }
-        
-        public void setLatest(boolean isLatest) {
-            this.isLatest = isLatest;
-        }
-        
-        public String getRevisionId() {
-            return original.getId();
-        }
-        
-        @Override
-        public String toString() {
-            User lastModifyingUser = original.getLastModifyingUser();
-            String lastModifier = rb.getString("google.GoogleFileFetcher.010");
-            if (lastModifyingUser != null) {
-                if (lastModifyingUser.getDisplayName() != null
-                        && !lastModifyingUser.getDisplayName().isEmpty()) {
-                    lastModifier = lastModifyingUser.getDisplayName();
-                } else if (lastModifyingUser.getEmailAddress() != null
-                        && !lastModifyingUser.getEmailAddress().isEmpty()) {
-                    lastModifier = lastModifyingUser.getEmailAddress();
-                }
-            }
-            return "%s%s  %s".formatted(
-                    isLatest ? "%s  ".formatted(rb.getString("google.GoogleFileFetcher.020")) : "",
-                    original.getModifiedTime().toStringRfc3339(),
-                    lastModifier);
-        }
-    }
+    private static final int BUFFER_SIZE = 8192;
     
     // [instance members] ******************************************************
     
+    private final GoogleCredential credential;
     private final Drive driveService;
     
+    /**
+     * コンストラクタ。<br>
+     */
     public GoogleFileFetcher() {
-        GoogleCredential credential = GoogleCredential.get(false);
+        credential = GoogleCredential.get(false);
         driveService = new Drive.Builder(
                 GoogleUtil.HTTP_TRANSPORT,
                 GoogleUtil.JSON_FACTORY,
@@ -109,31 +49,31 @@ public class GoogleFileFetcher {
     }
     
     /**
-     * ファイルのメタデータをGoogleドライブから取得します。<br>
+     * ファイルのリビジョン一覧をGoogleドライブから取得します。<br>
      * 
-     * @param fileId 取得対象ファイルのGoogleドライブ上のID
-     * @return メタデータ
+     * @param fileId 取得対象のファイルID
+     * @return リビジョン一覧
      * @throws GoogleHandlingException メタデータ取得に失敗した場合
+     * @throws NullPointerException パラメータに {@code null} が含まれる場合
      */
-    public GoogleFileMetadata fetchMetadata(GoogleFileId fileId)
+    public List<GoogleRevision> fetchRevisions(String fileId)
             throws GoogleHandlingException {
         
         Objects.requireNonNull(fileId);
         
         try {
-            RevisionList revisionList = driveService.revisions().list(fileId.id())
-                    .setFields("revisions(id,modifiedTime,lastModifyingUser)")
+            RevisionList revisionList = driveService.revisions().list(fileId)
+                    .setFields("revisions(id,modifiedTime,lastModifyingUser,exportLinks)")
                     .execute();
             
-            List<RevisionMapper> revisions = revisionList.getRevisions().stream()
-                    .sorted(Comparator.<Revision, String> comparing(r -> r.getModifiedTime().toStringRfc3339())
-                            .reversed())
-                    .map(RevisionMapper::new)
+            List<GoogleRevision> revisions = IntStream.range(0, revisionList.getRevisions().size())
+                    .mapToObj(i -> {
+                        int j = revisionList.getRevisions().size() - 1 - i;
+                        return GoogleRevision.from(revisionList.getRevisions().get(j), i == 0);
+                    })
                     .toList();
             
-            revisions.get(0).setLatest(true);
-            
-            return new GoogleFileMetadata(fileId, revisions);
+            return revisions;
             
         } catch (Exception e) {
             throw new GoogleHandlingException(e);
@@ -144,18 +84,20 @@ public class GoogleFileFetcher {
      * Googleドライブから指定されたファイルの指定されたリビジョンをダウンロードします。<br>
      * 
      * @param metadata メタデータ
+     * @param revisions メタデータ
      * @param revisionId リビジョンID
      * @param dstDir ダウンロード先ディレクトリ
      * @return ファイル情報
      * @throws GoogleHandlingException 処理に失敗した場合
      */
     public GoogleFileInfo downloadFile(
-            GoogleFileMetadata metadata,
+            GoogleMetadata metadata,
+            List<GoogleRevision> revisions,
             String revisionId,
             Path dstDir)
             throws GoogleHandlingException {
         
-        Objects.requireNonNull(metadata);
+        Objects.requireNonNull(revisions);
         Objects.requireNonNull(revisionId);
         Objects.requireNonNull(dstDir);
         
@@ -171,45 +113,75 @@ public class GoogleFileFetcher {
             throw new IllegalArgumentException("dstDir must be a directory: " + dstDir);
         }
         
-        RevisionMapper revision = metadata.revisions.stream()
-                .filter(r -> r.getRevisionId().equals(revisionId))
+        GoogleRevision revision = revisions.stream()
+                .filter(r -> r.id().equals(revisionId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Revision not found: " + revisionId));
         GoogleFileInfo fileInfo = new GoogleFileInfo(
-                metadata.fileId(),
+                metadata,
                 dstDir,
-                revisionId,
-                revision.toString());
+                revision);
         
         if (Files.exists(fileInfo.localPath())) {
             // 既に当該ファイル・当該リビジョンをダウンロード済みの場合は、何もせずにファイル情報を返す。
             return fileInfo;
         }
         
-        if (fileInfo.fileType() == GoogleFileType.GOOGLE_SPREADSHEET) {
-            try (InputStream is = driveService.files()
-                    .export(fileInfo.fileId().id(), GoogleFileType.EXCEL_XLSX.mimeType())
-                    .executeMediaAsInputStream();
-                    OutputStream os = new FileOutputStream(fileInfo.localPath().toFile(), false)) {
-                
-                is.transferTo(os);
-                
-            } catch (Exception e) {
-                throw new GoogleHandlingException(e);
+        Path tempFile = null;
+        
+        try {
+            tempFile = Files.createTempFile(dstDir, ".downloading-", ".tmp");
+            String urlString = fileInfo.metadata().type() == GoogleFileType.GOOGLE_SPREADSHEET
+                    ? revision.exportLink()
+                    : "https://www.googleapis.com/drive/v3/files/%s/revisions/%s?alt=media"
+                            .formatted(fileInfo.metadata().id(), revisionId);
+            
+            downloadFromUrl(urlString, tempFile);
+            
+            Files.move(tempFile, fileInfo.localPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+        } catch (Exception e) {
+            try {
+                Files.deleteIfExists(tempFile);
+            } catch (IOException ex) {
+                e.addSuppressed(ex);
+            }
+            throw new GoogleHandlingException("ファイルのダウンロードに失敗しました: " + e.getMessage(), e);
+        }
+        
+        return fileInfo;
+    }
+    
+    private void downloadFromUrl(String urlString, Path outputPath) throws IOException {
+        URL url = URI.create(urlString).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        
+        try {
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + credential.credential().getAccessToken());
+            connection.setConnectTimeout(30000);
+            connection.setReadTimeout(60000);
+            
+            int responseCode = connection.getResponseCode();
+            
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (InputStream inputStream = connection.getInputStream();
+                        OutputStream outputStream = Files.newOutputStream(outputPath)) {
+                    
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    int bytesRead;
+                    
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.flush();
+                }
+            } else {
+                throw new IOException("fail to export.。HTTP status code: " + responseCode);
             }
             
-        } else {
-            try (InputStream is = driveService.files()
-                    .get(fileInfo.fileId().id())
-                    .executeMediaAsInputStream();
-                    OutputStream os = new FileOutputStream(fileInfo.localPath().toFile(), false)) {
-                
-                is.transferTo(os);
-                
-            } catch (Exception e) {
-                throw new GoogleHandlingException(e);
-            }
+        } finally {
+            connection.disconnect();
         }
-        return fileInfo;
     }
 }

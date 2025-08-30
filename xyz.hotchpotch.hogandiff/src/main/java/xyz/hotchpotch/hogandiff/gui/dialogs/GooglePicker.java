@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
@@ -22,12 +23,18 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleFileId;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileType;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.EnvConfig;
 
+/**
+ * Google Pickerを操作するためのユーティリティクラスです。<br>
+ * 
+ * @author nmby
+ */
 public class GooglePicker {
     
     // [static members] ********************************************************
@@ -62,8 +69,30 @@ public class GooglePicker {
                 
                         function createPicker() {
                             if (pickerApiLoaded) {
-                                const docsView = new google.picker.DocsView(google.picker.ViewId.DOCS)
-                                    .setIncludeFolders(true)
+                                const docsView1 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setEnableDrives(true)
+                                    .setMimeTypes(
+                                        'application/vnd.google-apps.spreadsheet,' +
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+                                        'application/vnd.ms-excel,' +
+                                        'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    )
+                                    .setMode(google.picker.DocsViewMode.LIST);
+                
+                                const docsView2 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setMimeTypes(
+                                        'application/vnd.google-apps.spreadsheet,' +
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
+                                        'application/vnd.ms-excel,' +
+                                        'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    )
+                                    .setMode(google.picker.DocsViewMode.LIST);
+                
+                                const docsView3 = new google.picker.DocsView(google.picker.ViewId.DOCS)
+                                    .setLabel('%s')
+                                    .setStarred(true)
                                     .setMimeTypes(
                                         'application/vnd.google-apps.spreadsheet,' +
                                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,' +
@@ -76,7 +105,9 @@ public class GooglePicker {
                                     .setOAuthToken('%s')
                                     .setDeveloperKey('%s')
                                     .setAppId('%s')
-                                    .addView(docsView)
+                                    .addView(docsView1)
+                                    .addView(docsView2)
+                                    .addView(docsView3)
                                     .setTitle('%s')
                                     .setCallback(pickerCallback)
                                     .build();
@@ -133,6 +164,9 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
+                rb.getString("fx.GoogleFilePickerDialogPane.070"),
+                rb.getString("fx.GoogleFilePickerDialogPane.080"),
+                rb.getString("fx.GoogleFilePickerDialogPane.090"),
                 accessToken,
                 API_KEY, APP_ID,
                 rb.getString("fx.GoogleFilePickerDialog.020"));
@@ -143,31 +177,38 @@ public class GooglePicker {
     private HttpServer server;
     private CompletableFuture<String> fileSelectionFuture;
     
+    /**
+     * Google Pickerを開き、選択されたファイルの情報を取得します。<br>
+     * 
+     * @return 選択されたファイルの情報。キャンセルされた場合は {@code null}
+     * @throws GoogleHandlingException ファイル情報の取得に失敗した場合
+     */
     public CompletableFuture<GoogleFileInfo> downloadAndGetFileInfo() throws GoogleHandlingException {
         try {
             return openPicker()
-                    .thenCompose(fileId -> {
-                        if (fileId == null) {
+                    .thenCompose(metadata -> {
+                        if (metadata == null) {
                             return CompletableFuture.completedFuture(null);
                         }
                         
                         // メタデータ取得（バックグラウンドスレッドで実行可能）
-                        CompletableFuture<GoogleFileMetadata> metadataFuture = CompletableFuture.supplyAsync(() -> {
+                        CompletableFuture<List<GoogleRevision>> metadataFuture = CompletableFuture.supplyAsync(() -> {
                             try {
                                 GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                                return fetcher.fetchMetadata(fileId);
+                                return fetcher.fetchRevisions(metadata.id());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                         });
                         
                         // ダイアログ表示（JavaFXアプリケーションスレッドで実行）
-                        return metadataFuture.thenCompose(metadata -> {
+                        return metadataFuture.thenCompose(revisions -> {
                             CompletableFuture<GoogleFileInfo> dialogFuture = new CompletableFuture<>();
                             
                             Platform.runLater(() -> {
                                 try {
-                                    GoogleRevisionSelectorDialog dialog = new GoogleRevisionSelectorDialog(metadata);
+                                    GoogleRevisionSelectorDialog dialog = new GoogleRevisionSelectorDialog(metadata,
+                                            revisions);
                                     Optional<GoogleFileInfo> modified = dialog.showAndWait();
                                     dialogFuture.complete(modified.orElse(null));
                                 } catch (Exception e) {
@@ -209,7 +250,7 @@ public class GooglePicker {
      * @param credential Google認証情報
      * @return 選択されたファイルの情報
      */
-    private CompletableFuture<GoogleFileId> openPicker() {
+    private CompletableFuture<GoogleMetadata> openPicker() {
         if (fileSelectionFuture != null && !fileSelectionFuture.isDone()) {
             return CompletableFuture.failedFuture(
                     new IllegalStateException("Picker is already open."));
@@ -258,10 +299,19 @@ public class GooglePicker {
                         String id = jsonObject.get("id").toString();
                         String url = jsonObject.get("url").toString();
                         String name = jsonObject.get("name").toString();
-                        String mimeType = jsonObject.get("mimeType").toString();
-                        return new GoogleFileId(id, url, name, mimeType);
+                        GoogleFileType type = calcType(jsonObject.get("mimeType").toString(), name);
+                        return new GoogleMetadata(id, url, name, type);
                     }
                 });
+    }
+    
+    private GoogleFileType calcType(String mimeType, String fileName) {
+        // .xlsm ファイルはGoogleドライブ上では GoogleFileType.EXCEL_XLSX として管理されるようなので
+        // ファイル名に基づいて補正する。
+        GoogleFileType candidateType = GoogleFileType.of(mimeType);
+        return candidateType == GoogleFileType.EXCEL_XLSX && fileName.endsWith(".xlsm")
+                ? GoogleFileType.EXCEL_XLSM
+                : candidateType;
     }
     
     private void startServer() throws IOException {

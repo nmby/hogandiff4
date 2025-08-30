@@ -145,6 +145,9 @@ public class MainController extends VBox {
         // nop
     }
     
+    /**
+     * 現在選択されている比較メニューに応じて、対応する比較情報を更新します。<br>
+     */
     public void updateActiveComparison() {
         switch (menuProp.getValue()) {
         case COMPARE_SHEETS -> updateSheetComparison();
