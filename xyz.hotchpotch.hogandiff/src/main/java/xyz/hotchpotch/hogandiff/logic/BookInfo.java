@@ -9,9 +9,17 @@ import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 /**
  * Excelブック情報を表す不変クラスです。<br>
  * 
+ * @param bookPath Excelブックのローカルパス
+ * @param sheetNames Excelブックに含まれるシート名
+ * @param status このExcelブック情報の状態
+ * @param googleFileInfo GoogleDrive上のファイル情報。ローカルファイルの場合は {@code null}
  * @author nmby
  */
-public class BookInfo {
+public record BookInfo(
+        Path bookPath,
+        List<String> sheetNames,
+        Status status,
+        GoogleFileInfo googleFileInfo) {
     
     // [static members] ********************************************************
     
@@ -75,25 +83,22 @@ public class BookInfo {
     
     // [instance members] ******************************************************
     
-    private final Path bookPath;
-    private final List<String> sheetNames;
-    private final Status status;
-    private final GoogleFileInfo googleFileInfo;
-    
-    private BookInfo(
-            Path bookPath,
-            List<String> sheetNames,
-            Status status,
-            GoogleFileInfo googleFileInfo) {
+    /**
+     * コンストラクタ。<br>
+     * 
+     * @param bookPath Excelブックのローカルパス
+     * @param sheetNames Excelブックに含まれるシート名
+     * @param status このExcelブック情報の状態
+     * @param googleFileInfo GoogleDrive上のファイル情報。ローカルファイルの場合は {@code null}
+     * @throws NullPointerException パラメータが {@code null} の場合（ただし {@code googleFileInfo} は除く）
+     */
+    public BookInfo {
+        Objects.requireNonNull(bookPath);
+        Objects.requireNonNull(sheetNames);
+        Objects.requireNonNull(status);
+        // googleFileInfo は null 許容
         
-        assert bookPath != null;
-        assert sheetNames != null;
-        assert status != null;
-        
-        this.bookPath = bookPath;
-        this.sheetNames = List.copyOf(sheetNames);
-        this.status = status;
-        this.googleFileInfo = googleFileInfo;
+        sheetNames = List.copyOf(sheetNames);
     }
     
     @Override
@@ -114,20 +119,25 @@ public class BookInfo {
         return bookName();
     }
     
-    /** @return Excelブックのパス */
-    public Path bookPath() {
-        return bookPath;
-    }
-    
-    /** @return Excelブックのファイル名 */
+    /**
+     * Excelブック名、Googleスプレッドシートファイル名を返します。<br>
+     * Googleスプレッドシートの場合は拡張子の無いファイル名が返されます。<br>
+     * 
+     * @return Excelブック名／Googleスプレッドシートファイル名
+     */
     public String bookName() {
         return googleFileInfo == null
                 ? bookPath.getFileName().toString()
                 : googleFileInfo.fileId().name();
     }
     
+    /**
+     * 比較結果として出力すべきファイル名を返します。<br>
+     * Googleスプレッドシートは拡張子を持たないため、ローカル保存ように拡張子を追加して返します。<br>
+     * 
+     * @return 比較結果として出力すべきファイル名
+     */
     public String bookNameWithExtension() {
-        // FIXME: メンバメソッドを整理する・糞な実装を直す
         String bookName = bookName();
         try {
             BookType.of(Path.of(bookName));
@@ -137,34 +147,31 @@ public class BookInfo {
         }
     }
     
-    public String dispName() {
+    /**
+     * ユーザー向けに表示するパス情報を返します。<br>
+     * ローカルファイルの場合はパスを、GoogleDrive上のファイルの場合はファイルIDとリビジョン名を返します。<br>
+     * 
+     * @return ユーザー向けに表示するパス情報
+     */
+    public String dispPathInfo() {
         return googleFileInfo == null
                 ? bookPath.toString()
                 : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileId().name(), googleFileInfo.revisionName());
     }
     
-    public String googleFileDesc() {
-        return "GoogleDrive: %s [%s]".formatted(
-                googleFileInfo.fileId().name(),
-                null);
-    }
-    
-    /** @return Excelブックに含まれるシート名 */
-    public List<String> sheetNames() {
-        return sheetNames;
-    }
-    
-    /** @return このExcelブック情報の状態 */
-    public Status status() {
-        return status;
-    }
-    
-    /** @return GoogleDrive上のファイル情報。ローカルファイルの場合は {@code null} */
-    public GoogleFileInfo googleFileInfo() {
-        return googleFileInfo;
-    }
-    
+    /**
+     * このExcelブック情報にGoogleDrive上のファイル情報を設定した新しいインスタンスを返します。<br>
+     * 
+     * @param googleFileInfo GoogleDrive上のファイル情報
+     * @return GoogleDrive上のファイル情報を設定した新しいインスタンス
+     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws IllegalStateException 既にGoogleDrive上のファイル情報が設定されている場合
+     */
     public BookInfo withGoogleFileInfo(GoogleFileInfo googleFileInfo) {
+        Objects.requireNonNull(googleFileInfo);
+        if (this.googleFileInfo != null) {
+            throw new IllegalStateException("googleFileInfo is already set.");
+        }
         return new BookInfo(bookPath, sheetNames, status, googleFileInfo);
     }
 }

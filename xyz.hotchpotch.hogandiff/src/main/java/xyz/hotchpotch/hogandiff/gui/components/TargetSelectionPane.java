@@ -174,7 +174,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         bookPathTextField.textProperty().bind(Bindings.createStringBinding(
                 () -> parent.bookInfoPropPair.get(side).getValue() != null
-                        ? parent.bookInfoPropPair.get(side).getValue().dispName()
+                        ? parent.bookInfoPropPair.get(side).getValue().dispPathInfo()
                         : null,
                 parent.bookInfoPropPair.get(side)));
         bookPathButton.setOnAction(this::chooseBook);
