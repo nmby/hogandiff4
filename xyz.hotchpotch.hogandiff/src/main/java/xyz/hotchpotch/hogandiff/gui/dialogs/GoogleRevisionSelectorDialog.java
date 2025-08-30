@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.ButtonType;
@@ -10,8 +11,9 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 
 /**
@@ -31,9 +33,13 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
     /**
      * 新しいダイアログを構成します。<br>
      */
-    public GoogleRevisionSelectorDialog(GoogleFileMetadata metadata) throws IOException {
+    public GoogleRevisionSelectorDialog(
+            GoogleMetadata metadata,
+            List<GoogleRevision> revisions)
+            throws IOException {
+        
         GoogleRevisionSelectorDialogPane dialogPane = new GoogleRevisionSelectorDialogPane();
-        dialogPane.init(metadata);
+        dialogPane.init(metadata, revisions);
         
         DialogPane me = getDialogPane();
         me.setContent(dialogPane);
@@ -50,7 +56,8 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                     GoogleFileFetcher fetcher = new GoogleFileFetcher();
                     return fetcher.downloadFile(
                             metadata,
-                            dialogPane.revisionChoiceBox.getValue().getRevisionId(),
+                            revisions,
+                            dialogPane.revisionChoiceBox.getValue().id(),
                             ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
                     
                 } catch (GoogleHandlingException e) {

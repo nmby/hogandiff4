@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
@@ -9,8 +10,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.GoogleFileMetadata;
-import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher.RevisionMapper;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
 
 /**
  * ユーザーにGoogleドライブ上のファイルのバージョン選択を求めるダイアログボックスの要素です。<br>
@@ -32,7 +33,7 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
     private Label fileNameLabel;
     
     @FXML
-    /* package */ ChoiceBox<RevisionMapper> revisionChoiceBox;
+    /* package */ ChoiceBox<GoogleRevision> revisionChoiceBox;
     
     /**
      * コンストラクタ<br>
@@ -50,9 +51,10 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
      * このダイアログボックス要素を初期化します。<br>
      * 
      * @param parent   親要素
-     * @param metadata  Googleドライブファイルのメタデータ
+     * @param metadata Googleドライブファイルのメタデータ
+     * @param revisions  Googleドライブファイルのリビジョン一覧
      */
-    /* package */ void init(GoogleFileMetadata metadata) {
+    /* package */ void init(GoogleMetadata metadata, List<GoogleRevision> revisions) {
         // 1.プロパティのバインディング
         // nop
         
@@ -60,9 +62,9 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
         // nop
         
         // 3.初期値の設定
-        fileUrlLabel.setText(metadata.fileId().url());
-        fileNameLabel.setText(metadata.fileId().name());
-        revisionChoiceBox.getItems().setAll(metadata.revisions());
+        fileUrlLabel.setText(metadata.url());
+        fileNameLabel.setText(metadata.name());
+        revisionChoiceBox.getItems().setAll(revisions);
         revisionChoiceBox.getSelectionModel().selectFirst();
     }
 }

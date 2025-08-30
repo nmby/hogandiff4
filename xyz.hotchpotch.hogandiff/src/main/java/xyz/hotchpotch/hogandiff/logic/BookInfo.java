@@ -156,7 +156,7 @@ public record BookInfo(
     public String dispPathInfo() {
         return googleFileInfo == null
                 ? bookPath.toString()
-                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileId().name(), googleFileInfo.revisionName());
+                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.fileId().name(), googleFileInfo.revisionDesc());
     }
     
     /**
