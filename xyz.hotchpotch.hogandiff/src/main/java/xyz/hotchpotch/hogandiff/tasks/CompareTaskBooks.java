@@ -112,10 +112,10 @@ public final class CompareTaskBooks extends CompareTask {
             updateProgress(progressBefore, PROGRESS_MAX);
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::bookPath);
+            Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             
             str.append("%s%n[A] %s%n[B] %s%n"
-                    .formatted(rb.getString("CompareBooksTask.010"), bookPathPair.a(), bookPathPair.b()));
+                    .formatted(rb.getString("CompareBooksTask.010"), dispPathPair.a(), dispPathPair.b()));
             
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
