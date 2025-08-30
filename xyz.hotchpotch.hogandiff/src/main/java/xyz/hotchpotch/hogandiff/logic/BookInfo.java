@@ -156,7 +156,8 @@ public record BookInfo(
     public String dispPathInfo() {
         return googleFileInfo == null
                 ? bookPath.toString()
-                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.metadata().name(), googleFileInfo.revision().desc());
+                : "GoogleDrive :  %s  [%s]".formatted(googleFileInfo.metadata().name(),
+                        googleFileInfo.revision().desc());
     }
     
     /**
@@ -164,11 +165,9 @@ public record BookInfo(
      * 
      * @param googleFileInfo GoogleDrive上のファイル情報
      * @return GoogleDrive上のファイル情報を設定した新しいインスタンス
-     * @throws NullPointerException パラメータが {@code null} の場合
      * @throws IllegalStateException 既にGoogleDrive上のファイル情報が設定されている場合
      */
     public BookInfo withGoogleFileInfo(GoogleFileInfo googleFileInfo) {
-        Objects.requireNonNull(googleFileInfo);
         if (this.googleFileInfo != null) {
             throw new IllegalStateException("googleFileInfo is already set.");
         }

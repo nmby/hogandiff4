@@ -488,6 +488,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return BookInfo.ofLoadFailed(newBookPath);
         }
     }
