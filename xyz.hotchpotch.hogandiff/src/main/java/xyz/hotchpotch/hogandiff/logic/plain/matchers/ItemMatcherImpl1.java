@@ -2,19 +2,15 @@ package xyz.hotchpotch.hogandiff.logic.plain.matchers;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.logic.CellData;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
 /**
  * 縦方向の挿入／削除を考慮して縦方向の対応付けを行う {@link ItemMatcher} の実装です。<br>
@@ -123,49 +119,19 @@ public class ItemMatcherImpl1 implements ItemMatcher {
         
         Objects.requireNonNull(cellsSetPair);
         
-        Pair<Set<Integer>> horizontalRedundants = horizontalPairs == null
-                ? new Pair<>(Set.of(), Set.of())
-                : Side.map(side -> horizontalPairs.stream()
-                        .filter(pair -> pair.isOnly(side))
-                        .map(pair -> pair.get(side))
-                        .collect(Collectors.toSet()));
+        Pair<Set<Integer>> horizontalRedundants = ItemMatcher.extractRedundants(horizontalPairs);
         
-        List<List<CellData>> listA = convert(cellsSetPair.a(), horizontalRedundants.a());
-        List<List<CellData>> listB = convert(cellsSetPair.b(), horizontalRedundants.b());
+        Pair<List<List<CellData>>> listPair = ItemMatcher.convertCellsToList(
+                cellsSetPair,
+                horizontalRedundants,
+                vertical,
+                horizontal,
+                List.of(),
+                list -> {
+                    list.sort(horizontalComparator);
+                    return list;
+                });
         
-        return matcher.makeIdxPairs(listA, listB);
-    }
-    
-    /**
-     * セルセットを横方向リストを要素に持つ縦方向リストに変換します。<br>
-     * 
-     * @param cells                セルセット
-     * @param horizontalRedundants 横方向の余剰インデックス
-     * @return 横方向リストを要素に持つ縦方向リスト
-     */
-    private List<List<CellData>> convert(
-            Set<CellData> cells,
-            Set<Integer> horizontalRedundants) {
-        
-        assert cells != null;
-        assert horizontalRedundants != null;
-        
-        Map<Integer, List<CellData>> map = cells.parallelStream()
-                .filter(cell -> !horizontalRedundants.contains(horizontal.applyAsInt(cell)))
-                .collect(Collectors.groupingBy(vertical::applyAsInt));
-        
-        int max = map.keySet().stream().mapToInt(n -> n).max().orElse(0);
-        
-        return IntStream.rangeClosed(0, max).parallel()
-                .mapToObj(i -> {
-                    if (map.containsKey(i)) {
-                        List<CellData> list = map.get(i);
-                        list.sort(horizontalComparator);
-                        return list;
-                    } else {
-                        return List.<CellData> of();
-                    }
-                })
-                .toList();
+        return matcher.makeIdxPairs(listPair.a(), listPair.b());
     }
 }
