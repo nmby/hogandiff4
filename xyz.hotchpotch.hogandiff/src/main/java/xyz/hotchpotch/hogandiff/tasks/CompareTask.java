@@ -204,15 +204,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        try {
-            if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, srcBookPathPair.a(), bResult, 80, 98);
-            } else {
-                paintSaveAndShowBook2(workDir, srcBookPathPair, bResult, 80, 98);
-            }
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::paintSaveAndShowBook");
+        if (isSameBook()) {
+            paintSaveAndShowBook1(workDir, srcBookPathPair.a(), bResult, 80, 98);
+        } else {
+            paintSaveAndShowBook2(workDir, srcBookPathPair, bResult, 80, 98);
         }
     }
     
@@ -236,6 +231,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             throws ApplicationException {
         
         Path dstBookPath = null;
+        ApplicationException thrown = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -257,7 +253,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.070", "");
+            thrown = getApplicationException(e, "AppTaskBase.070", "");
         }
         
         try {
@@ -270,7 +266,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            if (thrown == null) {
+                thrown = ee;
+            } else {
+                thrown.addSuppressed(ee);
+            }
+        }
+        
+        if (thrown != null) {
+            throw thrown;
         }
     }
     
@@ -292,6 +297,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressBefore,
             int progressAfter)
             throws ApplicationException {
+        
+        ApplicationException thrown = null;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
@@ -321,7 +328,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             PROGRESS_MAX);
                     
                 } catch (Exception e) {
-                    throw getApplicationException(e, side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                    ApplicationException ee = getApplicationException(e,
+                            side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                    if (thrown == null) {
+                        thrown = ee;
+                    } else {
+                        thrown.addSuppressed(ee);
+                    }
                 }
             }
             
@@ -337,7 +350,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            if (thrown == null) {
+                thrown = ee;
+            } else {
+                thrown.addSuppressed(ee);
+            }
+        }
+        
+        if (thrown != null) {
+            throw thrown;
         }
     }
     

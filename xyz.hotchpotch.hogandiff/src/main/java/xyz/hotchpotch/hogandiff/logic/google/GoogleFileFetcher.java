@@ -177,7 +177,7 @@ public class GoogleFileFetcher {
                     outputStream.flush();
                 }
             } else {
-                throw new IOException("fail to export.。HTTP status code: " + responseCode);
+                throw new IOException("fail to export. HTTP status code: " + responseCode);
             }
             
         } finally {
