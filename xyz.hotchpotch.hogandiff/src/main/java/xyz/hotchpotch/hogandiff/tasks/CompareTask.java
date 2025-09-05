@@ -204,15 +204,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             int progressAfter)
             throws ApplicationException {
         
-        try {
-            if (isSameBook()) {
-                paintSaveAndShowBook1(workDir, srcBookPathPair.a(), bResult, 80, 98);
-            } else {
-                paintSaveAndShowBook2(workDir, srcBookPathPair, bResult, 80, 98);
-            }
-            
-        } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::paintSaveAndShowBook");
+        if (isSameBook()) {
+            paintSaveAndShowBook1(workDir, srcBookPathPair.a(), bResult, 80, 98);
+        } else {
+            paintSaveAndShowBook2(workDir, srcBookPathPair, bResult, 80, 98);
         }
     }
     
