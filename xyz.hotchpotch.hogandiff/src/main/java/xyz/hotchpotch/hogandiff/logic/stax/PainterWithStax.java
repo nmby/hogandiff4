@@ -76,6 +76,8 @@ public class PainterWithStax implements Painter {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        
         /**
          * {@link StylesManager} オブジェクトを生成して返します。<br>
          * 
@@ -104,8 +106,8 @@ public class PainterWithStax implements Painter {
             assert styles != null;
             this.styles = styles;
             
-            elemCellXfs = (Element) styles.getElementsByTagName("cellXfs").item(0);
-            elemFills = (Element) styles.getElementsByTagName("fills").item(0);
+            elemCellXfs = (Element) styles.getElementsByTagNameNS(xmlns, "cellXfs").item(0);
+            elemFills = (Element) styles.getElementsByTagNameNS(xmlns, "fills").item(0);
             cellXfsCount = Integer.parseInt(elemCellXfs.getAttribute("count"));
             fillsCount = Integer.parseInt(elemFills.getAttribute("count"));
         }
@@ -141,7 +143,7 @@ public class PainterWithStax implements Painter {
             cellXfsCount++;
             elemCellXfs.setAttribute("count", Integer.toString(cellXfsCount));
             
-            Element originalXf = (Element) elemCellXfs.getElementsByTagName("xf").item(styleIdx);
+            Element originalXf = (Element) elemCellXfs.getElementsByTagNameNS(xmlns, "xf").item(styleIdx);
             Element newXf = (Element) originalXf.cloneNode(true);
             elemCellXfs.appendChild(newXf);
             
@@ -183,7 +185,11 @@ public class PainterWithStax implements Painter {
     
     private static final XMLInputFactory inFactory = XMLInputFactory.newInstance();
     private static final XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
-    private static final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+    private static final DocumentBuilderFactory docBuilderFactory;
+    static {
+        docBuilderFactory = DocumentBuilderFactory.newInstance();
+        docBuilderFactory.setNamespaceAware(true);
+    }
     private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
     
     // [instance members] ******************************************************
