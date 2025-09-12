@@ -474,10 +474,10 @@ public class SaxUtil {
                 }
             }
             
-            if (readPassword == null && handler1.sheetNameAndId.size() == 0) {
-                // 大変雑ではあるが、例外がスローされずしかしシート情報を読み取れなかった場合は
-                // 読取パスワードでロックされていると見做してしまう。
-                throw new PasswordHandlingException();
+            if (handler1.sheetNameAndId.isEmpty()) {
+                // 何らかの理由によりシート名を読み取れなかった場合。
+                // パスワードでロックされている場合もあり得るが、例外を投げて後続のローダーに委ねることにする。
+                throw new ExcelHandlingException("no sheets found in the book : %s".formatted(bookPath));
             }
             
             return handler1.sheetNameAndId.stream()
