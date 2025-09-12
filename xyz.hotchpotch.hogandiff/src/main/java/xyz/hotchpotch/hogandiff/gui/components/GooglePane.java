@@ -158,12 +158,14 @@ public class GooglePane extends HBox implements ChildController {
         });
         
         // 3.初期値の設定
-        new Thread(() -> {
+        Thread asyncInitGoogleTask = new Thread(() -> {
             GoogleCredential credential = GoogleCredential.get(false);
             Platform.runLater(() -> {
                 parent.googleCredential.setValue(credential);
             });
-        }).start();
+        });
+        asyncInitGoogleTask.setDaemon(true);
+        asyncInitGoogleTask.start();
         
         // 4.値変更時のイベントハンドラの設定
         // nop
