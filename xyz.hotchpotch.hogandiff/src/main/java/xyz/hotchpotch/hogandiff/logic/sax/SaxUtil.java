@@ -84,6 +84,9 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        private static final String xmlns_r = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        
         private static record SheetNameAndId(String sheetName, String id) {
         };
         
@@ -97,10 +100,10 @@ public class SaxUtil {
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("sheet".equals(qName)) {
+            if (xmlns.equals(uri) && "sheet".equals(localName)) {
                 sheetNameAndId.add(new SheetNameAndId(
                         attributes.getValue("name"),
-                        attributes.getValue("r:id")));
+                        attributes.getValue(xmlns_r, "id")));
             }
         }
     }
@@ -122,6 +125,8 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/package/2006/relationships";
+        
         private static boolean isTarget(String entryName) {
             return "xl/_rels/workbook.xml.rels".equals(entryName);
         }
@@ -133,7 +138,7 @@ public class SaxUtil {
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("Relationship".equals(qName)) {
+            if (xmlns.equals(uri) && "Relationship".equals(localName)) {
                 String id = attributes.getValue("Id");
                 SheetType type = switch (attributes.getValue("Type")) {
                 case "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" -> SheetType.WORKSHEET;
@@ -169,6 +174,7 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/package/2006/relationships";
         private static final String commentRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
         private static final String vmlDrawingRelType = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing";
         
@@ -188,7 +194,7 @@ public class SaxUtil {
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("Relationship".equals(qName)) {
+            if (xmlns.equals(uri) && "Relationship".equals(localName)) {
                 switch (attributes.getValue("Type")) {
                 case commentRelType:
                     commentSource = attributes.getValue("Target").replace("../", "xl/");
@@ -217,28 +223,30 @@ public class SaxUtil {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        
         private static boolean isTarget(String entryName) {
             return "xl/sharedStrings.xml".equals(entryName);
         }
         
         // [instance members] --------------------------------------------------
         
-        private final Deque<String> qNames = new ArrayDeque<>();
+        private final Deque<String> localNames = new ArrayDeque<>();
         private final List<String> sst = new ArrayList<>();
         private StringBuilder text;
         private boolean waitingText;
         
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if ("si".equals(qName)) {
+            if (xmlns.equals(uri) && "si".equals(localName)) {
                 text = new StringBuilder();
-            } else if ("t".equals(qName)) {
-                String parent = qNames.getFirst();
+            } else if (xmlns.equals(uri) && "t".equals(localName)) {
+                String parent = localNames.getFirst();
                 if ("si".equals(parent) || "r".equals(parent)) {
                     waitingText = true;
                 }
             }
-            qNames.addFirst(qName);
+            localNames.addFirst(localName);
         }
         
         @Override
@@ -250,13 +258,13 @@ public class SaxUtil {
         
         @Override
         public void endElement(String uri, String localName, String qName) {
-            if ("si".equals(qName)) {
+            if (xmlns.equals(uri) && "si".equals(localName)) {
                 sst.add(text.toString());
                 text = null;
-            } else if ("t".equals(qName)) {
+            } else if (xmlns.equals(uri) && "t".equals(localName)) {
                 waitingText = false;
             }
-            qNames.removeFirst();
+            localNames.removeFirst();
         }
     }
     
@@ -438,6 +446,7 @@ public class SaxUtil {
         
         UnsafeFunction<ZipInputStream, List<SheetInfo>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser parser = factory.newSAXParser();
             Handler1 handler1 = new Handler1();
             Handler2 handler2 = new Handler2();
@@ -465,10 +474,10 @@ public class SaxUtil {
                 }
             }
             
-            if (readPassword == null && handler1.sheetNameAndId.size() == 0) {
-                // 大変雑ではあるが、例外がスローされずしかしシート情報を読み取れなかった場合は
-                // 読取パスワードでロックされていると見做してしまう。
-                throw new PasswordHandlingException();
+            if (handler1.sheetNameAndId.isEmpty()) {
+                // 何らかの理由によりシート名を読み取れなかった場合。
+                // パスワードでロックされている場合もあり得るが、例外を投げて後続のローダーに委ねることにする。
+                throw new ExcelHandlingException("no sheets found in the book : %s".formatted(bookPath));
             }
             
             return handler1.sheetNameAndId.stream()
@@ -516,6 +525,7 @@ public class SaxUtil {
         
         UnsafeFunction<ZipInputStream, List<String>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser parser = factory.newSAXParser();
             Handler4 handler4 = new Handler4();
             ZipEntry entry;
