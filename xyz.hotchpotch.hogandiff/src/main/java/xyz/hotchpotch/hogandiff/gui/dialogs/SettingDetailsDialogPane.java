@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -71,6 +72,9 @@ public class SettingDetailsDialogPane extends VBox {
     @FXML
     private ComboBox<LocaleItem> localeComboBox;
     
+    @FXML
+    private CheckBox checkUpdatesCheckBox;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -109,8 +113,12 @@ public class SettingDetailsDialogPane extends VBox {
         Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
         localeComboBox.setValue(LocaleItem.of(locale));
         
+        checkUpdatesCheckBox.setSelected(ar.settings().get(SettingKeys.CHECK_UPDATES));
+        
         // 4.値変更時のイベントハンドラの設定
-        // nop
+        checkUpdatesCheckBox.setOnAction(event -> ar.changeSetting(
+                SettingKeys.CHECK_UPDATES,
+                checkUpdatesCheckBox.isSelected()));
     }
     
     private Callback<ListView<LocaleItem>, ListCell<LocaleItem>> cellFactory(boolean showText) {

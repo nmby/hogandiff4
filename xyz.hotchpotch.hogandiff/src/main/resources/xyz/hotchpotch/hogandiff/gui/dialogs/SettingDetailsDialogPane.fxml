@@ -1,35 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane2" type="VBox" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsPane2" type="VBox" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<GridPane alignment="BOTTOM_RIGHT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
-			<columnConstraints>
-				<ColumnConstraints halignment="RIGHT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-				<ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-			</columnConstraints>
-			<rowConstraints>
-				<RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
-			</rowConstraints>
-			<children>
-				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="%fx.SettingsPane2.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" />
-				<ComboBox fx:id="localeComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="localeComboBox" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER">
-					<GridPane.margin>
-						<Insets bottom="1.0" left="5.0" top="1.0" />
-					</GridPane.margin>
-				</ComboBox>
-			</children>
-			<VBox.margin>
-				<Insets top="7.0" />
-			</VBox.margin>
-		</GridPane>
+      <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+         <children>
+				<Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="settingsTitleLabel2" text="%fx.SettingsPane2.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" HBox.hgrow="NEVER" />
+				<ComboBox fx:id="localeComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="localeComboBox" stylesheets="@../application.css" HBox.hgrow="NEVER" />
+         </children>
+      </HBox>
+      <CheckBox fx:id="checkUpdatesCheckBox" mnemonicParsing="false" text="起動時に新規バージョンの有無を確認する" />
 	</children>
 	<padding>
 		<Insets right="7.0" />
