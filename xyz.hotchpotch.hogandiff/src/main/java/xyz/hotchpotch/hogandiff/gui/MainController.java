@@ -141,20 +141,11 @@ public class MainController extends VBox {
         // 3.初期値の設定
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
-        if (ar.settings().get(SettingKeys.CHECK_UPDATES)) {
-            // TODO: coding
-            Thread checkUpdatesTask = new Thread(() -> {
-                System.out.println("Checking updates 1");
-                Platform.runLater(() -> {
-                    System.out.println("Checking updates 2");
-                });
-            });
-            checkUpdatesTask.setDaemon(true);
-            checkUpdatesTask.start();
-        }
-        
         // 4.値変更時のイベントハンドラの設定
         // nop
+        
+        // 5.その他
+        UpdateChecker.execute(false);
     }
     
     /**
