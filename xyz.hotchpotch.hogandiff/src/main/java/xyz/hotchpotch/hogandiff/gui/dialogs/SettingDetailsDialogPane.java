@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -24,6 +25,7 @@ import javafx.util.Callback;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.gui.UpdateChecker;
 
 public class SettingDetailsDialogPane extends VBox {
     
@@ -75,6 +77,9 @@ public class SettingDetailsDialogPane extends VBox {
     @FXML
     private CheckBox checkUpdatesCheckBox;
     
+    @FXML
+    private Button checkUpdatesImmediatelyButton;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -107,6 +112,10 @@ public class SettingDetailsDialogPane extends VBox {
                         ButtonType.OK)
                                 .showAndWait();
             }
+        });
+        
+        checkUpdatesImmediatelyButton.setOnAction(event -> {
+            UpdateChecker.execute(true);
         });
         
         // 3.初期値の設定
