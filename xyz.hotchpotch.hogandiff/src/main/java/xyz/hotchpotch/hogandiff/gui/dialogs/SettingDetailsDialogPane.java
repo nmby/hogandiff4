@@ -1,11 +1,15 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +30,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.UpdateChecker;
+import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 
 public class SettingDetailsDialogPane extends VBox {
     
@@ -80,6 +85,12 @@ public class SettingDetailsDialogPane extends VBox {
     @FXML
     private Button checkUpdatesImmediatelyButton;
     
+    @FXML
+    private Button openSettingsFileButton;
+    
+    @FXML
+    private Button resetSettingsButton;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -116,6 +127,36 @@ public class SettingDetailsDialogPane extends VBox {
         
         checkUpdatesImmediatelyButton.setOnAction(event -> {
             UpdateChecker.execute(true);
+        });
+        
+        openSettingsFileButton.setOnAction(event -> {
+            try {
+                Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+                // nop
+            }
+        });
+        
+        resetSettingsButton.setOnAction(event -> {
+            Optional<ButtonType> result = new Alert(
+                    AlertType.CONFIRMATION,
+                    "設定を初期化しアプリケーションを終了します。\nよろしいですか？")
+                            .showAndWait();
+            
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    Files.deleteIfExists(AppResource.APP_PROP_PATH);
+                    GoogleCredential credential = GoogleCredential.get(false);
+                    if (credential != null) {
+                        credential.deleteCredential();
+                    }
+                    Platform.exit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // nop
+                }
+            }
         });
         
         // 3.初期値の設定

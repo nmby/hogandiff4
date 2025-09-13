@@ -97,8 +97,7 @@ class PoiUtilTest1_possibleTypes {
                 EnumSet.of(SheetType.CHART_SHEET),
                 PoiUtil.possibleTypes(test1_xlsm_A2_ChartSheet));
         
-        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か .xlsm
-        // 形式のExcelブックから「3_ダイアログ」を読み込めない。
+        // FIXME: [No.01 シート識別不正 - usermodel] どういう訳か .xlsm 形式のExcelブックから「3_ダイアログ」を読み込めない。
         // つまり test1_xlsm_A3_DialogSheet == null。なのでテストできない。
         // どうしようもないのかしら？？
         // assertEquals(
