@@ -87,6 +87,17 @@
     -fx-pref-width: 65.0px;
 }
 
+.detailsPane {
+    -fx-background-color: rgb(230.0, 240.0, 255.0);
+    -fx-spacing: 3.0px;
+}
+
+.detailsTitleLabel {
+    -fx-background-color: rgb(196.0, 219.0, 255.0);
+    -fx-padding: 0.0px 7.0px 0.0px 5.0px;
+    -fx-pref-width: 99.0px;
+}
+
 .localeComboBox {
     -fx-pref-width: 70.0px;
 }
