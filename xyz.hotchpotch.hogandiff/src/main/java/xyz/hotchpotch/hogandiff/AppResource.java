@@ -53,7 +53,7 @@ public class AppResource {
     }
     
     /** プロパティファイルの相対パス */
-    private static Path APP_PROP_PATH = USER_HOME != null
+    public static Path APP_PROP_PATH = USER_HOME != null
             ? USER_HOME.resolve("hogandiff.properties")
             : null;
     

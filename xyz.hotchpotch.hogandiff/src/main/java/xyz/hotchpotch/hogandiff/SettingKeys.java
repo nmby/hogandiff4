@@ -3,6 +3,7 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -315,6 +316,30 @@ public class SettingKeys {
             String::valueOf,
             Boolean::valueOf,
             true);
+    
+    /** 起動時に新規バージョンの有無を確認するか */
+    public static final Key<Boolean> CHECK_UPDATES = new Key<>(
+            "application.checkUpdates",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
+    /** 新バージョン有無の最終チェック日時 */
+    public static final Key<Instant> LAST_CHECK_UPDATES = new Key<>(
+            "application.lastCheckUpdates",
+            () -> null,
+            Instant::toString,
+            Instant::parse,
+            true);
+    
+    /** 新バージョン有無チェックの最短間隔（時間） */
+    public static final Key<Integer> CHECK_UPDATES_INTERVAL_HOURS = new Key<>(
+            "application.checkUpdatesIntervalHours",
+            () -> 6,
+            String::valueOf,
+            Integer::valueOf,
+            false);
     
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが

@@ -143,6 +143,9 @@ public class MainController extends VBox {
         
         // 4.値変更時のイベントハンドラの設定
         // nop
+        
+        // 5.その他
+        UpdateChecker.execute(false);
     }
     
     /**
