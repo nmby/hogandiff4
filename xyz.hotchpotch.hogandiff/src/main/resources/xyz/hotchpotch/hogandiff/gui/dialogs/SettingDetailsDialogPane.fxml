@@ -24,7 +24,7 @@
             <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="detailsTitleLabel" text="%fx.SettingsPane2.010" textAlignment="RIGHT" textOverrun="CLIP" wrapText="true" GridPane.vgrow="ALWAYS" />
             <ComboBox fx:id="localeComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="localeComboBox" stylesheets="@../application.css" GridPane.columnIndex="1">
                <GridPane.margin>
-                  <Insets bottom="5.0" left="7.0" right="6.0" top="10.0" />
+                  <Insets bottom="3.0" left="7.0" right="6.0" top="5.0" />
                </GridPane.margin>
             </ComboBox>
          </children>
@@ -45,12 +45,12 @@
             <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="detailsTitleLabel" text="%fx.SettingDetailsDialogPane.010" textAlignment="RIGHT" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
             <CheckBox fx:id="checkUpdatesCheckBox" mnemonicParsing="false" text="%fx.SettingDetailsDialogPane.020" GridPane.columnIndex="1">
                <GridPane.margin>
-                  <Insets bottom="3.0" left="7.0" right="7.0" top="5.0" />
+                  <Insets bottom="2.0" left="7.0" right="7.0" top="3.0" />
                </GridPane.margin>
             </CheckBox>
             <Button fx:id="checkUpdatesImmediatelyButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingDetailsDialogPane.030" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
-                  <Insets bottom="5.0" left="7.0" right="7.0" top="3.0" />
+                  <Insets bottom="3.0" left="7.0" right="7.0" top="2.0" />
                </GridPane.margin>
             </Button>
          </children>
@@ -68,11 +68,11 @@
             <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="detailsTitleLabel" text="%fx.SettingDetailsDialogPane.040" textAlignment="RIGHT" GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
             <Button fx:id="openSettingsFileButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingDetailsDialogPane.050" GridPane.columnIndex="1">
                <GridPane.margin>
-                  <Insets bottom="3.0" left="7.0" right="7.0" top="5.0" />
+                  <Insets bottom="2.0" left="7.0" right="7.0" top="3.0" />
                </GridPane.margin></Button>
             <Button fx:id="resetSettingsButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="%fx.SettingDetailsDialogPane.060" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
-                  <Insets bottom="10.0" left="7.0" right="7.0" top="3.0" />
+                  <Insets bottom="5.0" left="7.0" right="7.0" top="2.0" />
                </GridPane.margin></Button>
          </children>
       </GridPane>
