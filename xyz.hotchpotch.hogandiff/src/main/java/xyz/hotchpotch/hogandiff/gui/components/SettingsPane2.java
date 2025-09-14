@@ -89,7 +89,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                 SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
                 detailsContent.init();
                 Dialog<Void> detailsDialog = new Dialog<>();
-                detailsDialog.setTitle("★方眼Diff  -  詳細設定");
+                detailsDialog.setTitle(rb.getString("gui.component.SettingsPane2.060"));
                 detailsDialog.getDialogPane().setContent(detailsContent);
                 detailsDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
                 detailsDialog.showAndWait();

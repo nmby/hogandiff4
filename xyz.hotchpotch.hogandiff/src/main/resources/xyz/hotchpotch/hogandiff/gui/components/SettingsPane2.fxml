@@ -47,7 +47,7 @@
             <Insets top="7.0" />
          </VBox.margin>
 		</GridPane>
-      <Button fx:id="detailsButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" text="詳細設定..." VBox.vgrow="ALWAYS">
+      <Button fx:id="detailsButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" text="%fx.SettingsPane2.040" VBox.vgrow="ALWAYS">
          <VBox.margin>
             <Insets bottom="3.0" top="1.0" />
          </VBox.margin></Button>

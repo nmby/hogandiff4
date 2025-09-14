@@ -10,11 +10,19 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.util.NetUtil;
 
+/**
+ * このアプリケーションの更新チェック機能を提供します。<br>
+ * 
+ * @author nmby
+ */
 public class UpdateChecker {
     
     // [static members] ********************************************************
@@ -22,6 +30,14 @@ public class UpdateChecker {
     private static final AppResource ar = AppMain.appResource;
     private static final ResourceBundle rb = ar.get();
     
+    /**
+     * 更新チェックを実行します。<br>
+     * {@code force} に {@code true} が指定されている場合は、強制的にチェックします。<br>
+     * {@code force} に {@code false} が指定されている場合は、
+     * ユーザーが更新チェックを無効にしている場合、過去数時間以内にチェックしている場合はスキップします。<br>
+     * 
+     * @param force 強制的にチェックする場合は {@code true}
+     */
     public static void execute(boolean force) {
         UpdateChecker checker = new UpdateChecker();
         checker.checkUpdate(force);
@@ -48,20 +64,26 @@ public class UpdateChecker {
         CompletableFuture
                 .supplyAsync(() -> NetUtil.getAsJson("https://nmby.github.io/hogandiff4/api/versions/latest"))
                 .thenAccept(json -> {
-                    if (!amILatest(json.getString("version"))) {
+                    String latestVersion = json.getString("version");
+                    if (!amILatest(latestVersion)) {
                         Platform.runLater(() -> {
-                            new Alert(
-                                    AlertType.INFORMATION,
-                                    // TODO: コンテンツのリッチ化
-                                    "最新バージョンがあります。",
-                                    ButtonType.OK)
-                                            .showAndWait();
+                            Hyperlink link = UIUtil.createHyperlink(AppMain.WEB_URL);
+                            VBox content = new VBox(10);
+                            content.getChildren().addAll(
+                                    new Label(rb.getString("gui.UpdateChecker.020")
+                                            .formatted(AppMain.VERSION, latestVersion)),
+                                    link);
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle(rb.getString("AppMain.010"));
+                            alert.setHeaderText(rb.getString("gui.UpdateChecker.010"));
+                            alert.getDialogPane().setContent(content);
+                            alert.showAndWait();
                         });
                     } else if (force) {
                         Platform.runLater(() -> {
                             new Alert(
                                     AlertType.INFORMATION,
-                                    "新規バージョンはありません。",
+                                    rb.getString("AppMain.030").formatted(AppMain.VERSION),
                                     ButtonType.OK)
                                             .showAndWait();
                         });

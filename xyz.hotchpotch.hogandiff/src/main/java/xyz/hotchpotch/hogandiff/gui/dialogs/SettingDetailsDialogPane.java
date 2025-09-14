@@ -32,6 +32,11 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.UpdateChecker;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 
+/**
+ * 詳細設定ダイアログの内容部分を提供します。<br>
+ * 
+ * @author nmby
+ */
 public class SettingDetailsDialogPane extends VBox {
     
     // [static members] ********************************************************
@@ -103,6 +108,9 @@ public class SettingDetailsDialogPane extends VBox {
         loader.load();
     }
     
+    /**
+     * このオブジェクトを初期化します。<br>
+     */
     public void init() {
         // 1.disableプロパティのバインディング
         // nop
@@ -141,7 +149,7 @@ public class SettingDetailsDialogPane extends VBox {
         resetSettingsButton.setOnAction(event -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    "設定を初期化しアプリケーションを終了します。\nよろしいですか？")
+                    rb.getString("gui.dialogs.SettingDetailsDialogPane.010"))
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {
