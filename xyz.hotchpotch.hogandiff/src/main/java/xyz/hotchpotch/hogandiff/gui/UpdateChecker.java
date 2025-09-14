@@ -83,7 +83,7 @@ public class UpdateChecker {
                         Platform.runLater(() -> {
                             new Alert(
                                     AlertType.INFORMATION,
-                                    rb.getString("AppMain.030").formatted(AppMain.VERSION),
+                                    rb.getString("gui.UpdateChecker.030").formatted(AppMain.VERSION),
                                     ButtonType.OK)
                                             .showAndWait();
                         });
