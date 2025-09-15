@@ -2,11 +2,16 @@ package xyz.hotchpotch.hogandiff.logic.stax.readers;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 /**
@@ -24,6 +29,9 @@ public abstract class BufferingReader implements XMLEventReader {
     
     // [instance members] ******************************************************
     
+    /** イベントファクトリ */
+    protected final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
+    
     /** ソースリーダー */
     protected final XMLEventReader source;
     
@@ -33,17 +41,39 @@ public abstract class BufferingReader implements XMLEventReader {
     /** 現在の要素ツリー */
     protected final Deque<QName> currTree = new ArrayDeque<>();
     
+    /** 名前空間コンテキスト */
+    protected NamespaceContext namespaces;
+    
     private boolean isReady;
     
     /**
      * 新しいリーダーを生成します。<br>
      * 
      * @param source ソースリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      */
-    protected BufferingReader(XMLEventReader source) {
+    protected BufferingReader(XMLEventReader source) throws XMLStreamException {
         assert source != null;
         
         this.source = source;
+    }
+    
+    /**
+     * 指定された情報から開始要素イベントを生成します。<br>
+     * 
+     * @param qName 要素名
+     * @param attrs 属性イテレータ
+     * @return 開始要素イベント
+     */
+    protected StartElement createStartElement(QName qName, Iterator<Attribute> attrs) {
+        return namespaces != null
+                ? eventFactory.createStartElement(
+                        namespaces.getPrefix(qName.getNamespaceURI()),
+                        qName.getNamespaceURI(),
+                        qName.getLocalPart(),
+                        attrs,
+                        null)
+                : eventFactory.createStartElement(qName, attrs, null);
     }
     
     /**
@@ -133,7 +163,9 @@ public abstract class BufferingReader implements XMLEventReader {
                 : buffer.remove();
         
         if (next.isStartElement()) {
-            currTree.addLast(next.asStartElement().getName());
+            StartElement se = next.asStartElement();
+            namespaces = se.getNamespaceContext();
+            currTree.addLast(se.getName());
         } else if (next.isEndElement()) {
             currTree.removeLast();
         }

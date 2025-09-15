@@ -168,14 +168,14 @@ public class PainterWithStax implements Painter {
             fillsCount++;
             elemFills.setAttribute("count", Integer.toString(fillsCount));
             
-            Element newFill = styles.createElement("fill");
+            Element newFill = styles.createElementNS(xmlns, "fill");
             elemFills.appendChild(newFill);
             
-            Element patternFill = styles.createElement("patternFill");
+            Element patternFill = styles.createElementNS(xmlns, "patternFill");
             patternFill.setAttribute("patternType", "solid");
             newFill.appendChild(patternFill);
             
-            Element fgColor = styles.createElement("fgColor");
+            Element fgColor = styles.createElementNS(xmlns, "fgColor");
             fgColor.setAttribute("indexed", Integer.toString(colorIdx));
             patternFill.appendChild(fgColor);
             
