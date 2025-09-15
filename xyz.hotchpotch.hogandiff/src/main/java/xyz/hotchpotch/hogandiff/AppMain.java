@@ -8,9 +8,11 @@ import java.util.UUID;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -26,7 +28,7 @@ public class AppMain extends Application {
     // [static members] ********************************************************
     
     /** このアプリケーションのバージョン */
-    public static final String VERSION = "v0.26.2";
+    public static final String VERSION = "v0.27.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -123,6 +125,7 @@ public class AppMain extends Application {
         });
         
         primaryStage.show();
+        announceNewFeature2();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
@@ -145,12 +148,36 @@ public class AppMain extends Application {
         String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
         if (!VERSION.equals(prevVersion)) {
             
-            assert VERSION.equals("v0.26.2");
-            // v0.26.2 では次を行う。
+            assert VERSION.equals("v0.27.0");
+            // v0.27.0 では次を行う。
+            //  ●設定エリアの強制展開
+            //  ・詳細設定ダイアログの強制表示
             //  ・新機能紹介ページの表示
+            appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
+        }
+    }
+    
+    /**
+     * ユーザーが現在のバージョンを初めて起動した際の処理を行います。<br>
+     */
+    private void announceNewFeature2() {
+        // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
+        String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
+        if (!VERSION.equals(prevVersion)) {
+            
+            assert VERSION.equals("v0.27.0");
+            // v0.27.0 では次を行う。
+            //  ・設定エリアの強制展開
+            //  ●詳細設定ダイアログの強制表示
+            //  ●新機能紹介ページの表示
             
             try {
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-26-2/"));
+                Button detailsButton = appResource.settings().get(SettingKeys.V0_27_0_NOTICE);
+                if (detailsButton != null) {
+                    Platform.runLater(() -> detailsButton.fire());
+                }
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-0/"));
+                
             } catch (IOException e) {
                 e.printStackTrace();
                 // nop

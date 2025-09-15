@@ -105,6 +105,9 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         // 4.値変更時のイベントハンドラの設定
         // nop
+        
+        // 5.その他
+        ar.changeSetting(SettingKeys.V0_27_0_NOTICE, detailsButton);
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {
