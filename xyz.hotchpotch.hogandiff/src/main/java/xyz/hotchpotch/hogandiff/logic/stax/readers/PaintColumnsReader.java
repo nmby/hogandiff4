@@ -14,7 +14,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -40,8 +39,6 @@ public class PaintColumnsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -50,6 +47,7 @@ public class PaintColumnsReader extends BufferingReader {
      * @param targetColumns 着色対象の列インデックス（0 開始）
      * @param colorIdx      着色する色のインデックス
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetColumns} の長さが 0 の場合
      */
@@ -57,7 +55,8 @@ public class PaintColumnsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> targetColumns,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
@@ -84,7 +83,8 @@ public class PaintColumnsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> targetColumns,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         super(source);
         
@@ -127,7 +127,7 @@ public class PaintColumnsReader extends BufferingReader {
         if (StaxUtil.isStart(event, QNAME.SHEET_DATA)) {
             // 元ファイルに cols 要素が存在しない場合は、
             // cols 要素を作成して着色列分の col 要素を追加する。
-            buffer.add(eventFactory.createStartElement(QNAME.COLS, Collections.emptyIterator(), null));
+            buffer.add(createStartElement(QNAME.COLS, Collections.emptyIterator()));
             targetRanges.forEach(this::createCol);
             buffer.add(eventFactory.createEndElement(QNAME.COLS, null));
             auto = true;
@@ -300,7 +300,7 @@ public class PaintColumnsReader extends BufferingReader {
         // "9.1" を指定すると 8.47 になる。Apache POI は魔訶不識である。
         attrs.add(eventFactory.createAttribute(NONS_QNAME.WIDTH, "9.1"));
         
-        buffer.add(eventFactory.createStartElement(QNAME.COL, attrs.iterator(), null));
+        buffer.add(createStartElement(QNAME.COL, attrs.iterator()));
         buffer.add(eventFactory.createEndElement(QNAME.COL, null));
     }
     
@@ -349,6 +349,6 @@ public class PaintColumnsReader extends BufferingReader {
             }
         }
         
-        return eventFactory.createStartElement(QNAME.COL, newAttrs.values().iterator(), null);
+        return createStartElement(QNAME.COL, newAttrs.values().iterator());
     }
 }

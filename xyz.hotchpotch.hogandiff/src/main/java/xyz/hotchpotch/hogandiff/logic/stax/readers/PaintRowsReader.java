@@ -12,7 +12,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -36,8 +35,6 @@ public class PaintRowsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -46,6 +43,7 @@ public class PaintRowsReader extends BufferingReader {
      * @param targetRows    着色対象の行インデックス（0 開始）
      * @param colorIdx      着色する色のインデックス
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetRows} の長さが 0 の場合
      */
@@ -53,7 +51,8 @@ public class PaintRowsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> targetRows,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
@@ -80,7 +79,8 @@ public class PaintRowsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<Integer> targetRows,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         super(source);
         
@@ -150,7 +150,7 @@ public class PaintRowsReader extends BufferingReader {
         attrs.add(eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyle)));
         attrs.add(eventFactory.createAttribute(NONS_QNAME.CUSTOM_FORMAT, "1"));
         
-        buffer.add(eventFactory.createStartElement(QNAME.ROW, attrs.iterator(), null));
+        buffer.add(createStartElement(QNAME.ROW, attrs.iterator()));
         buffer.add(eventFactory.createEndElement(QNAME.ROW, null));
     }
     
@@ -184,7 +184,7 @@ public class PaintRowsReader extends BufferingReader {
             }
         }
         
-        return eventFactory.createStartElement(QNAME.ROW, newAttrs.values().iterator(), null);
+        return createStartElement(QNAME.ROW, newAttrs.values().iterator());
     }
     
     /**
@@ -203,6 +203,6 @@ public class PaintRowsReader extends BufferingReader {
             }
         }
         
-        return eventFactory.createStartElement(QNAME.ROW, attrs.iterator(), null);
+        return createStartElement(QNAME.ROW, attrs.iterator());
     }
 }

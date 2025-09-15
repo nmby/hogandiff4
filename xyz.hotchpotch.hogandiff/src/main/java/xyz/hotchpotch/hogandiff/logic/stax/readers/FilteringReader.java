@@ -108,8 +108,9 @@ public class FilteringReader extends BufferingReader {
          * このビルダーからリーダーを構成します。<br>
          * 
          * @return 新しいリーダー
+         * @throws XMLStreamException XMLイベントの解析に失敗した場合
          */
-        public XMLEventReader build() {
+        public XMLEventReader build() throws XMLStreamException {
             return new FilteringReader(this);
         }
     }
@@ -131,7 +132,7 @@ public class FilteringReader extends BufferingReader {
     
     private final List<BiPredicate<? super Deque<QName>, ? super StartElement>> filters;
     
-    private FilteringReader(Builder builder) {
+    private FilteringReader(Builder builder) throws XMLStreamException {
         super(builder.source);
         
         filters = builder.filters;

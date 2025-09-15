@@ -8,7 +8,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -34,8 +33,6 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -45,6 +42,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
      * @param diffCommentColor      差分セルコメントに適用する色
      * @param redundantCommentColor 余剰セルコメントに適用する色
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *                                  {@code diffCommentAddrs},
@@ -55,7 +53,8 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             Set<String> diffCommentAddrs,
             Set<String> redundantCommentAddrs,
             String diffCommentColor,
-            String redundantCommentColor) {
+            String redundantCommentColor)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(diffCommentAddrs);
@@ -91,7 +90,8 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             Set<String> diffCommentAddrs,
             Set<String> redundantCommentAddrs,
             String diffCommentColor,
-            String redundantCommentColor) {
+            String redundantCommentColor)
+            throws XMLStreamException {
         
         super(source);
         
@@ -176,7 +176,7 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
             buffer.add(events.poll());
         }
         
-        buffer.add(eventFactory.createStartElement(X_QNAME.VISIBLE, null, null));
+        buffer.add(createStartElement(X_QNAME.VISIBLE, null));
         buffer.add(eventFactory.createEndElement(X_QNAME.VISIBLE, null));
         
         buffer.addAll(events);
@@ -192,6 +192,6 @@ public class PaintDiffOrRedundantCommentsReader extends BufferingReader {
         
         attrs.put(NONS_QNAME.FILL_COLOR, eventFactory.createAttribute(NONS_QNAME.FILL_COLOR, color));
         
-        return eventFactory.createStartElement(V_QNAME.SHAPE, attrs.values().iterator(), null);
+        return createStartElement(V_QNAME.SHAPE, attrs.values().iterator());
     }
 }
