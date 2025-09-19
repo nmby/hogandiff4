@@ -55,8 +55,8 @@ public class UpdateChecker {
             }
             
             Instant lastCheckAt = ar.settings().get(SettingKeys.LAST_CHECK_UPDATES);
-            int interval = ar.settings().get(SettingKeys.CHECK_UPDATES_INTERVAL_HOURS);
-            if (lastCheckAt != null && Instant.now().isBefore(lastCheckAt.plus(interval, ChronoUnit.HOURS))) {
+            int interval = ar.settings().get(SettingKeys.CHECK_UPDATES_INTERVAL_MINUTES);
+            if (lastCheckAt != null && Instant.now().isBefore(lastCheckAt.plus(interval, ChronoUnit.MINUTES))) {
                 return;
             }
         }

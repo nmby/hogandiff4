@@ -325,9 +325,9 @@ public class SettingKeys {
             true);
     
     /** 新バージョン有無チェックの最短間隔（時間） */
-    public static final Key<Integer> CHECK_UPDATES_INTERVAL_HOURS = new Key<>(
+    public static final Key<Integer> CHECK_UPDATES_INTERVAL_MINUTES = new Key<>(
             "application.checkUpdatesIntervalHours",
-            () -> 6,
+            () -> 120,
             String::valueOf,
             Integer::valueOf,
             false);
