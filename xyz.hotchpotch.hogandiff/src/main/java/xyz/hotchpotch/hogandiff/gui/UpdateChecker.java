@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -66,7 +65,7 @@ public class UpdateChecker {
                 .supplyAsync(() -> NetUtil.getAsJson("https://nmby.github.io/hogandiff4/api/versions/latest"))
                 .thenAccept(json -> {
                     String latestVersion = json.getString("version");
-                    if (!amILatest(latestVersion)) {
+                    if (VersionMaster.compareVersion(latestVersion) < 0) {
                         Platform.runLater(() -> {
                             Hyperlink link = UIUtil.createHyperlink(AppMain.WEB_URL);
                             VBox content = new VBox(10);
@@ -95,30 +94,5 @@ public class UpdateChecker {
                     throwable.printStackTrace();
                     return null;
                 });
-    }
-    
-    private boolean amILatest(String latestVersion) {
-        Function<String, int[]> toVersionNumbers = (v) -> {
-            String[] parts = v.replace("v", "").split("\\.");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Invalid version string: " + v);
-            }
-            int[] numbers = new int[parts.length];
-            for (int i = 0; i < parts.length; i++) {
-                numbers[i] = Integer.parseInt(parts[i]);
-            }
-            return numbers;
-        };
-        
-        int[] latest = toVersionNumbers.apply(latestVersion);
-        int[] current = toVersionNumbers.apply(VersionMaster.APP_VERSION);
-        for (int i = 0; i < latest.length; i++) {
-            if (latest[i] > current[i]) {
-                return false;
-            } else if (latest[i] < current[i]) {
-                return true;
-            }
-        }
-        return true;
     }
 }

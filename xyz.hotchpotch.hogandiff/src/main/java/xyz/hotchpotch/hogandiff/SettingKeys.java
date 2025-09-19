@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-import javafx.scene.control.Button;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -331,14 +330,6 @@ public class SettingKeys {
             () -> 6,
             String::valueOf,
             Integer::valueOf,
-            false);
-    
-    /** v0.27.0新規起動時用 */
-    public static final Key<Button> V0_27_0_NOTICE = new Key<>(
-            "application.v0.27.0.notice",
-            () -> null,
-            Button::toString,
-            decodeNotSupported("cannnot decode."),
             false);
     
     /** 全ての定義済み設定項目を含むセット */

@@ -24,6 +24,7 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.VersionMaster;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.SettingDetailsDialogPane;
@@ -107,7 +108,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         // nop
         
         // 5.その他
-        ar.changeSetting(SettingKeys.V0_27_0_NOTICE, detailsButton);
+        VersionMaster.for_v0_27_0 = detailsButton;
     }
     
     private final EventHandler<ActionEvent> openDir = event -> {
