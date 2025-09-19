@@ -71,7 +71,7 @@ public class UpdateChecker {
                             VBox content = new VBox(10);
                             content.getChildren().addAll(
                                     new Label(rb.getString("gui.UpdateChecker.020")
-                                            .formatted(VersionMaster.APP_VERSION, latestVersion)),
+                                            .formatted(VersionMaster.APP_VERSION, "v" + latestVersion)),
                                     link);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
                             alert.setTitle(rb.getString("AppMain.010"));
