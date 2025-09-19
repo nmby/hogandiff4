@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.SettingKeys;
+import xyz.hotchpotch.hogandiff.VersionMaster;
 import xyz.hotchpotch.hogandiff.util.NetUtil;
 
 /**
@@ -71,7 +72,7 @@ public class UpdateChecker {
                             VBox content = new VBox(10);
                             content.getChildren().addAll(
                                     new Label(rb.getString("gui.UpdateChecker.020")
-                                            .formatted(AppMain.VERSION, latestVersion)),
+                                            .formatted(VersionMaster.APP_VERSION, latestVersion)),
                                     link);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
                             alert.setTitle(rb.getString("AppMain.010"));
@@ -83,7 +84,7 @@ public class UpdateChecker {
                         Platform.runLater(() -> {
                             new Alert(
                                     AlertType.INFORMATION,
-                                    rb.getString("gui.UpdateChecker.030").formatted(AppMain.VERSION),
+                                    rb.getString("gui.UpdateChecker.030").formatted(VersionMaster.APP_VERSION),
                                     ButtonType.OK)
                                             .showAndWait();
                         });
@@ -110,7 +111,7 @@ public class UpdateChecker {
         };
         
         int[] latest = toVersionNumbers.apply(latestVersion);
-        int[] current = toVersionNumbers.apply(AppMain.VERSION);
+        int[] current = toVersionNumbers.apply(VersionMaster.APP_VERSION);
         for (int i = 0; i < latest.length; i++) {
             if (latest[i] > current[i]) {
                 return false;

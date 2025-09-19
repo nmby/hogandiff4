@@ -1,18 +1,11 @@
 package xyz.hotchpotch.hogandiff;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.util.UUID;
-
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -26,9 +19,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 public class AppMain extends Application {
     
     // [static members] ********************************************************
-    
-    /** このアプリケーションのバージョン */
-    public static final String VERSION = "v0.27.0";
     
     /** このアプリケーションのドメイン（xyz.hotchpotch.hogandiff） */
     public static final String APP_DOMAIN = AppMain.class.getPackageName();
@@ -72,7 +62,7 @@ public class AppMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
         
-        announceNewFeature();
+        VersionMaster.announceNewFeature1();
         
         // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
         // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
@@ -93,7 +83,7 @@ public class AppMain extends Application {
         primaryStage.setTitle(
                 appResource.get().getString("AppMain.010")
                         + "  -  "
-                        + VERSION);
+                        + VersionMaster.APP_VERSION);
         
         primaryStage.setMinHeight(
                 settings.get(SettingKeys.SHOW_SETTINGS)
@@ -125,64 +115,12 @@ public class AppMain extends Application {
         });
         
         primaryStage.show();
-        announceNewFeature2();
+        VersionMaster.announceNewFeature2();
         
         MainController controller = loader.getController();
         if (controller.isReady().getValue()) {
             controller.updateActiveComparison();
             controller.execute();
-        }
-    }
-    
-    /**
-     * ユーザーが現在のバージョンを初めて起動した際の処理を行います。<br>
-     */
-    private void announceNewFeature() {
-        // UUIDが未採番の場合は採番する。
-        UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);
-        if (uuid == null) {
-            appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
-        }
-        
-        // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
-        String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
-        if (!VERSION.equals(prevVersion)) {
-            
-            assert VERSION.equals("v0.27.0");
-            // v0.27.0 では次を行う。
-            //  ●設定エリアの強制展開
-            //  ・詳細設定ダイアログの強制表示
-            //  ・新機能紹介ページの表示
-            appResource.changeSetting(SettingKeys.SHOW_SETTINGS, true);
-        }
-    }
-    
-    /**
-     * ユーザーが現在のバージョンを初めて起動した際の処理を行います。<br>
-     */
-    private void announceNewFeature2() {
-        // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
-        String prevVersion = appResource.settings().get(SettingKeys.APP_VERSION);
-        if (!VERSION.equals(prevVersion)) {
-            
-            assert VERSION.equals("v0.27.0");
-            // v0.27.0 では次を行う。
-            //  ・設定エリアの強制展開
-            //  ●詳細設定ダイアログの強制表示
-            //  ●新機能紹介ページの表示
-            
-            try {
-                Button detailsButton = appResource.settings().get(SettingKeys.V0_27_0_NOTICE);
-                if (detailsButton != null) {
-                    Platform.runLater(() -> detailsButton.fire());
-                }
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-0/"));
-                
-            } catch (IOException e) {
-                e.printStackTrace();
-                // nop
-            }
-            appResource.changeSetting(SettingKeys.APP_VERSION, VERSION);
         }
     }
 }
