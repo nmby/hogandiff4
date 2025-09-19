@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,14 +33,6 @@ public class SettingKeys {
             throw new UnsupportedOperationException(msg);
         };
     }
-    
-    /** クライアント上で生成されたUUID */
-    public static final Key<UUID> CLIENT_UUID = new Key<>(
-            "client.uuid",
-            () -> null,
-            UUID::toString,
-            UUID::fromString,
-            true);
     
     /** このアプリケーションの実行したことのあるバージョン */
     public static final Key<String> APP_VERSION = new Key<>(

@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
-import java.util.UUID;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -26,12 +25,6 @@ public class VersionMaster {
      * ユーザーが現在のバージョンを初めて起動した際の処理を行います。<br>
      */
     public static void announceNewFeature1() {
-        // UUIDが未採番の場合は採番する。
-        UUID uuid = ar.settings().get(SettingKeys.CLIENT_UUID);
-        if (uuid == null) {
-            ar.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
-        }
-        
         // 前回までの利用Versionを調べ、新バージョンの初回起動の場合は新バージョンに応じた処理を行う。
         String prevVersion = ar.settings().get(SettingKeys.APP_VERSION);
         if (!APP_VERSION.equals(prevVersion)) {
