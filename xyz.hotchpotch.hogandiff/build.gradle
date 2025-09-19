@@ -39,7 +39,7 @@ tasks.withType(JavaCompile) {
 
 javafx {
 	// 直近の LTS-version とする。
-    version = 21
+    version = 25
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
