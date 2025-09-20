@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 
-class SheetNamesLoaderWithPoiEventApiTest {
+class BookInfoLoaderWithPoiEventApiTest {
     
     // [static members] ********************************************************
     
@@ -30,17 +30,17 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
+        test1_xls = Path.of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test1.xlsx").toURI());
         test2_xls = Path.of(
-                SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
+                BookInfoLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xls").toURI());
         test2_xlsx = Path
-                .of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx")
+                .of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test2_passwordAAA.xlsx")
                         .toURI());
         test4_xls = Path
-                .of(SheetNamesLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls")
+                .of(BookInfoLoaderWithPoiEventApiTest.class.getResource("Test4_containsVBModule.xls")
                         .toURI());
     }
     
@@ -51,20 +51,20 @@ class SheetNamesLoaderWithPoiEventApiTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> SheetNamesLoaderWithPoiEventApi.of(null));
+                () -> BookInfoLoaderWithPoiEventApi.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> SheetNamesLoaderWithPoiEventApi.of(Set.of()));
+                () -> BookInfoLoaderWithPoiEventApi.of(Set.of()));
         
         // 正常系
         assertTrue(
-                SheetNamesLoaderWithPoiEventApi.of(
-                        EnumSet.allOf(SheetType.class)) instanceof SheetNamesLoaderWithPoiEventApi);
+                BookInfoLoaderWithPoiEventApi.of(
+                        EnumSet.allOf(SheetType.class)) instanceof BookInfoLoaderWithPoiEventApi);
     }
     
     @Test
     void testLoadSheetNames_例外系_非チェック例外() {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(Set.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(Set.of(SheetType.WORKSHEET));
         
         // null パラメータ
         assertThrows(
@@ -88,7 +88,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_例外系_チェック例外() {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(Set.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
         assertEquals(
@@ -103,7 +103,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_全てのシート種別が対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -115,7 +115,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.of(SheetType.WORKSHEET));
         
         // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
@@ -129,7 +129,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.CHART_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.of(SheetType.CHART_SHEET));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -141,7 +141,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.of(SheetType.DIALOG_SHEET));
         
         // FIXME: [No.01 シート識別不正 - HSSF] ダイアログシートもワークシートと判別されてしまう。
         // どうしようもないのかしら？？
@@ -154,7 +154,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.of(SheetType.MACRO_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.of(SheetType.MACRO_SHEET));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -166,7 +166,7 @@ class SheetNamesLoaderWithPoiEventApiTest {
     
     @Test
     void testLoadSheetNames_VBモジュールが含まれる場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
+        BookInfoLoader testee = BookInfoLoaderWithPoiEventApi.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(

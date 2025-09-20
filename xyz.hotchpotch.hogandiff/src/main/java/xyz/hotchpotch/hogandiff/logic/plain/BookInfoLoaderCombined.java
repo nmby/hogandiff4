@@ -9,15 +9,15 @@ import java.util.function.Supplier;
 import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookType;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 
 /**
- * 処理が成功するまで複数のローダーで順に処理を行う {@link SheetNamesLoader} の実装です。<br>
+ * 処理が成功するまで複数のローダーで順に処理を行う {@link BookInfoLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler
-public class SheetNamesLoaderCombined implements SheetNamesLoader {
+public class BookInfoLoaderCombined implements BookInfoLoader {
     
     // [static members] ********************************************************
     
@@ -29,20 +29,20 @@ public class SheetNamesLoaderCombined implements SheetNamesLoader {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code suppliers} が空の場合
      */
-    public static SheetNamesLoader of(List<Supplier<SheetNamesLoader>> suppliers) {
+    public static BookInfoLoader of(List<Supplier<BookInfoLoader>> suppliers) {
         Objects.requireNonNull(suppliers);
         if (suppliers.isEmpty()) {
             throw new IllegalArgumentException("param \"suppliers\" is empty.");
         }
         
-        return new SheetNamesLoaderCombined(suppliers);
+        return new BookInfoLoaderCombined(suppliers);
     }
     
     // [instance members] ******************************************************
     
-    private final List<Supplier<SheetNamesLoader>> suppliers;
+    private final List<Supplier<BookInfoLoader>> suppliers;
     
-    private SheetNamesLoaderCombined(List<Supplier<SheetNamesLoader>> suppliers) {
+    private BookInfoLoaderCombined(List<Supplier<BookInfoLoader>> suppliers) {
         assert suppliers != null;
         
         this.suppliers = List.copyOf(suppliers);
@@ -76,10 +76,10 @@ public class SheetNamesLoaderCombined implements SheetNamesLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookPath));
         
         try {
-            Iterator<Supplier<SheetNamesLoader>> itr = suppliers.iterator();
+            Iterator<Supplier<BookInfoLoader>> itr = suppliers.iterator();
             
             while (itr.hasNext()) {
-                SheetNamesLoader loader = itr.next().get();
+                BookInfoLoader loader = itr.next().get();
                 BookInfo bookInfo = loader.loadBookInfo(bookPath, readPassword);
                 
                 switch (bookInfo.status()) {

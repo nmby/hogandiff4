@@ -43,9 +43,9 @@ import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.DirLoader;
+import xyz.hotchpotch.hogandiff.logic.DirInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -393,7 +393,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirLoader dirLoader = Factory.dirLoader(
+            DirInfoLoader dirLoader = Factory.dirInfoLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
@@ -464,7 +464,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         try {
             String readPassword = readPasswords.get(newBookPath);
-            SheetNamesLoader loader = Factory.sheetNamesLoader(newBookPath);
+            BookInfoLoader loader = Factory.bookInfoLoader(newBookPath);
             
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword)
