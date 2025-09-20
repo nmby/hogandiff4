@@ -15,7 +15,7 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
@@ -81,7 +81,7 @@ public class DirInfoLoaderStandard implements DirInfoLoader {
                     .filter(DirInfoLoaderStandard::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
-                        SheetNamesLoader bookLoader = Factory.sheetNamesLoader(bookPath);
+                        BookInfoLoader bookLoader = Factory.bookInfoLoader(bookPath);
                         return bookLoader.loadBookInfo(bookPath, null);
                     })
                     .toList();

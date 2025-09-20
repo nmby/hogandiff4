@@ -22,19 +22,19 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookType;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
 
 /**
  * Apache POI イベントモデル API を利用して
  * .xls 形式のExcelブックから
- * シート名の一覧を抽出する {@link SheetNamesLoader} の実装です。<br>
+ * シート名の一覧を抽出する {@link BookInfoLoader} の実装です。<br>
  *
  * @author nmby
  */
 @BookHandler(targetTypes = { BookType.XLS })
-public class SheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
+public class BookInfoLoaderWithPoiEventApi implements BookInfoLoader {
     
     // [static members] ********************************************************
     
@@ -136,20 +136,20 @@ public class SheetNamesLoaderWithPoiEventApi implements SheetNamesLoader {
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code targetTypes} が空の場合
      */
-    public static SheetNamesLoader of(Set<SheetType> targetTypes) {
+    public static BookInfoLoader of(Set<SheetType> targetTypes) {
         Objects.requireNonNull(targetTypes);
         if (targetTypes.isEmpty()) {
             throw new IllegalArgumentException("targetTypes is empty.");
         }
         
-        return new SheetNamesLoaderWithPoiEventApi(targetTypes);
+        return new BookInfoLoaderWithPoiEventApi(targetTypes);
     }
     
     // [instance members] ******************************************************
     
     private final Set<SheetType> targetTypes;
     
-    private SheetNamesLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
+    private BookInfoLoaderWithPoiEventApi(Set<SheetType> targetTypes) {
         assert targetTypes != null;
         
         this.targetTypes = EnumSet.copyOf(targetTypes);

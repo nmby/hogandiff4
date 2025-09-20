@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 
-class SheetNamesLoaderCombinedTest {
+class BookInfoLoaderCombinedTest {
     
     // [static members] ********************************************************
     
-    private static final SheetNamesLoader successLoader = (bookPath, readPassword) -> BookInfo.ofLoadCompleted(
+    private static final BookInfoLoader successLoader = (bookPath, readPassword) -> BookInfo.ofLoadCompleted(
             bookPath, List.of("success"));
     
-    private static final SheetNamesLoader failLoader = (bookPath, readPassword) -> {
+    private static final BookInfoLoader failLoader = (bookPath, readPassword) -> {
         throw new RuntimeException("fail");
     };
     
@@ -29,24 +29,24 @@ class SheetNamesLoaderCombinedTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> SheetNamesLoaderCombined.of(null));
+                () -> BookInfoLoaderCombined.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> SheetNamesLoaderCombined.of(List.of()));
+                () -> BookInfoLoaderCombined.of(List.of()));
         
         // 正常系
         assertTrue(
-                SheetNamesLoaderCombined.of(List.of(
-                        () -> successLoader)) instanceof SheetNamesLoaderCombined);
+                BookInfoLoaderCombined.of(List.of(
+                        () -> successLoader)) instanceof BookInfoLoaderCombined);
         assertTrue(
-                SheetNamesLoaderCombined.of(List.of(
+                BookInfoLoaderCombined.of(List.of(
                         () -> successLoader,
-                        () -> failLoader)) instanceof SheetNamesLoaderCombined);
+                        () -> failLoader)) instanceof BookInfoLoaderCombined);
     }
     
     @Test
     void testLoadSheetNames_パラメータチェック() {
-        SheetNamesLoader testee = SheetNamesLoaderCombined.of(List.of(() -> successLoader));
+        BookInfoLoader testee = BookInfoLoaderCombined.of(List.of(() -> successLoader));
         
         // null パラメータ
         assertThrows(
@@ -56,8 +56,8 @@ class SheetNamesLoaderCombinedTest {
     
     @Test
     void testLoadSheetNames_失敗系() {
-        SheetNamesLoader testeeF = SheetNamesLoaderCombined.of(List.of(() -> failLoader));
-        SheetNamesLoader testeeFFF = SheetNamesLoaderCombined.of(List.of(
+        BookInfoLoader testeeF = BookInfoLoaderCombined.of(List.of(() -> failLoader));
+        BookInfoLoader testeeFFF = BookInfoLoaderCombined.of(List.of(
                 () -> failLoader, () -> failLoader, () -> failLoader));
         
         // 失敗１つ
@@ -73,8 +73,8 @@ class SheetNamesLoaderCombinedTest {
     
     @Test
     void testLoadSheetNames_成功系() throws ExcelHandlingException {
-        SheetNamesLoader testeeS = SheetNamesLoaderCombined.of(List.of(() -> successLoader));
-        SheetNamesLoader testeeFFSF = SheetNamesLoaderCombined.of(List.of(
+        BookInfoLoader testeeS = BookInfoLoaderCombined.of(List.of(() -> successLoader));
+        BookInfoLoader testeeFFSF = BookInfoLoaderCombined.of(List.of(
                 () -> failLoader,
                 () -> failLoader,
                 () -> successLoader,

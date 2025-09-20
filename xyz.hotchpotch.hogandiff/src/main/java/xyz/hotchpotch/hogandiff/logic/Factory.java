@@ -30,10 +30,10 @@ public class Factory {
      * @throws NullPointerException          {@code bookPath} が {@code null} の場合
      * @throws UnsupportedOperationException {@code bookPath} がサポート対象外の形式の場合
      */
-    public static SheetNamesLoader sheetNamesLoader(Path bookPath) {
+    public static BookInfoLoader bookInfoLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
         
-        return SheetNamesLoader.of(bookPath);
+        return BookInfoLoader.of(bookPath);
     }
     
     /**
