@@ -12,7 +12,7 @@ import java.util.Set;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookType;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.DirLoader;
+import xyz.hotchpotch.hogandiff.logic.DirInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
@@ -20,11 +20,11 @@ import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction.ResultOrThrown;
 
 /**
- * {@link DirLoader} の標準的な実装です。<br>
+ * {@link DirInfoLoader} の標準的な実装です。<br>
  * 
  * @author nmby
  */
-public class DirLoaderStandard implements DirLoader {
+public class DirInfoLoaderStandard implements DirInfoLoader {
     
     // [static members] ********************************************************
     
@@ -47,7 +47,7 @@ public class DirLoaderStandard implements DirLoader {
      * 
      * @param recursively 子フォルダの情報も再帰的にロードするか
      */
-    public DirLoaderStandard(boolean recursively) {
+    public DirInfoLoaderStandard(boolean recursively) {
         this.recursively = recursively;
     }
     
@@ -78,7 +78,7 @@ public class DirLoaderStandard implements DirLoader {
             
             List<BookInfo> childBookPaths = Files.list(path)
                     .filter(f -> Files.isRegularFile(f, LinkOption.NOFOLLOW_LINKS))
-                    .filter(DirLoaderStandard::isHandleableExcelBook)
+                    .filter(DirInfoLoaderStandard::isHandleableExcelBook)
                     .sorted()
                     .map(bookPath -> {
                         SheetNamesLoader bookLoader = Factory.sheetNamesLoader(bookPath);

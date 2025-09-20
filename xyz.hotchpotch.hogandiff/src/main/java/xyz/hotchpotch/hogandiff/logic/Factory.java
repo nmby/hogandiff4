@@ -19,9 +19,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * @author nmby
  */
 public class Factory {
-
+    
     // [static members] ********************************************************
-
+    
     /**
      * Excelブック情報を抽出するローダーを返します。<br>
      * 
@@ -32,10 +32,10 @@ public class Factory {
      */
     public static SheetNamesLoader sheetNamesLoader(Path bookPath) {
         Objects.requireNonNull(bookPath);
-
+        
         return SheetNamesLoader.of(bookPath);
     }
-
+    
     /**
      * Excelシートからセルデータを抽出するローダーを返します。<br>
      * 
@@ -49,16 +49,16 @@ public class Factory {
     public static CellsLoader cellsLoader(Settings settings, BookInfo bookInfo) {
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookInfo);
-
+        
         // 設計メモ：
         // Settings を扱うのは Factory の層までとし、これ以下の各機能へは
         // Settings 丸ごとではなく、必要な個別のパラメータを渡すこととする。
-
+        
         boolean useCachedValue = !settings.get(SettingKeys.COMPARE_ON_FORMULA_STRING);
-
+        
         return CellsLoader.of(bookInfo, useCachedValue);
     }
-
+    
     /**
      * フォルダ情報を抽出するローダーを返します。<br>
      * 
@@ -66,13 +66,13 @@ public class Factory {
      * @return フォルダ情報を抽出するローダー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static DirLoader dirLoader(Settings settings) {
+    public static DirInfoLoader dirInfoLoader(Settings settings) {
         Objects.requireNonNull(settings);
-
+        
         boolean recursively = settings.get(SettingKeys.COMPARE_DIRS_RECURSIVELY);
-        return DirLoader.of(recursively);
+        return DirInfoLoader.of(recursively);
     }
-
+    
     /**
      * 2つのExcelブックに含まれるシート名同士の対応関係を決めるマッチャーを返します。<br>
      * 
@@ -82,7 +82,7 @@ public class Factory {
      */
     public static Matcher<String> sheetNamesMatcher(Settings settings) {
         Objects.requireNonNull(settings);
-
+        
         boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
         return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
@@ -92,7 +92,7 @@ public class Factory {
                                 (s1, s2) -> StringDiffUtil.levenshteinDistance(s1, s2) + 1)))
                 : Matcher.identityMatcherOf();
     }
-
+    
     /**
      * 2つのフォルダに含まれるExcelブック情報同士の対応関係を決めるマッチャーを返します。<br>
      * Excelブックパスの末尾のファイル名に基づいて対応関係を求めます。<br>
@@ -103,7 +103,7 @@ public class Factory {
      */
     public static Matcher<BookInfo> bookInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
-
+        
         boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
         return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
@@ -117,7 +117,7 @@ public class Factory {
                                 })))
                 : Matcher.identityMatcherOf(BookInfo::bookName);
     }
-
+    
     /**
      * 2つのフォルダツリーに含まれるフォルダ同士の対応関係を決めるマッチャーを返します。<br>
      * 
@@ -127,7 +127,7 @@ public class Factory {
      */
     public static Matcher<DirInfo> dirInfosMatcher(Settings settings) {
         Objects.requireNonNull(settings);
-
+        
         boolean enableFuzzyMatching = settings.get(SettingKeys.ENABLE_FUZZY_MATCHING);
         return enableFuzzyMatching
                 ? Matcher.combinedMatcherOf(List.of(
@@ -135,26 +135,26 @@ public class Factory {
                         fuzzyButSimpleDirInfosMatcher))
                 : strictDirInfosMatcher;
     }
-
+    
     private static final Function<DirInfo, String> dirNameExtractor = d -> d.dirPath().getFileName().toString();
-
+    
     private static final Matcher<DirInfo> strictDirInfosMatcher = Matcher.identityMatcherOf(dirNameExtractor);
-
+    
     private static final Matcher<DirInfo> fuzzyButSimpleDirInfosMatcher = Matcher.minimumCostFlowMatcherOf(
             d -> d.childDirInfos().size() + d.childBookInfos().size(),
             (d1, d2) -> {
                 List<String> childrenNames1 = d1.childDirInfos().stream().map(dirNameExtractor).toList();
                 List<String> childrenNames2 = d2.childDirInfos().stream().map(dirNameExtractor).toList();
-
+                
                 int gapChildren = (int) Matcher.identityMatcherOf().makeIdxPairs(childrenNames1, childrenNames2)
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
                 int gapBookNames = (int) Matcher.identityMatcherOf()
                         .makeIdxPairs(d1.childBookInfos(), d2.childBookInfos())
                         .stream().filter(Predicate.not(IntPair::isPaired)).count();
-
+                
                 return gapChildren + gapBookNames;
             });
-
+    
     /**
      * 2つのExcelシートから抽出したセルセット同士を比較するコンパレータを返します。<br>
      * 
@@ -164,14 +164,14 @@ public class Factory {
      */
     public static ComparatorOfSheets sheetComparator(Settings settings) {
         Objects.requireNonNull(settings);
-
+        
         boolean considerRowGaps = settings.get(SettingKeys.CONSIDER_ROW_GAPS);
         boolean considerColumnGaps = settings.get(SettingKeys.CONSIDER_COLUMN_GAPS);
         boolean prioritizeSpeed = settings.get(SettingKeys.PRIORITIZE_SPEED);
-
+        
         return ComparatorOfSheets.of(considerRowGaps, considerColumnGaps, prioritizeSpeed);
     }
-
+    
     /**
      * Excelブックの差分個所に色を付けて新しいファイルとして保存する
      * ペインターを返します。<br>
@@ -188,11 +188,11 @@ public class Factory {
             Settings settings,
             Path bookPath,
             String readPassword) {
-
+        
         Objects.requireNonNull(settings);
         Objects.requireNonNull(bookPath);
         // readPassword may be null.
-
+        
         short redundantColor = settings.get(SettingKeys.REDUNDANT_COLOR);
         short diffColor = settings.get(SettingKeys.DIFF_COLOR);
         Color redundantCommentColor = settings.get(SettingKeys.REDUNDANT_COMMENT_COLOR);
@@ -202,7 +202,7 @@ public class Factory {
         Color redundantSheetColor = settings.get(SettingKeys.REDUNDANT_SHEET_COLOR);
         Color diffSheetColor = settings.get(SettingKeys.DIFF_SHEET_COLOR);
         Color sameSheetColor = settings.get(SettingKeys.SAME_SHEET_COLOR);
-
+        
         return Painter.of(
                 bookPath,
                 readPassword,
@@ -216,9 +216,9 @@ public class Factory {
                 diffSheetColor,
                 sameSheetColor);
     }
-
+    
     // [instance members] ******************************************************
-
+    
     private Factory() {
     }
 }
