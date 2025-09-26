@@ -15,7 +15,8 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
  * 
- * @param <T> 比較情報の型
+ * @param <T>
+ *            比較情報の型
  * @author nmby
  */
 public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
@@ -29,9 +30,12 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param comparison 比較情報
-     * @throws IOException          ダイアログの構成に失敗した場合
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param comparison
+     *            比較情報
+     * @throws IOException
+     *             ダイアログの構成に失敗した場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public EditComparisonDialog(T comparison) throws IOException {
         Objects.requireNonNull(comparison);
@@ -53,7 +57,7 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
         editComparisonDialogPane.getStylesheets().add(
                 getClass().getResource("editComparisonDialog.css").toExternalForm());
         
-        widthProperty().addListener((target, oldValue, newValue) -> {
+        widthProperty().addListener((_, _, newValue) -> {
             editComparisonDialogPane.setMaxWidth(newValue.doubleValue() - 20);
             editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
         });

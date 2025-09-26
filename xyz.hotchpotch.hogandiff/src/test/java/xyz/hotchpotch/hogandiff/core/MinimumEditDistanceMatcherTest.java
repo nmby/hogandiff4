@@ -15,7 +15,7 @@ class MinimumEditDistanceMatcherTest {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
-    private static final ToIntFunction<Character> gapEvaluator = c -> 1;
+    private static final ToIntFunction<Character> gapEvaluator = _ -> 1;
     private static final ToIntBiFunction<Character, Character> diffEvaluator = (c1, c2) -> c1.equals(c2) ? 0 : 3;
     
     private static final List<Character> list0_1 = List.of();

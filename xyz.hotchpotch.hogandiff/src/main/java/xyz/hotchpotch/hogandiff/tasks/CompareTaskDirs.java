@@ -38,7 +38,8 @@ public final class CompareTaskDirs extends CompareTask {
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     public CompareTaskDirs(Settings settings) {
         super(settings);
@@ -179,7 +180,7 @@ public final class CompareTaskDirs extends CompareTask {
                         pairingInfoDirs,
                         pairingInfoDirs.childBookInfoPairs().stream().collect(Collectors.toMap(
                                 Function.identity(),
-                                name -> Optional.empty())),
+                                _ -> Optional.empty())),
                         "");
             }
             

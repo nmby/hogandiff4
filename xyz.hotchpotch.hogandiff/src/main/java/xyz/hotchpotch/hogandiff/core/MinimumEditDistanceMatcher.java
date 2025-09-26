@@ -13,7 +13,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * 文字列（文字を要素とするリスト）同士のマッチングだけでなく、
  * 任意の型の要素のリスト同士のマッチングに利用することができます。<br>
  * 
- * @param <T> リストの要素の型
+ * @param <T>
+ *            リストの要素の型
  * @author nmby
  */
 /*package*/ class MinimumEditDistanceMatcher<T> extends MatcherBase<T> {
@@ -64,7 +65,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         /**
          * エディットグラフの上から遷移してきたことを表します。
          * 
-         * @param prev 遷移元ノード
+         * @param prev
+         *            遷移元ノード
          */
         static record Upper(ComeFrom prev) implements ComeFrom {
         }
@@ -72,7 +74,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         /**
          * エディットグラフの左から遷移してきたことを表します。
          * 
-         * @param prev 遷移元ノード
+         * @param prev
+         *            遷移元ノード
          */
         static record Left(ComeFrom prev) implements ComeFrom {
         }
@@ -80,7 +83,8 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         /**
          * エディットグラフの左上から遷移してきたことを表します。
          * 
-         * @param prev 遷移元ノード
+         * @param prev
+         *            遷移元ノード
          */
         static record UpperLeft(ComeFrom prev) implements ComeFrom {
         }
@@ -89,9 +93,9 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
         
         default Direction direction() {
             return switch (this) {
-            case Upper from -> Direction.FROM_UPPER;
-            case Left from -> Direction.FROM_LEFT;
-            case UpperLeft from -> Direction.FROM_UPPER_LEFT;
+            case Upper _ -> Direction.FROM_UPPER;
+            case Left _ -> Direction.FROM_LEFT;
+            case UpperLeft _ -> Direction.FROM_UPPER_LEFT;
             };
         }
         
@@ -103,8 +107,10 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     /**
      * コンストラクタ
      * 
-     * @param gapEvaluator 余剰評価関数
-     * @param diffEvaluator 差分評価関数
+     * @param gapEvaluator
+     *            余剰評価関数
+     * @param diffEvaluator
+     *            差分評価関数
      */
     /*package*/ MinimumEditDistanceMatcher(
             ToIntFunction<? super T> gapEvaluator,
@@ -119,9 +125,12 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     /**
      * コンストラクタ
      * 
-     * @param gapEvaluatorA 比較対象Aに適用する余剰評価関数
-     * @param gapEvaluatorB 比較対象Bに適用する余剰評価関数
-     * @param diffEvaluator 差分評価関数
+     * @param gapEvaluatorA
+     *            比較対象Aに適用する余剰評価関数
+     * @param gapEvaluatorB
+     *            比較対象Bに適用する余剰評価関数
+     * @param diffEvaluator
+     *            差分評価関数
      */
     /*package*/ MinimumEditDistanceMatcher(
             ToIntFunction<? super T> gapEvaluatorA,

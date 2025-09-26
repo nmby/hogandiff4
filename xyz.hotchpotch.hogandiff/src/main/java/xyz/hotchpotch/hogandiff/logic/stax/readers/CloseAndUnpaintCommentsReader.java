@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -29,16 +28,15 @@ public class CloseAndUnpaintCommentsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
      * @param source ソースリーダー
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
-    public static XMLEventReader of(XMLEventReader source) {
+    public static XMLEventReader of(XMLEventReader source) throws XMLStreamException {
         Objects.requireNonNull(source);
         
         return new CloseAndUnpaintCommentsReader(source);
@@ -49,7 +47,7 @@ public class CloseAndUnpaintCommentsReader extends BufferingReader {
     private boolean inCommentShape;
     private boolean inNoteObject;
     
-    private CloseAndUnpaintCommentsReader(XMLEventReader source) {
+    private CloseAndUnpaintCommentsReader(XMLEventReader source) throws XMLStreamException {
         super(source);
     }
     
@@ -119,6 +117,6 @@ public class CloseAndUnpaintCommentsReader extends BufferingReader {
         attrs.remove(NONS_QNAME.FILL_COLOR);
         attrs.remove(NONS_QNAME.STROKE_COLOR);
         
-        return eventFactory.createStartElement(V_QNAME.SHAPE, attrs.values().iterator(), null);
+        return createStartElement(V_QNAME.SHAPE, attrs.values().iterator());
     }
 }

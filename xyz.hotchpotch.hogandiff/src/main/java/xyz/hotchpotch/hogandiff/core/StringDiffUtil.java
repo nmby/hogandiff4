@@ -23,7 +23,7 @@ public class StringDiffUtil {
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher<>(
-            x -> 1,
+            _ -> 1,
             (x, y) -> x.equals(y) ? 0 : 3);
     
     /**
@@ -31,10 +31,13 @@ public class StringDiffUtil {
      * 一文字の挿入と削除はそれぞれ距離1と評価します。
      * 一文字の置換は削除＋挿入とみなし、従って距離2と評価します。<br>
      * 
-     * @param str1 文字列1
-     * @param str2 文字列2
+     * @param str1
+     *            文字列1
+     * @param str2
+     *            文字列2
      * @return 2つの文字列間のレーベンシュタイン距離
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static int levenshteinDistance(String str1, String str2) {
         Objects.requireNonNull(str1);

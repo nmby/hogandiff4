@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -35,8 +34,6 @@ public class PaintRedundantCellsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
@@ -46,6 +43,7 @@ public class PaintRedundantCellsReader extends BufferingReader {
      * @param redundantColumns 余剰列インデックス（0 開始）
      * @param colorIdx         着色する色のインデックス
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException
      *                                  {@code redundantRows},
@@ -56,7 +54,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
             StylesManager stylesManager,
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
@@ -86,7 +85,8 @@ public class PaintRedundantCellsReader extends BufferingReader {
             StylesManager stylesManager,
             List<Integer> redundantRows,
             List<Integer> redundantColumns,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         super(source);
         
@@ -147,6 +147,6 @@ public class PaintRedundantCellsReader extends BufferingReader {
             }
         }
         
-        return eventFactory.createStartElement(QNAME.C, newAttrs.values().iterator(), null);
+        return createStartElement(QNAME.C, newAttrs.values().iterator());
     }
 }

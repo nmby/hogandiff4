@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -65,6 +67,14 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                             ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
                     
                 } catch (GoogleHandlingException e) {
+                    new Alert(
+                            AlertType.ERROR,
+                            "%s%n%s".formatted(
+                                    rb.getString("fx.GoogleRevisionSelectorDialog.010"),
+                                    e.getMessage()),
+                            ButtonType.OK)
+                                    .showAndWait();
+                    
                     e.printStackTrace();
                     return null;
                 }

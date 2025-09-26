@@ -3,10 +3,10 @@ package xyz.hotchpotch.hogandiff;
 import java.awt.Color;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,18 +28,10 @@ public class SettingKeys {
     // [static members] ********************************************************
     
     private static <T> Function<String, T> decodeNotSupported(String msg) {
-        return str -> {
+        return _ -> {
             throw new UnsupportedOperationException(msg);
         };
     }
-    
-    /** クライアント上で生成されたUUID */
-    public static final Key<UUID> CLIENT_UUID = new Key<>(
-            "client.uuid",
-            () -> null,
-            UUID::toString,
-            UUID::fromString,
-            true);
     
     /** このアプリケーションの実行したことのあるバージョン */
     public static final Key<String> APP_VERSION = new Key<>(
@@ -117,7 +109,7 @@ public class SettingKeys {
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
             () -> Map.of(),
-            readPasswords -> "*****",
+            _ -> "*****",
             decodeNotSupported("cannot decode."),
             false);
     
@@ -315,6 +307,30 @@ public class SettingKeys {
             String::valueOf,
             Boolean::valueOf,
             true);
+    
+    /** 起動時に新規バージョンの有無を確認するか */
+    public static final Key<Boolean> CHECK_UPDATES = new Key<>(
+            "application.checkUpdates",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
+    /** 新バージョン有無の最終チェック日時 */
+    public static final Key<Instant> LAST_CHECK_UPDATES = new Key<>(
+            "application.lastCheckUpdates",
+            () -> null,
+            Instant::toString,
+            Instant::parse,
+            true);
+    
+    /** 新バージョン有無チェックの最短間隔（時間） */
+    public static final Key<Integer> CHECK_UPDATES_INTERVAL_MINUTES = new Key<>(
+            "application.checkUpdatesIntervalHours",
+            () -> 120,
+            String::valueOf,
+            Integer::valueOf,
+            false);
     
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが

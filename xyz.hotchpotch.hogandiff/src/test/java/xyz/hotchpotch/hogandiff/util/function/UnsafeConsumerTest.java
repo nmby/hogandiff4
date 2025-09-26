@@ -11,12 +11,12 @@ class UnsafeConsumerTest {
     
     // [static members] ********************************************************
     
-    private static final UnsafeConsumer<String, Exception> unsafe1 = x -> {
+    private static final UnsafeConsumer<String, Exception> unsafe1 = _ -> {
     };
-    private static final UnsafeConsumer<String, IOException> unsafe2 = x -> {
+    private static final UnsafeConsumer<String, IOException> unsafe2 = _ -> {
         throw new IOException("unsafe2");
     };
-    private static final UnsafeConsumer<String, Exception> unsafe3 = x -> {
+    private static final UnsafeConsumer<String, Exception> unsafe3 = _ -> {
         throw new IllegalArgumentException("unsafe3");
     };
     
@@ -29,7 +29,7 @@ class UnsafeConsumerTest {
                 () -> UnsafeConsumer.from(null));
         
         assertTrue(
-                UnsafeConsumer.from(x -> {
+                UnsafeConsumer.from(_ -> {
                 }) instanceof UnsafeConsumer);
     }
     

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -28,19 +27,19 @@ public class PaintSheetTabReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     /**
      * 新しいリーダーを構成します。<br>
      * 
      * @param source ソースリーダー
      * @param color  着色する色
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public static XMLEventReader of(
             XMLEventReader source,
-            Color color) {
+            Color color)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(color);
@@ -55,7 +54,8 @@ public class PaintSheetTabReader extends BufferingReader {
     
     private PaintSheetTabReader(
             XMLEventReader source,
-            Color color) {
+            Color color)
+            throws XMLStreamException {
         
         super(source);
         
@@ -80,10 +80,10 @@ public class PaintSheetTabReader extends BufferingReader {
         }
         
         buffer.add(source.nextEvent());
-        buffer.add(eventFactory.createStartElement(QNAME.SHEET_PR, Collections.emptyIterator(), null));
+        buffer.add(createStartElement(QNAME.SHEET_PR, Collections.emptyIterator()));
         
         Set<Attribute> attrs = Set.of(eventFactory.createAttribute(NONS_QNAME.RGB, rgb));
-        buffer.add(eventFactory.createStartElement(QNAME.TAB_COLOR, attrs.iterator(), null));
+        buffer.add(createStartElement(QNAME.TAB_COLOR, attrs.iterator()));
         buffer.add(eventFactory.createEndElement(QNAME.TAB_COLOR, null));
         
         buffer.add(eventFactory.createEndElement(QNAME.SHEET_PR, null));

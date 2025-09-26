@@ -42,10 +42,10 @@ import xyz.hotchpotch.hogandiff.gui.dialogs.GooglePicker;
 import xyz.hotchpotch.hogandiff.gui.dialogs.PasswordDialog;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
-import xyz.hotchpotch.hogandiff.logic.DirLoader;
+import xyz.hotchpotch.hogandiff.logic.DirInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.Factory;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleHandlingException;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
@@ -111,7 +111,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public TargetSelectionPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), rb);
@@ -179,7 +180,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 parent.bookInfoPropPair.get(side)));
         bookPathButton.setOnAction(this::chooseBook);
         
-        googleDriveButton.setOnAction(event -> {
+        googleDriveButton.setOnAction(_ -> {
             GooglePicker picker = new GooglePicker();
             try {
                 picker.downloadAndGetFileInfo()
@@ -219,7 +220,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         // 4.値変更時のイベントハンドラの設定
         // ※このコントローラだけ特殊なので3と4を入れ替える
-        parent.menuProp.addListener((target, oldValue, newValue) -> {
+        parent.menuProp.addListener((_, oldValue, newValue) -> {
             DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
             if (dirInfo != null
                     && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)
@@ -227,7 +228,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 setDirPath(dirInfo.dirPath(), newValue == AppMenu.COMPARE_TREES);
             }
         });
-        parent.bookInfoPropPair.get(side).addListener((target, oldValue, newValue) -> {
+        parent.bookInfoPropPair.get(side).addListener((_, _, newValue) -> {
             sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
             if (newValue != null && !newValue.sheetNames().isEmpty()) {
                 sheetNameChoiceBox.setItems(FXCollections.observableList(newValue.sheetNames()));
@@ -393,7 +394,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
         
         try {
-            DirLoader dirLoader = Factory.dirLoader(
+            DirInfoLoader dirLoader = Factory.dirInfoLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             parent.dirInfoPropPair.get(side).setValue(newDirInfo);
@@ -464,7 +465,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         try {
             String readPassword = readPasswords.get(newBookPath);
-            SheetNamesLoader loader = Factory.sheetNamesLoader(newBookPath);
+            BookInfoLoader loader = Factory.bookInfoLoader(newBookPath);
             
             while (true) {
                 BookInfo bookInfo = loader.loadBookInfo(newBookPath, readPassword)

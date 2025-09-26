@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -40,8 +39,6 @@ public class PaintDiffCellsReader extends BufferingReader {
     
     // [static members] ********************************************************
     
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newFactory();
-    
     private static final Comparator<CellData> cellSorter = (c1, c2) -> {
         if (c1.row() != c2.row()) {
             return c1.row() < c2.row() ? -1 : 1;
@@ -60,6 +57,7 @@ public class PaintDiffCellsReader extends BufferingReader {
      * @param diffCellContents 差分セル
      * @param colorIdx         着色する色のインデックス
      * @return 新しいリーダー
+     * @throws XMLStreamException XMLイベントの解析に失敗した場合
      * @throws NullPointerException     パラメータが {@code null} の場合
      * @throws IllegalArgumentException {@code diffCellContents} が空の場合
      */
@@ -67,7 +65,8 @@ public class PaintDiffCellsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<CellData> diffCellContents,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         Objects.requireNonNull(source);
         Objects.requireNonNull(stylesManager);
@@ -95,7 +94,8 @@ public class PaintDiffCellsReader extends BufferingReader {
             XMLEventReader source,
             StylesManager stylesManager,
             List<CellData> diffCellContents,
-            short colorIdx) {
+            short colorIdx)
+            throws XMLStreamException {
         
         super(source);
         
@@ -227,7 +227,7 @@ public class PaintDiffCellsReader extends BufferingReader {
     private void createRowStart(int r) {
         Set<Attribute> attrs = new HashSet<>();
         attrs.add(eventFactory.createAttribute(NONS_QNAME.R, Integer.toString(r + 1)));
-        buffer.add(eventFactory.createStartElement(QNAME.ROW, attrs.iterator(), null));
+        buffer.add(createStartElement(QNAME.ROW, attrs.iterator()));
     }
     
     /**
@@ -249,7 +249,7 @@ public class PaintDiffCellsReader extends BufferingReader {
         attrs.add(eventFactory.createAttribute(NONS_QNAME.R, addr));
         attrs.add(eventFactory.createAttribute(NONS_QNAME.S, Integer.toString(newStyle)));
         
-        buffer.add(eventFactory.createStartElement(QNAME.C, attrs.iterator(), null));
+        buffer.add(createStartElement(QNAME.C, attrs.iterator()));
         buffer.add(eventFactory.createEndElement(QNAME.C, null));
     }
     
@@ -280,6 +280,6 @@ public class PaintDiffCellsReader extends BufferingReader {
             }
         }
         
-        return eventFactory.createStartElement(QNAME.C, newAttrs.values().iterator(), null);
+        return createStartElement(QNAME.C, newAttrs.values().iterator());
     }
 }

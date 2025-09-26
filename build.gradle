@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 import java.nio.file.Files
 import java.nio.file.Path
 
-final def version = '0.26.2'
+final def version = '0.27.0'
 
 final def timetag = LocalDateTime.now().format(DateTimeFormatter.ofPattern('yyyyMMdd-HHmmss-SSS'))
 final def baseDir = projectDir.toPath()
@@ -83,7 +83,7 @@ task exewrapForWinX64(type: Exec, dependsOn: pickupAndExpandFatJar) {
     commandLine project['myprop.cmd.exewrap'],
             '-g',
             // 直近の LTS-version とする。
-            '-t', '21',
+            '-t', '25',
             '-i', baseDir.resolve('resources/favicon.ico'),
             '-v', version,
             '-V', version,
@@ -220,7 +220,7 @@ task checkDependencies(type: Exec, dependsOn: pickupAndExpandFatJar) {
 
     commandLine project['myprop.cmd.jdeps'],
             // 直近の LTS-version とする。
-            '--multi-release', 21,
+            '--multi-release', 25,
             '--module-path', "${project['myprop.jre.mod.win.x64']};${project['myprop.jfx.sdk.win.x64']};${outputDirTmpJars}",
             '-s', outputDirTmpJars.resolve("xyz.hotchpotch.hogandiff.jar")
 }

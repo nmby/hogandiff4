@@ -54,7 +54,8 @@ public class MenuPane extends HBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public MenuPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"), rb);
@@ -95,10 +96,10 @@ public class MenuPane extends HBox implements ChildController {
                 ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
         
         // 4.値変更時のイベントハンドラの設定
-        parent.menuProp.addListener((target, oldValue, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+        parent.menuProp.addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
         
         recursivelyCheckBox.selectedProperty()
-                .addListener((target, oldValue, newValue) -> ar.changeSetting(
+                .addListener((_, _, newValue) -> ar.changeSetting(
                         SettingKeys.COMPARE_DIRS_RECURSIVELY,
                         newValue));
     }

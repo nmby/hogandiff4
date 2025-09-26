@@ -91,12 +91,14 @@ public class CellsLoaderWithSax implements CellsLoader {
         
         // [static members] ----------------------------------------------------
         
+        private static final String xmlns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        
         // [instance members] --------------------------------------------------
         
         private final boolean extractCachedValue;
         private final List<String> sst;
         
-        private final Deque<String> qNames = new ArrayDeque<>();
+        private final Deque<String> localNames = new ArrayDeque<>();
         private final Map<String, StringBuilder> texts = new HashMap<>();
         private final Map<String, String> addressToContent = new HashMap<>();
         
@@ -117,9 +119,9 @@ public class CellsLoaderWithSax implements CellsLoader {
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
             
-            qNames.addFirst(qName);
+            localNames.addFirst(localName);
             
-            if ("c".equals(qName)) {
+            if (xmlns.equals(uri) && "c".equals(localName)) {
                 type = XSSFCellType.of(attributes.getValue("t"));
                 address = attributes.getValue("r");
                 texts.clear();
@@ -128,14 +130,14 @@ public class CellsLoaderWithSax implements CellsLoader {
         
         @Override
         public void characters(char ch[], int start, int length) {
-            String qName = qNames.getFirst();
-            texts.putIfAbsent(qName, new StringBuilder());
-            texts.get(qName).append(ch, start, length);
+            String localName = localNames.getFirst();
+            texts.putIfAbsent(localName, new StringBuilder());
+            texts.get(localName).append(ch, start, length);
         }
         
         @Override
         public void endElement(String uri, String localName, String qName) {
-            if ("c".equals(qName)) {
+            if (xmlns.equals(uri) && "c".equals(localName)) {
                 StringBuilder vText = texts.get("v");
                 StringBuilder fText = texts.get("f");
                 StringBuilder tText = texts.get("t");
@@ -181,7 +183,7 @@ public class CellsLoaderWithSax implements CellsLoader {
                     addressToContent.put(address, value);
                 }
                 
-                qNames.removeFirst();
+                localNames.removeFirst();
                 type = null;
                 address = null;
                 texts.clear();
@@ -192,6 +194,8 @@ public class CellsLoaderWithSax implements CellsLoader {
     private static class Handler2 extends DefaultHandler {
         
         // [static members] ----------------------------------------------------
+        
+        private static final String xmlns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
         
         // [instance members] --------------------------------------------------
         
@@ -204,7 +208,7 @@ public class CellsLoaderWithSax implements CellsLoader {
         public void startElement(String uri, String localName, String qName, Attributes attributes)
                 throws SAXException {
             
-            if ("comment".equals(qName)) {
+            if (xmlns.equals(uri) && "comment".equals(localName)) {
                 address = attributes.getValue("ref");
                 comment = new StringBuilder();
             }
@@ -219,7 +223,7 @@ public class CellsLoaderWithSax implements CellsLoader {
         
         @Override
         public void endElement(String uri, String localName, String qName) {
-            if ("comment".equals(qName)) {
+            if (xmlns.equals(uri) && "comment".equals(localName)) {
                 addressToComment.put(address, comment.toString());
                 address = null;
                 comment = null;
@@ -296,6 +300,7 @@ public class CellsLoaderWithSax implements CellsLoader {
         
         UnsafeFunction<ZipInputStream, Set<CellData>, Exception> processor = zis -> {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             SAXParser parser = factory.newSAXParser();
             Handler1 handler1 = new Handler1(extractCachedValue, sst);
             Handler2 handler2 = new Handler2();

@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
-import xyz.hotchpotch.hogandiff.logic.SheetNamesLoader;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 
-class SheetNamesLoaderWithSaxTest {
+class BookInfoLoaderWithSaxTest {
     
     // [static members] ********************************************************
     
@@ -29,12 +29,12 @@ class SheetNamesLoaderWithSaxTest {
     
     @BeforeAll
     static void beforeAll() throws URISyntaxException {
-        test1_xls = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
-        test1_xlsb = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
-        test1_xlsm = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
-        test1_xlsx = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
-        test2_xls = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xls").toURI());
-        test2_xlsx = Path.of(SheetNamesLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
+        test1_xls = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test1.xls").toURI());
+        test1_xlsb = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test1.xlsb").toURI());
+        test1_xlsm = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test1.xlsm").toURI());
+        test1_xlsx = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test1.xlsx").toURI());
+        test2_xls = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xls").toURI());
+        test2_xlsx = Path.of(BookInfoLoaderWithSaxTest.class.getResource("Test2_passwordAAA.xlsx").toURI());
     }
     
     // [instance members] ******************************************************
@@ -44,20 +44,20 @@ class SheetNamesLoaderWithSaxTest {
         // 異常系
         assertThrows(
                 NullPointerException.class,
-                () -> SheetNamesLoaderWithSax.of(null));
+                () -> BookInfoLoaderWithSax.of(null));
         assertThrows(
                 IllegalArgumentException.class,
-                () -> SheetNamesLoaderWithSax.of(Set.of()));
+                () -> BookInfoLoaderWithSax.of(Set.of()));
         
         // 正常系
         assertTrue(
-                SheetNamesLoaderWithSax.of(
-                        EnumSet.allOf(SheetType.class)) instanceof SheetNamesLoaderWithSax);
+                BookInfoLoaderWithSax.of(
+                        EnumSet.allOf(SheetType.class)) instanceof BookInfoLoaderWithSax);
     }
     
     @Test
     void testLoadSheetNames_例外系_非チェック例外() {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
         
         // null パラメータ
         assertThrows(
@@ -78,7 +78,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_例外系_チェック例外() {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(Set.of(SheetType.WORKSHEET));
         
         // 存在しないファイル
         assertEquals(
@@ -93,7 +93,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_全てのシート種別が対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(EnumSet.allOf(SheetType.class));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(EnumSet.allOf(SheetType.class));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -111,7 +111,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_ワークシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(EnumSet.of(SheetType.WORKSHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(EnumSet.of(SheetType.WORKSHEET));
         
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
         // 「x4_マクロ」も取得されている。
@@ -131,7 +131,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_グラフシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(EnumSet.of(SheetType.CHART_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(EnumSet.of(SheetType.CHART_SHEET));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -149,7 +149,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_ダイアログシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(EnumSet.of(SheetType.DIALOG_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(EnumSet.of(SheetType.DIALOG_SHEET));
         
         assertEquals(
                 BookInfo.ofLoadCompleted(
@@ -167,7 +167,7 @@ class SheetNamesLoaderWithSaxTest {
     
     @Test
     void testLoadSheetNames_マクロシートのみが対象の場合() throws ExcelHandlingException {
-        SheetNamesLoader testee = SheetNamesLoaderWithSax.of(EnumSet.of(SheetType.MACRO_SHEET));
+        BookInfoLoader testee = BookInfoLoaderWithSax.of(EnumSet.of(SheetType.MACRO_SHEET));
         
         // マクロ無しのブックのため「x4_マクロ」が通常のワークシートとして保存されたためか、
         // 「x4_マクロ」が取得されない。
