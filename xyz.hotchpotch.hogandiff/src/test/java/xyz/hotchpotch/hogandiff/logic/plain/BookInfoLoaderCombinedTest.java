@@ -8,17 +8,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
-import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
+import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
 
 class BookInfoLoaderCombinedTest {
     
     // [static members] ********************************************************
     
-    private static final BookInfoLoader successLoader = (bookPath, readPassword) -> BookInfo.ofLoadCompleted(
+    private static final BookInfoLoader successLoader = (bookPath, _) -> BookInfo.ofLoadCompleted(
             bookPath, List.of("success"));
     
-    private static final BookInfoLoader failLoader = (bookPath, readPassword) -> {
+    private static final BookInfoLoader failLoader = (_, _) -> {
         throw new RuntimeException("fail");
     };
     

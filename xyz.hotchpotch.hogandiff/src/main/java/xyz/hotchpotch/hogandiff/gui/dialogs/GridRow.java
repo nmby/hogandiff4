@@ -43,11 +43,16 @@ public class GridRow extends Pane {
     /**
      * コンストラクタ
      * 
-     * @param pane    親Pane
-     * @param idx     GridPaneにおける行インデックス
-     * @param srcPair この {@link GridRow} が描画を担当するオブジェクト
-     * @throws NullPointerException     パラメータが {@code null} の場合
-     * @throws IllegalArgumentException {@code srcPair} が空の場合
+     * @param pane
+     *            親Pane
+     * @param idx
+     *            GridPaneにおける行インデックス
+     * @param srcPair
+     *            この {@link GridRow} が描画を担当するオブジェクト
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     * @throws IllegalArgumentException
+     *             {@code srcPair} が空の場合
      */
     public GridRow(
             EditComparisonDialogPane<?> pane,
@@ -302,7 +307,7 @@ public class GridRow extends Pane {
             
             getStyleClass().add("loadCompletedItem");
             if (srcPair.isPaired()) {
-                setOnMouseClicked(event -> pane.onClickPaired(idx));
+                setOnMouseClicked(_ -> pane.onClickPaired(idx));
             }
         }
     }
@@ -337,7 +342,7 @@ public class GridRow extends Pane {
             super(side);
             
             getStyleClass().add("needsPasswordItem");
-            setOnMouseClicked(event -> pane.onPasswordChallenge(idx, side));
+            setOnMouseClicked(_ -> pane.onPasswordChallenge(idx, side));
             statusImageView.setImage(needsPasswordImage);
         }
     }
@@ -371,7 +376,7 @@ public class GridRow extends Pane {
             setGraphic(linkOffImageView);
             setPrefWidth(50.0d);
             getStyleClass().add("unpairButton");
-            setOnAction(event -> pane.unpair(idx));
+            setOnAction(_ -> pane.unpair(idx));
         }
     }
 }

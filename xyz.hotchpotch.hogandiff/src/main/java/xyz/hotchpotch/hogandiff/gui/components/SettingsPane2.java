@@ -62,7 +62,8 @@ public class SettingsPane2 extends VBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingsPane2() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane2.fxml"), rb);
@@ -85,7 +86,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         changeWorkDirButton.setOnAction(changeDir);
         deleteWorkDirButton.setOnAction(deleteDir);
         
-        detailsButton.setOnAction(event -> {
+        detailsButton.setOnAction(_ -> {
             try {
                 SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
                 detailsContent.init();
@@ -111,7 +112,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         VersionMaster.for_v0_27_0 = detailsButton;
     }
     
-    private final EventHandler<ActionEvent> openDir = event -> {
+    private final EventHandler<ActionEvent> openDir = _ -> {
         Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         try {
@@ -132,7 +133,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         }
     };
     
-    private final EventHandler<ActionEvent> changeDir = event -> {
+    private final EventHandler<ActionEvent> changeDir = _ -> {
         Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         File newDir = null;
@@ -176,7 +177,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         }
     };
     
-    private final EventHandler<ActionEvent> deleteDir = event -> {
+    private final EventHandler<ActionEvent> deleteDir = _ -> {
         Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
         
         Optional<ButtonType> result = new Alert(

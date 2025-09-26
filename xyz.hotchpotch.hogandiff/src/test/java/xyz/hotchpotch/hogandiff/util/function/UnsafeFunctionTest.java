@@ -14,22 +14,22 @@ class UnsafeFunctionTest {
     
     private static final UnsafeFunction<String, Integer, Exception> unsafe1_1 = String::length;
     private static final UnsafeFunction<Integer, String, Exception> unsafe1_2 = "x"::repeat;
-    private static final UnsafeFunction<String, Integer, Exception> unsafe2_1 = s -> {
+    private static final UnsafeFunction<String, Integer, Exception> unsafe2_1 = _ -> {
         throw new IOException("unsafe2_1");
     };
-    private static final UnsafeFunction<Integer, String, Exception> unsafe2_2 = i -> {
+    private static final UnsafeFunction<Integer, String, Exception> unsafe2_2 = _ -> {
         throw new SAXException("unsafe2_2");
     };
-    private static final UnsafeFunction<String, Integer, Exception> unsafe2_3 = i -> {
+    private static final UnsafeFunction<String, Integer, Exception> unsafe2_3 = _ -> {
         throw new IllegalArgumentException("unsafe2_3");
     };
     
     private static final Function<String, Integer> safe1_1 = String::length;
     private static final Function<Integer, String> safe1_2 = "x"::repeat;
-    private static final Function<String, Integer> safe2_1 = s -> {
+    private static final Function<String, Integer> safe2_1 = _ -> {
         throw new IllegalArgumentException("safe2_1");
     };
-    private static final Function<Integer, String> safe2_2 = i -> {
+    private static final Function<Integer, String> safe2_2 = _ -> {
         throw new UnsupportedOperationException("unsafe2_2");
     };
     
@@ -56,7 +56,7 @@ class UnsafeFunctionTest {
                 () -> UnsafeFunction.from(null));
         
         assertTrue(
-                UnsafeFunction.from(x -> "Hello!!") instanceof UnsafeFunction);
+                UnsafeFunction.from(_ -> "Hello!!") instanceof UnsafeFunction);
     }
     
     @Test

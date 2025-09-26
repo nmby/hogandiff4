@@ -72,7 +72,8 @@ public class SettingsPane1 extends VBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingsPane1() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane1.fxml"), rb);
@@ -105,7 +106,7 @@ public class SettingsPane1 extends VBox implements ChildController {
         
         // 4.値変更時のイベントハンドラの設定
         BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
-                .setOnAction(event -> ar.changeSetting(key, target.isSelected()));
+                .setOnAction(_ -> ar.changeSetting(key, target.isSelected()));
         
         addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
         addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
@@ -113,12 +114,12 @@ public class SettingsPane1 extends VBox implements ChildController {
         addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
         addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
         
-        compareValuesOrFormulas.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
+        compareValuesOrFormulas.selectedToggleProperty().addListener((_, _, _) -> ar
                 .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
-        prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((target, oldValue, newValue) -> ar
+        prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((_, _, _) -> ar
                 .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
         
-        enableFuzzyMatchingCheckBox.setOnAction(event -> {
+        enableFuzzyMatchingCheckBox.setOnAction(_ -> {
             ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
             parent.updateActiveComparison();
         });

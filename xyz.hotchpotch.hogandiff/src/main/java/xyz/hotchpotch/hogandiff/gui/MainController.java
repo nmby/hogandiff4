@@ -118,7 +118,7 @@ public class MainController extends VBox {
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
         
-        row3Pane.showSettings().addListener((target, oldValue, newValue) -> {
+        row3Pane.showSettings().addListener((_, _, newValue) -> {
             if (newValue) {
                 row4Pane.setVisible2(true);
                 AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight());
@@ -130,13 +130,13 @@ public class MainController extends VBox {
             }
         });
         
-        menuProp.addListener((target, oldVal, newVal) -> updateActiveComparison());
-        sheetNamePropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        sheetNamePropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        bookInfoPropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        bookInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        dirInfoPropPair.a().addListener((target, oldVal, newVal) -> updateActiveComparison());
-        dirInfoPropPair.b().addListener((target, oldVal, newVal) -> updateActiveComparison());
+        menuProp.addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropPair.a().addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropPair.b().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
         
         // 3.初期値の設定
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
@@ -289,7 +289,8 @@ public class MainController extends VBox {
     /**
      * 比較処理を実行します。<br>
      * 
-     * @throws IllegalStateException 必要な設定がなされておらず実行できない場合
+     * @throws IllegalStateException
+     *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
         if (!isReady.getValue()) {
@@ -325,7 +326,7 @@ public class MainController extends VBox {
         currentTask = menu.getTask(ar.settings());
         row3Pane.bind(currentTask);
         
-        currentTask.setOnSucceeded(event -> {
+        currentTask.setOnSucceeded(_ -> {
             row3Pane.unbind();
             
             alertPasswordUnlocked();
@@ -337,7 +338,7 @@ public class MainController extends VBox {
             }
         });
         
-        currentTask.setOnFailed(event -> {
+        currentTask.setOnFailed(_ -> {
             Throwable e = currentTask.getException();
             e.printStackTrace();
             row3Pane.unbind();

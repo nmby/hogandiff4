@@ -33,7 +33,8 @@ public class ExecutePane extends AnchorPane implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public ExecutePane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ExecutePane.fxml"), rb);
@@ -51,7 +52,7 @@ public class ExecutePane extends AnchorPane implements ChildController {
         executeButton.disableProperty().bind(parent.isReady().not());
         
         // 2.項目ごとの各種設定
-        executeButton.setOnAction(event -> parent.execute());
+        executeButton.setOnAction(_ -> parent.execute());
         
         // 3.初期値の設定
         // nop

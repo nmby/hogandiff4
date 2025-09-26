@@ -99,7 +99,8 @@ public class SettingDetailsDialogPane extends VBox {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingDetailsDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingDetailsDialogPane.fxml"), rb);
@@ -120,7 +121,7 @@ public class SettingDetailsDialogPane extends VBox {
         localeComboBox.setButtonCell(cellFactory(false).call(null));
         localeComboBox.setCellFactory(cellFactory(true));
         
-        localeComboBox.setOnAction(event -> {
+        localeComboBox.setOnAction(_ -> {
             if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
@@ -133,11 +134,11 @@ public class SettingDetailsDialogPane extends VBox {
             }
         });
         
-        checkUpdatesImmediatelyButton.setOnAction(event -> {
+        checkUpdatesImmediatelyButton.setOnAction(_ -> {
             UpdateChecker.execute(true);
         });
         
-        openSettingsFileButton.setOnAction(event -> {
+        openSettingsFileButton.setOnAction(_ -> {
             try {
                 Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
             } catch (IOException e) {
@@ -146,7 +147,7 @@ public class SettingDetailsDialogPane extends VBox {
             }
         });
         
-        resetSettingsButton.setOnAction(event -> {
+        resetSettingsButton.setOnAction(_ -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
                     rb.getString("gui.dialogs.SettingDetailsDialogPane.010"))
@@ -174,13 +175,13 @@ public class SettingDetailsDialogPane extends VBox {
         checkUpdatesCheckBox.setSelected(ar.settings().get(SettingKeys.CHECK_UPDATES));
         
         // 4.値変更時のイベントハンドラの設定
-        checkUpdatesCheckBox.setOnAction(event -> ar.changeSetting(
+        checkUpdatesCheckBox.setOnAction(_ -> ar.changeSetting(
                 SettingKeys.CHECK_UPDATES,
                 checkUpdatesCheckBox.isSelected()));
     }
     
     private Callback<ListView<LocaleItem>, ListCell<LocaleItem>> cellFactory(boolean showText) {
-        return listView -> new ListCell<>() {
+        return _ -> new ListCell<>() {
             @Override
             public void updateItem(LocaleItem item, boolean empty) {
                 super.updateItem(item, empty);

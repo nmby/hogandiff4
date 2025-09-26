@@ -45,7 +45,8 @@ public class AppMain extends Application {
     /**
      * このアプリケーションのエントリポイントです。<br>
      * 
-     * @param args アプリケーション実行時引数
+     * @param args
+     *            アプリケーション実行時引数
      */
     public static void main(String[] args) {
         appResource.reflectArgs(args);
@@ -100,17 +101,17 @@ public class AppMain extends Application {
         if (settings.containsKey(SettingKeys.STAGE_MAXIMIZED)) {
             primaryStage.setMaximized(settings.get(SettingKeys.STAGE_MAXIMIZED));
         }
-        primaryStage.heightProperty().addListener((target, oldValue, newValue) -> {
+        primaryStage.heightProperty().addListener((_, _, newValue) -> {
             if (!primaryStage.isMaximized()) {
                 appResource.changeSetting(SettingKeys.STAGE_HEIGHT, (Double) newValue);
             }
         });
-        primaryStage.widthProperty().addListener((target, oldValue, newValue) -> {
+        primaryStage.widthProperty().addListener((_, _, newValue) -> {
             if (!primaryStage.isMaximized()) {
                 appResource.changeSetting(SettingKeys.STAGE_WIDTH, (Double) newValue);
             }
         });
-        primaryStage.maximizedProperty().addListener((target, oldValue, newValue) -> {
+        primaryStage.maximizedProperty().addListener((_, _, newValue) -> {
             appResource.changeSetting(SettingKeys.STAGE_MAXIMIZED, newValue);
         });
         

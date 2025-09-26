@@ -181,7 +181,8 @@ public class GooglePicker {
      * Google Pickerを開き、選択されたファイルの情報を取得します。<br>
      * 
      * @return 選択されたファイルの情報。キャンセルされた場合は {@code null}
-     * @throws GoogleHandlingException ファイル情報の取得に失敗した場合
+     * @throws GoogleHandlingException
+     *             ファイル情報の取得に失敗した場合
      */
     public CompletableFuture<GoogleFileInfo> downloadAndGetFileInfo() throws GoogleHandlingException {
         try {
@@ -247,7 +248,9 @@ public class GooglePicker {
     
     /**
      * Google Pickerを開いてファイル選択結果を取得
-     * @param credential Google認証情報
+     * 
+     * @param credential
+     *            Google認証情報
      * @return 選択されたファイルの情報
      */
     private CompletableFuture<GoogleMetadata> openPicker() {
@@ -267,7 +270,7 @@ public class GooglePicker {
                         throw new RuntimeException(e);
                     }
                 })
-                .thenCompose(v -> fileSelectionFuture
+                .thenCompose(_ -> fileSelectionFuture
                         .orTimeout(PICKER_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                         .handle((result, throwable) -> {
                             if (throwable instanceof TimeoutException) {
@@ -278,7 +281,7 @@ public class GooglePicker {
                             }
                             return result;
                         }))
-                .whenComplete((result, error) -> {
+                .whenComplete((_, _) -> {
                     stopServer();
                     fileSelectionFuture = null;
                     

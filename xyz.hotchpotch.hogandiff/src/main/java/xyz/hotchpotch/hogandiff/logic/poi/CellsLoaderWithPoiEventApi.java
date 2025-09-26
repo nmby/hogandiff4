@@ -119,13 +119,14 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * .xls 形式のExcelブックからセルデータを抽出します。<br>
          * 
-         * @param record レコード
+         * @param record
+         *            レコード
          * @throws NoSuchElementException
-         *                                       指定された名前のシートが見つからない場合
+         *             指定された名前のシートが見つからない場合
          * @throws UnsupportedOperationException
-         *                                       指定された名前のシートがワークシートではなかった場合
+         *             指定された名前のシートがワークシートではなかった場合
          * @throws UnsupportedOperationException
-         *                                       数式セルからキャッシュされた計算値ではなく数式文字列を抽出しようとした場合
+         *             数式セルからキャッシュされた計算値ではなく数式文字列を抽出しようとした場合
          */
         @Override
         public void processRecord(Record record) {
@@ -162,8 +163,10 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * BOUNDSHEET レコードの中から、目的のシートが何番目に定義されているかを探します。<br>
          * 
-         * @param record レコード
-         * @throws NoSuchElementException 指定された名前のシートが見つからない場合
+         * @param record
+         *            レコード
+         * @throws NoSuchElementException
+         *             指定された名前のシートが見つからない場合
          */
         private void searchingSheetDefinition(Record record) {
             if (record instanceof BoundSheetRecord bsRec) {
@@ -182,7 +185,8 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * Excelブック共通の SST レコードを読み取ります。<br>
          * 
-         * @param record レコード
+         * @param record
+         *            レコード
          */
         private void readingSstData(Record record) {
             if (record instanceof SSTRecord sstRec) {
@@ -200,9 +204,10 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * 目的のシートが定義される BOF レコードを探します。<br>
          * 
-         * @param record レコード
+         * @param record
+         *            レコード
          * @throws UnsupportedOperationException
-         *                                       指定された名前のシートがグラフシートもしくはマクロシートだった場合
+         *             指定された名前のシートがグラフシートもしくはマクロシートだった場合
          */
         private void searchingSheetBody(Record record) {
             if (record instanceof BOFRecord bofRec) {
@@ -240,9 +245,10 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * 目的のシートがワークシートなのかダイアログシートなのかを確認します。<br>
          * 
-         * @param record レコード
+         * @param record
+         *            レコード
          * @throws UnsupportedOperationException
-         *                                       指定された名前のシートがダイアログシートだった場合
+         *             指定された名前のシートがダイアログシートだった場合
          */
         private void checkWorksheetOrDialogsheet(Record record) {
             if (record instanceof WSBoolRecord wsbRec) {
@@ -260,7 +266,8 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * 目的のシートのセル内容物とセルコメントを読み取ります。<br>
          * 
-         * @param record レコード
+         * @param record
+         *            レコード
          */
         private void readingCellContentsAndComments(Record record) {
             assert record != null;
@@ -351,7 +358,7 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
                 }
                 break;
             
-            case EOFRecord eofRec: // 次ステップに移行
+            case EOFRecord _: // 次ステップに移行
                 step = ProcessingStep.COMPLETED;
                 break;
             
@@ -376,10 +383,11 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
         /**
          * FORMULA レコードからセル格納値を抽出します。<br>
          * 
-         * @param fRec レコード
+         * @param fRec
+         *            レコード
          * @return セル格納値
          * @throws UnsupportedOperationException
-         *                                       キャッシュされた計算値ではなく数式文字列を抽出しようとした場合
+         *             キャッシュされた計算値ではなく数式文字列を抽出しようとした場合
          */
         private String getValueFromFormulaRecord(FormulaRecord fRec) {
             if (extractCachedValue) {
@@ -427,8 +435,8 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
      * コンストラクタ
      * 
      * @param extractCachedValue
-     *                           数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
-     *                           数式文字列を抽出する場合は {@code false}
+     *            数式セルからキャッシュされた計算値を抽出する場合は {@code true}、
+     *            数式文字列を抽出する場合は {@code false}
      */
     public CellsLoaderWithPoiEventApi(boolean extractCachedValue) {
         this.extractCachedValue = extractCachedValue;
@@ -438,12 +446,12 @@ public class CellsLoaderWithPoiEventApi implements CellsLoader {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *                                  {@code bookInfo}, {@code sheetName} のいずれかが
-     *                                  {@code null} の場合
+     *             {@code bookInfo}, {@code sheetName} のいずれかが
+     *             {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  {@code bookInfo} がサポート対象外の形式の場合
+     *             {@code bookInfo} がサポート対象外の形式の場合
      * @throws ExcelHandlingException
-     *                                  処理に失敗した場合
+     *             処理に失敗した場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
