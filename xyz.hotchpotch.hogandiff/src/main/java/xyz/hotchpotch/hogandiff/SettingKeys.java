@@ -28,7 +28,7 @@ public class SettingKeys {
     // [static members] ********************************************************
     
     private static <T> Function<String, T> decodeNotSupported(String msg) {
-        return str -> {
+        return _ -> {
             throw new UnsupportedOperationException(msg);
         };
     }
@@ -109,7 +109,7 @@ public class SettingKeys {
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
             "current.readPasswords",
             () -> Map.of(),
-            readPasswords -> "*****",
+            _ -> "*****",
             decodeNotSupported("cannot decode."),
             false);
     

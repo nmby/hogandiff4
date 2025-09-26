@@ -93,11 +93,14 @@ public class PoiUtil {
      * 以上の理由により、このメソッドは「{@code 10:27}」と入力されたセルの値を
      * {@code "1899/12/31 10:27:00.000"} という文字列で返します。<br>
      * 
-     * @param cell           対象のセル
-     * @param useCachedValue 対象のセルの形式が数式の場合に、
-     *                       数式ではなくキャッシュされた算出値を返す場合は {@code true}
+     * @param cell
+     *            対象のセル
+     * @param useCachedValue
+     *            対象のセルの形式が数式の場合に、
+     *            数式ではなくキャッシュされた算出値を返す場合は {@code true}
      * @return セルの格納値を表す文字列
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static String getCellContentAsString(Cell cell, boolean useCachedValue) {
         Objects.requireNonNull(cell);
@@ -139,9 +142,11 @@ public class PoiUtil {
     /**
      * Excelシートの種類を推定して、可能性のある種類を返します。<br>
      * 
-     * @param sheet Excelシート
+     * @param sheet
+     *            Excelシート
      * @return 可能性のある種類
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     // このロジックで合ってるのかはさっぱり分からん
     // FIXME: [No.01 シート識別不正 - usermodel] 識別精度を上げたい...
@@ -149,9 +154,9 @@ public class PoiUtil {
         Objects.requireNonNull(sheet);
         
         return switch (sheet) {
-        case XSSFChartSheet xcs -> EnumSet.of(SheetType.CHART_SHEET);
-        case XSSFDialogsheet xds -> EnumSet.of(SheetType.DIALOG_SHEET);
-        case XSSFSheet xs -> EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
+        case XSSFChartSheet _ -> EnumSet.of(SheetType.CHART_SHEET);
+        case XSSFDialogsheet _ -> EnumSet.of(SheetType.DIALOG_SHEET);
+        case XSSFSheet _ -> EnumSet.of(SheetType.WORKSHEET, SheetType.MACRO_SHEET);
     
         case HSSFSheet hSheet -> {
             try {
@@ -178,8 +183,10 @@ public class PoiUtil {
      * 指定されたExcelブックに設定されているあらゆる色をクリアし、
      * セルコメントを非表示にします。<br>
      * 
-     * @param book Excelブック
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param book
+     *            Excelブック
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void clearAllColors(Workbook book) {
         Objects.requireNonNull(book);
@@ -314,10 +321,14 @@ public class PoiUtil {
     /**
      * 指定されたExcelシート上の指定された行に指定された色を付けます。<br>
      * 
-     * @param sheet   Excelシート
-     * @param rowIdxs 色を付ける行のインデックス値
-     * @param color   着色する色のインデックス値
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param sheet
+     *            Excelシート
+     * @param rowIdxs
+     *            色を付ける行のインデックス値
+     * @param color
+     *            着色する色のインデックス値
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void paintRows(Sheet sheet, List<Integer> rowIdxs, short color) {
         Objects.requireNonNull(sheet);
@@ -369,10 +380,14 @@ public class PoiUtil {
     /**
      * 指定されたExcelシートの指定された列に指定された色を付けます。<br>
      * 
-     * @param sheet      Excelシート
-     * @param columnIdxs 色を付ける行のインデックス値
-     * @param color      着色する色のインデックス値
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param sheet
+     *            Excelシート
+     * @param columnIdxs
+     *            色を付ける行のインデックス値
+     * @param color
+     *            着色する色のインデックス値
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void paintColumns(Sheet sheet, List<Integer> columnIdxs, short color) {
         Objects.requireNonNull(sheet);
@@ -417,10 +432,14 @@ public class PoiUtil {
     /**
      * 指定されたExcelシート上の指定された位置のセルに指定された色を付けます。<br>
      * 
-     * @param sheet     Excelシート
-     * @param addresses 色を付けるセルの位置
-     * @param color     着色する色のインデックス値
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param sheet
+     *            Excelシート
+     * @param addresses
+     *            色を付けるセルの位置
+     * @param color
+     *            着色する色のインデックス値
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void paintCells(
             Sheet sheet,
@@ -466,7 +485,7 @@ public class PoiUtil {
                 CellPropertyType.FILL_PATTERN, FillPatternType.SOLID_FOREGROUND,
                 CellPropertyType.FILL_FOREGROUND_COLOR, color);
         
-        currStyles.forEach((currStyle, cs) -> {
+        currStyles.forEach((_, cs) -> {
             Iterator<Cell> itr = cs.iterator();
             if (itr.hasNext()) {
                 Cell first = itr.next();
@@ -481,10 +500,14 @@ public class PoiUtil {
      * 指定されたExcelシート上の指定された位置のセルに付されているコメントに
      * 指定された色を付け、表示状態にします。<br>
      * 
-     * @param sheet     Excelシート
-     * @param addresses 色を付けるセルコメントの位置
-     * @param color     着色する色
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param sheet
+     *            Excelシート
+     * @param addresses
+     *            色を付けるセルコメントの位置
+     * @param color
+     *            着色する色
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void paintComments(
             Sheet sheet,
@@ -521,9 +544,12 @@ public class PoiUtil {
     /**
      * 指定されたExcelシートの見出しに指定された色を付けます。<br>
      * 
-     * @param sheet Excelシート
-     * @param color 着色する色
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param sheet
+     *            Excelシート
+     * @param color
+     *            着色する色
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static void paintSheetTab(
             Sheet sheet,
@@ -539,7 +565,7 @@ public class PoiUtil {
                     new DefaultIndexedColorMap()));
             break;
         
-        case HSSFSheet hSheet:
+        case HSSFSheet _:
             // FIXME: [No.03 着色関連] シート見出しの色の設定方法が分からない
             break;
         
@@ -552,12 +578,17 @@ public class PoiUtil {
      * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して返します。<br>
      * 
-     * @param sheet シート
-     * @param r     行インデックス（0開始）
-     * @param c     列インデックス（0開始）
+     * @param sheet
+     *            シート
+     * @param r
+     *            行インデックス（0開始）
+     * @param c
+     *            列インデックス（0開始）
      * @return セルオブジェクト
-     * @throws NullPointerException     パラメータが {@code null} の場合
-     * @throws IllegalArgumentException {@code r}, {@code c} のいずれかが負数の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     * @throws IllegalArgumentException
+     *             {@code r}, {@code c} のいずれかが負数の場合
      */
     public static Cell getCell(
             Sheet sheet,
@@ -577,11 +608,15 @@ public class PoiUtil {
      * シート上の指定した位置の {@link Cell} オブジェクトを返します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は {@link Optional#empty} を返します。<br>
      * 
-     * @param sheet シート
-     * @param r     行インデックス（0開始）
-     * @param c     列インデックス（0開始）
+     * @param sheet
+     *            シート
+     * @param r
+     *            行インデックス（0開始）
+     * @param c
+     *            列インデックス（0開始）
      * @return セルオブジェクト（存在しない場合は {@link Optional#empty}）
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Optional<Cell> getCellIfPresent(
             Sheet sheet,
@@ -602,10 +637,14 @@ public class PoiUtil {
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
      * 
-     * @param sheet シート
-     * @param r     行インデックス（0開始）
-     * @param c     列インデックス（0開始）
-     * @param value 設定する値
+     * @param sheet
+     *            シート
+     * @param r
+     *            行インデックス（0開始）
+     * @param c
+     *            列インデックス（0開始）
+     * @param value
+     *            設定する値
      * @return セルオブジェクト
      */
     // 醜いオーバーロードだ・・
@@ -619,10 +658,14 @@ public class PoiUtil {
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
      * 
-     * @param sheet シート
-     * @param r     行インデックス（0開始）
-     * @param c     列インデックス（0開始）
-     * @param value 設定する値
+     * @param sheet
+     *            シート
+     * @param r
+     *            行インデックス（0開始）
+     * @param c
+     *            列インデックス（0開始）
+     * @param value
+     *            設定する値
      * @return セルオブジェクト
      */
     // 醜いオーバーロードだ・・
@@ -636,10 +679,14 @@ public class PoiUtil {
      * シート上の指定した位置のセルに値を設定します。<br>
      * 指定した位置のセルオブジェクトが存在しない場合は作成して値を設定します。<br>
      * 
-     * @param sheet シート
-     * @param r     行インデックス（0開始）
-     * @param c     列インデックス（0開始）
-     * @param value 設定する値
+     * @param sheet
+     *            シート
+     * @param r
+     *            行インデックス（0開始）
+     * @param c
+     *            列インデックス（0開始）
+     * @param value
+     *            設定する値
      * @return セルオブジェクト
      */
     // 醜いオーバーロードだ・・
@@ -656,11 +703,15 @@ public class PoiUtil {
      * - セルの内容
      * これ以外の内容はコピーしませんのでご注意ください。<br>
      * 
-     * @param sheet    シート
-     * @param srcRowNo コピー元行番号
-     * @param dstRowNo コピー先行番号
+     * @param sheet
+     *            シート
+     * @param srcRowNo
+     *            コピー元行番号
+     * @param dstRowNo
+     *            コピー先行番号
      * @return コピー先の行
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Row copyRow(
             Sheet sheet,
@@ -710,10 +761,13 @@ public class PoiUtil {
     /**
      * 指定されたセルに指定されたパスへのハイパーリンクを設定します。<br>
      * 
-     * @param cell ハイパーリンクを付与するセル
-     * @param path ハイパーリンク化するパス
+     * @param cell
+     *            ハイパーリンクを付与するセル
+     * @param path
+     *            ハイパーリンク化するパス
      * @return セル
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Cell setHyperlink(
             Cell cell,
@@ -738,10 +792,13 @@ public class PoiUtil {
     /**
      * 指定されたセルに指定されたURLへのハイパーリンクを設定します。<br>
      * 
-     * @param cell ハイパーリンクを付与するセル
-     * @param url ハイパーリンク化するURL
+     * @param cell
+     *            ハイパーリンクを付与するセル
+     * @param url
+     *            ハイパーリンク化するURL
      * @return セル
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Cell setHyperlink(
             Cell cell,

@@ -45,7 +45,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
@@ -66,7 +67,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                 parent.menuProp, parent.isReady()));
         
         // 2.項目ごとの各種設定
-        editComparisonButton.setOnAction(event -> editComparison());
+        editComparisonButton.setOnAction(_ -> editComparison());
         
         // 3.初期値の設定
         // nop

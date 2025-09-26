@@ -20,9 +20,9 @@ class CellsLoaderCombinedTest {
     
     private static final CellData cell1 = new CellData(1, 2, "success", null);
     
-    private static final CellsLoader successLoader = (bookPath, readPassword, sheetName) -> Set.of(cell1);
+    private static final CellsLoader successLoader = (_, _, _) -> Set.of(cell1);
     
-    private static final CellsLoader failLoader = (bookPath, readPassword, sheetName) -> {
+    private static final CellsLoader failLoader = (_, _, _) -> {
         throw new RuntimeException("fail");
     };
     

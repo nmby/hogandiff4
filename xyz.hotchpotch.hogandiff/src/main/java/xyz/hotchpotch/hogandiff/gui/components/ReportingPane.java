@@ -50,7 +50,8 @@ public class ReportingPane extends VBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public ReportingPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportingPane.fxml"), rb);
@@ -91,8 +92,10 @@ public class ReportingPane extends VBox implements ChildController {
     /**
      * このコンポーネントとタスクをバインドします。<br>
      * 
-     * @param task タスク
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param task
+     *            タスク
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void bind(Task<Void> task) {
         Objects.requireNonNull(task);
@@ -107,8 +110,8 @@ public class ReportingPane extends VBox implements ChildController {
                     .findAny()
                     .ifPresent(bar -> {
                         scrollBar = bar;
-                        reportingTextArea.textProperty().addListener((t, o, n) -> bar.setValue(bar.getMax()));
-                        bar.valueProperty().addListener((target, oldValue, newValue) -> {
+                        reportingTextArea.textProperty().addListener((_, _, _) -> bar.setValue(bar.getMax()));
+                        bar.valueProperty().addListener((_, oldValue, newValue) -> {
                             if (newValue.doubleValue() == 0d
                                     && oldValue.doubleValue() == bar.getMax()
                                     && !bar.pressedProperty().get()

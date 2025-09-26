@@ -46,9 +46,11 @@ public class FilteringReader extends BufferingReader {
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
-         * @param qNames 除外する要素を表すQNameの階層
+         * @param qNames
+         *            除外する要素を表すQNameの階層
          * @return このビルダー
-         * @throws NullPointerException {@code filter} が {@code null} の場合
+         * @throws NullPointerException
+         *             {@code filter} が {@code null} の場合
          */
         public Builder addFilter(QName... qNames) {
             if (qNames.length == 0) {
@@ -80,23 +82,27 @@ public class FilteringReader extends BufferingReader {
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
-         * @param filter フィルダー
+         * @param filter
+         *            フィルダー
          * @return このビルダー
-         * @throws NullPointerException パラメータが {@code null} の場合
+         * @throws NullPointerException
+         *             パラメータが {@code null} の場合
          */
         public Builder addFilter(Predicate<? super StartElement> filter) {
             Objects.requireNonNull(filter);
             
-            filters.add((currTree, start) -> filter.test(start));
+            filters.add((_, start) -> filter.test(start));
             return this;
         }
         
         /**
          * このビルダーにフィルターを追加します。<br>
          * 
-         * @param filter フィルダー
+         * @param filter
+         *            フィルダー
          * @return このビルダー
-         * @throws NullPointerException パラメータが {@code null} の場合
+         * @throws NullPointerException
+         *             パラメータが {@code null} の場合
          */
         public Builder addFilter(BiPredicate<? super Deque<QName>, ? super StartElement> filter) {
             Objects.requireNonNull(filter);
@@ -108,7 +114,8 @@ public class FilteringReader extends BufferingReader {
          * このビルダーからリーダーを構成します。<br>
          * 
          * @return 新しいリーダー
-         * @throws XMLStreamException XMLイベントの解析に失敗した場合
+         * @throws XMLStreamException
+         *             XMLイベントの解析に失敗した場合
          */
         public XMLEventReader build() throws XMLStreamException {
             return new FilteringReader(this);
@@ -118,9 +125,11 @@ public class FilteringReader extends BufferingReader {
     /**
      * このクラスのビルダーを返します。<br>
      * 
-     * @param source ソースリーダー
+     * @param source
+     *            ソースリーダー
      * @return このクラスのビルダー
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Builder builder(XMLEventReader source) {
         Objects.requireNonNull(source);

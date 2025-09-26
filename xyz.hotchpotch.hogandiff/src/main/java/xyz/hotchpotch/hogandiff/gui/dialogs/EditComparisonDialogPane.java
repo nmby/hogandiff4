@@ -20,7 +20,7 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
-/*package*/ abstract class EditComparisonDialogPane<T extends PairingInfo> extends VBox {
+/* package */ abstract class EditComparisonDialogPane<T extends PairingInfo> extends VBox {
     
     // [static members] ********************************************************
     
@@ -87,7 +87,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), rb);
@@ -99,14 +100,17 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parentType 比較対象親要素の型
-     * @param parentPair 比較対象親要素
-     * @param childPairs 比較対象子要素
+     * @param parentType
+     *            比較対象親要素の型
+     * @param parentPair
+     *            比較対象親要素
+     * @param childPairs
+     *            比較対象子要素
      */
     /* package */ void init(Pair<?> parentPair) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
-        childGridPane.widthProperty().addListener((target, oldValue, newValue) -> {
+        childGridPane.widthProperty().addListener((_, _, newValue) -> {
             double colWidth = (newValue.doubleValue() - 50) / 2;
             parentGridPane.getColumnConstraints().get(0).setPrefWidth(colWidth);
             parentGridPane.getColumnConstraints().get(2).setPrefWidth(colWidth);

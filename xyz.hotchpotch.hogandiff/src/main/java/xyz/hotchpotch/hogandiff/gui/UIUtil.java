@@ -26,9 +26,11 @@ public class UIUtil {
     /**
      * 指定されたURLを開くハイパーリンクを生成します。<br>
      * 
-     * @param url URL
+     * @param url
+     *            URL
      * @return ハイパーリンク
-     * @throws NullPointerException 引数がnullの場合
+     * @throws NullPointerException
+     *             引数がnullの場合
      */
     public static Hyperlink createHyperlink(String url) {
         Objects.requireNonNull(url);
@@ -41,15 +43,18 @@ public class UIUtil {
     /**
      * 指定されたハイパーリンクに、指定されたURLを開くアクションを設定します。<br>
      * 
-     * @param link ハイパーリンク
-     * @param url URL
-     * @throws NullPointerException 引数がnullの場合
+     * @param link
+     *            ハイパーリンク
+     * @param url
+     *            URL
+     * @throws NullPointerException
+     *             引数がnullの場合
      */
     public static void setupHyperlink(Hyperlink link, String url) {
         Objects.requireNonNull(link);
         Objects.requireNonNull(url);
         
-        link.setOnAction(event -> {
+        link.setOnAction(_ -> {
             try {
                 Desktop.getDesktop().browse(URI.create(url));
             } catch (IOException e) {

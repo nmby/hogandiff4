@@ -36,7 +36,8 @@ public class TogglePane extends AnchorPane implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public TogglePane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TogglePane.fxml"), rb);
@@ -61,7 +62,7 @@ public class TogglePane extends AnchorPane implements ChildController {
         toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
         
         // 4.値変更時のイベントハンドラの設定
-        toggleButton.setOnAction(event -> ar
+        toggleButton.setOnAction(_ -> ar
                 .changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
     }
     

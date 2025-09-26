@@ -60,7 +60,8 @@ public class GooglePane extends HBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public GooglePane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), rb);
@@ -108,14 +109,14 @@ public class GooglePane extends HBox implements ChildController {
                 },
                 parent.googleCredential));
         
-        connectGoogleButton.setOnAction(event -> {
+        connectGoogleButton.setOnAction(_ -> {
             Task<GoogleCredential> connectTask = new ConnectGoogleTask(parent.googleCredential);
             Thread connectThread = new Thread(connectTask);
             connectThread.setDaemon(true);
             connectThread.start();
         });
         
-        disconnectGoogleButton.setOnAction(event -> {
+        disconnectGoogleButton.setOnAction(_ -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
                     rb.getString("gui.component.GooglePane.010"))

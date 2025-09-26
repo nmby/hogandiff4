@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 /**
  * Googleドライブからのダウンロードに関する注意事項を表示するダイアログボックス要素です。<br>
  * 
- * @author hotchpotch
+ * @author nmby
  */
 public class GoogleDownloadNoticeDialogPane extends VBox {
     
@@ -41,7 +41,8 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public GoogleDownloadNoticeDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GoogleDownloadNoticeDialogPane.fxml"), rb);
@@ -59,7 +60,7 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
         
         // 2.イベントハンドラの設定
         Path localDir = ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive");
-        localDirHyperlink.setOnAction(e -> {
+        localDirHyperlink.setOnAction(_ -> {
             try {
                 Desktop.getDesktop().open(localDir.toFile());
             } catch (IOException e1) {
@@ -68,7 +69,7 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
             }
         });
         
-        dontShowNoMoreCheckBox.setOnAction(event -> ar.changeSetting(
+        dontShowNoMoreCheckBox.setOnAction(_ -> ar.changeSetting(
                 SettingKeys.SHOW_GOOGLE_DL_NOTICE,
                 !dontShowNoMoreCheckBox.isSelected()));
         
