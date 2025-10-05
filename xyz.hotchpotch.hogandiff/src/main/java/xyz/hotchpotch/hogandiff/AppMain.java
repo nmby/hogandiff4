@@ -69,6 +69,14 @@ public class AppMain extends Application {
         // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
         ZipSecureFile.setMinInflateRatio(0.001);
         
+        // 多数のシートを含むExcelファイルを扱うための制限の緩和。
+        // 規定値の 1,000 から 100,000 に変更する。
+        ZipSecureFile.setMaxFileCount(100_000);
+        
+        // 念のためこれも変更しておく。
+        // 規定値の 4,294,967,295 [0xffffffff] から Long.MAX_VALUE に変更する。
+        ZipSecureFile.setMaxEntrySize(Long.MAX_VALUE);
+        
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("gui/MainView.fxml"),
                 appResource.get());
