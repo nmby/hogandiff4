@@ -74,7 +74,7 @@ public class UpdateChecker {
                                             .formatted(VersionMaster.APP_VERSION, "v" + latestVersion)),
                                     link);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle(Msg.MSG_084.get());
+                            alert.setTitle(Msg.MSG_001.get());
                             alert.setHeaderText(Msg.MSG_085.get());
                             alert.getDialogPane().setContent(content);
                             alert.showAndWait();

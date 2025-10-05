@@ -282,7 +282,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffDetail() {
         if (!hasDiff()) {
-            return Msg.MSG_059.get();
+            return Msg.MSG_055.get();
         }
         
         StringBuilder str = new StringBuilder();

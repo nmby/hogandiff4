@@ -177,7 +177,7 @@ public final class CompareTaskBooks extends CompareTask {
                         updateMessage(str.toString());
                     }
                 } catch (Exception e) {
-                    str.append("  -  ").append(Msg.MSG_018.get()).append(BR);
+                    str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));

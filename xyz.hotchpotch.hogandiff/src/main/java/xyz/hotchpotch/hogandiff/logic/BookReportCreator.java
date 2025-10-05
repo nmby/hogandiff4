@@ -191,9 +191,9 @@ public class BookReportCreator {
         PoiUtil.copyRow(sheet, ROW_TEMPLATE_SHEET_TITLE, rowIdx);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() - 1, sheetIdx + 1);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1,
-                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.MSG_033.get());
+                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.MSG_031.get());
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1,
-                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.MSG_033.get());
+                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.MSG_031.get());
         rowIdx++;
         
         // 比較対象なしの場合は「比較対象なし」の旨を出力する。

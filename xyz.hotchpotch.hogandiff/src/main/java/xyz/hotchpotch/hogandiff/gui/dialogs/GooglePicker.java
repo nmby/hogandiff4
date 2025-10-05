@@ -226,7 +226,7 @@ public class GooglePicker {
                                     GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
                                     content.init();
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle(Msg.MSG_114.get());
+                                    alert.setTitle(Msg.MSG_001.get());
                                     alert.setHeaderText(Msg.MSG_115.get());
                                     alert.getDialogPane().setContent(content);
                                     alert.showAndWait();

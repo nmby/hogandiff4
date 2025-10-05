@@ -173,7 +173,7 @@ public record ResultOfDirs(
         StringBuilder str = new StringBuilder();
         
         if (bookResults.isEmpty()) {
-            str.append("    - ").append(Msg.MSG_051.get()).append(BR);
+            str.append("    - ").append(Msg.MSG_045.get()).append(BR);
             if (isDetailMode) {
                 str.append(BR);
             }

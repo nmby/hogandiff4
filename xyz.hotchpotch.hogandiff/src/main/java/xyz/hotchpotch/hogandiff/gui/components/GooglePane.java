@@ -135,7 +135,7 @@ public class GooglePane extends HBox implements ChildController {
                 VBox content = new VBox(10);
                 content.getChildren().addAll(new Label(Msg.MSG_089.get()), link);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(Msg.MSG_090.get());
+                alert.setTitle(Msg.MSG_001.get());
                 alert.setHeaderText(Msg.MSG_091.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
@@ -148,7 +148,7 @@ public class GooglePane extends HBox implements ChildController {
                 VBox content = new VBox(10);
                 content.getChildren().addAll(new Label(Msg.MSG_092.get()), link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Msg.MSG_093.get());
+                alert.setTitle(Msg.MSG_001.get());
                 alert.setHeaderText(Msg.MSG_094.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
