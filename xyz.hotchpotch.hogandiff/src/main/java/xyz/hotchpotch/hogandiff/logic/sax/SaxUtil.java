@@ -48,12 +48,18 @@ public class SaxUtil {
      * 不変クラスです。<br>
      *
      * @author nmby
-     * @param sheetName        シート名（例：{@code "シート1"}）
-     * @param id               シートId(relId)（例：{@code "rId1"}）
-     * @param type             シート形式（例：{@link SheetType#WORKSHEET}）
-     * @param source           ソースエントリのパス文字列（例：{@code "xl/worksheets/sheet1.xml"}）
-     * @param commentSource    セルコメントのソースエントリのパス文字列（例：{@code "xl/comments1.xml"}）
-     * @param vmlDrawingSource セルコメントの図としての情報を保持するソースエントリのパス（例：{@code "xl/drawings/vmlDrawing1.vml"}）
+     * @param sheetName
+     *            シート名（例：{@code "シート1"}）
+     * @param id
+     *            シートId(relId)（例：{@code "rId1"}）
+     * @param type
+     *            シート形式（例：{@link SheetType#WORKSHEET}）
+     * @param source
+     *            ソースエントリのパス文字列（例：{@code "xl/worksheets/sheet1.xml"}）
+     * @param commentSource
+     *            セルコメントのソースエントリのパス文字列（例：{@code "xl/comments1.xml"}）
+     * @param vmlDrawingSource
+     *            セルコメントの図としての情報を保持するソースエントリのパス（例：{@code "xl/drawings/vmlDrawing1.vml"}）
      */
     public static record SheetInfo(
             String sheetName,
@@ -147,7 +153,8 @@ public class SaxUtil {
                 case "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet" -> SheetType.MACRO_SHEET;
                 default -> null;
                 };
-                String source = "xl/" + attributes.getValue("Target");
+                String tmp = attributes.getValue("Target");
+                String source = tmp.startsWith("xl/") || tmp.startsWith("/xl/") ? tmp : "xl/" + tmp;
                 
                 idToType.put(id, type);
                 idToSource.put(id, source);
@@ -282,8 +289,10 @@ public class SaxUtil {
         /**
          * コンストラクタ<br>
          * 
-         * @param delegate ソースインプットストリーム
-         * @throws NullPointerException パラメータが {@code null} の場合
+         * @param delegate
+         *            ソースインプットストリーム
+         * @throws NullPointerException
+         *             パラメータが {@code null} の場合
          */
         public IgnoreCloseInputStream(InputStream delegate) {
             Objects.requireNonNull(delegate);
@@ -368,14 +377,20 @@ public class SaxUtil {
      * スローされた例外が {@link ExcelHandlingException} とそのサブタイプの場合はそのままスローし、
      * それ以外の例外の場合は {@link ExcelHandlingException} でラップしてスローします。<br>
      * 
-     * @param <T>          戻り値の型
-     * @param bookPath     Excelブックのパス
-     * @param readPassword 読取パスワード（読取パスワード無しの場合は {@code null}）
-     * @param processor    Zip処理プロセッサ
+     * @param <T>
+     *            戻り値の型
+     * @param bookPath
+     *            Excelブックのパス
+     * @param readPassword
+     *            読取パスワード（読取パスワード無しの場合は {@code null}）
+     * @param processor
+     *            Zip処理プロセッサ
      * @return 処理結果
-     * @throws NullPointerException   {@code bookPath}, {@code processor} のいずれかが
-     *                                {@code null} の場合
-     * @throws ExcelHandlingException 処理に失敗した場合
+     * @throws NullPointerException
+     *             {@code bookPath}, {@code processor} のいずれかが
+     *             {@code null} の場合
+     * @throws ExcelHandlingException
+     *             処理に失敗した場合
      */
     public static <T> T processExcelAsZip(
             Path bookPath,
@@ -428,12 +443,17 @@ public class SaxUtil {
     /**
      * .xlsx/.xlsm 形式のExcelブックからシート情報の一覧を読み取ります。<br>
      * 
-     * @param bookPath     Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
+     * @param bookPath
+     *            Excelブックのパス
+     * @param readPassword
+     *            Excelブックの読み取りパスワード
      * @return シート情報の一覧
-     * @throws NullPointerException     {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException   処理に失敗した場合
+     * @throws NullPointerException
+     *             {@code bookPath} が {@code null} の場合
+     * @throws IllegalArgumentException
+     *             {@code bookPath} がサポート対象外の形式の場合
+     * @throws ExcelHandlingException
+     *             処理に失敗した場合
      */
     public static List<SheetInfo> loadSheetInfos(
             Path bookPath,
@@ -507,12 +527,17 @@ public class SaxUtil {
     /**
      * .xlsx/.xlsm 形式のExcelブックから Shared Strings を読み取ります。<br>
      * 
-     * @param bookPath     Excelブックのパス
-     * @param readPassword Excelブックの読み取りパスワード
+     * @param bookPath
+     *            Excelブックのパス
+     * @param readPassword
+     *            Excelブックの読み取りパスワード
      * @return Shared Strings
-     * @throws NullPointerException     {@code bookPath} が {@code null} の場合
-     * @throws IllegalArgumentException {@code bookPath} がサポート対象外の形式の場合
-     * @throws ExcelHandlingException   処理に失敗した場合
+     * @throws NullPointerException
+     *             {@code bookPath} が {@code null} の場合
+     * @throws IllegalArgumentException
+     *             {@code bookPath} がサポート対象外の形式の場合
+     * @throws ExcelHandlingException
+     *             処理に失敗した場合
      */
     public static List<String> loadSharedStrings(
             Path bookPath,
