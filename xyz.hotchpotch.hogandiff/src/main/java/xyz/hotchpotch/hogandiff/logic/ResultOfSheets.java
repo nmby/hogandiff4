@@ -2,10 +2,9 @@ package xyz.hotchpotch.hogandiff.logic;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.Set;
 
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.plain.CellsUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -21,17 +20,21 @@ public final class ResultOfSheets implements Result {
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * 片側のシートに関する差分内容を表す不変クラスです。<br>
      *
      * @author nmby
-     * @param redundantRows         余剰行のリスト
-     * @param redundantColumns      余剰列のリスト
-     * @param diffCellContents      セル内容に差分のあるセルのリスト
-     * @param diffCellComments      セルコメントに差分のあるセルのリスト
-     * @param redundantCellComments セルコメントが余剰であるセルのリスト
+     * @param redundantRows
+     *            余剰行のリスト
+     * @param redundantColumns
+     *            余剰列のリスト
+     * @param diffCellContents
+     *            セル内容に差分のあるセルのリスト
+     * @param diffCellComments
+     *            セルコメントに差分のあるセルのリスト
+     * @param redundantCellComments
+     *            セルコメントが余剰であるセルのリスト
      */
     public static record Piece(
             List<Integer> redundantRows,
@@ -47,12 +50,18 @@ public final class ResultOfSheets implements Result {
         /**
          * コンストラクタ<br>
          * 
-         * @param redundantRows         余剰行のリスト
-         * @param redundantColumns      余剰列のリスト
-         * @param diffCellContents      セル内容に差分のあるセルのリスト
-         * @param diffCellComments      セルコメントに差分のあるセルのリスト
-         * @param redundantCellComments セルコメントが余剰であるセルのリスト
-         * @throws NullPointerException パラメータが {@code null} の場合
+         * @param redundantRows
+         *            余剰行のリスト
+         * @param redundantColumns
+         *            余剰列のリスト
+         * @param diffCellContents
+         *            セル内容に差分のあるセルのリスト
+         * @param diffCellComments
+         *            セルコメントに差分のあるセルのリスト
+         * @param redundantCellComments
+         *            セルコメントが余剰であるセルのリスト
+         * @throws NullPointerException
+         *             パラメータが {@code null} の場合
          */
         // java16で正式導入されたRecordを使ってみたいが故にこのクラスをRecordとしているが、
         // 本来はコンストラクタを公開する必要がない。ぐぬぬ
@@ -82,12 +91,18 @@ public final class ResultOfSheets implements Result {
     /**
      * 比較処理の統計情報<br>
      * 
-     * @param rows             各比較対象シートの行数
-     * @param columns          各比較対象シートの列数
-     * @param cells            各比較対象シートのセル数
-     * @param redundantRows    各比較対象シートの余剰行数
-     * @param redundantColumns 各比較対象シートの余剰列数
-     * @param diffCells        差分セル数
+     * @param rows
+     *            各比較対象シートの行数
+     * @param columns
+     *            各比較対象シートの列数
+     * @param cells
+     *            各比較対象シートのセル数
+     * @param redundantRows
+     *            各比較対象シートの余剰行数
+     * @param redundantColumns
+     *            各比較対象シートの余剰列数
+     * @param diffCells
+     *            差分セル数
      */
     public static record SheetStats(
             IntPair rows,
@@ -104,13 +119,20 @@ public final class ResultOfSheets implements Result {
         /**
          * コンストラクタ
          * 
-         * @param rows             各比較対象シートの行数
-         * @param columns          各比較対象シートの列数
-         * @param cells            各比較対象シートのセル数
-         * @param redundantRows    各比較対象シートの余剰行数
-         * @param redundantColumns 各比較対象シートの余剰列数
-         * @param diffCells        差分セル数
-         * @throws NullPointerException パラメータが {@code null} の場合
+         * @param rows
+         *            各比較対象シートの行数
+         * @param columns
+         *            各比較対象シートの列数
+         * @param cells
+         *            各比較対象シートのセル数
+         * @param redundantRows
+         *            各比較対象シートの余剰行数
+         * @param redundantColumns
+         *            各比較対象シートの余剰列数
+         * @param diffCells
+         *            差分セル数
+         * @throws NullPointerException
+         *             パラメータが {@code null} の場合
          */
         public SheetStats {
             Objects.requireNonNull(rows);
@@ -131,13 +153,18 @@ public final class ResultOfSheets implements Result {
     /**
      * コンストラクタ<br>
      * 
-     * @param cellsSetPair     各シートに含まれるセル
-     * @param redundantRows    各シートにおける余剰行
-     * @param redundantColumns 各シートにおける余剰列
-     * @param diffCells        差分セル
-     * @throws NullPointerException     パラメータが {@code null} の場合
+     * @param cellsSetPair
+     *            各シートに含まれるセル
+     * @param redundantRows
+     *            各シートにおける余剰行
+     * @param redundantColumns
+     *            各シートにおける余剰列
+     * @param diffCells
+     *            差分セル
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
+     *             余剰／欠損の考慮なしにも関わらす余剰／欠損の数が 0 でない場合
      */
     public ResultOfSheets(
             Pair<Set<CellData>> cellsSetPair,
@@ -169,9 +196,11 @@ public final class ResultOfSheets implements Result {
     /**
      * 指定された側のシートに関する差分内容を返します。<br>
      * 
-     * @param side シートの側
+     * @param side
+     *            シートの側
      * @return 指定された側のシートに関する差分内容
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public Piece getPiece(Side side) {
         Objects.requireNonNull(side);
@@ -219,7 +248,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffSummary() {
         if (!hasDiff()) {
-            return rb.getString("excel.SResult.010");
+            return Msg.MSG_055.get();
         }
         
         int rows = redundantRows.a().size() + redundantRows.b().size();
@@ -228,19 +257,19 @@ public final class ResultOfSheets implements Result {
         
         StringBuilder str = new StringBuilder();
         if (0 < rows) {
-            str.append(rb.getString("excel.SResult.020").formatted(rows));
+            str.append(Msg.MSG_056.get().formatted(rows));
         }
         if (0 < cols) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(rb.getString("excel.SResult.030").formatted(cols));
+            str.append(Msg.MSG_057.get().formatted(cols));
         }
         if (0 < cells) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(rb.getString("excel.SResult.040").formatted(cells));
+            str.append(Msg.MSG_058.get().formatted(cells));
         }
         
         return str.toString();
@@ -253,7 +282,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffDetail() {
         if (!hasDiff()) {
-            return rb.getString("excel.SResult.010");
+            return Msg.MSG_059.get();
         }
         
         StringBuilder str = new StringBuilder();
@@ -262,10 +291,10 @@ public final class ResultOfSheets implements Result {
             for (Side side : Side.values()) {
                 List<Integer> rows = redundantRows.get(side);
                 if (!rows.isEmpty()) {
-                    str.append(rb.getString("excel.SResult.050").formatted(side)).append(BR);
+                    str.append(Msg.MSG_060.get().formatted(side)).append(BR);
                     for (int row : rows) {
                         str.append("    ")
-                                .append(rb.getString("excel.SResult.060").formatted(row + 1))
+                                .append(Msg.MSG_061.get().formatted(row + 1))
                                 .append(BR);
                     }
                 }
@@ -276,10 +305,10 @@ public final class ResultOfSheets implements Result {
             for (Side side : Side.values()) {
                 List<Integer> cols = redundantColumns.get(side);
                 if (!cols.isEmpty()) {
-                    str.append(rb.getString("excel.SResult.070").formatted(side)).append(BR);
+                    str.append(Msg.MSG_062.get().formatted(side)).append(BR);
                     for (int col : cols) {
                         str.append("    ")
-                                .append(rb.getString("excel.SResult.080").formatted(CellsUtil.columnIdxToStr(col)))
+                                .append(Msg.MSG_063.get().formatted(CellsUtil.columnIdxToStr(col)))
                                 .append(BR);
                     }
                 }
@@ -287,7 +316,7 @@ public final class ResultOfSheets implements Result {
             str.append(BR);
         }
         if (!diffCells.isEmpty()) {
-            str.append(rb.getString("excel.SResult.090"));
+            str.append(Msg.MSG_064.get());
             diffCells.forEach(pair -> {
                 str.append(BR);
                 str.append("    [A] ").append(pair.a()).append(BR);

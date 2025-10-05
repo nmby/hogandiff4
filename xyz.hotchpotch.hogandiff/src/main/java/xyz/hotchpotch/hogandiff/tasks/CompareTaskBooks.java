@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.CellData;
@@ -39,7 +40,8 @@ public final class CompareTaskBooks extends CompareTask {
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     public CompareTaskBooks(Settings settings) {
         super(settings);
@@ -115,7 +117,7 @@ public final class CompareTaskBooks extends CompareTask {
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             
             str.append("%s%n[A] %s%n[B] %s%n"
-                    .formatted(rb.getString("CompareBooksTask.010"), dispPathPair.a(), dispPathPair.b()));
+                    .formatted(Msg.MSG_016.get(), dispPathPair.a(), dispPathPair.b()));
             
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
@@ -139,7 +141,7 @@ public final class CompareTaskBooks extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareBooksTask.040")).append(BR);
+            str.append(Msg.MSG_017.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
@@ -175,7 +177,7 @@ public final class CompareTaskBooks extends CompareTask {
                         updateMessage(str.toString());
                     }
                 } catch (Exception e) {
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    str.append("  -  ").append(Msg.MSG_018.get()).append(BR);
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));

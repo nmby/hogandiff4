@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -82,7 +83,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
-                        rb.getString("gui.MainController.010"),
+                        Msg.MSG_087.get(),
                         ButtonType.OK)
                                 .showAndWait();
                 return;

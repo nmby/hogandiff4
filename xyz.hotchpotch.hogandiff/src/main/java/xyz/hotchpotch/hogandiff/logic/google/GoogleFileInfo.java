@@ -6,21 +6,23 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import org.apache.commons.codec.binary.Hex;
 
 import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.User;
 
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 
 /**
  * ローカルにダウンロードしたGoogleドライブ上のファイルを表します。<br>
  * 
- * @param metadata Googleドライブ上のファイルのメタデータ
- * @param dirPath 格納先ディレクトリのパス
- * @param revision ファイルのリビジョン情報
+ * @param metadata
+ *            Googleドライブ上のファイルのメタデータ
+ * @param dirPath
+ *            格納先ディレクトリのパス
+ * @param revision
+ *            ファイルのリビジョン情報
  * @author nmby
  */
 public record GoogleFileInfo(
@@ -29,8 +31,6 @@ public record GoogleFileInfo(
         GoogleRevision revision) {
     
     // [static members] ********************************************************
-    
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     private static final MessageDigest digest;
     static {
@@ -54,10 +54,14 @@ public record GoogleFileInfo(
      * Googleドライブ上のファイルのメタデータを表す不変クラスです。<br>
      * リビジョン情報は含みません。<br>
      * 
-     * @param id ファイルID
-     * @param url ファイルのURL
-     * @param name ファイル名
-     * @param type ファイルタイプ
+     * @param id
+     *            ファイルID
+     * @param url
+     *            ファイルのURL
+     * @param name
+     *            ファイル名
+     * @param type
+     *            ファイルタイプ
      * @author nmby
      */
     public static record GoogleMetadata(
@@ -73,11 +77,16 @@ public record GoogleFileInfo(
         /**
          * コンストラクタ。<br>
          * 
-         * @param id ファイルID
-         * @param url ファイルのURL
-         * @param name ファイル名
-         * @param type MIMEタイプ
-         * @throws NullPointerException パラメータに {@code null} が含まれる場合
+         * @param id
+         *            ファイルID
+         * @param url
+         *            ファイルのURL
+         * @param name
+         *            ファイル名
+         * @param type
+         *            MIMEタイプ
+         * @throws NullPointerException
+         *             パラメータに {@code null} が含まれる場合
          */
         public GoogleMetadata {
             Objects.requireNonNull(id);
@@ -90,9 +99,12 @@ public record GoogleFileInfo(
     /**
      * Googleドライブ上のファイルのリビジョンを表す不変クラスです。<br>
      * 
-     * @param id リビジョンID
-     * @param desc リビジョン表示名
-     * @param exportLink エクスポート用リンク
+     * @param id
+     *            リビジョンID
+     * @param desc
+     *            リビジョン表示名
+     * @param exportLink
+     *            エクスポート用リンク
      */
     public static record GoogleRevision(
             String id,
@@ -104,13 +116,15 @@ public record GoogleFileInfo(
         /**
          * リビジョン情報を生成します。<br>
          * 
-         * @param original 元となるリビジョン情報
-         * @param isLatest このリビジョンが最新である場合は {@code true}
+         * @param original
+         *            元となるリビジョン情報
+         * @param isLatest
+         *            このリビジョンが最新である場合は {@code true}
          * @return リビジョン情報
          */
         public static GoogleRevision from(Revision original, boolean isLatest) {
             User lastModifyingUser = original.getLastModifyingUser();
-            String lastModifier = rb.getString("google.GoogleFileFetcher.010");
+            String lastModifier = Msg.MSG_073.get();
             if (lastModifyingUser != null) {
                 if (lastModifyingUser.getDisplayName() != null
                         && !lastModifyingUser.getDisplayName().isEmpty()) {
@@ -121,7 +135,7 @@ public record GoogleFileInfo(
                 }
             }
             String desc = "%s%s  %s".formatted(
-                    isLatest ? "%s  ".formatted(rb.getString("google.GoogleFileFetcher.020")) : "",
+                    isLatest ? "%s  ".formatted(Msg.MSG_074.get()) : "",
                     original.getModifiedTime().toStringRfc3339(),
                     lastModifier);
             
@@ -139,10 +153,14 @@ public record GoogleFileInfo(
         /**
          * コンストラクタ。<br>
          * 
-         * @param id リビジョンID
-         * @param desc リビジョン表示名
-         * @param exportLink エクスポート用リンク
-         * @throws NullPointerException パラメータに {@code null} が含まれる場合（ただし {@code exportLink} は除く）
+         * @param id
+         *            リビジョンID
+         * @param desc
+         *            リビジョン表示名
+         * @param exportLink
+         *            エクスポート用リンク
+         * @throws NullPointerException
+         *             パラメータに {@code null} が含まれる場合（ただし {@code exportLink} は除く）
          */
         public GoogleRevision {
             Objects.requireNonNull(id);
@@ -160,10 +178,14 @@ public record GoogleFileInfo(
     /**
      * コンストラクタ。<br>
      * 
-     * @param metadata Googleドライブ上のファイルのメタデータ
-     * @param dirPath 格納先ディレクトリのパス
-     * @param revision ファイルのリビジョン情報
-     * @throws NullPointerException パラメータに {@code null} が含まれる場合
+     * @param metadata
+     *            Googleドライブ上のファイルのメタデータ
+     * @param dirPath
+     *            格納先ディレクトリのパス
+     * @param revision
+     *            ファイルのリビジョン情報
+     * @throws NullPointerException
+     *             パラメータに {@code null} が含まれる場合
      */
     public GoogleFileInfo {
         Objects.requireNonNull(metadata);

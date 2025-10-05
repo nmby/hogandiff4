@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.CellData;
@@ -38,7 +39,8 @@ public final class CompareTaskSheets extends CompareTask {
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     public CompareTaskSheets(Settings settings) {
         super(settings);
@@ -114,7 +116,7 @@ public final class CompareTaskSheets extends CompareTask {
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
             
-            str.append(rb.getString("CompareSheetsTask.010")).append(BR);
+            str.append(Msg.MSG_022.get()).append(BR);
             str.append(isSameBook()
                     ? "%s%n[A] %s%n[B] %s%n%n".formatted(
                             dispPathPair.a(), sheetNamePair.a(), sheetNamePair.b())
@@ -137,7 +139,7 @@ public final class CompareTaskSheets extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareSheetsTask.020")).append(BR);
+            str.append(Msg.MSG_023.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);

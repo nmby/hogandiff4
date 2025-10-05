@@ -2,12 +2,11 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 
 /**
  * ユーザーにパスワード入力を求めるダイアログボックスです。<br>
@@ -20,14 +19,15 @@ public class PasswordDialog extends Dialog<String> {
     
     // instance members ********************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
-    
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param bookName 開こうとしているExcelブックの名前
-     * @param readPassword 開こうとしているExcelブックの読み取りパスワード
-     * @throws IOException 子要素の構成に失敗した場合
+     * @param bookName
+     *            開こうとしているExcelブックの名前
+     * @param readPassword
+     *            開こうとしているExcelブックの読み取りパスワード
+     * @throws IOException
+     *             子要素の構成に失敗した場合
      */
     public PasswordDialog(
             String bookName,
@@ -48,7 +48,7 @@ public class PasswordDialog extends Dialog<String> {
         me.lookupButton(ButtonType.OK).disableProperty()
                 .bind(passwordDialogPane.passwordField.textProperty().isEmpty());
         
-        this.setTitle(rb.getString("gui.PasswordDialog.010"));
+        this.setTitle(Msg.MSG_118.get());
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? passwordDialogPane.passwordField.getText()
                 : null);

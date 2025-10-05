@@ -4,13 +4,13 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 
 /**
  * GUIに関するユーティリティクラスです。<br>
@@ -20,8 +20,6 @@ import xyz.hotchpotch.hogandiff.AppMain;
 public class UIUtil {
     
     // [static members] ********************************************************
-    
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * 指定されたURLを開くハイパーリンクを生成します。<br>
@@ -61,7 +59,7 @@ public class UIUtil {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "%s%n%s".formatted(rb.getString("gui.component.LinkPane.010"), AppMain.WEB_URL),
+                        "%s%n%s".formatted(Msg.MSG_082.get(), AppMain.WEB_URL),
                         ButtonType.OK)
                                 .showAndWait();
             }

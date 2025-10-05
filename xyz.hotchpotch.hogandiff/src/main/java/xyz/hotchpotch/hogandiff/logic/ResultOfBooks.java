@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -20,8 +19,10 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  * 
- * @param bookComparison Excelブック比較情報
- * @param sheetResults   Excelシート同士の比較結果（片側だけの欠損ペアも含む）
+ * @param bookComparison
+ *            Excelブック比較情報
+ * @param sheetResults
+ *            Excelシート同士の比較結果（片側だけの欠損ペアも含む）
  */
 public record ResultOfBooks(
         PairingInfoBooks bookComparison,
@@ -31,15 +32,17 @@ public record ResultOfBooks(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * シート名ペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param id            シート名ペアの識別子。
-     * @param sheetNamePair シート名ペア
+     * @param id
+     *            シート名ペアの識別子。
+     * @param sheetNamePair
+     *            シート名ペア
      * @return シート名ペアの整形済み文字列
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static String formatSheetNamesPair(
             String id,
@@ -52,8 +55,8 @@ public record ResultOfBooks(
         
         return "    %s) %s  vs  %s".formatted(
                 id,
-                sheetNamePair.hasA() ? "A[ " + sheetNamePair.a() + " ]" : rb.getString("excel.BResult.010"),
-                sheetNamePair.hasB() ? "B[ " + sheetNamePair.b() + " ]" : rb.getString("excel.BResult.010"));
+                sheetNamePair.hasA() ? "A[ " + sheetNamePair.a() + " ]" : Msg.MSG_037.get(),
+                sheetNamePair.hasB() ? "B[ " + sheetNamePair.b() + " ]" : Msg.MSG_037.get());
     }
     
     // [instance members] ******************************************************
@@ -61,9 +64,12 @@ public record ResultOfBooks(
     /**
      * コンストラクタ<br>
      * 
-     * @param bookComparison Excelブック比較情報
-     * @param sheetResults   Excelシート同士の比較結果（片側だけの欠損ペアも含む）
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param bookComparison
+     *            Excelブック比較情報
+     * @param sheetResults
+     *            Excelシート同士の比較結果（片側だけの欠損ペアも含む）
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public ResultOfBooks {
         Objects.requireNonNull(bookComparison);
@@ -75,9 +81,11 @@ public record ResultOfBooks(
     /**
      * 片側のExcelブックについての差分内容を返します。<br>
      * 
-     * @param side Excelブックの側
+     * @param side
+     *            Excelブックの側
      * @return 片側のExcelブックについての差分内容（シート名とそのシート上の差分個所のマップ）
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public Map<String, Optional<Piece>> getPiece(Side side) {
         Objects.requireNonNull(side);
@@ -117,18 +125,18 @@ public record ResultOfBooks(
                 .count();
         
         if (diffSheets == 0 && gapSheets == 0) {
-            return rb.getString("excel.BResult.020");
+            return Msg.MSG_038.get();
         }
         
         StringBuilder str = new StringBuilder();
         if (0 < diffSheets) {
-            str.append(rb.getString("excel.BResult.030").formatted(diffSheets));
+            str.append(Msg.MSG_039.get().formatted(diffSheets));
         }
         if (0 < gapSheets) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(rb.getString("excel.BResult.040").formatted(gapSheets));
+            str.append(Msg.MSG_040.get().formatted(gapSheets));
         }
         
         return str.toString();
@@ -169,7 +177,7 @@ public record ResultOfBooks(
         }
         
         return str.isEmpty()
-                ? "    " + rb.getString("excel.BResult.020") + BR + BR
+                ? "    " + Msg.MSG_038.get() + BR + BR
                 : str.toString();
     }
     
@@ -178,12 +186,12 @@ public record ResultOfBooks(
         StringBuilder str = new StringBuilder();
         
         if (bookComparison.parentBookInfoPair().isIdentical()) {
-            str.append(rb.getString("excel.BResult.050").formatted(""))
+            str.append(Msg.MSG_041.get().formatted(""))
                     .append(bookComparison.parentBookInfoPair().a().bookPath()).append(BR);
         } else {
-            str.append(rb.getString("excel.BResult.050").formatted("A"))
+            str.append(Msg.MSG_041.get().formatted("A"))
                     .append(bookComparison.parentBookInfoPair().a().bookPath()).append(BR);
-            str.append(rb.getString("excel.BResult.050").formatted("B"))
+            str.append(Msg.MSG_041.get().formatted("B"))
                     .append(bookComparison.parentBookInfoPair().b().bookPath()).append(BR);
         }
         
@@ -193,9 +201,9 @@ public record ResultOfBooks(
         }
         
         str.append(BR);
-        str.append(rb.getString("excel.BResult.060")).append(BR);
+        str.append(Msg.MSG_042.get()).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append(rb.getString("excel.BResult.070")).append(BR);
+        str.append(Msg.MSG_043.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

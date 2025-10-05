@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.UpdateChecker;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
@@ -125,10 +126,7 @@ public class SettingDetailsDialogPane extends VBox {
             if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
                 new Alert(
                         AlertType.INFORMATION,
-                        "%s%n%n%s%n%n%s".formatted(
-                                rb.getString("gui.component.SettingsPane2.051"),
-                                rb.getString("gui.component.SettingsPane2.052"),
-                                rb.getString("gui.component.SettingsPane2.053")),
+                        "%s%n%n%s%n%n%s".formatted(Msg.MSG_120.get(), Msg.MSG_121.get(), Msg.MSG_122.get()),
                         ButtonType.OK)
                                 .showAndWait();
             }
@@ -150,7 +148,7 @@ public class SettingDetailsDialogPane extends VBox {
         resetSettingsButton.setOnAction(_ -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    rb.getString("gui.dialogs.SettingDetailsDialogPane.010"))
+                    Msg.MSG_123.get())
                             .showAndWait();
             
             if (result.isPresent() && result.get() == ButtonType.OK) {

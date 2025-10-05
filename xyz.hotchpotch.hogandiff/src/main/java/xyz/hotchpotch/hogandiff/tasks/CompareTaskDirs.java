@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
@@ -113,12 +114,12 @@ public final class CompareTaskDirs extends CompareTask {
             List<Pair<BookInfo>> bookInfoPairs = pairingInfoDirs.childBookInfoPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
-                    rb.getString("CompareDirsTask.010"),
+                    Msg.MSG_019.get(),
                     dirInfoPair.a().dirPath(),
                     dirInfoPair.b().dirPath()));
             
             if (bookInfoPairs.size() == 0) {
-                str.append("    - ").append(rb.getString("CompareDirsTask.070")).append(BR);
+                str.append("    - ").append(Msg.MSG_020.get()).append(BR);
             }
             for (int i = 0; i < bookInfoPairs.size(); i++) {
                 Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);
@@ -165,7 +166,7 @@ public final class CompareTaskDirs extends CompareTask {
             PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
             if (0 < pairingInfoDirs.childBookInfoPairs().size()) {
-                str.append(BR).append(rb.getString("CompareDirsTask.050")).append(BR);
+                str.append(BR).append(Msg.MSG_021.get()).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",

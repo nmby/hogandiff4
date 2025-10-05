@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
@@ -37,7 +38,8 @@ public final class CompareTaskTrees extends CompareTask {
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     public CompareTaskTrees(Settings settings) {
         super(settings);
@@ -101,7 +103,7 @@ public final class CompareTaskTrees extends CompareTask {
                     .flatten();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
-                    rb.getString("CompareTreesTask.010"),
+                    Msg.MSG_024.get(),
                     pairingInfoDirsFlatten.parentDirInfoPair().a().dirPath(),
                     pairingInfoDirsFlatten.parentDirInfoPair().b().dirPath()));
             
@@ -128,7 +130,7 @@ public final class CompareTaskTrees extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareTreesTask.040")).append(BR);
+            str.append(Msg.MSG_025.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
@@ -174,7 +176,7 @@ public final class CompareTaskTrees extends CompareTask {
                     
                 } catch (IOException e) {
                     dirResults.putIfAbsent(dirInfoPair, Optional.empty());
-                    str.append("  -  ").append(rb.getString("CompareTreesTask.050")).append(BR);
+                    str.append("  -  ").append(Msg.MSG_026.get()).append(BR);
                     updateMessage(str.toString());
                     e.printStackTrace();
                     continue;

@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -32,6 +31,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row2Pane;
@@ -74,7 +74,6 @@ public class MainController extends VBox {
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     /** 現在選択されている比較メニュー */
     public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
@@ -238,7 +237,7 @@ public class MainController extends VBox {
         if (isPasswordUsed()) {
             new Alert(
                     AlertType.WARNING,
-                    rb.getString("gui.MainController.020"),
+                    Msg.MSG_075.get(),
                     ButtonType.OK)
                             .showAndWait();
         }
@@ -302,7 +301,7 @@ public class MainController extends VBox {
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
-                    rb.getString("gui.MainController.010"),
+                    Msg.MSG_076.get(),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -315,7 +314,7 @@ public class MainController extends VBox {
         if (workDir == null) {
             new Alert(
                     AlertType.WARNING,
-                    rb.getString("gui.MainController.070"),
+                    Msg.MSG_077.get(),
                     ButtonType.OK)
                             .showAndWait();
             
@@ -358,7 +357,7 @@ public class MainController extends VBox {
                 new Alert(
                         AlertType.WARNING,
                         "%s%n%s%n%s".formatted(
-                                rb.getString("gui.MainController.030"),
+                                Msg.MSG_078.get(),
                                 e.getClass().getName(),
                                 e.getMessage()),
                         ButtonType.OK)
@@ -395,15 +394,12 @@ public class MainController extends VBox {
                 
                 new Alert(
                         AlertType.WARNING,
-                        "%s%n%s%n%n%s".formatted(
-                                rb.getString("gui.MainController.040"),
-                                workDirBase,
-                                rb.getString("gui.MainController.050")),
+                        "%s%n%s%n%n%s".formatted(Msg.MSG_079.get(), workDirBase, Msg.MSG_080.get()),
                         ButtonType.OK)
                                 .showAndWait();
                 
                 DirectoryChooser dirChooser = new DirectoryChooser();
-                dirChooser.setTitle(rb.getString("gui.MainController.060"));
+                dirChooser.setTitle(Msg.MSG_081.get());
                 File newDir = dirChooser.showDialog(AppMain.stage);
                 
                 if (newDir != null) {

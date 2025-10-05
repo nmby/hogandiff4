@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 
 /**
  * ユーザーにパスワード入力を求めるダイアログボックスの要素です。<br>
@@ -36,7 +37,8 @@ public class PasswordDialogPane extends VBox {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public PasswordDialogPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PasswordDialogPane.fxml"), rb);
@@ -48,9 +50,12 @@ public class PasswordDialogPane extends VBox {
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parent 親要素
-     * @param bookName 開こうとしているExcelブックの名前
-     * @param readPassword 開こうとしているExcelブックの読み取りパスワード
+     * @param parent
+     *            親要素
+     * @param bookName
+     *            開こうとしているExcelブックの名前
+     * @param readPassword
+     *            開こうとしているExcelブックの読み取りパスワード
      */
     /*package*/ void init(
             PasswordDialog parent,
@@ -62,8 +67,7 @@ public class PasswordDialogPane extends VBox {
         // readPassword may be null.
         
         errorMsgLabel.setVisible(readPassword != null);
-        mainMsgLabel.setText(
-                rb.getString("gui.PasswordDialogPane.010").formatted(bookName));
+        mainMsgLabel.setText(Msg.MSG_119.get().formatted(bookName));
         passwordField.textProperty().setValue(readPassword);
     }
 }

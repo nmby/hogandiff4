@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -11,6 +10,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo;
@@ -30,14 +30,16 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
     // instance members ********************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     /**
      * 新しいダイアログを構成します。<br>
      * 
-     * @param metadata Googleドライブ上のファイルのメタデータ
-     * @param revisions Googleドライブ上のファイルのバージョン一覧
-     * @throws IOException 処理に失敗した場合
+     * @param metadata
+     *            Googleドライブ上のファイルのメタデータ
+     * @param revisions
+     *            Googleドライブ上のファイルのバージョン一覧
+     * @throws IOException
+     *             処理に失敗した場合
      */
     public GoogleRevisionSelectorDialog(
             GoogleMetadata metadata,
@@ -53,7 +55,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        this.setTitle(rb.getString("fx.GoogleFilePickerDialog.010"));
+        this.setTitle(Msg.MSG_116.get());
         this.setResizable(true);
         
         this.setResultConverter(buttonType -> {
@@ -69,9 +71,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                 } catch (GoogleHandlingException e) {
                     new Alert(
                             AlertType.ERROR,
-                            "%s%n%s".formatted(
-                                    rb.getString("fx.GoogleRevisionSelectorDialog.010"),
-                                    e.getMessage()),
+                            "%s%n%s".formatted(Msg.MSG_117.get(), e.getMessage()),
                             ButtonType.OK)
                                     .showAndWait();
                     

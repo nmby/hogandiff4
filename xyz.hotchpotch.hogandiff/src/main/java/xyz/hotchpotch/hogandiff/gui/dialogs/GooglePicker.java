@@ -7,7 +7,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -20,6 +19,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
@@ -40,7 +40,6 @@ public class GooglePicker {
     // [static members] ********************************************************
     
     private static final AppResource ar = AppMain.appResource;
-    private static final ResourceBundle rb = ar.get();
     
     private static final String API_KEY = EnvConfig.get("GOOGLE_PICKER_API_KEY");
     private static final String APP_ID = EnvConfig.get("GOOGLE_CLOUD_PROJECT_ID");
@@ -164,12 +163,12 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
-                rb.getString("fx.GoogleFilePickerDialogPane.070"),
-                rb.getString("fx.GoogleFilePickerDialogPane.080"),
-                rb.getString("fx.GoogleFilePickerDialogPane.090"),
+                Msg.MSG_110.get(),
+                Msg.MSG_111.get(),
+                Msg.MSG_112.get(),
                 accessToken,
                 API_KEY, APP_ID,
-                rb.getString("fx.GoogleFilePickerDialog.020"));
+                Msg.MSG_113.get());
     }
     
     // [instance members] ******************************************************
@@ -227,8 +226,8 @@ public class GooglePicker {
                                     GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
                                     content.init();
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle(rb.getString("AppMain.010"));
-                                    alert.setHeaderText(rb.getString("gui.component.GooglePane.090"));
+                                    alert.setTitle(Msg.MSG_114.get());
+                                    alert.setHeaderText(Msg.MSG_115.get());
                                     alert.getDialogPane().setContent(content);
                                     alert.showAndWait();
                                     

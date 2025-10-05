@@ -4,11 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
 
@@ -17,9 +16,12 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param dirComparison フォルダ比較情報
- * @param bookResults   Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
- * @param dirId         フォルダの識別番号
+ * @param dirComparison
+ *            フォルダ比較情報
+ * @param bookResults
+ *            Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
+ * @param dirId
+ *            フォルダの識別番号
  */
 public record ResultOfDirs(
         PairingInfoDirs dirComparison,
@@ -30,16 +32,19 @@ public record ResultOfDirs(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * Excelブックパスペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param dirId        親フォルダのペアを示す識別子。
-     * @param bookId       このExcelブックパスペアを示す識別子。
-     * @param bookInfoPair Excelブックパスペア
+     * @param dirId
+     *            親フォルダのペアを示す識別子。
+     * @param bookId
+     *            このExcelブックパスペアを示す識別子。
+     * @param bookInfoPair
+     *            Excelブックパスペア
      * @return Excelブックパスペアの整形済み文字列
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static String formatBookNamesPair(
             String dirId,
@@ -56,10 +61,10 @@ public record ResultOfDirs(
         return "    %s  vs  %s".formatted(
                 bookInfoPair.hasA()
                         ? "【A%s-%s】%s".formatted(dirId, bookId, bookNameA)
-                        : rb.getString("excel.DResult.010"),
+                        : Msg.MSG_044.get(),
                 bookInfoPair.hasB()
                         ? "【B%s-%s】%s".formatted(dirId, bookId, bookNameB)
-                        : rb.getString("excel.DResult.010"));
+                        : Msg.MSG_044.get());
     }
     
     // [instance members] ******************************************************
@@ -67,10 +72,14 @@ public record ResultOfDirs(
     /**
      * コンストラクタ<br>
      * 
-     * @param dirComparison フォルダ比較情報
-     * @param bookResults   Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
-     * @param dirId         フォルダの識別番号
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param dirComparison
+     *            フォルダ比較情報
+     * @param bookResults
+     *            Excelブックパスのペアに対応するExcelブック同士の比較結果のマップ
+     * @param dirId
+     *            フォルダの識別番号
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public ResultOfDirs {
         Objects.requireNonNull(dirComparison);
@@ -98,7 +107,7 @@ public record ResultOfDirs(
      */
     public String getDiffSimpleSummary() {
         if (bookResults.isEmpty()) {
-            return rb.getString("excel.DResult.100");
+            return Msg.MSG_045.get();
         }
         
         int diffBooks = (int) bookResults.values().stream()
@@ -115,24 +124,24 @@ public record ResultOfDirs(
                 .count();
         
         if (diffBooks == 0 && gapBooks == 0 && failed == 0) {
-            return rb.getString("excel.DResult.060");
+            return Msg.MSG_046.get();
         }
         
         StringBuilder str = new StringBuilder();
         if (0 < diffBooks) {
-            str.append(rb.getString("excel.DResult.070").formatted(diffBooks));
+            str.append(Msg.MSG_047.get().formatted(diffBooks));
         }
         if (0 < gapBooks) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(rb.getString("excel.DResult.080").formatted(gapBooks));
+            str.append(Msg.MSG_048.get().formatted(gapBooks));
         }
         if (0 < failed) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(rb.getString("excel.DResult.090").formatted(failed));
+            str.append(Msg.MSG_049.get().formatted(failed));
         }
         
         return str.toString();
@@ -141,7 +150,7 @@ public record ResultOfDirs(
     private String getDiffSummary() {
         return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
                 ? bResult.get().getDiffSimpleSummary()
-                : rb.getString("excel.DResult.050")),
+                : Msg.MSG_050.get()),
                 false);
     }
     
@@ -153,7 +162,7 @@ public record ResultOfDirs(
     public String getDiffDetail() {
         return getDiffText(bResult -> bResult.isPresent()
                 ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : BR + "        " + rb.getString("excel.DResult.050") + BR + BR,
+                : BR + "        " + Msg.MSG_050.get() + BR + BR,
                 true);
     }
     
@@ -164,7 +173,7 @@ public record ResultOfDirs(
         StringBuilder str = new StringBuilder();
         
         if (bookResults.isEmpty()) {
-            str.append("    - ").append(rb.getString("excel.DResult.100")).append(BR);
+            str.append("    - ").append(Msg.MSG_051.get()).append(BR);
             if (isDetailMode) {
                 str.append(BR);
             }
@@ -193,10 +202,10 @@ public record ResultOfDirs(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(rb.getString("excel.DResult.020").formatted("A"))
+        str.append(Msg.MSG_052.get().formatted("A"))
                 .append(dirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
-        str.append(rb.getString("excel.DResult.020").formatted("B"))
+        str.append(Msg.MSG_052.get().formatted("B"))
                 .append(dirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
@@ -206,9 +215,9 @@ public record ResultOfDirs(
         }
         
         str.append(BR);
-        str.append(rb.getString("excel.DResult.030")).append(BR);
+        str.append(Msg.MSG_053.get()).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append(rb.getString("excel.DResult.040")).append(BR);
+        str.append(Msg.MSG_054.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

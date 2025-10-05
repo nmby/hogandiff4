@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 import javafx.application.Platform;
@@ -14,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.VersionMaster;
 import xyz.hotchpotch.hogandiff.util.NetUtil;
@@ -28,7 +28,6 @@ public class UpdateChecker {
     // [static members] ********************************************************
     
     private static final AppResource ar = AppMain.appResource;
-    private static final ResourceBundle rb = ar.get();
     
     /**
      * 更新チェックを実行します。<br>
@@ -36,7 +35,8 @@ public class UpdateChecker {
      * {@code force} に {@code false} が指定されている場合は、
      * ユーザーが更新チェックを無効にしている場合、過去数時間以内にチェックしている場合はスキップします。<br>
      * 
-     * @param force 強制的にチェックする場合は {@code true}
+     * @param force
+     *            強制的にチェックする場合は {@code true}
      */
     public static void execute(boolean force) {
         UpdateChecker checker = new UpdateChecker();
@@ -70,12 +70,12 @@ public class UpdateChecker {
                             Hyperlink link = UIUtil.createHyperlink(AppMain.WEB_URL);
                             VBox content = new VBox(10);
                             content.getChildren().addAll(
-                                    new Label(rb.getString("gui.UpdateChecker.020")
+                                    new Label(Msg.MSG_083.get()
                                             .formatted(VersionMaster.APP_VERSION, "v" + latestVersion)),
                                     link);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle(rb.getString("AppMain.010"));
-                            alert.setHeaderText(rb.getString("gui.UpdateChecker.010"));
+                            alert.setTitle(Msg.MSG_084.get());
+                            alert.setHeaderText(Msg.MSG_085.get());
                             alert.getDialogPane().setContent(content);
                             alert.showAndWait();
                         });
@@ -83,7 +83,7 @@ public class UpdateChecker {
                         Platform.runLater(() -> {
                             new Alert(
                                     AlertType.INFORMATION,
-                                    rb.getString("gui.UpdateChecker.030").formatted(VersionMaster.APP_VERSION),
+                                    Msg.MSG_086.get().formatted(VersionMaster.APP_VERSION),
                                     ButtonType.OK)
                                             .showAndWait();
                         });
