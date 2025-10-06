@@ -97,7 +97,7 @@ public final class CompareTaskSheets extends CompareTask {
             return bResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareSheetsTask::call2");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareSheetsTask::call2");
         }
     }
     
@@ -116,7 +116,7 @@ public final class CompareTaskSheets extends CompareTask {
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
             
-            str.append(Msg.MSG_022.get()).append(BR);
+            str.append(Msg.APP_0290.get()).append(BR);
             str.append(isSameBook()
                     ? "%s%n[A] %s%n[B] %s%n%n".formatted(
                             dispPathPair.a(), sheetNamePair.a(), sheetNamePair.b())
@@ -127,7 +127,7 @@ public final class CompareTaskSheets extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareSheetsTask::announceStart");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareSheetsTask::announceStart");
         }
     }
     
@@ -139,7 +139,7 @@ public final class CompareTaskSheets extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(Msg.MSG_023.get()).append(BR);
+            str.append(Msg.APP_0300.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
@@ -171,7 +171,7 @@ public final class CompareTaskSheets extends CompareTask {
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_131.get());
+            throw getApplicationException(e, Msg.APP_0310.get());
         }
     }
 }

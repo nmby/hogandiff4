@@ -48,7 +48,7 @@ public class PasswordDialog extends Dialog<String> {
         me.lookupButton(ButtonType.OK).disableProperty()
                 .bind(passwordDialogPane.passwordField.textProperty().isEmpty());
         
-        this.setTitle(Msg.MSG_118.get());
+        this.setTitle(Msg.APP_1250.get());
         this.setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? passwordDialogPane.passwordField.getText()
                 : null);

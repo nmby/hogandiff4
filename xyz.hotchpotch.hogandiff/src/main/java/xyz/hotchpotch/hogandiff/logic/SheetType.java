@@ -12,16 +12,16 @@ public enum SheetType {
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     /** ワークシート */
-    WORKSHEET(Msg.MSG_124.get()),
+    WORKSHEET(Msg.APP_0680.get()),
     
     /** グラフシート */
-    CHART_SHEET(Msg.MSG_125.get()),
+    CHART_SHEET(Msg.APP_0690.get()),
     
     /** MS Excel 5.0 ダイアログシート */
-    DIALOG_SHEET(Msg.MSG_126.get()),
+    DIALOG_SHEET(Msg.APP_0700.get()),
     
     /** Excel 4.0 マクロシート */
-    MACRO_SHEET(Msg.MSG_127.get());
+    MACRO_SHEET(Msg.APP_0710.get());
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     

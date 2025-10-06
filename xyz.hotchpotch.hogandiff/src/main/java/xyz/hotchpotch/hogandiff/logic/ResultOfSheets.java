@@ -248,7 +248,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffSummary() {
         if (!hasDiff()) {
-            return Msg.MSG_055.get();
+            return Msg.APP_0720.get();
         }
         
         int rows = redundantRows.a().size() + redundantRows.b().size();
@@ -257,19 +257,19 @@ public final class ResultOfSheets implements Result {
         
         StringBuilder str = new StringBuilder();
         if (0 < rows) {
-            str.append(Msg.MSG_056.get().formatted(rows));
+            str.append(Msg.APP_0730.get().formatted(rows));
         }
         if (0 < cols) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(Msg.MSG_057.get().formatted(cols));
+            str.append(Msg.APP_0740.get().formatted(cols));
         }
         if (0 < cells) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(Msg.MSG_058.get().formatted(cells));
+            str.append(Msg.APP_0750.get().formatted(cells));
         }
         
         return str.toString();
@@ -282,7 +282,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffDetail() {
         if (!hasDiff()) {
-            return Msg.MSG_055.get();
+            return Msg.APP_0720.get();
         }
         
         StringBuilder str = new StringBuilder();
@@ -291,10 +291,10 @@ public final class ResultOfSheets implements Result {
             for (Side side : Side.values()) {
                 List<Integer> rows = redundantRows.get(side);
                 if (!rows.isEmpty()) {
-                    str.append(Msg.MSG_060.get().formatted(side)).append(BR);
+                    str.append(Msg.APP_0760.get().formatted(side)).append(BR);
                     for (int row : rows) {
                         str.append("    ")
-                                .append(Msg.MSG_061.get().formatted(row + 1))
+                                .append(Msg.APP_0770.get().formatted(row + 1))
                                 .append(BR);
                     }
                 }
@@ -305,10 +305,10 @@ public final class ResultOfSheets implements Result {
             for (Side side : Side.values()) {
                 List<Integer> cols = redundantColumns.get(side);
                 if (!cols.isEmpty()) {
-                    str.append(Msg.MSG_062.get().formatted(side)).append(BR);
+                    str.append(Msg.APP_0780.get().formatted(side)).append(BR);
                     for (int col : cols) {
                         str.append("    ")
-                                .append(Msg.MSG_063.get().formatted(CellsUtil.columnIdxToStr(col)))
+                                .append(Msg.APP_0790.get().formatted(CellsUtil.columnIdxToStr(col)))
                                 .append(BR);
                     }
                 }
@@ -316,7 +316,7 @@ public final class ResultOfSheets implements Result {
             str.append(BR);
         }
         if (!diffCells.isEmpty()) {
-            str.append(Msg.MSG_064.get());
+            str.append(Msg.APP_0800.get());
             diffCells.forEach(pair -> {
                 str.append(BR);
                 str.append("    [A] ").append(pair.a()).append(BR);

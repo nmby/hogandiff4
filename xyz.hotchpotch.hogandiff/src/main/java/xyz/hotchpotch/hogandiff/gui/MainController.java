@@ -237,7 +237,7 @@ public class MainController extends VBox {
         if (isPasswordUsed()) {
             new Alert(
                     AlertType.WARNING,
-                    Msg.MSG_075.get(),
+                    Msg.APP_1190.get(),
                     ButtonType.OK)
                             .showAndWait();
         }
@@ -301,7 +301,7 @@ public class MainController extends VBox {
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
-                    Msg.MSG_076.get(),
+                    Msg.APP_1180.get(),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -314,7 +314,7 @@ public class MainController extends VBox {
         if (workDir == null) {
             new Alert(
                     AlertType.WARNING,
-                    Msg.MSG_077.get(),
+                    Msg.APP_1240.get(),
                     ButtonType.OK)
                             .showAndWait();
             
@@ -357,7 +357,7 @@ public class MainController extends VBox {
                 new Alert(
                         AlertType.WARNING,
                         "%s%n%s%n%s".formatted(
-                                Msg.MSG_078.get(),
+                                Msg.APP_1200.get(),
                                 e.getClass().getName(),
                                 e.getMessage()),
                         ButtonType.OK)
@@ -394,12 +394,12 @@ public class MainController extends VBox {
                 
                 new Alert(
                         AlertType.WARNING,
-                        "%s%n%s%n%n%s".formatted(Msg.MSG_079.get(), workDirBase, Msg.MSG_080.get()),
+                        "%s%n%s%n%n%s".formatted(Msg.APP_1210.get(), workDirBase, Msg.APP_1220.get()),
                         ButtonType.OK)
                                 .showAndWait();
                 
                 DirectoryChooser dirChooser = new DirectoryChooser();
-                dirChooser.setTitle(Msg.MSG_081.get());
+                dirChooser.setTitle(Msg.APP_1230.get());
                 File newDir = dirChooser.showDialog(AppMain.stage);
                 
                 if (newDir != null) {

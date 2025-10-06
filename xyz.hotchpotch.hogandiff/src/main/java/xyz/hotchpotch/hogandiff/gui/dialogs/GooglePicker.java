@@ -163,12 +163,12 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
-                Msg.MSG_110.get(),
-                Msg.MSG_111.get(),
-                Msg.MSG_112.get(),
+                Msg.APP_0890.get(),
+                Msg.APP_0900.get(),
+                Msg.APP_0910.get(),
                 accessToken,
                 API_KEY, APP_ID,
-                Msg.MSG_113.get());
+                Msg.APP_0880.get());
     }
     
     // [instance members] ******************************************************
@@ -226,8 +226,8 @@ public class GooglePicker {
                                     GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
                                     content.init();
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle(Msg.MSG_001.get());
-                                    alert.setHeaderText(Msg.MSG_115.get());
+                                    alert.setTitle(Msg.APP_0010.get());
+                                    alert.setHeaderText(Msg.APP_1030.get());
                                     alert.getDialogPane().setContent(content);
                                     alert.showAndWait();
                                     

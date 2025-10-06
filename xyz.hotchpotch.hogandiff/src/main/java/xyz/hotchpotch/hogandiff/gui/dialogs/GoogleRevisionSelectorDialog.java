@@ -55,7 +55,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                 ButtonType.OK,
                 ButtonType.CANCEL);
         
-        this.setTitle(Msg.MSG_116.get());
+        this.setTitle(Msg.APP_0870.get());
         this.setResizable(true);
         
         this.setResultConverter(buttonType -> {
@@ -71,7 +71,7 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
                 } catch (GoogleHandlingException e) {
                     new Alert(
                             AlertType.ERROR,
-                            "%s%n%s".formatted(Msg.MSG_117.get(), e.getMessage()),
+                            "%s%n%s".formatted(Msg.APP_0920.get(), e.getMessage()),
                             ButtonType.OK)
                                     .showAndWait();
                     

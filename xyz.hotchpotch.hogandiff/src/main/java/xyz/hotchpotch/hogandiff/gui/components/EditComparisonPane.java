@@ -83,7 +83,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
-                        Msg.MSG_076.get(),
+                        Msg.APP_1180.get(),
                         ButtonType.OK)
                                 .showAndWait();
                 return;

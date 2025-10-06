@@ -51,10 +51,10 @@ public record ResultOfTrees(
         return "    - %s%n    - %s%n".formatted(
                 dirInfoPair.hasA()
                         ? "【A%s】 %s".formatted(id, dirInfoPair.a().dirPath())
-                        : Msg.MSG_065.get(),
+                        : Msg.APP_0810.get(),
                 dirInfoPair.hasB()
                         ? "【B%s】 %s".formatted(id, dirInfoPair.b().dirPath())
-                        : Msg.MSG_065.get());
+                        : Msg.APP_0810.get());
     }
     
     // [instance members] ******************************************************
@@ -90,13 +90,13 @@ public record ResultOfTrees(
     private String getDiffSummary() {
         return getDiffText(dirResult -> "        - %s%n%n".formatted(dirResult.isPresent()
                 ? dirResult.get().getDiffSimpleSummary()
-                : Msg.MSG_066.get()));
+                : Msg.APP_0850.get()));
     }
     
     private String getDiffDetail() {
         return getDiffText(dirResult -> dirResult.isPresent()
                 ? dirResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : "        " + Msg.MSG_066.get() + BR + BR);
+                : "        " + Msg.APP_0850.get() + BR + BR);
     }
     
     private String getDiffText(Function<Optional<ResultOfDirs>, String> diffDescriptor) {
@@ -123,17 +123,17 @@ public record ResultOfTrees(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(Msg.MSG_067.get().formatted("A"))
+        str.append(Msg.APP_0820.get().formatted("A"))
                 .append(flattenDirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
-        str.append(Msg.MSG_067.get().formatted("B"))
+        str.append(Msg.APP_0820.get().formatted("B"))
                 .append(flattenDirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);
-        str.append(Msg.MSG_068.get()).append(BR);
+        str.append(Msg.APP_0830.get()).append(BR);
         str.append(getDiffSummary());
-        str.append(Msg.MSG_069.get()).append(BR);
+        str.append(Msg.APP_0840.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

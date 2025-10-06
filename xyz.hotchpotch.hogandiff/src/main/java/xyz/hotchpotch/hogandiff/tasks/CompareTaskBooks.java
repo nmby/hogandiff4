@@ -98,7 +98,7 @@ public final class CompareTaskBooks extends CompareTask {
             return bResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareBooksTask::call2");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareBooksTask::call2");
         }
     }
     
@@ -117,7 +117,7 @@ public final class CompareTaskBooks extends CompareTask {
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             
             str.append("%s%n[A] %s%n[B] %s%n"
-                    .formatted(Msg.MSG_016.get(), dispPathPair.a(), dispPathPair.b()));
+                    .formatted(Msg.APP_0170.get(), dispPathPair.a(), dispPathPair.b()));
             
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
@@ -129,7 +129,7 @@ public final class CompareTaskBooks extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareBooksTask::announceStart");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareBooksTask::announceStart");
         }
     }
     
@@ -141,7 +141,7 @@ public final class CompareTaskBooks extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(Msg.MSG_017.get()).append(BR);
+            str.append(Msg.APP_0180.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
@@ -177,7 +177,7 @@ public final class CompareTaskBooks extends CompareTask {
                         updateMessage(str.toString());
                     }
                 } catch (Exception e) {
-                    str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
+                    str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));
@@ -191,7 +191,7 @@ public final class CompareTaskBooks extends CompareTask {
             return new ResultOfBooks(pairingInfoBooks, results);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_136.get());
+            throw getApplicationException(e, Msg.APP_0190.get());
         }
     }
 }

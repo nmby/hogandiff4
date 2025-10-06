@@ -55,8 +55,8 @@ public record ResultOfBooks(
         
         return "    %s) %s  vs  %s".formatted(
                 id,
-                sheetNamePair.hasA() ? "A[ " + sheetNamePair.a() + " ]" : Msg.MSG_037.get(),
-                sheetNamePair.hasB() ? "B[ " + sheetNamePair.b() + " ]" : Msg.MSG_037.get());
+                sheetNamePair.hasA() ? "A[ " + sheetNamePair.a() + " ]" : Msg.APP_0400.get(),
+                sheetNamePair.hasB() ? "B[ " + sheetNamePair.b() + " ]" : Msg.APP_0400.get());
     }
     
     // [instance members] ******************************************************
@@ -125,18 +125,18 @@ public record ResultOfBooks(
                 .count();
         
         if (diffSheets == 0 && gapSheets == 0) {
-            return Msg.MSG_038.get();
+            return Msg.APP_0410.get();
         }
         
         StringBuilder str = new StringBuilder();
         if (0 < diffSheets) {
-            str.append(Msg.MSG_039.get().formatted(diffSheets));
+            str.append(Msg.APP_0420.get().formatted(diffSheets));
         }
         if (0 < gapSheets) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(Msg.MSG_040.get().formatted(gapSheets));
+            str.append(Msg.APP_0430.get().formatted(gapSheets));
         }
         
         return str.toString();
@@ -177,7 +177,7 @@ public record ResultOfBooks(
         }
         
         return str.isEmpty()
-                ? "    " + Msg.MSG_038.get() + BR + BR
+                ? "    " + Msg.APP_0410.get() + BR + BR
                 : str.toString();
     }
     
@@ -186,12 +186,12 @@ public record ResultOfBooks(
         StringBuilder str = new StringBuilder();
         
         if (bookComparison.parentBookInfoPair().isIdentical()) {
-            str.append(Msg.MSG_041.get().formatted(""))
+            str.append(Msg.APP_0440.get().formatted(""))
                     .append(bookComparison.parentBookInfoPair().a().bookPath()).append(BR);
         } else {
-            str.append(Msg.MSG_041.get().formatted("A"))
+            str.append(Msg.APP_0440.get().formatted("A"))
                     .append(bookComparison.parentBookInfoPair().a().bookPath()).append(BR);
-            str.append(Msg.MSG_041.get().formatted("B"))
+            str.append(Msg.APP_0440.get().formatted("B"))
                     .append(bookComparison.parentBookInfoPair().b().bookPath()).append(BR);
         }
         
@@ -201,9 +201,9 @@ public record ResultOfBooks(
         }
         
         str.append(BR);
-        str.append(Msg.MSG_042.get()).append(BR);
+        str.append(Msg.APP_0450.get()).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append(Msg.MSG_043.get()).append(BR);
+        str.append(Msg.APP_0460.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

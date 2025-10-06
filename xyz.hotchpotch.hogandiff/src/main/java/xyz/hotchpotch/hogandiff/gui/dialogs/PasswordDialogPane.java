@@ -67,7 +67,7 @@ public class PasswordDialogPane extends VBox {
         // readPassword may be null.
         
         errorMsgLabel.setVisible(readPassword != null);
-        mainMsgLabel.setText(Msg.MSG_119.get().formatted(bookName));
+        mainMsgLabel.setText(Msg.APP_1260.get().formatted(bookName));
         passwordField.textProperty().setValue(readPassword);
     }
 }

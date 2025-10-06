@@ -120,7 +120,7 @@ public class GooglePane extends HBox implements ChildController {
         disconnectGoogleButton.setOnAction(_ -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    Msg.MSG_088.get())
+                    Msg.APP_0950.get())
                             .showAndWait();
             
             if (result.isEmpty() || result.get() != ButtonType.OK) {
@@ -133,10 +133,10 @@ public class GooglePane extends HBox implements ChildController {
                 
                 Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
                 VBox content = new VBox(10);
-                content.getChildren().addAll(new Label(Msg.MSG_089.get()), link);
+                content.getChildren().addAll(new Label(Msg.APP_0970.get()), link);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(Msg.MSG_001.get());
-                alert.setHeaderText(Msg.MSG_091.get());
+                alert.setTitle(Msg.APP_0010.get());
+                alert.setHeaderText(Msg.APP_0960.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
                 
@@ -146,10 +146,10 @@ public class GooglePane extends HBox implements ChildController {
                 
                 Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
-                content.getChildren().addAll(new Label(Msg.MSG_092.get()), link);
+                content.getChildren().addAll(new Label(Msg.APP_0990.get()), link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Msg.MSG_001.get());
-                alert.setHeaderText(Msg.MSG_094.get());
+                alert.setTitle(Msg.APP_0010.get());
+                alert.setHeaderText(Msg.APP_0980.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             }
@@ -195,11 +195,11 @@ public class GooglePane extends HBox implements ChildController {
                 Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
-                        new Label(Msg.MSG_095.get().formatted(exception.getMessage())),
+                        new Label(Msg.APP_1020.get().formatted(exception.getMessage())),
                         link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(Msg.MSG_096.get());
-                alert.setHeaderText(Msg.MSG_097.get());
+                alert.setTitle(Msg.APP_1000.get());
+                alert.setHeaderText(Msg.APP_1010.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             });

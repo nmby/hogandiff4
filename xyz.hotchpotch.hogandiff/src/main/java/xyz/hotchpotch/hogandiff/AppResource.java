@@ -144,7 +144,7 @@ public class AppResource {
             e.printStackTrace();
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(Msg.MSG_002.get(), APP_PROP_PATH),
+                    "%s%n%s".formatted(Msg.APP_0020.get(), APP_PROP_PATH),
                     ButtonType.OK)
                             .showAndWait();
             return false;

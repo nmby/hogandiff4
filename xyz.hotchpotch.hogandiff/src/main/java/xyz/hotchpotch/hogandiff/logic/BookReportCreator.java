@@ -129,10 +129,10 @@ public class BookReportCreator {
             Path workDir,
             ResultOfBooks bookResult) {
         
-        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(), Msg.MSG_027.get());
-        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a(), Msg.MSG_028.get());
-        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(), Msg.MSG_029.get().formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(), Msg.MSG_029.get().formatted(Side.B));
+        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(), Msg.APP_0570.get());
+        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a(), Msg.APP_0580.get());
+        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.B));
         
         String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
@@ -176,9 +176,9 @@ public class BookReportCreator {
             }
         }
         
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(), Msg.MSG_030.get());
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(), Msg.MSG_031.get());
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(), Msg.MSG_032.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(), Msg.APP_0600.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(), Msg.APP_0650.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(), Msg.APP_0610.get());
     }
     
     private int outputSheetResult(
@@ -191,9 +191,9 @@ public class BookReportCreator {
         PoiUtil.copyRow(sheet, ROW_TEMPLATE_SHEET_TITLE, rowIdx);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() - 1, sheetIdx + 1);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1,
-                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.MSG_031.get());
+                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.APP_0650.get());
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1,
-                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.MSG_031.get());
+                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.APP_0650.get());
         rowIdx++;
         
         // 比較対象なしの場合は「比較対象なし」の旨を出力する。
@@ -221,7 +221,7 @@ public class BookReportCreator {
         if (!sheetResult.redundantRows().a().isEmpty() || !sheetResult.redundantRows().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    Msg.MSG_034.get().formatted(
+                    Msg.APP_0620.get().formatted(
                             sheetResult.redundantRows().a().size(),
                             sheetResult.redundantRows().b().size()));
             rowIdx++;
@@ -269,7 +269,7 @@ public class BookReportCreator {
         if (!sheetResult.redundantColumns().a().isEmpty() || !sheetResult.redundantColumns().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    Msg.MSG_035.get().formatted(
+                    Msg.APP_0630.get().formatted(
                             sheetResult.redundantColumns().a().size(),
                             sheetResult.redundantColumns().b().size()));
             rowIdx++;
@@ -317,7 +317,7 @@ public class BookReportCreator {
         if (!sheetResult.diffCells().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    Msg.MSG_036.get().formatted(sheetResult.diffCells().size()));
+                    Msg.APP_0640.get().formatted(sheetResult.diffCells().size()));
             rowIdx++;
             int start = rowIdx;
             

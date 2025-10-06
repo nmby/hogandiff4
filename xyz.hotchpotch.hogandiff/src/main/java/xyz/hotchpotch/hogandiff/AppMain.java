@@ -90,7 +90,7 @@ public class AppMain extends Application {
         primaryStage.setScene(scene);
         primaryStage.getIcons().add(icon);
         primaryStage.setTitle(
-                Msg.MSG_001.get()
+                Msg.APP_0010.get()
                         + "  -  "
                         + VersionMaster.APP_VERSION);
         

@@ -124,7 +124,7 @@ public record GoogleFileInfo(
          */
         public static GoogleRevision from(Revision original, boolean isLatest) {
             User lastModifyingUser = original.getLastModifyingUser();
-            String lastModifier = Msg.MSG_073.get();
+            String lastModifier = Msg.APP_0930.get();
             if (lastModifyingUser != null) {
                 if (lastModifyingUser.getDisplayName() != null
                         && !lastModifyingUser.getDisplayName().isEmpty()) {
@@ -135,7 +135,7 @@ public record GoogleFileInfo(
                 }
             }
             String desc = "%s%s  %s".formatted(
-                    isLatest ? "%s  ".formatted(Msg.MSG_074.get()) : "",
+                    isLatest ? "%s  ".formatted(Msg.APP_0940.get()) : "",
                     original.getModifiedTime().toStringRfc3339(),
                     lastModifier);
             

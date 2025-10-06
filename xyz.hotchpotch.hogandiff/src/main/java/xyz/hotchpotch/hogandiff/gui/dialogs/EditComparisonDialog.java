@@ -59,7 +59,7 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
             editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
         });
         
-        setTitle(Msg.MSG_109.get());
+        setTitle(Msg.APP_0860.get());
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editComparisonDialogPane.getResult()

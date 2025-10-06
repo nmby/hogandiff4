@@ -70,12 +70,12 @@ public class UpdateChecker {
                             Hyperlink link = UIUtil.createHyperlink(AppMain.WEB_URL);
                             VBox content = new VBox(10);
                             content.getChildren().addAll(
-                                    new Label(Msg.MSG_083.get()
+                                    new Label(Msg.APP_1280.get()
                                             .formatted(VersionMaster.APP_VERSION, "v" + latestVersion)),
                                     link);
                             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setTitle(Msg.MSG_001.get());
-                            alert.setHeaderText(Msg.MSG_085.get());
+                            alert.setTitle(Msg.APP_0010.get());
+                            alert.setHeaderText(Msg.APP_1270.get());
                             alert.getDialogPane().setContent(content);
                             alert.showAndWait();
                         });
@@ -83,7 +83,7 @@ public class UpdateChecker {
                         Platform.runLater(() -> {
                             new Alert(
                                     AlertType.INFORMATION,
-                                    Msg.MSG_086.get().formatted(VersionMaster.APP_VERSION),
+                                    Msg.APP_1290.get().formatted(VersionMaster.APP_VERSION),
                                     ButtonType.OK)
                                             .showAndWait();
                         });

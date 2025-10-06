@@ -61,10 +61,10 @@ public record ResultOfDirs(
         return "    %s  vs  %s".formatted(
                 bookInfoPair.hasA()
                         ? "【A%s-%s】%s".formatted(dirId, bookId, bookNameA)
-                        : Msg.MSG_044.get(),
+                        : Msg.APP_0470.get(),
                 bookInfoPair.hasB()
                         ? "【B%s-%s】%s".formatted(dirId, bookId, bookNameB)
-                        : Msg.MSG_044.get());
+                        : Msg.APP_0470.get());
     }
     
     // [instance members] ******************************************************
@@ -107,7 +107,7 @@ public record ResultOfDirs(
      */
     public String getDiffSimpleSummary() {
         if (bookResults.isEmpty()) {
-            return Msg.MSG_045.get();
+            return Msg.APP_0560.get();
         }
         
         int diffBooks = (int) bookResults.values().stream()
@@ -124,24 +124,24 @@ public record ResultOfDirs(
                 .count();
         
         if (diffBooks == 0 && gapBooks == 0 && failed == 0) {
-            return Msg.MSG_046.get();
+            return Msg.APP_0520.get();
         }
         
         StringBuilder str = new StringBuilder();
         if (0 < diffBooks) {
-            str.append(Msg.MSG_047.get().formatted(diffBooks));
+            str.append(Msg.APP_0530.get().formatted(diffBooks));
         }
         if (0 < gapBooks) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(Msg.MSG_048.get().formatted(gapBooks));
+            str.append(Msg.APP_0540.get().formatted(gapBooks));
         }
         if (0 < failed) {
             if (!str.isEmpty()) {
                 str.append(", ");
             }
-            str.append(Msg.MSG_049.get().formatted(failed));
+            str.append(Msg.APP_0550.get().formatted(failed));
         }
         
         return str.toString();
@@ -150,7 +150,7 @@ public record ResultOfDirs(
     private String getDiffSummary() {
         return getDiffText(bResult -> "  -  %s%n".formatted(bResult.isPresent()
                 ? bResult.get().getDiffSimpleSummary()
-                : Msg.MSG_050.get()),
+                : Msg.APP_0510.get()),
                 false);
     }
     
@@ -162,7 +162,7 @@ public record ResultOfDirs(
     public String getDiffDetail() {
         return getDiffText(bResult -> bResult.isPresent()
                 ? BR + bResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : BR + "        " + Msg.MSG_050.get() + BR + BR,
+                : BR + "        " + Msg.APP_0510.get() + BR + BR,
                 true);
     }
     
@@ -173,7 +173,7 @@ public record ResultOfDirs(
         StringBuilder str = new StringBuilder();
         
         if (bookResults.isEmpty()) {
-            str.append("    - ").append(Msg.MSG_045.get()).append(BR);
+            str.append("    - ").append(Msg.APP_0560.get()).append(BR);
             if (isDetailMode) {
                 str.append(BR);
             }
@@ -202,10 +202,10 @@ public record ResultOfDirs(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(Msg.MSG_052.get().formatted("A"))
+        str.append(Msg.APP_0480.get().formatted("A"))
                 .append(dirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
-        str.append(Msg.MSG_052.get().formatted("B"))
+        str.append(Msg.APP_0480.get().formatted("B"))
                 .append(dirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
@@ -215,9 +215,9 @@ public record ResultOfDirs(
         }
         
         str.append(BR);
-        str.append(Msg.MSG_053.get()).append(BR);
+        str.append(Msg.APP_0490.get()).append(BR);
         str.append(getDiffSummary()).append(BR);
-        str.append(Msg.MSG_054.get()).append(BR);
+        str.append(Msg.APP_0500.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

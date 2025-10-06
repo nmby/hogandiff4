@@ -94,7 +94,7 @@ public final class CompareTaskDirs extends CompareTask {
             return tResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareDirsTask::call2");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareDirsTask::call2");
         }
     }
     
@@ -114,12 +114,12 @@ public final class CompareTaskDirs extends CompareTask {
             List<Pair<BookInfo>> bookInfoPairs = pairingInfoDirs.childBookInfoPairs();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
-                    Msg.MSG_019.get(),
+                    Msg.APP_0240.get(),
                     dirInfoPair.a().dirPath(),
                     dirInfoPair.b().dirPath()));
             
             if (bookInfoPairs.size() == 0) {
-                str.append("    - ").append(Msg.MSG_020.get()).append(BR);
+                str.append("    - ").append(Msg.APP_0270.get()).append(BR);
             }
             for (int i = 0; i < bookInfoPairs.size(); i++) {
                 Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);
@@ -130,7 +130,7 @@ public final class CompareTaskDirs extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareDirsTask::announceStart");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareDirsTask::announceStart");
         }
     }
     
@@ -149,7 +149,7 @@ public final class CompareTaskDirs extends CompareTask {
             return outputDirPair.unsafeMap(Files::createDirectory);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_132.get());
+            throw getApplicationException(e, Msg.APP_0250.get());
         }
     }
     
@@ -166,7 +166,7 @@ public final class CompareTaskDirs extends CompareTask {
             PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
             
             if (0 < pairingInfoDirs.childBookInfoPairs().size()) {
-                str.append(BR).append(Msg.MSG_021.get()).append(BR);
+                str.append(BR).append(Msg.APP_0260.get()).append(BR);
                 updateMessage(str.toString());
                 return compareDirs(
                         "",
@@ -186,7 +186,7 @@ public final class CompareTaskDirs extends CompareTask {
             }
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_133.get());
+            throw getApplicationException(e, Msg.APP_0280.get());
         }
     }
 }

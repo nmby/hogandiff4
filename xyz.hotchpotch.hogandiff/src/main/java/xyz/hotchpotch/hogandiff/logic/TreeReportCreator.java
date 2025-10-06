@@ -216,10 +216,10 @@ public class TreeReportCreator {
             Path workDir,
             ResultOfTrees treeResult) {
         
-        PoiUtil.setCellValue(sheet, 0, 4, Msg.MSG_027.get());
-        PoiUtil.setCellValue(sheet, 1, 4, Msg.MSG_071.get());
-        PoiUtil.setCellValue(sheet, 2, 4, Msg.MSG_073.get().formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 3, 4, Msg.MSG_072.get().formatted(Side.B));
+        PoiUtil.setCellValue(sheet, 0, 4, Msg.APP_0570.get());
+        PoiUtil.setCellValue(sheet, 1, 4, Msg.APP_0670.get());
+        PoiUtil.setCellValue(sheet, 2, 4, Msg.APP_0930.get().formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, 4, Msg.APP_0660.get().formatted(Side.B));
         
         String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);

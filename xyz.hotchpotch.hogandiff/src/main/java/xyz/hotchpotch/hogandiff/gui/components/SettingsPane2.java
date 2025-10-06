@@ -92,7 +92,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                 SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
                 detailsContent.init();
                 Dialog<Void> detailsDialog = new Dialog<>();
-                detailsDialog.setTitle(Msg.MSG_098.get());
+                detailsDialog.setTitle(Msg.APP_1100.get());
                 detailsDialog.getDialogPane().setContent(detailsContent);
                 detailsDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
                 detailsDialog.showAndWait();
@@ -126,7 +126,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             e.printStackTrace();
             new Alert(
                     AlertType.WARNING,
-                    "%s%n%s".formatted(Msg.MSG_099.get(), workDirBase),
+                    "%s%n%s".formatted(Msg.APP_1050.get(), workDirBase),
                     ButtonType.OK)
                             .showAndWait();
         }
@@ -138,13 +138,13 @@ public class SettingsPane2 extends VBox implements ChildController {
         File newDir = null;
         try {
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(Msg.MSG_100.get());
+            dirChooser.setTitle(Msg.APP_1060.get());
             dirChooser.setInitialDirectory(workDirBase.toFile());
             newDir = dirChooser.showDialog(getScene().getWindow());
             
         } catch (IllegalArgumentException e) {
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(Msg.MSG_100.get());
+            dirChooser.setTitle(Msg.APP_1060.get());
             newDir = dirChooser.showDialog(getScene().getWindow());
         }
         
@@ -164,7 +164,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                     e.printStackTrace();
                     new Alert(
                             AlertType.WARNING,
-                            "%s%n%s".formatted(Msg.MSG_101.get(), newPath),
+                            "%s%n%s".formatted(Msg.APP_1070.get(), newPath),
                             ButtonType.OK)
                                     .showAndWait();
                     return;
@@ -179,7 +179,7 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         Optional<ButtonType> result = new Alert(
                 AlertType.CONFIRMATION,
-                "%s%n%s".formatted(Msg.MSG_102.get(), workDirBase))
+                "%s%n%s".formatted(Msg.APP_1080.get(), workDirBase))
                         .showAndWait();
         
         if (result.isPresent() && result.get() == ButtonType.OK) {

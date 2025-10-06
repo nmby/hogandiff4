@@ -59,7 +59,7 @@ public class UIUtil {
                 e.printStackTrace();
                 new Alert(
                         AlertType.WARNING,
-                        "%s%n%s".formatted(Msg.MSG_082.get(), AppMain.WEB_URL),
+                        "%s%n%s".formatted(Msg.APP_1040.get(), AppMain.WEB_URL),
                         ButtonType.OK)
                                 .showAndWait();
             }

@@ -116,10 +116,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return null;
             
         } catch (OutOfMemoryError e) {
-            throw getApplicationException(e, Msg.MSG_137.get());
+            throw getApplicationException(e, Msg.APP_0140.get());
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at AppTaskBase::call");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at AppTaskBase::call");
         }
     }
     
@@ -166,13 +166,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Path textPath = workDir.resolve("result.txt");
             
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append("%s%n    - %s%n%n".formatted(Msg.MSG_003.get(), textPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0030.get(), textPath));
             updateMessage(str.toString());
             
             String timestamp = settings.get(SettingKeys.CURR_TIMESTAMP);
             LocalDateTime execDatetime = LocalDateTime.parse(timestamp, formatter);
             String execDatetimeStr = "%s%s%n".formatted(
-                    Msg.MSG_004.get(),
+                    Msg.APP_0160.get(),
                     execDatetime.format(formatter2));
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
@@ -182,7 +182,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_005.get());
+            throw getApplicationException(e, Msg.APP_0040.get());
         }
     }
     
@@ -195,12 +195,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
     protected void announceEnd() throws ApplicationException {
         try {
-            str.append(Msg.MSG_006.get());
+            str.append(Msg.APP_0110.get());
             updateMessage(str.toString());
             updateProgress(PROGRESS_MAX, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_007.get() + " at AppTaskBase::announceEnd");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at AppTaskBase::announceEnd");
         }
     }
     
@@ -267,7 +267,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            str.append(Msg.MSG_008.get()).append(BR);
+            str.append(Msg.APP_0050.get()).append(BR);
             updateMessage(str.toString());
             
             dstBookPath = workDir.resolve(srcBookInfo.bookNameWithExtension());
@@ -284,12 +284,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            thrown = getApplicationException(e, Msg.MSG_141.get());
+            thrown = getApplicationException(e, Msg.APP_0060.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(Msg.MSG_009.get()).append(BR).append(BR);
+                str.append(Msg.APP_0070.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPath.toFile());
             }
@@ -297,7 +297,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, Msg.MSG_142.get());
+            ApplicationException ee = getApplicationException(e, Msg.APP_0080.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -338,7 +338,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(Msg.MSG_008.get()).append(BR);
+            str.append(Msg.APP_0050.get()).append(BR);
             updateMessage(str.toString());
             
             Pair<Path> dstBookPathPair = Side.map(side -> workDir.resolve(
@@ -365,7 +365,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                 } catch (Exception e) {
                     ApplicationException ee = getApplicationException(e,
-                            side == Side.A ? Msg.MSG_139.get() : Msg.MSG_140.get());
+                            side == Side.A ? Msg.APP_0090.get() : Msg.APP_0100.get());
                     if (thrown == null) {
                         thrown = ee;
                     } else {
@@ -375,7 +375,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(BR).append(Msg.MSG_009.get()).append(BR).append(BR);
+                str.append(BR).append(Msg.APP_0070.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPathPair.a().toFile());
                 Desktop.getDesktop().open(dstBookPathPair.b().toFile());
@@ -386,7 +386,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, Msg.MSG_142.get());
+            ApplicationException ee = getApplicationException(e, Msg.APP_0080.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -426,7 +426,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(Msg.MSG_010.get(), resultBookPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0350.get(), resultBookPath));
             updateMessage(str.toString());
             
             TreeReportCreator creator = new TreeReportCreator();
@@ -437,19 +437,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_128.get());
+            throw getApplicationException(e, Msg.APP_0360.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
-                str.append(Msg.MSG_011.get()).append(BR).append(BR);
+                str.append(Msg.APP_0370.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_129.get());
+            throw getApplicationException(e, Msg.APP_0380.get());
         }
     }
     
@@ -480,7 +480,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(Msg.MSG_012.get(), resultBookPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0200.get(), resultBookPath));
             updateMessage(str.toString());
             
             BookReportCreator creator = new BookReportCreator();
@@ -488,19 +488,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_134.get());
+            throw getApplicationException(e, Msg.APP_0210.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
-                str.append(Msg.MSG_013.get()).append(BR).append(BR);
+                str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.MSG_135.get());
+            throw getApplicationException(e, Msg.APP_0230.get());
         }
     }
     
@@ -615,7 +615,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 + (progressAfter - progressBefore) * n / dirComparison.childBookInfoPairs().size();
         
         if (dirComparison.childBookInfoPairs().size() == 0) {
-            str.append(indent + "    - ").append(Msg.MSG_014.get()).append(BR);
+            str.append(indent + "    - ").append(Msg.APP_0130.get()).append(BR);
             updateMessage(str.toString());
         }
         
@@ -653,7 +653,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 
             } else {
                 if (bookInfoPair.isPaired()) {
-                    str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
+                    str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
                     updateMessage(str.toString());
                 } else {
                     str.append(BR);
@@ -694,7 +694,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     progressAfter);
             
         } catch (Exception e) {
-            str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
             
@@ -735,7 +735,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
         }
@@ -748,7 +748,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             dstBookPath.toFile().setWritable(true, false);
             
         } catch (Exception e) {
-            str.append("  -  ").append(Msg.MSG_015.get()).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
         }
