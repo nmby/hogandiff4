@@ -94,7 +94,7 @@ public final class CompareTaskDirs extends CompareTask {
             return tResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::call2");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareDirsTask::call2");
         }
     }
     
@@ -130,7 +130,7 @@ public final class CompareTaskDirs extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareDirsTask::announceStart");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareDirsTask::announceStart");
         }
     }
     
@@ -149,7 +149,7 @@ public final class CompareTaskDirs extends CompareTask {
             return outputDirPair.unsafeMap(Files::createDirectory);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareDirsTask.020", "");
+            throw getApplicationException(e, Msg.MSG_132.get());
         }
     }
     
@@ -186,7 +186,7 @@ public final class CompareTaskDirs extends CompareTask {
             }
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareDirsTask.080", "");
+            throw getApplicationException(e, Msg.MSG_133.get());
         }
     }
 }

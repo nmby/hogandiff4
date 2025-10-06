@@ -98,7 +98,7 @@ public final class CompareTaskBooks extends CompareTask {
             return bResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::call2");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareBooksTask::call2");
         }
     }
     
@@ -129,7 +129,7 @@ public final class CompareTaskBooks extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::announceStart");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareBooksTask::announceStart");
         }
     }
     
@@ -191,7 +191,7 @@ public final class CompareTaskBooks extends CompareTask {
             return new ResultOfBooks(pairingInfoBooks, results);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.050", "");
+            throw getApplicationException(e, Msg.MSG_136.get());
         }
     }
 }

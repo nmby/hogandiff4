@@ -84,7 +84,7 @@ public final class CompareTaskTrees extends CompareTask {
             return tResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::call2");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareTreesTask::call2");
         }
     }
     
@@ -117,7 +117,7 @@ public final class CompareTaskTrees extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareTreesTask::announceStart");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareTreesTask::announceStart");
         }
     }
     
@@ -207,7 +207,7 @@ public final class CompareTaskTrees extends CompareTask {
             return new ResultOfTrees(pairingInfoDirsFlatten, dirResults);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareTreesTask.110", "");
+            throw getApplicationException(e, Msg.MSG_130.get());
         }
     }
 }

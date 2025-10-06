@@ -116,10 +116,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return null;
             
         } catch (OutOfMemoryError e) {
-            throw getApplicationException(e, "AppTaskBase.170", "");
+            throw getApplicationException(e, Msg.MSG_137.get());
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at AppTaskBase::call");
         }
     }
     
@@ -284,7 +284,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            thrown = getApplicationException(e, "AppTaskBase.070", "");
+            thrown = getApplicationException(e, Msg.MSG_141.get());
         }
         
         try {
@@ -297,7 +297,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, Msg.MSG_142.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -365,7 +365,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     
                 } catch (Exception e) {
                     ApplicationException ee = getApplicationException(e,
-                            side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                            side == Side.A ? Msg.MSG_139.get() : Msg.MSG_140.get());
                     if (thrown == null) {
                         thrown = ee;
                     } else {
@@ -386,7 +386,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, Msg.MSG_142.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -437,7 +437,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareTreesTask.080", "");
+            throw getApplicationException(e, Msg.MSG_128.get());
         }
         
         try {
@@ -449,7 +449,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareTreesTask.100", "");
+            throw getApplicationException(e, Msg.MSG_129.get());
         }
     }
     
@@ -488,7 +488,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.070", "");
+            throw getApplicationException(e, Msg.MSG_134.get());
         }
         
         try {
@@ -500,7 +500,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.090", "");
+            throw getApplicationException(e, Msg.MSG_135.get());
         }
     }
     

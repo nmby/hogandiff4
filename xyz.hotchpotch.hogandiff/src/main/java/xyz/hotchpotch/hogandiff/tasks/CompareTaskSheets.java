@@ -97,7 +97,7 @@ public final class CompareTaskSheets extends CompareTask {
             return bResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::call2");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareSheetsTask::call2");
         }
     }
     
@@ -127,7 +127,7 @@ public final class CompareTaskSheets extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareSheetsTask::announceStart");
+            throw getApplicationException(e, Msg.MSG_007.get() + " at CompareSheetsTask::announceStart");
         }
     }
     
@@ -171,7 +171,7 @@ public final class CompareTaskSheets extends CompareTask {
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareSheetsTask.030", "");
+            throw getApplicationException(e, Msg.MSG_131.get());
         }
     }
 }
