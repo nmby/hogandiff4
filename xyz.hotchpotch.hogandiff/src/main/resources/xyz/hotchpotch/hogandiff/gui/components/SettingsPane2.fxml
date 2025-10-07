@@ -40,8 +40,8 @@
 					maxHeight="1.7976931348623157E308"
 					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 					minWidth="-Infinity" styleClass="settingsTitleLabel2"
-					text="%fx.SettingsPane2.020" textAlignment="RIGHT"
-					textOverrun="CLIP" wrapText="true" GridPane.rowSpan="3">
+					text="%FXML_0240" textAlignment="RIGHT" textOverrun="CLIP"
+					wrapText="true" GridPane.rowSpan="3">
 					<GridPane.margin>
 						<Insets />
 					</GridPane.margin>
@@ -49,8 +49,8 @@
 				<Button fx:id="openWorkDirButton" alignment="CENTER"
 					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.010"
-					textAlignment="CENTER" GridPane.columnIndex="1">
+					styleClass="workDirButton" text="%FXML_0260" textAlignment="CENTER"
+					GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="5.0" top="1.0" />
 					</GridPane.margin>
@@ -58,9 +58,8 @@
 				<Button fx:id="changeWorkDirButton" alignment="CENTER"
 					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.020"
-					textAlignment="CENTER" GridPane.columnIndex="1"
-					GridPane.rowIndex="1">
+					styleClass="workDirButton" text="%FXML_0270" textAlignment="CENTER"
+					GridPane.columnIndex="1" GridPane.rowIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="5.0" top="1.0" />
 					</GridPane.margin>
@@ -68,9 +67,8 @@
 				<Button fx:id="deleteWorkDirButton" alignment="CENTER"
 					maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 					minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-					styleClass="workDirButton" text="%fx.SettingsPane2.workDir.030"
-					textAlignment="CENTER" GridPane.columnIndex="1"
-					GridPane.rowIndex="2">
+					styleClass="workDirButton" text="%FXML_0280" textAlignment="CENTER"
+					GridPane.columnIndex="1" GridPane.rowIndex="2">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="5.0" top="1.0" />
 					</GridPane.margin>
@@ -82,8 +80,7 @@
 		</GridPane>
 		<Button fx:id="detailsButton" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			mnemonicParsing="false" text="%fx.SettingsPane2.040"
-			VBox.vgrow="ALWAYS">
+			mnemonicParsing="false" text="%FXML_0250" VBox.vgrow="ALWAYS">
 			<VBox.margin>
 				<Insets bottom="3.0" top="1.0" />
 			</VBox.margin>

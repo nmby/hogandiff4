@@ -27,8 +27,7 @@
 	</rowConstraints>
 	<children>
 		<Label maxHeight="-Infinity" maxWidth="-Infinity"
-			minHeight="-Infinity" minWidth="-Infinity"
-			text="%fx.GoogleFilePickerDialogPane.030" />
+			minHeight="-Infinity" minWidth="-Infinity" text="%FXML_0320" />
 		<Label fx:id="fileUrlLabel" maxWidth="1.7976931348623157E308"
 			text="Label" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
 			GridPane.vgrow="NEVER">
@@ -37,8 +36,8 @@
 			</GridPane.margin>
 		</Label>
 		<Label maxHeight="-Infinity" maxWidth="-Infinity"
-			minHeight="-Infinity" minWidth="-Infinity"
-			text="%fx.GoogleFilePickerDialogPane.050" GridPane.rowIndex="1" />
+			minHeight="-Infinity" minWidth="-Infinity" text="%FXML_0330"
+			GridPane.rowIndex="1" />
 		<Label fx:id="fileNameLabel" maxWidth="1.7976931348623157E308"
 			text="Label" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
 			GridPane.rowIndex="1" GridPane.vgrow="NEVER">
@@ -49,8 +48,8 @@
 		<Separator GridPane.columnSpan="2" GridPane.hgrow="ALWAYS"
 			GridPane.rowIndex="2" GridPane.vgrow="NEVER" />
 		<Label maxHeight="-Infinity" maxWidth="-Infinity"
-			minHeight="-Infinity" minWidth="-Infinity"
-			text="%fx.GoogleFilePickerDialogPane.060" GridPane.rowIndex="3" />
+			minHeight="-Infinity" minWidth="-Infinity" text="%FXML_0340"
+			GridPane.rowIndex="3" />
 		<ChoiceBox fx:id="revisionChoiceBox" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"

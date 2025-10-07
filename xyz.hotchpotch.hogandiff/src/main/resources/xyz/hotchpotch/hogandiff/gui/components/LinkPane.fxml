@@ -11,6 +11,6 @@
 	<children>
 		<Hyperlink fx:id="toWebSiteHyperlink" alignment="CENTER"
 			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" text="%fx.LinkPane.010" HBox.hgrow="NEVER" />
+			minWidth="-Infinity" text="%FXML_0020" HBox.hgrow="NEVER" />
 	</children>
 </fx:root>

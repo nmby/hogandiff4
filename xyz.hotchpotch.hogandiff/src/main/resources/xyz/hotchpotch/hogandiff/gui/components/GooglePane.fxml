@@ -28,7 +28,7 @@
 		<Button fx:id="connectGoogleButton"
 			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-			text="%fx.GooglePane.010" textAlignment="CENTER" textOverrun="CLIP"
+			text="%FXML_0350" textAlignment="CENTER" textOverrun="CLIP"
 			HBox.hgrow="ALWAYS">
 			<HBox.margin>
 				<Insets left="7.0" />
@@ -37,7 +37,7 @@
 		<Button fx:id="disconnectGoogleButton"
 			maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-			text="%fx.GooglePane.020" textAlignment="CENTER" textFill="RED"
+			text="%FXML_0360" textAlignment="CENTER" textFill="RED"
 			textOverrun="CLIP" HBox.hgrow="ALWAYS">
 			<HBox.margin>
 				<Insets left="7.0" />
