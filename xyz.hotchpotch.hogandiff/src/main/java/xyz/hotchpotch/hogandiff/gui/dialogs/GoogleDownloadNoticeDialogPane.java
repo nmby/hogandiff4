@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +26,6 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Label msgLabel;
@@ -45,7 +43,7 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public GoogleDownloadNoticeDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GoogleDownloadNoticeDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GoogleDownloadNoticeDialogPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

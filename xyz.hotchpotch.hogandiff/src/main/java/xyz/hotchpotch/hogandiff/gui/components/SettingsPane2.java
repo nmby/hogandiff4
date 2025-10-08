@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import javafx.event.ActionEvent;
@@ -23,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.VersionMaster;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -42,7 +42,6 @@ public class SettingsPane2 extends VBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private GooglePane googlePane;
@@ -66,7 +65,7 @@ public class SettingsPane2 extends VBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingsPane2() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane2.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane2.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -91,7 +90,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                 SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
                 detailsContent.init();
                 Dialog<Void> detailsDialog = new Dialog<>();
-                detailsDialog.setTitle(rb.getString("gui.component.SettingsPane2.060"));
+                detailsDialog.setTitle(Msg.APP_1100.get());
                 detailsDialog.getDialogPane().setContent(detailsContent);
                 detailsDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
                 detailsDialog.showAndWait();
@@ -125,9 +124,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             e.printStackTrace();
             new Alert(
                     AlertType.WARNING,
-                    "%s%n%s".formatted(
-                            rb.getString("gui.component.SettingsPane2.010"),
-                            workDirBase),
+                    "%s%n%s".formatted(Msg.APP_1050.get(), workDirBase),
                     ButtonType.OK)
                             .showAndWait();
         }
@@ -139,13 +136,13 @@ public class SettingsPane2 extends VBox implements ChildController {
         File newDir = null;
         try {
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
+            dirChooser.setTitle(Msg.APP_1060.get());
             dirChooser.setInitialDirectory(workDirBase.toFile());
             newDir = dirChooser.showDialog(getScene().getWindow());
             
         } catch (IllegalArgumentException e) {
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(rb.getString("gui.component.SettingsPane2.020"));
+            dirChooser.setTitle(Msg.APP_1060.get());
             newDir = dirChooser.showDialog(getScene().getWindow());
         }
         
@@ -165,9 +162,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                     e.printStackTrace();
                     new Alert(
                             AlertType.WARNING,
-                            "%s%n%s".formatted(
-                                    rb.getString("gui.component.SettingsPane2.030"),
-                                    newPath),
+                            "%s%n%s".formatted(Msg.APP_1070.get(), newPath),
                             ButtonType.OK)
                                     .showAndWait();
                     return;
@@ -182,10 +177,8 @@ public class SettingsPane2 extends VBox implements ChildController {
         
         Optional<ButtonType> result = new Alert(
                 AlertType.CONFIRMATION,
-                "%s%n%s".formatted(
-                        rb.getString("gui.component.SettingsPane2.040"),
-                        workDirBase))
-                                .showAndWait();
+                "%s%n%s".formatted(Msg.APP_1080.get(), workDirBase))
+                        .showAndWait();
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
             Desktop desktop = Desktop.getDesktop();

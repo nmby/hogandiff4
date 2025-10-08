@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.Function;
 
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -17,8 +16,10 @@ import xyz.hotchpotch.hogandiff.util.Pair;
  * 
  * @author nmby
  * 
- * @param flattenDirComparison フォルダツリー比較情報
- * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
+ * @param flattenDirComparison
+ *            フォルダツリー比較情報
+ * @param dirResults
+ *            比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
  */
 public record ResultOfTrees(
         PairingInfoDirsFlatten flattenDirComparison,
@@ -28,15 +29,17 @@ public record ResultOfTrees(
     // [static members] ********************************************************
     
     private static final String BR = System.lineSeparator();
-    private static final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * フォルダペアをユーザー表示用に整形して返します。<br>
      * 
-     * @param id          このフォルダペアの識別子。
-     * @param dirInfoPair フォルダペア情報
+     * @param id
+     *            このフォルダペアの識別子。
+     * @param dirInfoPair
+     *            フォルダペア情報
      * @return フォルダペアの整形済み文字列
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static String formatDirInfoPair(
             String id,
@@ -48,10 +51,10 @@ public record ResultOfTrees(
         return "    - %s%n    - %s%n".formatted(
                 dirInfoPair.hasA()
                         ? "【A%s】 %s".formatted(id, dirInfoPair.a().dirPath())
-                        : rb.getString("excel.TreeResult.010"),
+                        : Msg.APP_0810.get(),
                 dirInfoPair.hasB()
                         ? "【B%s】 %s".formatted(id, dirInfoPair.b().dirPath())
-                        : rb.getString("excel.TreeResult.010"));
+                        : Msg.APP_0810.get());
     }
     
     // [instance members] ******************************************************
@@ -59,9 +62,12 @@ public record ResultOfTrees(
     /**
      * コンストラクタ<br>
      * 
-     * @param flattenDirComparison フォルダツリー比較情報
-     * @param dirResults           比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param flattenDirComparison
+     *            フォルダツリー比較情報
+     * @param dirResults
+     *            比較対象フォルダパスのペアに対するフォルダ比較結果のマップ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public ResultOfTrees {
         Objects.requireNonNull(flattenDirComparison);
@@ -84,13 +90,13 @@ public record ResultOfTrees(
     private String getDiffSummary() {
         return getDiffText(dirResult -> "        - %s%n%n".formatted(dirResult.isPresent()
                 ? dirResult.get().getDiffSimpleSummary()
-                : rb.getString("excel.TreeResult.050")));
+                : Msg.APP_0850.get()));
     }
     
     private String getDiffDetail() {
         return getDiffText(dirResult -> dirResult.isPresent()
                 ? dirResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : "        " + rb.getString("excel.TreeResult.050") + BR + BR);
+                : "        " + Msg.APP_0850.get() + BR + BR);
     }
     
     private String getDiffText(Function<Optional<ResultOfDirs>, String> diffDescriptor) {
@@ -117,17 +123,17 @@ public record ResultOfTrees(
     public String toString() {
         StringBuilder str = new StringBuilder();
         
-        str.append(rb.getString("excel.TreeResult.020").formatted("A"))
+        str.append(Msg.APP_0820.get().formatted("A"))
                 .append(flattenDirComparison.parentDirInfoPair().a().dirPath())
                 .append(BR);
-        str.append(rb.getString("excel.TreeResult.020").formatted("B"))
+        str.append(Msg.APP_0820.get().formatted("B"))
                 .append(flattenDirComparison.parentDirInfoPair().b().dirPath())
                 .append(BR);
         
         str.append(BR);
-        str.append(rb.getString("excel.TreeResult.030")).append(BR);
+        str.append(Msg.APP_0830.get()).append(BR);
         str.append(getDiffSummary());
-        str.append(rb.getString("excel.TreeResult.040")).append(BR);
+        str.append(Msg.APP_0840.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

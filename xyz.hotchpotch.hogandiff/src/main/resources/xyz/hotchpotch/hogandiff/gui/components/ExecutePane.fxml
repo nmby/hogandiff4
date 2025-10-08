@@ -12,7 +12,7 @@
 			contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
 			minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
 			prefWidth="60.0" styleClass="executeButton"
-			text="%fx.ExecutePane.010" textAlignment="CENTER" textOverrun="CLIP"
+			text="%FXML_0010" textAlignment="CENTER" textOverrun="CLIP"
 			wrapText="true" AnchorPane.bottomAnchor="0.0"
 			AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
 			AnchorPane.topAnchor="0.0" />

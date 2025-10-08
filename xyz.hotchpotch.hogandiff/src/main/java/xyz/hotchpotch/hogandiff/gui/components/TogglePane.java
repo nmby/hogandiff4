@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
@@ -28,7 +27,6 @@ public class TogglePane extends AnchorPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ToggleButton toggleButton;
@@ -40,7 +38,7 @@ public class TogglePane extends AnchorPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public TogglePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TogglePane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TogglePane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

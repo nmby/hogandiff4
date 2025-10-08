@@ -2,12 +2,11 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
@@ -24,8 +23,6 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
     // static members **********************************************************
     
     // instance members ********************************************************
-    
-    private final ResourceBundle rb = AppMain.appResource.get();
     
     /**
      * 新しいダイアログを構成します。<br>
@@ -62,7 +59,7 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
             editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
         });
         
-        setTitle(rb.getString("fx.EditComparisonPane.010"));
+        setTitle(Msg.APP_0860.get());
         setResizable(true);
         setResultConverter(buttonType -> buttonType == ButtonType.OK
                 ? editComparisonDialogPane.getResult()

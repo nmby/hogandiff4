@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 import javafx.application.Platform;
@@ -35,6 +34,7 @@ import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -68,7 +68,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Label titleLabel;
@@ -115,7 +114,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public TargetSelectionPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -326,7 +325,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             
             DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.010"));
+            chooser.setTitle(Msg.APP_1110.get());
             
             DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
             if (dirInfo != null) {
@@ -356,7 +355,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             
             FileChooser chooser = new FileChooser();
-            chooser.setTitle(rb.getString("gui.component.TargetSelectionPane.020"));
+            chooser.setTitle(Msg.APP_1120.get());
             
             BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
             if (bookInfo != null) {
@@ -368,9 +367,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
             }
             
-            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
-                    rb.getString("gui.component.TargetSelectionPane.030"),
-                    "*.xls", "*.xlsx", "*.xlsm"));
+            chooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter(Msg.APP_1130.get(), "*.xls", "*.xlsx", "*.xlsm"));
             
             File selected = chooser.showOpenDialog(getScene().getWindow());
             
@@ -405,9 +403,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             parent.dirInfoPropPair.get(side).setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(
-                            rb.getString("gui.component.TargetSelectionPane.060"),
-                            newDirPath),
+                    "%s%n%s".formatted(Msg.APP_1160.get(), newDirPath),
                     ButtonType.OK)
                             .showAndWait();
             return;
@@ -432,9 +428,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             readPasswords.remove(newBookPath);
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(
-                            rb.getString("gui.component.TargetSelectionPane.040"),
-                            newBookPath),
+                    "%s%n%s".formatted(Msg.APP_1140.get(), newBookPath),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -450,9 +444,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             sheetNameChoiceBox.setValue(null);
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(
-                            rb.getString("gui.component.TargetSelectionPane.050"),
-                            sheetName),
+                    "%s%n%s".formatted(Msg.APP_1150.get(), sheetName),
                     ButtonType.OK)
                             .showAndWait();
             return false;

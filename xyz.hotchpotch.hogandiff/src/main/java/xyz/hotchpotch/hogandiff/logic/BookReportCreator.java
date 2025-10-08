@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -19,6 +18,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.plain.CellsUtil;
 import xyz.hotchpotch.hogandiff.logic.poi.PoiUtil;
@@ -54,15 +54,18 @@ public class BookReportCreator {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     /**
      * Excelブック同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
      * 
-     * @param dstBookPath 保存先Excelブックのパス
-     * @param bookResult  フォルダツリー同士の比較結果
-     * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException   パラメータが {@code null} の場合
+     * @param dstBookPath
+     *            保存先Excelブックのパス
+     * @param bookResult
+     *            フォルダツリー同士の比較結果
+     * @throws ExcelHandlingException
+     *             処理に失敗した場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
@@ -126,14 +129,10 @@ public class BookReportCreator {
             Path workDir,
             ResultOfBooks bookResult) {
         
-        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.010"));
-        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.020"));
-        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.030").formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.030").formatted(Side.B));
+        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(), Msg.APP_0570.get());
+        PoiUtil.setCellValue(sheet, 1, COL_LEFT.a(), Msg.APP_0580.get());
+        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.B));
         
         String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
@@ -177,12 +176,9 @@ public class BookReportCreator {
             }
         }
         
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.040"));
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(),
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.050"));
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(), Msg.APP_0600.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(), Msg.APP_0650.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(), Msg.APP_0610.get());
     }
     
     private int outputSheetResult(
@@ -195,11 +191,9 @@ public class BookReportCreator {
         PoiUtil.copyRow(sheet, ROW_TEMPLATE_SHEET_TITLE, rowIdx);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() - 1, sheetIdx + 1);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1,
-                sheetNamePair.hasA() ? sheetNamePair.a()
-                        : rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
+                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.APP_0650.get());
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1,
-                sheetNamePair.hasB() ? sheetNamePair.b()
-                        : rb.getString("excel.poi.usermodel.BookResultBookCreator.090"));
+                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.APP_0650.get());
         rowIdx++;
         
         // 比較対象なしの場合は「比較対象なし」の旨を出力する。
@@ -227,7 +221,7 @@ public class BookReportCreator {
         if (!sheetResult.redundantRows().a().isEmpty() || !sheetResult.redundantRows().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    rb.getString("excel.poi.usermodel.BookResultBookCreator.060").formatted(
+                    Msg.APP_0620.get().formatted(
                             sheetResult.redundantRows().a().size(),
                             sheetResult.redundantRows().b().size()));
             rowIdx++;
@@ -275,7 +269,7 @@ public class BookReportCreator {
         if (!sheetResult.redundantColumns().a().isEmpty() || !sheetResult.redundantColumns().b().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    rb.getString("excel.poi.usermodel.BookResultBookCreator.070").formatted(
+                    Msg.APP_0630.get().formatted(
                             sheetResult.redundantColumns().a().size(),
                             sheetResult.redundantColumns().b().size()));
             rowIdx++;
@@ -323,8 +317,7 @@ public class BookReportCreator {
         if (!sheetResult.diffCells().isEmpty()) {
             PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
-                    rb.getString("excel.poi.usermodel.BookResultBookCreator.080").formatted(
-                            sheetResult.diffCells().size()));
+                    Msg.APP_0640.get().formatted(sheetResult.diffCells().size()));
             rowIdx++;
             int start = rowIdx;
             

@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -25,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.UIUtil;
@@ -43,7 +43,6 @@ public class GooglePane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ImageView profileImageView;
@@ -64,7 +63,7 @@ public class GooglePane extends HBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public GooglePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -119,7 +118,7 @@ public class GooglePane extends HBox implements ChildController {
         disconnectGoogleButton.setOnAction(_ -> {
             Optional<ButtonType> result = new Alert(
                     AlertType.CONFIRMATION,
-                    rb.getString("gui.component.GooglePane.010"))
+                    Msg.APP_0950.get())
                             .showAndWait();
             
             if (result.isEmpty() || result.get() != ButtonType.OK) {
@@ -132,12 +131,10 @@ public class GooglePane extends HBox implements ChildController {
                 
                 Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
                 VBox content = new VBox(10);
-                content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.030")),
-                        link);
+                content.getChildren().addAll(new Label(Msg.APP_0970.get()), link);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(rb.getString("AppMain.010"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.020"));
+                alert.setTitle(Msg.APP_0010.get());
+                alert.setHeaderText(Msg.APP_0960.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
                 
@@ -147,12 +144,10 @@ public class GooglePane extends HBox implements ChildController {
                 
                 Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
-                content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.050")),
-                        link);
+                content.getChildren().addAll(new Label(Msg.APP_0990.get()), link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(rb.getString("AppMain.010"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.040"));
+                alert.setTitle(Msg.APP_0010.get());
+                alert.setHeaderText(Msg.APP_0980.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             }
@@ -198,11 +193,11 @@ public class GooglePane extends HBox implements ChildController {
                 Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                 VBox content = new VBox(10);
                 content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.080").formatted(exception.getMessage())),
+                        new Label(Msg.APP_1020.get().formatted(exception.getMessage())),
                         link);
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(rb.getString("gui.component.GooglePane.060"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.070"));
+                alert.setTitle(Msg.APP_1000.get());
+                alert.setHeaderText(Msg.APP_1010.get());
                 alert.getDialogPane().setContent(content);
                 alert.showAndWait();
             });

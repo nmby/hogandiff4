@@ -40,30 +40,28 @@
 					maxHeight="1.7976931348623157E308"
 					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 					minWidth="-Infinity" styleClass="settingsTitleLabel1"
-					text="%fx.SettingsPane1.010" textAlignment="RIGHT"
-					textOverrun="CLIP" wrapText="true" GridPane.rowSpan="4" />
+					text="%FXML_0100" textAlignment="RIGHT" textOverrun="CLIP"
+					wrapText="true" GridPane.rowSpan="4" />
 				<CheckBox fx:id="considerRowGapsCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 					minWidth="-Infinity" mnemonicParsing="false" selected="true"
-					text="%fx.SettingsPane1.compare.010" GridPane.columnIndex="1">
+					text="%FXML_0110" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="5.0" />
 					</GridPane.margin>
 				</CheckBox>
 				<CheckBox fx:id="considerColumnGapsCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-					minWidth="-Infinity" mnemonicParsing="false"
-					text="%fx.SettingsPane1.compare.020" GridPane.columnIndex="1"
-					GridPane.rowIndex="1">
+					minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0120"
+					GridPane.columnIndex="1" GridPane.rowIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
 				</CheckBox>
 				<CheckBox fx:id="enableFuzzyMatchingCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-					minWidth="-Infinity" mnemonicParsing="false"
-					text="%fx.SettingsPane1.compare.050" GridPane.columnIndex="1"
-					GridPane.rowIndex="2">
+					minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0150"
+					GridPane.columnIndex="1" GridPane.rowIndex="2">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
@@ -79,15 +77,14 @@
 						<RadioButton fx:id="compareValuesRadioButton"
 							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 							minWidth="-Infinity" mnemonicParsing="false" selected="true"
-							text="%fx.SettingsPane1.compare.030">
+							text="%FXML_0130">
 							<toggleGroup>
 								<ToggleGroup fx:id="compareValuesOrFormulas" />
 							</toggleGroup>
 						</RadioButton>
 						<RadioButton fx:id="compareFormulasRadioButton"
 							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-							minWidth="-Infinity" mnemonicParsing="false"
-							text="%fx.SettingsPane1.compare.040"
+							minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0140"
 							toggleGroup="$compareValuesOrFormulas" />
 					</children>
 				</HBox>
@@ -113,12 +110,12 @@
 					maxHeight="1.7976931348623157E308"
 					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 					minWidth="-Infinity" styleClass="settingsTitleLabel1"
-					text="%fx.SettingsPane1.020" textAlignment="RIGHT"
-					textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
+					text="%FXML_0160" textAlignment="RIGHT" textOverrun="CLIP"
+					wrapText="true" GridPane.rowSpan="2" />
 				<CheckBox fx:id="showPaintedSheetsCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 					minWidth="-Infinity" mnemonicParsing="false" selected="true"
-					text="%fx.SettingsPane1.report.010" GridPane.columnIndex="1">
+					text="%FXML_0170" GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
 					</GridPane.margin>
@@ -126,8 +123,7 @@
 				<CheckBox fx:id="showResultTextCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 					minWidth="-Infinity" mnemonicParsing="false" selected="true"
-					text="%fx.SettingsPane1.report.020" GridPane.columnIndex="1"
-					GridPane.rowIndex="1">
+					text="%FXML_0180" GridPane.columnIndex="1" GridPane.rowIndex="1">
 					<GridPane.margin>
 						<Insets bottom="3.0" left="7.0" right="7.0" top="1.0" />
 					</GridPane.margin>
@@ -157,12 +153,12 @@
 					maxHeight="1.7976931348623157E308"
 					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 					minWidth="-Infinity" styleClass="settingsTitleLabel1"
-					text="%fx.SettingsPane1.030" textAlignment="RIGHT"
-					textOverrun="CLIP" wrapText="true" GridPane.rowSpan="2" />
+					text="%FXML_0190" textAlignment="RIGHT" textOverrun="CLIP"
+					wrapText="true" GridPane.rowSpan="2" />
 				<CheckBox fx:id="exitWhenFinishedCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-					minWidth="-Infinity" mnemonicParsing="false"
-					text="%fx.SettingsPane1.execute.010" GridPane.columnIndex="1">
+					minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0200"
+					GridPane.columnIndex="1">
 					<GridPane.margin>
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
 					</GridPane.margin>
@@ -173,8 +169,7 @@
 					<children>
 						<RadioButton fx:id="prioritizeSpeedRadioButton"
 							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-							minWidth="-Infinity" mnemonicParsing="false"
-							text="%fx.SettingsPane1.execute.030">
+							minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0210">
 							<toggleGroup>
 								<ToggleGroup fx:id="prioritizeSpeedOrAccuracy" />
 							</toggleGroup>
@@ -182,8 +177,7 @@
 						<RadioButton fx:id="prioritizeAccuracyRadioButton"
 							maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 							minWidth="-Infinity" mnemonicParsing="false" selected="true"
-							text="%fx.SettingsPane1.execute.040"
-							toggleGroup="$prioritizeSpeedOrAccuracy" />
+							text="%FXML_0220" toggleGroup="$prioritizeSpeedOrAccuracy" />
 					</children>
 					<GridPane.margin>
 						<Insets bottom="5.0" left="7.0" right="7.0" top="1.0" />

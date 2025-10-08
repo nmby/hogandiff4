@@ -40,14 +40,12 @@
 			GridPane.rowSpan="2" GridPane.vgrow="ALWAYS" />
 		<Label fx:id="dirPathLabel" alignment="CENTER_RIGHT"
 			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" styleClass="targetItemLabel"
-			text="%fx.TargetSelectionPane.030" textAlignment="RIGHT"
-			textOverrun="CLIP" GridPane.columnIndex="1" />
+			minWidth="-Infinity" styleClass="targetItemLabel" text="%FXML_0310"
+			textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" />
 		<Label fx:id="bookPathLabel" alignment="CENTER_RIGHT"
 			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" styleClass="targetItemLabel"
-			text="%fx.TargetSelectionPane.010" textAlignment="RIGHT"
-			textOverrun="CLIP" GridPane.columnIndex="1" />
+			minWidth="-Infinity" styleClass="targetItemLabel" text="%FXML_0290"
+			textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1" />
 		<TextField fx:id="dirPathTextField" editable="false"
 			maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
 			minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="2">
@@ -97,9 +95,9 @@
 		</HBox>
 		<Label fx:id="sheetNameLabel" alignment="CENTER_RIGHT"
 			maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-			minWidth="-Infinity" styleClass="targetItemLabel"
-			text="%fx.TargetSelectionPane.020" textAlignment="RIGHT"
-			textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+			minWidth="-Infinity" styleClass="targetItemLabel" text="%FXML_0300"
+			textAlignment="RIGHT" textOverrun="CLIP" GridPane.columnIndex="1"
+			GridPane.rowIndex="1" />
 		<ChoiceBox fx:id="sheetNameChoiceBox" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="2"

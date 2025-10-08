@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -16,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -35,7 +35,6 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Button editComparisonButton;
@@ -49,7 +48,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -82,7 +81,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
-                        rb.getString("gui.MainController.010"),
+                        Msg.APP_1180.get(),
                         ButtonType.OK)
                                 .showAndWait();
                 return;

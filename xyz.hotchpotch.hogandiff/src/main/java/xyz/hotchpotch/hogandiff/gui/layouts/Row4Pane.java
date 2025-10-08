@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +25,6 @@ public class Row4Pane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     private final double originalHeight = AppMain.STAGE_HEIGHT_OPEN - AppMain.STAGE_HEIGHT_CLOSE;
     
     @FXML
@@ -38,10 +36,11 @@ public class Row4Pane extends HBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public Row4Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row4Pane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row4Pane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -77,7 +76,8 @@ public class Row4Pane extends HBox implements ChildController {
     /**
      * このコンポーネントの表示／非表示を指定します。<br>
      * 
-     * @param visible このコンポーネントを表示する場合は {@code true}
+     * @param visible
+     *            このコンポーネントを表示する場合は {@code true}
      */
     public void setVisible2(boolean visible) {
         setVisible(visible);

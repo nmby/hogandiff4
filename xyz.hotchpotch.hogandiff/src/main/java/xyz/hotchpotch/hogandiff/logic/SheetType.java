@@ -1,8 +1,6 @@
 package xyz.hotchpotch.hogandiff.logic;
 
-import java.util.ResourceBundle;
-
-import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.Msg;
 
 /**
  * Excelシートの種類を表す列挙型です。<br>
@@ -14,26 +12,24 @@ public enum SheetType {
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     /** ワークシート */
-    WORKSHEET("excel.SheetType.010"),
+    WORKSHEET(Msg.APP_0680.get()),
     
     /** グラフシート */
-    CHART_SHEET("excel.SheetType.020"),
+    CHART_SHEET(Msg.APP_0690.get()),
     
     /** MS Excel 5.0 ダイアログシート */
-    DIALOG_SHEET("excel.SheetType.030"),
+    DIALOG_SHEET(Msg.APP_0700.get()),
     
     /** Excel 4.0 マクロシート */
-    MACRO_SHEET("excel.SheetType.040");
+    MACRO_SHEET(Msg.APP_0710.get());
     
     // [instance members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     private final String description;
     
-    private SheetType(String descriptionKey) {
-        assert descriptionKey != null;
-        
-        ResourceBundle rb = AppMain.appResource.get();
-        this.description = rb.getString(descriptionKey);
+    private SheetType(String description) {
+        assert description != null;
+        this.description = description;
     }
     
     /**
