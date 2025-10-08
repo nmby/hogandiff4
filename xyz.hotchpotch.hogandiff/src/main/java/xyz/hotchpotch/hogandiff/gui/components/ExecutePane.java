@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +24,6 @@ public class ExecutePane extends AnchorPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Button executeButton;
@@ -37,7 +35,7 @@ public class ExecutePane extends AnchorPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public ExecutePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ExecutePane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ExecutePane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

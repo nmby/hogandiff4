@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
@@ -68,7 +68,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     
     // [instance members] ******************************************************
     
-    protected ResourceBundle rb = AppMain.appResource.get();
+    protected AppResource ar = AppMain.appResource;
     
     @FXML
     protected GridPane parentGridPane;
@@ -91,7 +91,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

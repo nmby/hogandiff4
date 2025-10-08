@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import javafx.event.ActionEvent;
@@ -43,7 +42,6 @@ public class SettingsPane2 extends VBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private GooglePane googlePane;
@@ -67,7 +65,7 @@ public class SettingsPane2 extends VBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingsPane2() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane2.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingsPane2.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

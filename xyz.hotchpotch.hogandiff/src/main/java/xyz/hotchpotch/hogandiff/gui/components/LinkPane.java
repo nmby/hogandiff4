@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +25,6 @@ public class LinkPane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Hyperlink toWebSiteHyperlink;
@@ -37,7 +35,7 @@ public class LinkPane extends HBox implements ChildController {
      * @throws IOException FXMLファイルの読み込みに失敗した場合
      */
     public LinkPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("LinkPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("LinkPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

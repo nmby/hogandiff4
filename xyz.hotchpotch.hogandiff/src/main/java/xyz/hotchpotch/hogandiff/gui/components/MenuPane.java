@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -31,7 +30,6 @@ public class MenuPane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Label compareLabel;
@@ -58,7 +56,7 @@ public class MenuPane extends HBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public MenuPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MenuPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

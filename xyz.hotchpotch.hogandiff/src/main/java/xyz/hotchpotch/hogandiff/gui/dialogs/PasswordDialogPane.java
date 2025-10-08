@@ -1,7 +1,6 @@
 package xyz.hotchpotch.hogandiff.gui.dialogs;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.Msg;
 
 /**
@@ -22,7 +22,7 @@ public class PasswordDialogPane extends VBox {
     
     // instance members ********************************************************
     
-    private final ResourceBundle rb = AppMain.appResource.get();
+    private final AppResource ar = AppMain.appResource;
     
     @FXML
     private Label errorMsgLabel;
@@ -41,7 +41,7 @@ public class PasswordDialogPane extends VBox {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public PasswordDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("PasswordDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("PasswordDialogPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

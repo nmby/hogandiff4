@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -44,7 +43,6 @@ public class GooglePane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ImageView profileImageView;
@@ -65,7 +63,7 @@ public class GooglePane extends HBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public GooglePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

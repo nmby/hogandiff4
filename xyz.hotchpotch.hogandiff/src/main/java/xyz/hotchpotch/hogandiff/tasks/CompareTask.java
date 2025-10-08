@@ -10,12 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.Msg;
@@ -70,9 +68,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** ユーザー向け表示文字列を保持する {@link StringBuilder} */
     protected final StringBuilder str = new StringBuilder();
     
-    /** このアプリケーションのリソースバンドル */
-    protected final ResourceBundle rb = AppMain.appResource.get();
-    
     /**
      * コンストラクタ
      * 
@@ -85,17 +80,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         this.settings = settings;
         this.workDir = settings.get(SettingKeys.WORK_DIR_BASE)
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
-    }
-    
-    protected ApplicationException getApplicationException(Throwable e, String msgId, String appendMsg) {
-        if (e instanceof ApplicationException ee) {
-            return ee;
-            
-        } else {
-            str.append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
-            updateMessage(str.toString());
-            return new ApplicationException(rb.getString(msgId) + appendMsg, e);
-        }
     }
     
     protected ApplicationException getApplicationException(Throwable e, String msg) {

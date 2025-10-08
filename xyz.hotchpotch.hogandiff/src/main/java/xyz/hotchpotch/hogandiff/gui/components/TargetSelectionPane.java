@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 import javafx.application.Platform;
@@ -69,7 +68,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Label titleLabel;
@@ -116,7 +114,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public TargetSelectionPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetSelectionPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -30,7 +29,6 @@ public class ReportingPane extends VBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ProgressBar reportingProgressBar;
@@ -54,7 +52,7 @@ public class ReportingPane extends VBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public ReportingPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportingPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportingPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

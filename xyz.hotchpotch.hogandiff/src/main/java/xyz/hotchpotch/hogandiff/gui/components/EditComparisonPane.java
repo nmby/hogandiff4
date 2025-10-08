@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -36,7 +35,6 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Button editComparisonButton;
@@ -50,7 +48,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

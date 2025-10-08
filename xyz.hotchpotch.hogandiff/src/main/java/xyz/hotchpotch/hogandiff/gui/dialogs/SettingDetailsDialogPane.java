@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -43,7 +42,6 @@ public class SettingDetailsDialogPane extends VBox {
     // [static members] ********************************************************
     
     private static final AppResource ar = AppMain.appResource;
-    private static final ResourceBundle rb = ar.get();
     
     private static enum LocaleItem {
         
@@ -104,7 +102,7 @@ public class SettingDetailsDialogPane extends VBox {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public SettingDetailsDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingDetailsDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("SettingDetailsDialogPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
