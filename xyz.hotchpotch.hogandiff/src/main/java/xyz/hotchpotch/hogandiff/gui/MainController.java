@@ -292,10 +292,6 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        if (!isReady.getValue()) {
-            throw new IllegalStateException();
-        }
-        
         AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(ar.settings())) {
