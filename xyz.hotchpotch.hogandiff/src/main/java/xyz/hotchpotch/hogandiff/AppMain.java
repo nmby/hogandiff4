@@ -1,5 +1,7 @@
 package xyz.hotchpotch.hogandiff;
 
+import java.util.UUID;
+
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import javafx.application.Application;
@@ -62,6 +64,12 @@ public class AppMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
+        
+        // UUIDが未採番の場合は採番する。
+        UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);
+        if (uuid == null) {
+            appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
+        }
         
         VersionMaster.announceNewFeature1();
         
