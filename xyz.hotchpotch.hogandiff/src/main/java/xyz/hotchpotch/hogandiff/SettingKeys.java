@@ -341,6 +341,14 @@ public class SettingKeys {
             Integer::valueOf,
             false);
     
+    /** 処理失敗時にエラー情報を送信するか */
+    public static final Key<Boolean> SEND_ERROR_INFO = new Key<>(
+            "application.sendErrorInfo",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが
     // 保証されないということなので、一応 Set#copyOf でラップしておく。
