@@ -5,6 +5,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -95,6 +96,39 @@
 			<rowConstraints>
 				<RowConstraints maxHeight="-Infinity"
 					minHeight="-Infinity" vgrow="NEVER" />
+			</rowConstraints>
+			<children>
+				<Label alignment="CENTER_RIGHT"
+					maxHeight="1.7976931348623157E308"
+					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+					minWidth="-Infinity" styleClass="detailsTitleLabel"
+					text="%FXML_0450" textAlignment="RIGHT" textOverrun="CLIP"
+					wrapText="true" GridPane.vgrow="ALWAYS" />
+				<CheckBox fx:id="sendErrorInfoCheckBox"
+					mnemonicParsing="false" text="%FXML_0460" GridPane.columnIndex="1">
+					<GridPane.margin>
+						<Insets bottom="7.0" left="7.0" right="7.0" top="5.0" />
+					</GridPane.margin>
+				</CheckBox>
+			</children>
+		</GridPane>
+		<Separator maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" VBox.vgrow="NEVER">
+			<VBox.margin>
+				<Insets bottom="3.0" top="3.0" />
+			</VBox.margin>
+		</Separator>
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints halignment="RIGHT"
+					hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+				<ColumnConstraints hgrow="ALWAYS"
+					maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints maxHeight="-Infinity"
+					minHeight="-Infinity" vgrow="NEVER" />
 				<RowConstraints maxHeight="-Infinity"
 					minHeight="-Infinity" vgrow="NEVER" />
 			</rowConstraints>
@@ -110,7 +144,7 @@
 					minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0410"
 					GridPane.columnIndex="1">
 					<GridPane.margin>
-						<Insets bottom="2.0" left="7.0" right="7.0" top="3.0" />
+						<Insets bottom="2.0" left="7.0" right="7.0" top="5.0" />
 					</GridPane.margin>
 				</Button>
 				<Button fx:id="resetSettingsButton" maxHeight="-Infinity"
@@ -118,35 +152,9 @@
 					minWidth="-Infinity" mnemonicParsing="false" text="%FXML_0420"
 					GridPane.columnIndex="1" GridPane.rowIndex="1">
 					<GridPane.margin>
-						<Insets bottom="3.0" left="7.0" right="7.0" top="2.0" />
+						<Insets bottom="5.0" left="7.0" right="7.0" top="2.0" />
 					</GridPane.margin>
 				</Button>
-			</children>
-		</GridPane>
-		<GridPane>
-			<columnConstraints>
-				<ColumnConstraints halignment="RIGHT"
-					hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
-				<ColumnConstraints hgrow="ALWAYS"
-					maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-			</columnConstraints>
-			<rowConstraints>
-				<RowConstraints maxHeight="-Infinity"
-					minHeight="-Infinity" vgrow="NEVER" />
-			</rowConstraints>
-			<children>
-				<Label alignment="CENTER_RIGHT"
-					maxHeight="1.7976931348623157E308"
-					maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-					minWidth="-Infinity" styleClass="detailsTitleLabel"
-					text="%FXML_0450" textAlignment="RIGHT" textOverrun="CLIP"
-					wrapText="true" GridPane.vgrow="ALWAYS" />
-				<CheckBox fx:id="sendErrorInfoCheckBox"
-					mnemonicParsing="false" text="%FXML_0460" GridPane.columnIndex="1">
-					<GridPane.margin>
-						<Insets bottom="7.0" left="7.0" right="7.0" top="5.0" />
-					</GridPane.margin>
-				</CheckBox>
 			</children>
 		</GridPane>
 	</children>
