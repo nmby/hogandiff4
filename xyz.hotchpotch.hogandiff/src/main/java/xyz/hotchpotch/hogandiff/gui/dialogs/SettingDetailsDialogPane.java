@@ -95,6 +95,9 @@ public class SettingDetailsDialogPane extends VBox {
     @FXML
     private Button resetSettingsButton;
     
+    @FXML
+    private CheckBox sendErrorInfoCheckBox;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -169,11 +172,15 @@ public class SettingDetailsDialogPane extends VBox {
         localeComboBox.setValue(LocaleItem.of(locale));
         
         checkUpdatesCheckBox.setSelected(ar.settings().get(SettingKeys.CHECK_UPDATES));
+        sendErrorInfoCheckBox.setSelected(ar.settings().get(SettingKeys.SEND_ERROR_INFO));
         
         // 4.値変更時のイベントハンドラの設定
         checkUpdatesCheckBox.setOnAction(_ -> ar.changeSetting(
                 SettingKeys.CHECK_UPDATES,
                 checkUpdatesCheckBox.isSelected()));
+        sendErrorInfoCheckBox.setOnAction(_ -> ar.changeSetting(
+                SettingKeys.SEND_ERROR_INFO,
+                sendErrorInfoCheckBox.isSelected()));
     }
     
     private Callback<ListView<LocaleItem>, ListCell<LocaleItem>> cellFactory(boolean showText) {
