@@ -62,6 +62,8 @@ public class MainController extends VBox {
     
     // [static members] ********************************************************
     
+    private static final String errorReportUrl = "https://api.hogandiff.hotchpotch.info/errorReport";
+    
     // [instance members] ******************************************************
     
     @FXML
@@ -311,7 +313,6 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
-        // FIXME: [No.X 内部実装改善] createWorkDirもTaskの中に入れるべき
         Path workDir = createWorkDir(ar.settings());
         if (workDir == null) {
             new Alert(
@@ -355,8 +356,7 @@ public class MainController extends VBox {
                 postData.put("message", e.getMessage());
                 postData.put("stackTrace", getStackTraceAsString(e));
                 
-                // TODO: URLを用意する
-                NetUtil.postDataAsync("", postData);
+                NetUtil.postDataAsync(errorReportUrl, postData);
             }
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
