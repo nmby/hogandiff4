@@ -16,6 +16,7 @@ import java.util.function.IntUnaryOperator;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
@@ -681,12 +682,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
+            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "CompareTask::compareBooks-1");
+            }
             
             Side.forEach(side -> {
                 try {
                     Files.copy(srcPathPair.get(side), dstPathPair.get(side));
                 } catch (IOException e1) {
-                    // nop
+                    if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
+                        ErrorReporter.report(e1, "CompareTask::compareBooks-2");
+                    }
                 }
             });
             return null;
@@ -722,6 +728,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
+            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "CompareTask::paintBook-1");
+            }
         }
     }
     
@@ -735,6 +744,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
             e.printStackTrace();
+            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "CompareTask::skipUnpairedBook-1");
+            }
         }
     }
 }
