@@ -73,7 +73,17 @@ public class ErrorReporter {
         postData.put("stackTrace", getStackTraceAsString(th));
         additionalContents.forEach((key, value) -> postData.put(key, value));
         
-        NetUtil.postDataAsync(errorReportUrl, postData);
+        NetUtil.postDataAsync(errorReportUrl, postData)
+                .thenAccept(response -> {
+                    if (response.getStatusCode() < 200 || 300 <= response.getStatusCode()) {
+                        System.err.println("例外レポート送信失敗: " + response.getStatusCode());
+                    }
+                    
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
     
     private static String getStackTraceAsString(Throwable th) {

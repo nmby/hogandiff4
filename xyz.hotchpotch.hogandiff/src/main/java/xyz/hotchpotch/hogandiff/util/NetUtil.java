@@ -1,5 +1,6 @@
 package xyz.hotchpotch.hogandiff.util;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -58,14 +59,15 @@ public class NetUtil {
      *            送信先URL
      * @param json
      *            送信する内容
+     * @return 非同期処理を表す {@link CompletableFuture} オブジェクト
      * @throws NullPointerException
      *             引数に {@code null} が指定された場合
      */
-    public static void postDataAsync(String url, JSONObject json) {
+    public static CompletableFuture<HttpResponse> postDataAsync(String url, JSONObject json) {
         Objects.requireNonNull(url);
         Objects.requireNonNull(json);
         
-        CompletableFuture.runAsync(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequest request = requestFactory.buildPostRequest(
                         new GenericUrl(url),
@@ -73,14 +75,10 @@ public class NetUtil {
                 request.setConnectTimeout(10000);
                 request.setReadTimeout(10000);
                 
-                HttpResponse response = request.execute();
+                return request.execute();
                 
-                if (response.getStatusCode() < 200 && 300 <= response.getStatusCode()) {
-                    System.err.println("例外レポート送信失敗: " + response.getStatusCode());
-                }
-                
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }
