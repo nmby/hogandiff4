@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
@@ -179,6 +180,9 @@ public final class CompareTaskTrees extends CompareTask {
                     str.append("  -  ").append(Msg.APP_0340.get()).append(BR);
                     updateMessage(str.toString());
                     e.printStackTrace();
+                    if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
+                        ErrorReporter.report(e, "CompareTaskTrees::compareTrees-1");
+                    }
                     continue;
                 }
                 
