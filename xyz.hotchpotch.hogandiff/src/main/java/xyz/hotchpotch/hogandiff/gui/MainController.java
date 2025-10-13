@@ -1,11 +1,8 @@
 package xyz.hotchpotch.hogandiff.gui;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,8 +11,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
-
-import org.json.JSONObject;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanExpression;
@@ -36,6 +31,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
@@ -49,7 +45,6 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
-import xyz.hotchpotch.hogandiff.util.NetUtil;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
@@ -61,8 +56,6 @@ import xyz.hotchpotch.hogandiff.util.Settings;
 public class MainController extends VBox {
     
     // [static members] ********************************************************
-    
-    private static final String errorReportUrl = "https://api.hogandiff.hotchpotch.info/errorReport";
     
     // [instance members] ******************************************************
     
@@ -348,15 +341,7 @@ public class MainController extends VBox {
             
             // エラー送信ONの場合はエラー情報を送信する
             if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                JSONObject postData = new JSONObject();
-                postData.put("uuid", ar.settings().get(SettingKeys.CLIENT_UUID));
-                postData.put("tag", "MainContoroller#execute");
-                postData.put("timestamp", Instant.now().toString());
-                postData.put("exceptionClass", e.getClass().getName());
-                postData.put("message", e.getMessage());
-                postData.put("stackTrace", getStackTraceAsString(e));
-                
-                NetUtil.postDataAsync(errorReportUrl, postData);
+                ErrorReporter.report(e, "MainContoroller#execute");
             }
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
@@ -386,13 +371,6 @@ public class MainController extends VBox {
         });
         
         taskExecutor.submit(currentTask);
-    }
-    
-    private static String getStackTraceAsString(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
-        return sw.toString();
     }
     
     private final ExecutorService taskExecutor = Executors.newSingleThreadExecutor(r -> {
