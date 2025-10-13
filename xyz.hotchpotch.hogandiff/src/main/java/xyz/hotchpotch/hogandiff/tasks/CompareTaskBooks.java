@@ -179,9 +179,7 @@ public final class CompareTaskBooks extends CompareTask {
                     }
                 } catch (Exception e) {
                     str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
-                    if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e, "CompareTaskBooks::compareSheets-1");
-                    }
+                    ErrorReporter.reportIfEnabled(e, "CompareTaskBooks::compareSheets-1");
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));

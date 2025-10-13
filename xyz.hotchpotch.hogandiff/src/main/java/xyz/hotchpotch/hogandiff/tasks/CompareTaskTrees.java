@@ -179,10 +179,7 @@ public final class CompareTaskTrees extends CompareTask {
                     dirResults.putIfAbsent(dirInfoPair, Optional.empty());
                     str.append("  -  ").append(Msg.APP_0340.get()).append(BR);
                     updateMessage(str.toString());
-                    e.printStackTrace();
-                    if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e, "CompareTaskTrees::compareTrees-1");
-                    }
+                    ErrorReporter.reportIfEnabled(e, "CompareTaskTrees::compareTrees-1");
                     continue;
                 }
                 

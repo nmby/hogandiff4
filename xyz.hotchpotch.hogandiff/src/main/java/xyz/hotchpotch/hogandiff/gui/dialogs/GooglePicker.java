@@ -233,10 +233,7 @@ public class GooglePicker {
                                     alert.showAndWait();
                                     
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                                        ErrorReporter.report(e, "GooglePicker::downloadAndGetFileInfo-1");
-                                    }
+                                    ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-1");
                                 }
                             });
                         }

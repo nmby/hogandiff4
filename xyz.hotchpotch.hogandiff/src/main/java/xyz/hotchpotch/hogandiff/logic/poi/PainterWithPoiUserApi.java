@@ -16,10 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
 
-import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
-import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.BookType;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
@@ -41,8 +38,6 @@ import xyz.hotchpotch.hogandiff.logic.plain.CommonUtil;
 public class PainterWithPoiUserApi implements Painter {
     
     // [static members] ********************************************************
-    
-    private static final AppResource ar = AppMain.appResource;
     
     // [instance members] ******************************************************
     
@@ -162,10 +157,7 @@ public class PainterWithPoiUserApi implements Painter {
                 // 3. まず、全ての色をクリアする。
                 PoiUtil.clearAllColors(book);
             } catch (RuntimeException e) {
-                e.printStackTrace();
-                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                    ErrorReporter.report(e, "PainterWithPoiUserApi::paintAndSave-1");
-                }
+                ErrorReporter.reportIfEnabled(e, "PainterWithPoiUserApi::paintAndSave-1");
             }
             
             // 4. 差分個所に色を付ける。
@@ -200,10 +192,7 @@ public class PainterWithPoiUserApi implements Painter {
                         PoiUtil.paintSheetTab(sheet, redundantSheetColor);
                     }
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
-                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e, "PainterWithPoiUserApi::paintAndSave-2");
-                    }
+                    ErrorReporter.reportIfEnabled(e, "PainterWithPoiUserApi::paintAndSave-2");
                 }
             });
             

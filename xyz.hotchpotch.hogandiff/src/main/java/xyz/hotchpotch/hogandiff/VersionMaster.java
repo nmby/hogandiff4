@@ -95,10 +95,7 @@ public class VersionMaster {
                 Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-0/"));
                 
             } catch (IOException e) {
-                e.printStackTrace();
-                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                    ErrorReporter.report(e, "VersionMaster::announceNewFeature2-1");
-                }
+                ErrorReporter.reportIfEnabled(e, "VersionMaster::announceNewFeature2-1");
             }
             ar.changeSetting(SettingKeys.APP_VERSION, APP_VERSION);
         }

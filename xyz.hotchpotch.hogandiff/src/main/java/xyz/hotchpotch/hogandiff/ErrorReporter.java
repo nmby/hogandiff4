@@ -33,11 +33,9 @@ public class ErrorReporter {
      *            タグ（例外の発生箇所を特定するための文字列）
      * @throws NullPointerException
      *             パラメータに {@code null} が指定された場合
-     * @throws IllegalStateException
-     *             エラー情報の送信が無効化されている場合
      */
-    public static void report(Throwable th, String tag) {
-        report(th, tag, Map.of());
+    public static void reportIfEnabled(Throwable th, String tag) {
+        reportIfEnabled(th, tag, Map.of());
     }
     
     /**
@@ -52,16 +50,16 @@ public class ErrorReporter {
      *            追加情報（キーと値のペア）
      * @throws NullPointerException
      *             パラメータに {@code null} が指定された場合
-     * @throws IllegalStateException
-     *             エラー情報の送信が無効化されている場合
      */
-    public static void report(Throwable th, String tag, Map<String, String> additionalContents) {
+    public static void reportIfEnabled(Throwable th, String tag, Map<String, String> additionalContents) {
         Objects.requireNonNull(th);
         Objects.requireNonNull(tag);
         Objects.requireNonNull(additionalContents);
         
+        th.printStackTrace();
+        
         if (!ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-            throw new IllegalStateException("Error reporting is disabled.");
+            return;
         }
         
         JSONObject postData = new JSONObject();

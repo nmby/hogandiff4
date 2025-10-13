@@ -141,10 +141,7 @@ public class SettingDetailsDialogPane extends VBox {
             try {
                 Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
             } catch (IOException e) {
-                e.printStackTrace();
-                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                    ErrorReporter.report(e, "SettingDetailsDialogPane::init-1");
-                }
+                ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-1");
             }
         });
         
@@ -163,10 +160,7 @@ public class SettingDetailsDialogPane extends VBox {
                     }
                     Platform.exit();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e, "SettingDetailsDialogPane::init-2");
-                    }
+                    ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-2");
                 }
             }
         });

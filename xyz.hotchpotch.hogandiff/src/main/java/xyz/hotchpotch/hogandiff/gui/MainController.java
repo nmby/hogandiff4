@@ -338,9 +338,7 @@ public class MainController extends VBox {
             row3Pane.unbind();
             
             // エラー送信ONの場合はエラー情報を送信する
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "MainContoroller#execute");
-            }
+            ErrorReporter.reportIfEnabled(e, "MainContoroller#execute");
             
             // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             alertPasswordUnlocked();

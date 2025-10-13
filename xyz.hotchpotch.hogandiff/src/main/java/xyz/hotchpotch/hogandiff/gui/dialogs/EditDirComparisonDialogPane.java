@@ -246,10 +246,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
             updateChildren();
             
         } catch (Exception e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "EditDirComparisonDialogPane::onClickPaired-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane::onClickPaired-1");
         }
     }
     

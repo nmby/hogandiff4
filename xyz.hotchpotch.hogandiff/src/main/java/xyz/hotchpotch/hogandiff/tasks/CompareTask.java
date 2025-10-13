@@ -681,18 +681,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         } catch (Exception e) {
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
-            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "CompareTask::compareBooks-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "CompareTask::compareBooks-1");
             
             Side.forEach(side -> {
                 try {
                     Files.copy(srcPathPair.get(side), dstPathPair.get(side));
                 } catch (IOException e1) {
-                    if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e1, "CompareTask::compareBooks-2");
-                    }
+                    ErrorReporter.reportIfEnabled(e1, "CompareTask::compareBooks-2");
                 }
             });
             return null;
@@ -727,10 +722,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         } catch (Exception e) {
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
-            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "CompareTask::paintBook-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "CompareTask::paintBook-1");
         }
     }
     
@@ -743,10 +735,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         } catch (Exception e) {
             str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
-            if (settings.get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "CompareTask::skipUnpairedBook-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "CompareTask::skipUnpairedBook-1");
         }
     }
 }

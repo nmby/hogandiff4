@@ -270,10 +270,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             event.acceptTransferModes(TransferMode.LINK);
             
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "TargetSelectionPane::onDragOver-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::onDragOver-1");
         }
     }
     
@@ -315,10 +312,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
         } catch (RuntimeException e) {
             event.setDropCompleted(false);
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "TargetSelectionPane::onDragDropped-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::onDragDropped-1");
             
         } finally {
             isBusy.set(false);
@@ -347,10 +341,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
             
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "TargetSelectionPane::chooseDir-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::chooseDir-1");
             
         } finally {
             isBusy.set(false);
@@ -384,10 +375,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
             
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "TargetSelectionPane::chooseBook-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::chooseBook-1");
             
         } finally {
             isBusy.set(false);
@@ -408,10 +396,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             prevSelectedBookPath = newDirPath;
             
         } catch (Exception e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "TargetSelectionPane::setDirPath-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::setDirPath-1");
             
             parent.dirInfoPropPair.get(side).setValue(null);
             new Alert(

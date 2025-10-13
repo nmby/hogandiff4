@@ -97,10 +97,7 @@ public class SettingsPane2 extends VBox implements ChildController {
                 detailsDialog.showAndWait();
                 
             } catch (IOException e) {
-                e.printStackTrace();
-                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                    ErrorReporter.report(e, "SettingsPane2::init-1");
-                }
+                ErrorReporter.reportIfEnabled(e, "SettingsPane2::init-1");
             }
         });
         
@@ -195,15 +192,11 @@ public class SettingsPane2 extends VBox implements ChildController {
                         } catch (Exception e) {
                             // 使用中などの理由で削除できないファイルがある場合は
                             // それを飛ばして削除処理を継続する
-                            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                                ErrorReporter.report(e, "SettingsPane2::deleteDir-1");
-                            }
+                            ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-1");
                         }
                     });
                 } catch (Exception e) {
-                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                        ErrorReporter.report(e, "SettingsPane2::deleteDir-2");
-                    }
+                    ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-2");
                 }
             });
         }

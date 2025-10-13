@@ -62,10 +62,7 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
             try {
                 Desktop.getDesktop().open(localDir.toFile());
             } catch (IOException e1) {
-                e1.printStackTrace();
-                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                    ErrorReporter.report(e1, "GoogleDownloadNoticeDialogPane::init-1");
-                }
+                ErrorReporter.reportIfEnabled(e1, "GoogleDownloadNoticeDialogPane::init-1");
             }
         });
         

@@ -119,10 +119,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
-            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
-                ErrorReporter.report(e, "EditComparisonPane::editComparison-1");
-            }
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane::editComparison-1");
         }
     }
 }
