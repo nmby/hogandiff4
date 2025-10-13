@@ -51,17 +51,14 @@ public class Row4Pane extends HBox implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         settingsPane1.init(parent);
         settingsPane2.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     /**

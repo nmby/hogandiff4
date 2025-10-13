@@ -27,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.UpdateChecker;
@@ -116,7 +117,6 @@ public class SettingDetailsDialogPane extends VBox {
      */
     public void init() {
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
@@ -142,7 +142,9 @@ public class SettingDetailsDialogPane extends VBox {
                 Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
             } catch (IOException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "SettingDetailsDialogPane::init-1");
+                }
             }
         });
         
@@ -162,7 +164,9 @@ public class SettingDetailsDialogPane extends VBox {
                     Platform.exit();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    // nop
+                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                        ErrorReporter.report(e, "SettingDetailsDialogPane::init-2");
+                    }
                 }
             }
         });

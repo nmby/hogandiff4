@@ -65,7 +65,6 @@ public class ReportingPane extends VBox implements ChildController {
         this.parent = parent;
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         reportingSeparator.setOnMousePressed(event -> {
@@ -81,10 +80,8 @@ public class ReportingPane extends VBox implements ChildController {
         });
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     /**

@@ -37,7 +37,8 @@ public class TargetsPane extends VBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), ar.get());
@@ -60,10 +61,8 @@ public class TargetsPane extends VBox implements ChildController {
         targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     @Override

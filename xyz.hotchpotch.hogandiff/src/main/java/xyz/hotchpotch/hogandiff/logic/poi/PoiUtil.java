@@ -55,6 +55,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 
 /**
@@ -65,6 +69,8 @@ import xyz.hotchpotch.hogandiff.logic.SheetType;
 public class PoiUtil {
     
     // [static members] ********************************************************
+    
+    private static final AppResource ar = AppMain.appResource;
     
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
             .ofPattern("yyyy/MM/dd HH:mm:ss.SSS");
@@ -275,7 +281,9 @@ public class PoiUtil {
                 ExtendedFormatRecord efRecord = (ExtendedFormatRecord) field.get(style);
                 efRecord.setAdtlDiag(IndexedColors.AUTOMATIC.getIndex());
             } catch (Exception e) {
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "PoiUtil::clearAllColors-1");
+                }
             }
             
             // パターンは残したまま、背景色＝白、前景色＝黒にする
@@ -784,7 +792,9 @@ public class PoiUtil {
             cell.setHyperlink(link);
             
         } catch (Exception e) {
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "PoiUtil::setHyperlink-1");
+            }
         }
         return cell;
     }
@@ -815,7 +825,9 @@ public class PoiUtil {
             cell.setHyperlink(link);
             
         } catch (Exception e) {
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "PoiUtil::setHyperlink-2");
+            }
         }
         return cell;
     }

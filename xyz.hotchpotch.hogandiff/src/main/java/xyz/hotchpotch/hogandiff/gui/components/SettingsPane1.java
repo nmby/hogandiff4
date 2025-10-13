@@ -88,7 +88,6 @@ public class SettingsPane1 extends VBox implements ChildController {
         disableProperty().bind(parent.isRunning());
         
         // 2.項目ごとの各種設定
-        // nop
         
         // 3.初期値の設定
         BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter.accept(ar.settings().get(key));

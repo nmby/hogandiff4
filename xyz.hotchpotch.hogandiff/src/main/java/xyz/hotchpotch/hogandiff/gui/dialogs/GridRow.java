@@ -17,6 +17,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialogPane.ItemType;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -30,6 +34,8 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 public class GridRow extends Pane {
     
     // [static members] ********************************************************
+    
+    private static final AppResource ar = AppMain.appResource;
     
     // [instance members] ******************************************************
     
@@ -160,7 +166,9 @@ public class GridRow extends Pane {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "GridRow::onDragEntered-1");
+            }
         }
     }
     
@@ -180,7 +188,9 @@ public class GridRow extends Pane {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "GridRow::onDragExited-1");
+            }
         }
     }
     
@@ -200,7 +210,9 @@ public class GridRow extends Pane {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "GridRow::onDragOver-1");
+            }
         }
     }
     
@@ -221,7 +233,9 @@ public class GridRow extends Pane {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "GridRow::onDragDropped-1");
+            }
         }
     }
     
@@ -280,7 +294,9 @@ public class GridRow extends Pane {
                 
             } catch (RuntimeException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "GridRow::onDragDetected-1");
+                }
             }
         }
         
@@ -291,7 +307,9 @@ public class GridRow extends Pane {
                 
             } catch (RuntimeException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "GridRow::onDragDone-1");
+                }
             }
         }
     }

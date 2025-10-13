@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 
 /**
@@ -54,7 +55,6 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
      */
     public void init() {
         // 1.プロパティのバインディング
-        // nop
         
         // 2.イベントハンドラの設定
         Path localDir = ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive");
@@ -63,7 +63,9 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
                 Desktop.getDesktop().open(localDir.toFile());
             } catch (IOException e1) {
                 e1.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e1, "GoogleDownloadNoticeDialogPane::init-1");
+                }
             }
         });
         

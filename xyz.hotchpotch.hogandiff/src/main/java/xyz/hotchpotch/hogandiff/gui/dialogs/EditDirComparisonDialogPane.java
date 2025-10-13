@@ -10,15 +10,16 @@ import java.util.Optional;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.core.Matcher;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
+import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.logic.BookInfoLoader;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -44,8 +45,10 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
     /**
      * コンストラクタ<br>
      * 
-     * @param dirComparison フォルダ比較情報
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @param dirComparison
+     *            フォルダ比較情報
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public EditDirComparisonDialogPane(PairingInfoDirs dirComparison) throws IOException {
         super();
@@ -244,7 +247,9 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
             
         } catch (Exception e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "EditDirComparisonDialogPane::onClickPaired-1");
+            }
         }
     }
     

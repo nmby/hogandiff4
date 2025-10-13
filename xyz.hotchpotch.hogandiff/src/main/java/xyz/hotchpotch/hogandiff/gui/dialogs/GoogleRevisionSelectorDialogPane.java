@@ -60,10 +60,8 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
      */
     /* package */ void init(GoogleMetadata metadata, List<GoogleRevision> revisions) {
         // 1.プロパティのバインディング
-        // nop
         
         // 2.イベントハンドラの設定
-        // nop
         
         // 3.初期値の設定
         fileUrlLabel.setText(metadata.url());

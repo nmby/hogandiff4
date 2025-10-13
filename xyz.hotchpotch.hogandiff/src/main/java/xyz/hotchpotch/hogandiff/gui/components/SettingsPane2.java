@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.VersionMaster;
@@ -97,15 +98,15 @@ public class SettingsPane2 extends VBox implements ChildController {
                 
             } catch (IOException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "SettingsPane2::init-1");
+                }
             }
         });
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
         
         // 5.その他
         VersionMaster.for_v0_27_0 = detailsButton;
@@ -192,13 +193,17 @@ public class SettingsPane2 extends VBox implements ChildController {
                         try {
                             deleteAction.accept(path);
                         } catch (Exception e) {
-                            // nop
                             // 使用中などの理由で削除できないファイルがある場合は
                             // それを飛ばして削除処理を継続する
+                            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                                ErrorReporter.report(e, "SettingsPane2::deleteDir-1");
+                            }
                         }
                     });
                 } catch (Exception e) {
-                    // nop
+                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                        ErrorReporter.report(e, "SettingsPane2::deleteDir-2");
+                    }
                 }
             });
         }

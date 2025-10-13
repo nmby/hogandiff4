@@ -34,6 +34,7 @@ import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -270,7 +271,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "TargetSelectionPane::onDragOver-1");
+            }
         }
     }
     
@@ -311,9 +314,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 }
             }
         } catch (RuntimeException e) {
-            e.printStackTrace();
             event.setDropCompleted(false);
-            // nop
+            e.printStackTrace();
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "TargetSelectionPane::onDragDropped-1");
+            }
             
         } finally {
             isBusy.set(false);
@@ -343,7 +348,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "TargetSelectionPane::chooseDir-1");
+            }
             
         } finally {
             isBusy.set(false);
@@ -378,7 +385,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
         } catch (RuntimeException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "TargetSelectionPane::chooseBook-1");
+            }
             
         } finally {
             isBusy.set(false);
@@ -400,6 +409,10 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
         } catch (Exception e) {
             e.printStackTrace();
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "TargetSelectionPane::setDirPath-1");
+            }
+            
             parent.dirInfoPropPair.get(side).setValue(null);
             new Alert(
                     AlertType.ERROR,

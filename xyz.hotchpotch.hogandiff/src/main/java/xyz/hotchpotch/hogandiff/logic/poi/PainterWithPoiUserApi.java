@@ -16,6 +16,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
 
+import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookHandler;
 import xyz.hotchpotch.hogandiff.logic.BookType;
 import xyz.hotchpotch.hogandiff.logic.ExcelHandlingException;
@@ -38,6 +42,8 @@ public class PainterWithPoiUserApi implements Painter {
     
     // [static members] ********************************************************
     
+    private static final AppResource ar = AppMain.appResource;
+    
     // [instance members] ******************************************************
     
     private final short redundantColor;
@@ -51,13 +57,20 @@ public class PainterWithPoiUserApi implements Painter {
     /**
      * コンストラクタ
      * 
-     * @param redundantColor        余剰行・余剰列に着ける色のインデックス値
-     * @param diffColor             差分セルに着ける色のインデックス値
-     * @param redundantCommentColor 余剰セルコメントに着ける色
-     * @param diffCommentColor      差分セルコメントに着ける色
-     * @param redundantSheetColor   余剰シートの見出しに着ける色
-     * @param diffSheetColor        差分シートの見出しに着ける色
-     * @param sameSheetColor        差分が無いシートの見出しに着ける色
+     * @param redundantColor
+     *            余剰行・余剰列に着ける色のインデックス値
+     * @param diffColor
+     *            差分セルに着ける色のインデックス値
+     * @param redundantCommentColor
+     *            余剰セルコメントに着ける色
+     * @param diffCommentColor
+     *            差分セルコメントに着ける色
+     * @param redundantSheetColor
+     *            余剰シートの見出しに着ける色
+     * @param diffSheetColor
+     *            差分シートの見出しに着ける色
+     * @param sameSheetColor
+     *            差分が無いシートの見出しに着ける色
      */
     public PainterWithPoiUserApi(
             short redundantColor,
@@ -87,17 +100,17 @@ public class PainterWithPoiUserApi implements Painter {
      * {@inheritDoc}
      * 
      * @throws NullPointerException
-     *                                  {@code srcBookPath}, {@code dstBookPath},
-     *                                  {@code diffs}
-     *                                  のいずれかが {@code null} の場合
+     *             {@code srcBookPath}, {@code dstBookPath},
+     *             {@code diffs}
+     *             のいずれかが {@code null} の場合
      * @throws IllegalArgumentException
-     *                                  {@code srcBookPath} がサポート対象外の形式の場合
+     *             {@code srcBookPath} がサポート対象外の形式の場合
      * @throws IllegalArgumentException
-     *                                  {@code srcBookPath} と {@code dstBookPath}
-     *                                  が同じパスの場合
+     *             {@code srcBookPath} と {@code dstBookPath}
+     *             が同じパスの場合
      * @throws IllegalArgumentException
-     *                                  {@code srcBookPath} と {@code dstBookPath}
-     *                                  の形式が異なる場合
+     *             {@code srcBookPath} と {@code dstBookPath}
+     *             の形式が異なる場合
      */
     // 例外カスケードのポリシーについて：
     // ・プログラミングミスに起因するこのメソッドの呼出不正は RuntimeException の派生でレポートする。
@@ -150,7 +163,9 @@ public class PainterWithPoiUserApi implements Painter {
                 PoiUtil.clearAllColors(book);
             } catch (RuntimeException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "PainterWithPoiUserApi::paintAndSave-1");
+                }
             }
             
             // 4. 差分個所に色を付ける。
@@ -186,7 +201,9 @@ public class PainterWithPoiUserApi implements Painter {
                     }
                 } catch (RuntimeException e) {
                     e.printStackTrace();
-                    // nop
+                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                        ErrorReporter.report(e, "PainterWithPoiUserApi::paintAndSave-2");
+                    }
                 }
             });
             

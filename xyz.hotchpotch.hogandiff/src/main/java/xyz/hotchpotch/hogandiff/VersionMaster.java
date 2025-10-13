@@ -28,7 +28,8 @@ public class VersionMaster {
     /**
      * このアプリの現在のバージョンと指定されたバージョンを比較します。<br>
      * 
-     * @param comparisonTarget 比較対象のバージョン
+     * @param comparisonTarget
+     *            比較対象のバージョン
      * @return 現在のバージョンの方が新しい場合は {@code 1}、同じ場合は {@code 0}、古い場合は {@code -1}
      */
     public static int compareVersion(String comparisonTarget) {
@@ -95,7 +96,9 @@ public class VersionMaster {
                 
             } catch (IOException e) {
                 e.printStackTrace();
-                // nop
+                if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                    ErrorReporter.report(e, "VersionMaster::announceNewFeature2-1");
+                }
             }
             ar.changeSetting(SettingKeys.APP_VERSION, APP_VERSION);
         }

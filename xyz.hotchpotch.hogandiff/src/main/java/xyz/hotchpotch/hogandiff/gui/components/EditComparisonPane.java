@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -69,10 +70,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
         editComparisonButton.setOnAction(_ -> editComparison());
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     private void editComparison() {
@@ -121,7 +120,9 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             
         } catch (IOException e) {
             e.printStackTrace();
-            // nop
+            if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                ErrorReporter.report(e, "EditComparisonPane::editComparison-1");
+            }
         }
     }
 }

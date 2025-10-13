@@ -53,9 +53,7 @@ public class ExecutePane extends AnchorPane implements ChildController {
         executeButton.setOnAction(_ -> parent.execute());
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
 }

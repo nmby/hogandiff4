@@ -164,7 +164,6 @@ public class GooglePane extends HBox implements ChildController {
         asyncInitGoogleTask.start();
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     private class ConnectGoogleTask extends Task<GoogleCredential> {

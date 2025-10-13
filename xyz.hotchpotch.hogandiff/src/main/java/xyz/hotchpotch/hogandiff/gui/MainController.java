@@ -105,7 +105,6 @@ public class MainController extends VBox {
     public void initialize() {
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         row1Pane.init(this);
@@ -142,7 +141,6 @@ public class MainController extends VBox {
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
         
         // 5.その他
         UpdateChecker.execute(false);

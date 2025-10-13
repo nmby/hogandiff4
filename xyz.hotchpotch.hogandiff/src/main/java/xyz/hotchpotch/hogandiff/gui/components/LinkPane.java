@@ -32,7 +32,8 @@ public class LinkPane extends HBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public LinkPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LinkPane.fxml"), ar.get());
@@ -46,15 +47,12 @@ public class LinkPane extends HBox implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         UIUtil.setupHyperlink(toWebSiteHyperlink, AppMain.WEB_URL);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
 }

@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
@@ -233,7 +234,9 @@ public class GooglePicker {
                                     
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                    // nop
+                                    if (ar.settings().get(SettingKeys.SEND_ERROR_INFO)) {
+                                        ErrorReporter.report(e, "GooglePicker::downloadAndGetFileInfo-1");
+                                    }
                                 }
                             });
                         }
