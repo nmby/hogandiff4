@@ -53,7 +53,7 @@ public class AppMain extends Application {
      *             パラメータ読み込みに失敗した場合
      */
     public static void main(String[] args) throws Exception {
-        ErrorReporter.run(() -> appResource.reflectArgs(args), "AppMain::main-1");
+        ErrorReporter.run("AppMain::main-1", () -> appResource.reflectArgs(args));
         
         launch(args);
     }
@@ -65,7 +65,7 @@ public class AppMain extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ErrorReporter.call(() -> {
+        ErrorReporter.run("AppMain::start-1", () -> {
             stage = primaryStage;
             
             // UUIDが未採番の場合は採番する。
@@ -142,7 +142,6 @@ public class AppMain extends Application {
                 controller.updateActiveComparison();
                 controller.execute();
             }
-            return null;
-        }, "AppMain::start-1");
+        });
     }
 }

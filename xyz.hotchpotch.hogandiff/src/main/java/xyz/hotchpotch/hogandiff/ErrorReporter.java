@@ -10,6 +10,8 @@ import java.util.concurrent.Callable;
 import org.json.JSONObject;
 
 import xyz.hotchpotch.hogandiff.util.NetUtil;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeConsumer;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeFunction;
 import xyz.hotchpotch.hogandiff.util.function.UnsafeRunnable;
 
 /**
@@ -95,45 +97,115 @@ public class ErrorReporter {
     
     /**
      * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
-     * を呼び出します。<br>
+     * を呼び出したうえで、その例外をスローします。<br>
      * 
-     * @param runnable
-     *            処理
      * @param tag
      *            エラーレポート用のタグ
+     * @param runnable
+     *            処理
      * @throws Exception
      *             処理中に例外が発生した場合
+     * @throws NullPointerException
+     *             パラメータに {@code null} が指定された場合
      */
-    public static void run(UnsafeRunnable runnable, String tag) throws Exception {
-        try {
-            runnable.run();
-        } catch (Exception e) {
-            reportIfEnabled(e, tag);
-            throw e;
-        }
+    public static void run(
+            String tag,
+            UnsafeRunnable runnable)
+            throws Exception {
         
+        run(tag, runnable, e -> {
+            throw e;
+        });
     }
     
     /**
      * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
-     * を呼び出します。<br>
+     * を呼び出したうえで、{@code onFiled} で指定された処理を行います。<br>
+     * 
+     * @param tag
+     *            エラーレポート用のタグ
+     * @param runnable
+     *            処理
+     * @param onFailed
+     *            例外発生時の処理
+     * @throws Exception
+     *             処理中に例外が発生した場合
+     * @throws NullPointerException
+     *             パラメータに {@code null} が指定された場合
+     */
+    public static void run(
+            String tag,
+            UnsafeRunnable runnable,
+            UnsafeConsumer<Exception, Exception> onFailed)
+            throws Exception {
+        
+        Objects.requireNonNull(tag);
+        Objects.requireNonNull(runnable);
+        Objects.requireNonNull(onFailed);
+        
+        try {
+            runnable.run();
+        } catch (Exception e) {
+            reportIfEnabled(e, tag);
+            onFailed.accept(e);
+        }
+    }
+    
+    /**
+     * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
+     * を呼び出したうえで、その例外をスローします。<br>
      * 
      * @param <T>
      *            戻り値の型
-     * @param callable
-     *            処理
      * @param tag
      *            エラーレポート用のタグ
+     * @param callable
+     *            処理
      * @return 処理の戻り値
      * @throws Exception
      *             処理中に例外が発生した場合
      */
-    public static <T> T call(Callable<T> callable, String tag) throws Exception {
+    public static <T> T call(
+            String tag,
+            Callable<T> callable)
+            throws Exception {
+        
+        return call(tag, callable, e -> {
+            throw e;
+        });
+    }
+    
+    /**
+     * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
+     * を呼び出したうえで、その例外をスローします。<br>
+     * 
+     * @param <T>
+     *            戻り値の型
+     * @param tag
+     *            エラーレポート用のタグ
+     * @param callable
+     *            処理
+     * @param onFailed
+     *            例外発生時の処理
+     * @return 処理の戻り値
+     * @throws Exception
+     *             処理中に例外が発生した場合
+     */
+    public static <T> T call(
+            String tag,
+            Callable<T> callable,
+            UnsafeFunction<Exception, T, Exception> onFailed)
+            throws Exception {
+        
+        Objects.requireNonNull(tag);
+        Objects.requireNonNull(callable);
+        Objects.requireNonNull(onFailed);
+        
         try {
             return callable.call();
         } catch (Exception e) {
             reportIfEnabled(e, tag);
-            throw e;
+            return onFailed.apply(e);
         }
     }
     
