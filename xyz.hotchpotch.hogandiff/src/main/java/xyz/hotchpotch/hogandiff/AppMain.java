@@ -49,9 +49,11 @@ public class AppMain extends Application {
      * 
      * @param args
      *            アプリケーション実行時引数
+     * @throws Exception
+     *             パラメータ読み込みに失敗した場合
      */
-    public static void main(String[] args) {
-        appResource.reflectArgs(args);
+    public static void main(String[] args) throws Exception {
+        ErrorReporter.run(() -> appResource.reflectArgs(args), "AppMain::main-1");
         
         launch(args);
     }
@@ -63,81 +65,84 @@ public class AppMain extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        stage = primaryStage;
-        
-        // UUIDが未採番の場合は採番する。
-        UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);
-        if (uuid == null) {
-            appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
-        }
-        
-        VersionMaster.announceNewFeature1();
-        
-        // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
-        // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
-        ZipSecureFile.setMinInflateRatio(0.001);
-        
-        // 多数のシートを含むExcelファイルを扱うための制限の緩和。
-        // 規定値の 1,000 から 100,000 に変更する。
-        ZipSecureFile.setMaxFileCount(100_000);
-        
-        // 念のためこれも変更しておく。
-        // 規定値の 4,294,967,295 [0xffffffff] から Long.MAX_VALUE に変更する。
-        ZipSecureFile.setMaxEntrySize(Long.MAX_VALUE);
-        
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("gui/MainView.fxml"),
-                appResource.get());
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        String cssPath = getClass().getResource("gui/application.css").toExternalForm().replace(" ", "%20");
-        root.getStylesheets().add(cssPath);
-        Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
-        Settings settings = appResource.settings();
-        
-        primaryStage.setScene(scene);
-        primaryStage.getIcons().add(icon);
-        primaryStage.setTitle(
-                Msg.APP_0010.get()
-                        + "  -  "
-                        + VersionMaster.APP_VERSION);
-        
-        primaryStage.setMinHeight(
-                settings.get(SettingKeys.SHOW_SETTINGS)
-                        ? STAGE_HEIGHT_OPEN
-                        : STAGE_HEIGHT_CLOSE);
-        primaryStage.setMinWidth(STAGE_WIDTH);
-        
-        if (settings.containsKey(SettingKeys.STAGE_HEIGHT)) {
-            primaryStage.setHeight(settings.get(SettingKeys.STAGE_HEIGHT));
-        }
-        if (settings.containsKey(SettingKeys.STAGE_WIDTH)) {
-            primaryStage.setWidth(settings.get(SettingKeys.STAGE_WIDTH));
-        }
-        if (settings.containsKey(SettingKeys.STAGE_MAXIMIZED)) {
-            primaryStage.setMaximized(settings.get(SettingKeys.STAGE_MAXIMIZED));
-        }
-        primaryStage.heightProperty().addListener((_, _, newValue) -> {
-            if (!primaryStage.isMaximized()) {
-                appResource.changeSetting(SettingKeys.STAGE_HEIGHT, (Double) newValue);
+        ErrorReporter.call(() -> {
+            stage = primaryStage;
+            
+            // UUIDが未採番の場合は採番する。
+            UUID uuid = appResource.settings().get(SettingKeys.CLIENT_UUID);
+            if (uuid == null) {
+                appResource.changeSetting(SettingKeys.CLIENT_UUID, UUID.randomUUID());
             }
-        });
-        primaryStage.widthProperty().addListener((_, _, newValue) -> {
-            if (!primaryStage.isMaximized()) {
-                appResource.changeSetting(SettingKeys.STAGE_WIDTH, (Double) newValue);
+            
+            VersionMaster.announceNewFeature1();
+            
+            // Zip bomb対策の制限の緩和。規定値の0.01から0.001に変更する。
+            // いささか乱暴ではあるものの、ファイルを開く都度ではなくここで一括で設定してしまう。
+            ZipSecureFile.setMinInflateRatio(0.001);
+            
+            // 多数のシートを含むExcelファイルを扱うための制限の緩和。
+            // 規定値の 1,000 から 100,000 に変更する。
+            ZipSecureFile.setMaxFileCount(100_000);
+            
+            // 念のためこれも変更しておく。
+            // 規定値の 4,294,967,295 [0xffffffff] から Long.MAX_VALUE に変更する。
+            ZipSecureFile.setMaxEntrySize(Long.MAX_VALUE);
+            
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("gui/MainView.fxml"),
+                    appResource.get());
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            String cssPath = getClass().getResource("gui/application.css").toExternalForm().replace(" ", "%20");
+            root.getStylesheets().add(cssPath);
+            Image icon = new Image(getClass().getResourceAsStream("gui/favicon.png"));
+            Settings settings = appResource.settings();
+            
+            primaryStage.setScene(scene);
+            primaryStage.getIcons().add(icon);
+            primaryStage.setTitle(
+                    Msg.APP_0010.get()
+                            + "  -  "
+                            + VersionMaster.APP_VERSION);
+            
+            primaryStage.setMinHeight(
+                    settings.get(SettingKeys.SHOW_SETTINGS)
+                            ? STAGE_HEIGHT_OPEN
+                            : STAGE_HEIGHT_CLOSE);
+            primaryStage.setMinWidth(STAGE_WIDTH);
+            
+            if (settings.containsKey(SettingKeys.STAGE_HEIGHT)) {
+                primaryStage.setHeight(settings.get(SettingKeys.STAGE_HEIGHT));
             }
-        });
-        primaryStage.maximizedProperty().addListener((_, _, newValue) -> {
-            appResource.changeSetting(SettingKeys.STAGE_MAXIMIZED, newValue);
-        });
-        
-        primaryStage.show();
-        VersionMaster.announceNewFeature2();
-        
-        MainController controller = loader.getController();
-        if (controller.isReady().getValue()) {
-            controller.updateActiveComparison();
-            controller.execute();
-        }
+            if (settings.containsKey(SettingKeys.STAGE_WIDTH)) {
+                primaryStage.setWidth(settings.get(SettingKeys.STAGE_WIDTH));
+            }
+            if (settings.containsKey(SettingKeys.STAGE_MAXIMIZED)) {
+                primaryStage.setMaximized(settings.get(SettingKeys.STAGE_MAXIMIZED));
+            }
+            primaryStage.heightProperty().addListener((_, _, newValue) -> {
+                if (!primaryStage.isMaximized()) {
+                    appResource.changeSetting(SettingKeys.STAGE_HEIGHT, (Double) newValue);
+                }
+            });
+            primaryStage.widthProperty().addListener((_, _, newValue) -> {
+                if (!primaryStage.isMaximized()) {
+                    appResource.changeSetting(SettingKeys.STAGE_WIDTH, (Double) newValue);
+                }
+            });
+            primaryStage.maximizedProperty().addListener((_, _, newValue) -> {
+                appResource.changeSetting(SettingKeys.STAGE_MAXIMIZED, newValue);
+            });
+            
+            primaryStage.show();
+            VersionMaster.announceNewFeature2();
+            
+            MainController controller = loader.getController();
+            if (controller.isReady().getValue()) {
+                controller.updateActiveComparison();
+                controller.execute();
+            }
+            return null;
+        }, "AppMain::start-1");
     }
 }

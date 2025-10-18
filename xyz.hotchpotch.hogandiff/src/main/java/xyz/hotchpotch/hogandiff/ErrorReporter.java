@@ -5,10 +5,12 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 import org.json.JSONObject;
 
 import xyz.hotchpotch.hogandiff.util.NetUtil;
+import xyz.hotchpotch.hogandiff.util.function.UnsafeRunnable;
 
 /**
  * エラー情報をサーバに送信するためのユーティリティクラスです。<br>
@@ -89,6 +91,50 @@ public class ErrorReporter {
         PrintWriter pw = new PrintWriter(sw);
         th.printStackTrace(pw);
         return sw.toString();
+    }
+    
+    /**
+     * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
+     * を呼び出します。<br>
+     * 
+     * @param runnable
+     *            処理
+     * @param tag
+     *            エラーレポート用のタグ
+     * @throws Exception
+     *             処理中に例外が発生した場合
+     */
+    public static void run(UnsafeRunnable runnable, String tag) throws Exception {
+        try {
+            runnable.run();
+        } catch (Exception e) {
+            reportIfEnabled(e, tag);
+            throw e;
+        }
+        
+    }
+    
+    /**
+     * 処理を実行し、例外が発生した場合は {@link #reportIfEnabled(Throwable, String)}
+     * を呼び出します。<br>
+     * 
+     * @param <T>
+     *            戻り値の型
+     * @param callable
+     *            処理
+     * @param tag
+     *            エラーレポート用のタグ
+     * @return 処理の戻り値
+     * @throws Exception
+     *             処理中に例外が発生した場合
+     */
+    public static <T> T call(Callable<T> callable, String tag) throws Exception {
+        try {
+            return callable.call();
+        } catch (Exception e) {
+            reportIfEnabled(e, tag);
+            throw e;
+        }
     }
     
     // [instance members] ******************************************************
