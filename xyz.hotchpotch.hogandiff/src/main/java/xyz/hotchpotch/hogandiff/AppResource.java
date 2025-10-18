@@ -34,22 +34,27 @@ public class AppResource {
     /** ユーザーディレクトリ */
     public static final Path USER_HOME;
     static {
-        String osName = System.getProperty("os.name").toLowerCase();
-        String userHome = System.getProperty("user.home");
-        
-        Path dir = osName.startsWith("mac")
-                ? Path.of(userHome, AppMain.APP_DOMAIN)
-                : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
-        
-        if (Files.notExists(dir)) {
-            try {
-                Files.createDirectory(dir);
-            } catch (Exception e) {
-                e.printStackTrace();
-                dir = null;
+        try {
+            String osName = System.getProperty("os.name").toLowerCase();
+            String userHome = System.getProperty("user.home");
+            
+            Path dir = osName.startsWith("mac")
+                    ? Path.of(userHome, AppMain.APP_DOMAIN)
+                    : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
+            
+            if (Files.notExists(dir)) {
+                try {
+                    Files.createDirectory(dir);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    dir = null;
+                }
             }
+            USER_HOME = dir;
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "AppResource#<clinit>-1");
+            throw e;
         }
-        USER_HOME = dir;
     }
     
     /** プロパティファイルの相対パス */
@@ -70,7 +75,7 @@ public class AppResource {
                 properties.load(r);
                 return properties;
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorReporter.reportIfEnabled(e, "AppResource#loadProperties-1");
             }
         }
         return new Properties();
@@ -89,6 +94,7 @@ public class AppResource {
             settings = Settings.builder(properties, SettingKeys.storableKeys).build();
         } catch (RuntimeException e) {
             settings = Settings.builder().build();
+            ErrorReporter.reportIfEnabled(e, "AppResource#fromProperties-1");
         }
         
         return new AppResource(properties, settings);
@@ -141,7 +147,7 @@ public class AppResource {
             return true;
             
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "AppResource#storeProperties-1");
             new Alert(
                     AlertType.ERROR,
                     "%s%n%s".formatted(Msg.APP_0020.get(), APP_PROP_PATH),

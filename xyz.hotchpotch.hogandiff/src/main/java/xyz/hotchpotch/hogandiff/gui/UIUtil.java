@@ -10,6 +10,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 
 /**
@@ -56,7 +57,7 @@ public class UIUtil {
             try {
                 Desktop.getDesktop().browse(URI.create(url));
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorReporter.reportIfEnabled(e, "UIUtil#setupHyperlink-1");
                 new Alert(
                         AlertType.WARNING,
                         "%s%n%s".formatted(Msg.APP_1040.get(), AppMain.WEB_URL),

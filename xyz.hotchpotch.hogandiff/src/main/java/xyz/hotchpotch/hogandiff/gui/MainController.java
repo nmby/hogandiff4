@@ -150,12 +150,17 @@ public class MainController extends VBox {
      * 現在選択されている比較メニューに応じて、対応する比較情報を更新します。<br>
      */
     public void updateActiveComparison() {
-        switch (menuProp.getValue()) {
-        case COMPARE_SHEETS -> updateSheetComparison();
-        case COMPARE_BOOKS -> updateBookComparison();
-        case COMPARE_DIRS -> updateDirComparison();
-        case COMPARE_TREES -> updateTreeComparison();
-        default -> throw new AssertionError();
+        try {
+            switch (menuProp.getValue()) {
+            case COMPARE_SHEETS -> updateSheetComparison();
+            case COMPARE_BOOKS -> updateBookComparison();
+            case COMPARE_DIRS -> updateDirComparison();
+            case COMPARE_TREES -> updateTreeComparison();
+            default -> throw new AssertionError();
+            }
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#updateActiveComparison-1");
+            throw e;
         }
     }
     
@@ -243,45 +248,55 @@ public class MainController extends VBox {
     }
     
     private boolean isPasswordUsed() {
-        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
-        
-        Stream<Path> bookPathStream = switch (menu) {
-        case COMPARE_SHEETS -> {
-            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-            yield bookPathPair.isIdentical()
-                    ? Stream.of(bookPathPair.a())
-                    : Stream.of(bookPathPair.a(), bookPathPair.b());
+        try {
+            AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+            
+            Stream<Path> bookPathStream = switch (menu) {
+            case COMPARE_SHEETS -> {
+                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield bookPathPair.isIdentical()
+                        ? Stream.of(bookPathPair.a())
+                        : Stream.of(bookPathPair.a(), bookPathPair.b());
+            }
+            case COMPARE_BOOKS -> {
+                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
+            }
+            case COMPARE_DIRS -> {
+                PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                yield bookPathStream(dirComparison);
+            }
+            case COMPARE_TREES -> {
+                PairingInfoDirsFlatten flattenDirComparison = ar.settings()
+                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                        .flatten();
+                yield flattenDirComparison.dirComparisons().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .flatMap(this::bookPathStream);
+            }
+            };
+            
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+            return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#isPasswordUsed-1");
+            throw e;
         }
-        case COMPARE_BOOKS -> {
-            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-            yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-        }
-        case COMPARE_DIRS -> {
-            PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            yield bookPathStream(dirComparison);
-        }
-        case COMPARE_TREES -> {
-            PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                    .get(SettingKeys.CURR_TREE_COMPARE_INFO)
-                    .flatten();
-            yield flattenDirComparison.dirComparisons().values().stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .flatMap(this::bookPathStream);
-        }
-        };
-        
-        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-        return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
     }
     
     private Stream<Path> bookPathStream(PairingInfoDirs dirComparison) {
-        return dirComparison.childBookInfoPairs().stream()
-                .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
-                .filter(bookInfo -> bookInfo != null)
-                .map(BookInfo::bookPath);
+        try {
+            return dirComparison.childBookInfoPairs().stream()
+                    .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
+                    .filter(bookInfo -> bookInfo != null)
+                    .map(BookInfo::bookPath);
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#bookPathStream-1");
+            throw e;
+        }
     }
     
     /**

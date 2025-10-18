@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.VersionMaster;
@@ -91,7 +92,7 @@ public class UpdateChecker {
                     ar.changeSetting(SettingKeys.LAST_CHECK_UPDATES, Instant.now());
                 })
                 .exceptionally(throwable -> {
-                    throwable.printStackTrace();
+                    ErrorReporter.reportIfEnabled(throwable, "UpdateChecker#checkUpdate-1");
                     return null;
                 });
     }
