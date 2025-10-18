@@ -3,10 +3,16 @@ package xyz.hotchpotch.hogandiff;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONObject;
+
+import com.google.api.client.http.HttpResponse;
 
 import xyz.hotchpotch.hogandiff.util.NetUtil;
 
@@ -22,6 +28,19 @@ public class ErrorReporter {
     private static final String errorReportUrl = "https://api.hogandiff.hotchpotch.info/errorReport";
     
     private static final AppResource ar = AppMain.appResource;
+    
+    private static final Set<CompletableFuture<HttpResponse>> pendingReports = Collections
+            .synchronizedSet(new HashSet<>());
+    
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            synchronized (pendingReports) {
+                for (CompletableFuture<?> future : pendingReports) {
+                    future.join();
+                }
+            }
+        }));
+    }
     
     /**
      * 指定された例外情報をサーバに送信します。<br>
@@ -71,14 +90,18 @@ public class ErrorReporter {
         postData.put("stackTrace", getStackTraceAsString(th));
         additionalContents.forEach((key, value) -> postData.put(key, value));
         
-        NetUtil.postDataAsync(errorReportUrl, postData)
+        CompletableFuture<HttpResponse> future = NetUtil.postDataAsync(errorReportUrl, postData);
+        pendingReports.add(future);
+        
+        future
                 .thenAccept(response -> {
                     if (response.getStatusCode() < 200 || 300 <= response.getStatusCode()) {
                         System.err.println("例外レポート送信失敗: " + response.getStatusCode());
                     }
-                    
+                    pendingReports.remove(future);
                 })
                 .exceptionally(e -> {
+                    pendingReports.remove(future);
                     e.printStackTrace();
                     return null;
                 });
