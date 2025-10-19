@@ -20,6 +20,7 @@ import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.logic.BookReportCreator;
 import xyz.hotchpotch.hogandiff.logic.CellData;
 import xyz.hotchpotch.hogandiff.logic.CellsLoader;
@@ -613,6 +614,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     + ResultOfDirs.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
             updateMessage(str.toString());
             
+            // FIXME: この辺も訳分からなくなってるのでリファクタリングする
             if (bookInfoPair.isPaired()
                     && dirComparison.childBookComparisons().get(bookInfoPair).isPresent()) {
                 
@@ -620,20 +622,30 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookInfoPair.get(side).bookName())));
                 
-                ResultOfBooks bookResult = compareBooks(
-                        dirComparison.childBookComparisons().get(bookInfoPair).get(),
-                        srcPathPair,
-                        dstPathPair,
-                        getProgress.applyAsInt(i),
-                        getProgress.applyAsInt(i + 1));
-                bookResults.put(bookInfoPair, Optional.ofNullable(bookResult));
-                
-                if (bookResult != null) {
-                    paintBook(
+                if (bookInfoPair.a().status() == Status.NEEDS_PASSWORD
+                        || bookInfoPair.b().status() == Status.NEEDS_PASSWORD) {
+                    
+                    str.append("  -  ").append(Msg.APP_1300.get()).append(BR);
+                    updateMessage(str.toString());
+                    
+                    bookResults.put(bookInfoPair, Optional.empty());
+                    
+                } else {
+                    ResultOfBooks bookResult = compareBooks(
+                            dirComparison.childBookComparisons().get(bookInfoPair).get(),
                             srcPathPair,
                             dstPathPair,
-                            bookResult,
+                            getProgress.applyAsInt(i),
                             getProgress.applyAsInt(i + 1));
+                    bookResults.put(bookInfoPair, Optional.ofNullable(bookResult));
+                    
+                    if (bookResult != null) {
+                        paintBook(
+                                srcPathPair,
+                                dstPathPair,
+                                bookResult,
+                                getProgress.applyAsInt(i + 1));
+                    }
                 }
                 
             } else {
