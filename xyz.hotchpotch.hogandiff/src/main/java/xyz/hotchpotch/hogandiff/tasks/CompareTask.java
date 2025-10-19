@@ -350,8 +350,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             PROGRESS_MAX);
                     
                 } catch (Exception e) {
-                    ApplicationException ee = getApplicationException(e,
-                            side == Side.A ? Msg.APP_0090.get() : Msg.APP_0100.get());
+                    ApplicationException ee = getApplicationException(e, Msg.APP_0090.get().formatted(side));
                     if (thrown == null) {
                         thrown = ee;
                     } else {

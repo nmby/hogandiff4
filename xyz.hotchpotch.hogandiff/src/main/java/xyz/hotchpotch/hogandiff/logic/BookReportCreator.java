@@ -129,10 +129,10 @@ public class BookReportCreator {
             Path workDir,
             ResultOfBooks bookResult) {
         
-        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(), Msg.APP_0570.get());
+        PoiUtil.setCellValue(sheet, 0, COL_LEFT.a(), Msg.APP_0160.get());
         PoiUtil.setCellValue(sheet, 1, COL_LEFT.a(), Msg.APP_0580.get());
-        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(), Msg.APP_0590.get().formatted(Side.B));
+        PoiUtil.setCellValue(sheet, 2, COL_LEFT.a(), Msg.APP_0440.get().formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, COL_LEFT.a(), Msg.APP_0440.get().formatted(Side.B));
         
         String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
