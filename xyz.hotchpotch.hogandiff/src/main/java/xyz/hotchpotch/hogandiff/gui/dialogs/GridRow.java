@@ -66,42 +66,48 @@ public class GridRow extends Pane {
             throw new IllegalArgumentException();
         }
         
-        this.pane = pane;
-        this.idx = idx;
-        this.srcPair = srcPair;
-        this.itemType = srcPair.hasA() ? ItemType.of(srcPair.a()) : ItemType.of(srcPair.b());
-        
-        Function<Side, GridItem> getGridItem = side -> {
-            if (!srcPair.has(side)) {
-                return new BlankItem(side);
-            }
-            if (itemType == ItemType.SHEET || itemType == ItemType.DIR) {
-                return new LoadCompletedItem(side);
-            }
-            BookInfo bookInfo = (BookInfo) srcPair.get(side);
-            return switch (bookInfo.status()) {
-            case LOAD_COMPLETED -> new LoadCompletedItem(side);
-            case LOAD_FAILED -> new LoadFailedItem(side);
-            case NEEDS_PASSWORD -> new NeedsPasswordItem(side);
+        try {
+            this.pane = pane;
+            this.idx = idx;
+            this.srcPair = srcPair;
+            this.itemType = srcPair.hasA() ? ItemType.of(srcPair.a()) : ItemType.of(srcPair.b());
+            
+            Function<Side, GridItem> getGridItem = side -> {
+                if (!srcPair.has(side)) {
+                    return new BlankItem(side);
+                }
+                if (itemType == ItemType.SHEET || itemType == ItemType.DIR) {
+                    return new LoadCompletedItem(side);
+                }
+                BookInfo bookInfo = (BookInfo) srcPair.get(side);
+                return switch (bookInfo.status()) {
+                case LOAD_COMPLETED -> new LoadCompletedItem(side);
+                case LOAD_FAILED -> new LoadFailedItem(side);
+                case NEEDS_PASSWORD -> new NeedsPasswordItem(side);
+                };
             };
-        };
-        this.itemPair = Pair.of(
-                getGridItem.apply(Side.A),
-                getGridItem.apply(Side.B));
-        
-        this.unpairButton = srcPair.isPaired()
-                ? new UnpairButton()
-                : null;
-        
-        setMaxHeight(Double.MAX_VALUE);
-        setMaxWidth(Double.MAX_VALUE);
-        getStyleClass().add("gridRow");
-        
-        if (!srcPair.isPaired()) {
-            setOnDragEntered(this::onDragEntered);
-            setOnDragExited(this::onDragExited);
-            setOnDragOver(this::onDragOver);
-            setOnDragDropped(this::onDragDropped);
+            this.itemPair = Pair.of(
+                    getGridItem.apply(Side.A),
+                    getGridItem.apply(Side.B));
+            
+            this.unpairButton = srcPair.isPaired()
+                    ? new UnpairButton()
+                    : null;
+            
+            setMaxHeight(Double.MAX_VALUE);
+            setMaxWidth(Double.MAX_VALUE);
+            getStyleClass().add("gridRow");
+            
+            if (!srcPair.isPaired()) {
+                setOnDragEntered(this::onDragEntered);
+                setOnDragExited(this::onDragExited);
+                setOnDragOver(this::onDragOver);
+                setOnDragDropped(this::onDragDropped);
+            }
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "GridRow#<init>-1");
+            throw e;
         }
     }
     
@@ -141,6 +147,7 @@ public class GridRow extends Pane {
             return idx;
             
         } catch (RuntimeException e) {
+            ErrorReporter.reportIfEnabled(e, "GridRow#getIdx-1");
             return null;
         }
     }

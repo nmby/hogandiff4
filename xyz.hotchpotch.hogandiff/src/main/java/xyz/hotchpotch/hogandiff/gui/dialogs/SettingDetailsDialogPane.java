@@ -116,91 +116,103 @@ public class SettingDetailsDialogPane extends VBox {
      * このオブジェクトを初期化します。<br>
      */
     public void init() {
-        // 1.disableプロパティのバインディング
-        
-        // 2.項目ごとの各種設定
-        localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
-        localeComboBox.setButtonCell(cellFactory(false).call(null));
-        localeComboBox.setCellFactory(cellFactory(true));
-        
-        localeComboBox.setOnAction(_ -> {
-            if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
-                new Alert(
-                        AlertType.INFORMATION,
-                        "%s%n%n%s%n%n%s".formatted(Msg.APP_1091.get(), Msg.APP_1092.get(), Msg.APP_1093.get()),
-                        ButtonType.OK)
-                                .showAndWait();
-            }
-        });
-        
-        checkUpdatesImmediatelyButton.setOnAction(_ -> {
-            UpdateChecker.execute(true);
-        });
-        
-        openSettingsFileButton.setOnAction(_ -> {
-            try {
-                Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
-            } catch (IOException e) {
-                ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-1");
-            }
-        });
-        
-        resetSettingsButton.setOnAction(_ -> {
-            Optional<ButtonType> result = new Alert(
-                    AlertType.CONFIRMATION,
-                    Msg.APP_1170.get())
-                            .showAndWait();
+        try {
+            // 1.disableプロパティのバインディング
             
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                try {
-                    Files.deleteIfExists(AppResource.APP_PROP_PATH);
-                    GoogleCredential credential = GoogleCredential.get(false);
-                    if (credential != null) {
-                        credential.deleteCredential();
-                    }
-                    Platform.exit();
-                } catch (Exception e) {
-                    ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-2");
+            // 2.項目ごとの各種設定
+            localeComboBox.setItems(FXCollections.observableArrayList(LocaleItem.values()));
+            localeComboBox.setButtonCell(cellFactory(false).call(null));
+            localeComboBox.setCellFactory(cellFactory(true));
+            
+            localeComboBox.setOnAction(_ -> {
+                if (ar.changeSetting(SettingKeys.APP_LOCALE, localeComboBox.getValue().locale)) {
+                    new Alert(
+                            AlertType.INFORMATION,
+                            "%s%n%n%s%n%n%s".formatted(Msg.APP_1091.get(), Msg.APP_1092.get(), Msg.APP_1093.get()),
+                            ButtonType.OK)
+                                    .showAndWait();
                 }
-            }
-        });
-        
-        // 3.初期値の設定
-        Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
-        localeComboBox.setValue(LocaleItem.of(locale));
-        
-        checkUpdatesCheckBox.setSelected(ar.settings().get(SettingKeys.CHECK_UPDATES));
-        sendErrorInfoCheckBox.setSelected(ar.settings().get(SettingKeys.SEND_ERROR_INFO));
-        
-        // 4.値変更時のイベントハンドラの設定
-        checkUpdatesCheckBox.setOnAction(_ -> ar.changeSetting(
-                SettingKeys.CHECK_UPDATES,
-                checkUpdatesCheckBox.isSelected()));
-        sendErrorInfoCheckBox.setOnAction(_ -> ar.changeSetting(
-                SettingKeys.SEND_ERROR_INFO,
-                sendErrorInfoCheckBox.isSelected()));
+            });
+            
+            checkUpdatesImmediatelyButton.setOnAction(_ -> {
+                UpdateChecker.execute(true);
+            });
+            
+            openSettingsFileButton.setOnAction(_ -> {
+                try {
+                    Desktop.getDesktop().open(AppResource.APP_PROP_PATH.toFile());
+                } catch (IOException e) {
+                    ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-1");
+                }
+            });
+            
+            resetSettingsButton.setOnAction(_ -> {
+                Optional<ButtonType> result = new Alert(
+                        AlertType.CONFIRMATION,
+                        Msg.APP_1170.get())
+                                .showAndWait();
+                
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    try {
+                        Files.deleteIfExists(AppResource.APP_PROP_PATH);
+                        GoogleCredential credential = GoogleCredential.get(false);
+                        if (credential != null) {
+                            credential.deleteCredential();
+                        }
+                        Platform.exit();
+                    } catch (Exception e) {
+                        ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane::init-2");
+                    }
+                }
+            });
+            
+            // 3.初期値の設定
+            Locale locale = ar.settings().get(SettingKeys.APP_LOCALE);
+            localeComboBox.setValue(LocaleItem.of(locale));
+            
+            checkUpdatesCheckBox.setSelected(ar.settings().get(SettingKeys.CHECK_UPDATES));
+            sendErrorInfoCheckBox.setSelected(ar.settings().get(SettingKeys.SEND_ERROR_INFO));
+            
+            // 4.値変更時のイベントハンドラの設定
+            checkUpdatesCheckBox.setOnAction(_ -> ar.changeSetting(
+                    SettingKeys.CHECK_UPDATES,
+                    checkUpdatesCheckBox.isSelected()));
+            sendErrorInfoCheckBox.setOnAction(_ -> ar.changeSetting(
+                    SettingKeys.SEND_ERROR_INFO,
+                    sendErrorInfoCheckBox.isSelected()));
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane#init-1");
+            throw e;
+        }
     }
     
     private Callback<ListView<LocaleItem>, ListCell<LocaleItem>> cellFactory(boolean showText) {
         return _ -> new ListCell<>() {
             @Override
             public void updateItem(LocaleItem item, boolean empty) {
-                super.updateItem(item, empty);
-                
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    ImageView iv = new ImageView(item.image);
-                    iv.setFitHeight(17);
-                    iv.setPreserveRatio(true);
-                    setGraphic(iv);
+                try {
+                    super.updateItem(item, empty);
                     
-                    if (showText) {
-                        setText(item.text);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
                     } else {
-                        this.setAlignment(Pos.CENTER);
+                        ImageView iv = new ImageView(item.image);
+                        iv.setFitHeight(17);
+                        iv.setPreserveRatio(true);
+                        setGraphic(iv);
+                        
+                        if (showText) {
+                            setText(item.text);
+                        } else {
+                            this.setAlignment(Pos.CENTER);
+                        }
                     }
+                    
+                } catch (Exception e) {
+                    ErrorReporter.reportIfEnabled(e, "SettingDetailsDialogPane#cellFactory-1");
+                    throw e;
                 }
             }
         };

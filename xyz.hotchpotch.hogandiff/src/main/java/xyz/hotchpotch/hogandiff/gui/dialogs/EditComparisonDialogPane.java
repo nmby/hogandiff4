@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
@@ -126,21 +127,25 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     }
     
     protected void drawGrid() {
-        childGridPane.getChildren().clear();
-        
-        for (int i = 0; i < currentChildPairs.size(); i++) {
-            Pair<?> pair = currentChildPairs.get(i);
-            GridRow gridRow = new GridRow(this, i, pair);
+        try {
+            childGridPane.getChildren().clear();
             
-            childGridPane.add(gridRow, 0, i, 3, 1);
-            childGridPane.add(gridRow.itemPair().a(), 0, i);
-            childGridPane.add(gridRow.itemPair().b(), 2, i);
-            if (pair.isPaired()) {
-                childGridPane.add(gridRow.unpairButton(), 1, i);
+            for (int i = 0; i < currentChildPairs.size(); i++) {
+                Pair<?> pair = currentChildPairs.get(i);
+                GridRow gridRow = new GridRow(this, i, pair);
+                
+                childGridPane.add(gridRow, 0, i, 3, 1);
+                childGridPane.add(gridRow.itemPair().a(), 0, i);
+                childGridPane.add(gridRow.itemPair().b(), 2, i);
+                if (pair.isPaired()) {
+                    childGridPane.add(gridRow.unpairButton(), 1, i);
+                }
+                
+                GridPane.setMargin(gridRow.itemPair().a(), new Insets(2, 3, 2, 3));
+                GridPane.setMargin(gridRow.itemPair().b(), new Insets(2, 3, 2, 3));
             }
-            
-            GridPane.setMargin(gridRow.itemPair().a(), new Insets(2, 3, 2, 3));
-            GridPane.setMargin(gridRow.itemPair().b(), new Insets(2, 3, 2, 3));
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonDialogPane#drawGrid-1");
         }
     }
     

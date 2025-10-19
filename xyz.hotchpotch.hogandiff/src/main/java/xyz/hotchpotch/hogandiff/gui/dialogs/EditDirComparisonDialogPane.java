@@ -60,161 +60,202 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
     }
     
     /* package */ void init() throws IOException {
-        super.init(dirComparison.parentDirInfoPair());
-        
-        updateChildren();
+        try {
+            super.init(dirComparison.parentDirInfoPair());
+            updateChildren();
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#init-1");
+            throw e;
+        }
     }
     
     private void updateChildren() {
-        currentChildPairs.clear();
-        currentChildPairs.addAll(currChildDirInfoPairs);
-        currentChildPairs.addAll(currChildBookInfoPairs);
-        drawGrid();
+        try {
+            currentChildPairs.clear();
+            currentChildPairs.addAll(currChildDirInfoPairs);
+            currentChildPairs.addAll(currChildBookInfoPairs);
+            drawGrid();
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#updateChildren-1");
+            throw e;
+        }
     }
     
     private Optional<PairingInfoDirs> createDirComparison(Pair<DirInfo> dirInfoPair) {
-        return Optional.of(
-                PairingInfoDirs.calculate(
-                        dirInfoPair,
-                        Factory.dirInfosMatcher(ar.settings()),
-                        Factory.bookInfosMatcher(ar.settings()),
-                        Factory.sheetNamesMatcher(ar.settings()),
-                        ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
+        try {
+            return Optional.of(
+                    PairingInfoDirs.calculate(
+                            dirInfoPair,
+                            Factory.dirInfosMatcher(ar.settings()),
+                            Factory.bookInfosMatcher(ar.settings()),
+                            Factory.sheetNamesMatcher(ar.settings()),
+                            ar.settings().get(SettingKeys.CURR_READ_PASSWORDS)));
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#createDirComparison-1");
+            throw e;
+        }
     }
     
     private Optional<PairingInfoBooks> createBookComparison(Pair<BookInfo> bookInfoPair) {
-        return Optional.of(PairingInfoBooks.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
+        try {
+            return Optional.of(PairingInfoBooks.calculate(bookInfoPair, Factory.sheetNamesMatcher(ar.settings())));
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#createBookComparison-1");
+            throw e;
+        }
     }
     
     @Override
     public PairingInfoDirs getResult() {
-        return new PairingInfoDirs(
-                dirComparison.parentDirInfoPair(),
-                currChildDirInfoPairs,
-                currChildDirComparisons,
-                currChildBookInfoPairs,
-                currChildBookComparisons);
+        try {
+            return new PairingInfoDirs(
+                    dirComparison.parentDirInfoPair(),
+                    currChildDirInfoPairs,
+                    currChildDirComparisons,
+                    currChildBookInfoPairs,
+                    currChildBookComparisons);
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#getResult-1");
+            throw e;
+        }
     }
     
     @Override
     protected void unpair(int idx) {
-        int childDirs = currChildDirInfoPairs.size();
-        int childBooks = currChildBookInfoPairs.size();
-        
-        if (0 <= idx && idx < childDirs) {
-            Pair<DirInfo> paired = currChildDirInfoPairs.get(idx);
-            assert paired.isPaired();
+        try {
+            int childDirs = currChildDirInfoPairs.size();
+            int childBooks = currChildBookInfoPairs.size();
             
-            Pair<DirInfo> unpairedA = Pair.of(paired.a(), null);
-            Pair<DirInfo> unpairedB = Pair.of(null, paired.b());
+            if (0 <= idx && idx < childDirs) {
+                Pair<DirInfo> paired = currChildDirInfoPairs.get(idx);
+                assert paired.isPaired();
+                
+                Pair<DirInfo> unpairedA = Pair.of(paired.a(), null);
+                Pair<DirInfo> unpairedB = Pair.of(null, paired.b());
+                
+                currChildDirInfoPairs.add(idx + 1, unpairedA);
+                currChildDirInfoPairs.add(idx + 2, unpairedB);
+                currChildDirInfoPairs.remove(idx);
+                
+                currChildDirComparisons.remove(paired);
+                currChildDirComparisons.put(unpairedA, createDirComparison(unpairedA));
+                currChildDirComparisons.put(unpairedB, createDirComparison(unpairedB));
+                
+            } else if (childDirs <= idx && idx < childDirs + childBooks) {
+                int idx2 = idx - childDirs;
+                
+                Pair<BookInfo> paired = currChildBookInfoPairs.get(idx2);
+                assert paired.isPaired();
+                
+                Pair<BookInfo> unpairedA = Pair.of(paired.a(), null);
+                Pair<BookInfo> unpairedB = Pair.of(null, paired.b());
+                
+                currChildBookInfoPairs.add(idx2 + 1, unpairedA);
+                currChildBookInfoPairs.add(idx2 + 2, unpairedB);
+                currChildBookInfoPairs.remove(idx2);
+                
+                Matcher<String> sheetNamesMatcher = Factory.sheetNamesMatcher(ar.settings());
+                PairingInfoBooks bookComparisonA = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
+                PairingInfoBooks bookComparisonB = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
+                
+                currChildBookComparisons.remove(paired);
+                currChildBookComparisons.put(unpairedA, Optional.of(bookComparisonA));
+                currChildBookComparisons.put(unpairedB, Optional.of(bookComparisonB));
+                
+            } else {
+                throw new AssertionError();
+            }
             
-            currChildDirInfoPairs.add(idx + 1, unpairedA);
-            currChildDirInfoPairs.add(idx + 2, unpairedB);
-            currChildDirInfoPairs.remove(idx);
+            updateChildren();
             
-            currChildDirComparisons.remove(paired);
-            currChildDirComparisons.put(unpairedA, createDirComparison(unpairedA));
-            currChildDirComparisons.put(unpairedB, createDirComparison(unpairedB));
-            
-        } else if (childDirs <= idx && idx < childDirs + childBooks) {
-            int idx2 = idx - childDirs;
-            
-            Pair<BookInfo> paired = currChildBookInfoPairs.get(idx2);
-            assert paired.isPaired();
-            
-            Pair<BookInfo> unpairedA = Pair.of(paired.a(), null);
-            Pair<BookInfo> unpairedB = Pair.of(null, paired.b());
-            
-            currChildBookInfoPairs.add(idx2 + 1, unpairedA);
-            currChildBookInfoPairs.add(idx2 + 2, unpairedB);
-            currChildBookInfoPairs.remove(idx2);
-            
-            Matcher<String> sheetNamesMatcher = Factory.sheetNamesMatcher(ar.settings());
-            PairingInfoBooks bookComparisonA = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
-            PairingInfoBooks bookComparisonB = PairingInfoBooks.calculate(unpairedA, sheetNamesMatcher);
-            
-            currChildBookComparisons.remove(paired);
-            currChildBookComparisons.put(unpairedA, Optional.of(bookComparisonA));
-            currChildBookComparisons.put(unpairedB, Optional.of(bookComparisonB));
-            
-        } else {
-            throw new AssertionError();
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#unpair-1");
+            throw e;
         }
-        
-        updateChildren();
     }
     
     @Override
     protected void makePair(int srcIdx, int dstIdx) {
-        assert srcIdx != dstIdx;
-        
-        int childDirs = currChildDirInfoPairs.size();
-        int childBooks = currChildBookInfoPairs.size();
-        
-        if (0 <= srcIdx && srcIdx < childDirs) {
-            assert 0 <= dstIdx && dstIdx < childDirs;
+        try {
+            assert srcIdx != dstIdx;
             
-            Pair<DirInfo> srcPair = currChildDirInfoPairs.get(srcIdx);
-            Pair<DirInfo> dstPair = currChildDirInfoPairs.get(dstIdx);
-            assert !srcPair.isPaired();
-            assert !dstPair.isPaired();
-            assert srcPair.hasA() != srcPair.hasB();
-            assert dstPair.hasA() != dstPair.hasB();
-            assert srcPair.hasA() == dstPair.hasB();
-            assert srcPair.hasB() == dstPair.hasA();
+            int childDirs = currChildDirInfoPairs.size();
+            int childBooks = currChildBookInfoPairs.size();
             
-            Pair<DirInfo> paired = Pair.of(
-                    srcPair.hasA() ? srcPair.a() : dstPair.a(),
-                    srcPair.hasB() ? srcPair.b() : dstPair.b());
+            if (0 <= srcIdx && srcIdx < childDirs) {
+                assert 0 <= dstIdx && dstIdx < childDirs;
+                
+                Pair<DirInfo> srcPair = currChildDirInfoPairs.get(srcIdx);
+                Pair<DirInfo> dstPair = currChildDirInfoPairs.get(dstIdx);
+                assert !srcPair.isPaired();
+                assert !dstPair.isPaired();
+                assert srcPair.hasA() != srcPair.hasB();
+                assert dstPair.hasA() != dstPair.hasB();
+                assert srcPair.hasA() == dstPair.hasB();
+                assert srcPair.hasB() == dstPair.hasA();
+                
+                Pair<DirInfo> paired = Pair.of(
+                        srcPair.hasA() ? srcPair.a() : dstPair.a(),
+                        srcPair.hasB() ? srcPair.b() : dstPair.b());
+                
+                currChildDirInfoPairs.remove(dstIdx);
+                currChildDirInfoPairs.add(dstIdx, paired);
+                currChildDirInfoPairs.remove(srcIdx);
+                
+                currChildDirComparisons.remove(srcPair);
+                currChildDirComparisons.remove(dstPair);
+                currChildDirComparisons.put(paired, createDirComparison(paired));
+                
+            } else if (childDirs <= srcIdx && srcIdx < childDirs + childBooks) {
+                assert childDirs <= dstIdx && dstIdx < childDirs + childBooks;
+                
+                int src2 = srcIdx - childDirs;
+                int dst2 = dstIdx - childDirs;
+                
+                Pair<BookInfo> srcPair = currChildBookInfoPairs.get(src2);
+                Pair<BookInfo> dstPair = currChildBookInfoPairs.get(dst2);
+                assert !srcPair.isPaired();
+                assert !dstPair.isPaired();
+                assert srcPair.hasA() != srcPair.hasB();
+                assert dstPair.hasA() != dstPair.hasB();
+                assert srcPair.hasA() == dstPair.hasB();
+                assert srcPair.hasB() == dstPair.hasA();
+                
+                Pair<BookInfo> paired = Pair.of(
+                        srcPair.hasA() ? srcPair.a() : dstPair.a(),
+                        srcPair.hasB() ? srcPair.b() : dstPair.b());
+                
+                currChildBookInfoPairs.remove(dst2);
+                currChildBookInfoPairs.add(dst2, paired);
+                currChildBookInfoPairs.remove(src2);
+                
+                currChildBookComparisons.remove(srcPair);
+                currChildBookComparisons.remove(dstPair);
+                currChildBookComparisons.put(paired, createBookComparison(paired));
+                
+            } else {
+                throw new AssertionError();
+            }
             
-            currChildDirInfoPairs.remove(dstIdx);
-            currChildDirInfoPairs.add(dstIdx, paired);
-            currChildDirInfoPairs.remove(srcIdx);
+            updateChildren();
             
-            currChildDirComparisons.remove(srcPair);
-            currChildDirComparisons.remove(dstPair);
-            currChildDirComparisons.put(paired, createDirComparison(paired));
-            
-        } else if (childDirs <= srcIdx && srcIdx < childDirs + childBooks) {
-            assert childDirs <= dstIdx && dstIdx < childDirs + childBooks;
-            
-            int src2 = srcIdx - childDirs;
-            int dst2 = dstIdx - childDirs;
-            
-            Pair<BookInfo> srcPair = currChildBookInfoPairs.get(src2);
-            Pair<BookInfo> dstPair = currChildBookInfoPairs.get(dst2);
-            assert !srcPair.isPaired();
-            assert !dstPair.isPaired();
-            assert srcPair.hasA() != srcPair.hasB();
-            assert dstPair.hasA() != dstPair.hasB();
-            assert srcPair.hasA() == dstPair.hasB();
-            assert srcPair.hasB() == dstPair.hasA();
-            
-            Pair<BookInfo> paired = Pair.of(
-                    srcPair.hasA() ? srcPair.a() : dstPair.a(),
-                    srcPair.hasB() ? srcPair.b() : dstPair.b());
-            
-            currChildBookInfoPairs.remove(dst2);
-            currChildBookInfoPairs.add(dst2, paired);
-            currChildBookInfoPairs.remove(src2);
-            
-            currChildBookComparisons.remove(srcPair);
-            currChildBookComparisons.remove(dstPair);
-            currChildBookComparisons.put(paired, createBookComparison(paired));
-            
-        } else {
-            throw new AssertionError();
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditDirComparisonDialogPane#makePair-1");
+            throw e;
         }
-        
-        updateChildren();
     }
     
     @Override
     protected void onClickPaired(int idx) {
-        int childDirs = currChildDirInfoPairs.size();
-        int childBooks = currChildBookInfoPairs.size();
-        
         try {
+            int childDirs = currChildDirInfoPairs.size();
+            int childBooks = currChildBookInfoPairs.size();
+            
             if (0 <= idx && idx < childDirs) {
                 Pair<DirInfo> paired = currChildDirInfoPairs.get(idx);
                 assert paired.isPaired();
@@ -252,18 +293,18 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
     
     @Override
     protected void onPasswordChallenge(int idx, Side side) {
-        int childDirs = currChildDirInfoPairs.size();
-        int childBooks = currChildBookInfoPairs.size();
-        int idx2 = idx - childDirs;
-        assert 0 <= idx2 && idx2 < childBooks;
-        
-        Pair<BookInfo> currBookInfoPair = currChildBookInfoPairs.get(idx2);
-        assert currBookInfoPair.get(side).status() == Status.NEEDS_PASSWORD;
-        
-        Path bookPath = currBookInfoPair.get(side).bookPath();
-        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-        
         try {
+            int childDirs = currChildDirInfoPairs.size();
+            int childBooks = currChildBookInfoPairs.size();
+            int idx2 = idx - childDirs;
+            assert 0 <= idx2 && idx2 < childBooks;
+            
+            Pair<BookInfo> currBookInfoPair = currChildBookInfoPairs.get(idx2);
+            assert currBookInfoPair.get(side).status() == Status.NEEDS_PASSWORD;
+            
+            Path bookPath = currBookInfoPair.get(side).bookPath();
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+            
             String readPassword = readPasswords.get(bookPath);
             BookInfoLoader loader = Factory.bookInfoLoader(bookPath);
             BookInfo newBookInfo = null;
@@ -302,6 +343,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
             updateChildren();
             
         } catch (Exception e) {
+            // ここはエラーレポートしなくてよい
             // nop
         }
     }

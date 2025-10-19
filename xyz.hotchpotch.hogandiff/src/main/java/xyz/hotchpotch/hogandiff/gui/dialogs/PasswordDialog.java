@@ -6,6 +6,7 @@ import java.util.Objects;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 
 /**
@@ -37,22 +38,28 @@ public class PasswordDialog extends Dialog<String> {
         Objects.requireNonNull(bookName);
         // readPassword may be null.
         
-        PasswordDialogPane passwordDialogPane = new PasswordDialogPane();
-        passwordDialogPane.init(this, bookName, readPassword);
-        
-        DialogPane me = getDialogPane();
-        me.setContent(passwordDialogPane);
-        me.getButtonTypes().setAll(
-                ButtonType.OK,
-                ButtonType.CANCEL);
-        me.lookupButton(ButtonType.OK).disableProperty()
-                .bind(passwordDialogPane.passwordField.textProperty().isEmpty());
-        
-        this.setTitle(Msg.APP_1250.get());
-        this.setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? passwordDialogPane.passwordField.getText()
-                : null);
-        
-        passwordDialogPane.passwordField.requestFocus();
+        try {
+            PasswordDialogPane passwordDialogPane = new PasswordDialogPane();
+            passwordDialogPane.init(this, bookName, readPassword);
+            
+            DialogPane me = getDialogPane();
+            me.setContent(passwordDialogPane);
+            me.getButtonTypes().setAll(
+                    ButtonType.OK,
+                    ButtonType.CANCEL);
+            me.lookupButton(ButtonType.OK).disableProperty()
+                    .bind(passwordDialogPane.passwordField.textProperty().isEmpty());
+            
+            this.setTitle(Msg.APP_1250.get());
+            this.setResultConverter(buttonType -> buttonType == ButtonType.OK
+                    ? passwordDialogPane.passwordField.getText()
+                    : null);
+            
+            passwordDialogPane.passwordField.requestFocus();
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "PasswordDialog#<init>-1");
+            throw e;
+        }
     }
 }

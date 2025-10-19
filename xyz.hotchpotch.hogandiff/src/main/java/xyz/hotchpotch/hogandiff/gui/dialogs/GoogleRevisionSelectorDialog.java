@@ -10,6 +10,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
@@ -46,41 +47,47 @@ public class GoogleRevisionSelectorDialog extends Dialog<GoogleFileInfo> {
             List<GoogleRevision> revisions)
             throws IOException {
         
-        GoogleRevisionSelectorDialogPane dialogPane = new GoogleRevisionSelectorDialogPane();
-        dialogPane.init(metadata, revisions);
-        
-        DialogPane me = getDialogPane();
-        me.setContent(dialogPane);
-        me.getButtonTypes().setAll(
-                ButtonType.OK,
-                ButtonType.CANCEL);
-        
-        this.setTitle(Msg.APP_0870.get());
-        this.setResizable(true);
-        
-        this.setResultConverter(buttonType -> {
-            if (buttonType == ButtonType.OK) {
-                try {
-                    GoogleFileFetcher fetcher = new GoogleFileFetcher();
-                    return fetcher.downloadFile(
-                            metadata,
-                            revisions,
-                            dialogPane.revisionChoiceBox.getValue().id(),
-                            ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
-                    
-                } catch (GoogleHandlingException e) {
-                    new Alert(
-                            AlertType.ERROR,
-                            "%s%n%s".formatted(Msg.APP_0920.get(), e.getMessage()),
-                            ButtonType.OK)
-                                    .showAndWait();
-                    
-                    e.printStackTrace();
+        try {
+            GoogleRevisionSelectorDialogPane dialogPane = new GoogleRevisionSelectorDialogPane();
+            dialogPane.init(metadata, revisions);
+            
+            DialogPane me = getDialogPane();
+            me.setContent(dialogPane);
+            me.getButtonTypes().setAll(
+                    ButtonType.OK,
+                    ButtonType.CANCEL);
+            
+            this.setTitle(Msg.APP_0870.get());
+            this.setResizable(true);
+            
+            this.setResultConverter(buttonType -> {
+                if (buttonType == ButtonType.OK) {
+                    try {
+                        GoogleFileFetcher fetcher = new GoogleFileFetcher();
+                        return fetcher.downloadFile(
+                                metadata,
+                                revisions,
+                                dialogPane.revisionChoiceBox.getValue().id(),
+                                ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive"));
+                        
+                    } catch (GoogleHandlingException e) {
+                        new Alert(
+                                AlertType.ERROR,
+                                "%s%n%s".formatted(Msg.APP_0920.get(), e.getMessage()),
+                                ButtonType.OK)
+                                        .showAndWait();
+                        
+                        e.printStackTrace();
+                        return null;
+                    }
+                } else {
                     return null;
                 }
-            } else {
-                return null;
-            }
-        });
+            });
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "GoogleRevisionSelectorDialog#<init>-1");
+            throw e;
+        }
     }
 }

@@ -9,6 +9,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 
 /**
@@ -66,8 +67,14 @@ public class PasswordDialogPane extends VBox {
         assert bookName != null;
         // readPassword may be null.
         
-        errorMsgLabel.setVisible(readPassword != null);
-        mainMsgLabel.setText(Msg.APP_1260.get().formatted(bookName));
-        passwordField.textProperty().setValue(readPassword);
+        try {
+            errorMsgLabel.setVisible(readPassword != null);
+            mainMsgLabel.setText(Msg.APP_1260.get().formatted(bookName));
+            passwordField.textProperty().setValue(readPassword);
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "PasswordDialogPane#init-1");
+            throw e;
+        }
     }
 }

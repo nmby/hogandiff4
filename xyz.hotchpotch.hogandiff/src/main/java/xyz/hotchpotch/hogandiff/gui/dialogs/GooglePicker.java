@@ -238,9 +238,15 @@ public class GooglePicker {
                             });
                         }
                         return fileInfo;
+                    })
+                    .exceptionally(e -> {
+                        ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-2");
+                        return null;
                     });
             
         } catch (Exception e) {
+            // FIXME: 例外レポートポリシー、例外カスケードポリシーが訳分からなくなってるので整理する
+            ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-3");
             throw new GoogleHandlingException(e);
         }
     }
@@ -304,6 +310,10 @@ public class GooglePicker {
                         GoogleFileType type = calcType(jsonObject.get("mimeType").toString(), name);
                         return new GoogleMetadata(id, url, name, type);
                     }
+                })
+                .exceptionally(e -> {
+                    ErrorReporter.reportIfEnabled(e, "GooglePicker#openPicker-1");
+                    return null;
                 });
     }
     
