@@ -154,11 +154,14 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         bookPathButton.managedProperty().bind(isDirOperation.not());
         
         googleDriveButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
-                parent.googleCredential, parent.menuProp));
+                () -> parent.googleCredential.getValue() != null,
+                parent.googleCredential));
         googleDriveButton.managedProperty().bind(Bindings.createBooleanBinding(
-                () -> parent.googleCredential.getValue() != null && !isDirOperation(parent.menuProp.getValue()),
-                parent.googleCredential, parent.menuProp));
+                () -> parent.googleCredential.getValue() != null,
+                parent.googleCredential));
+        googleDriveButton.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> isDirOperation(parent.menuProp.getValue()),
+                parent.menuProp));
         
         // 2.項目ごとの各種設定
         setOnDragOver(this::onDragOver);
