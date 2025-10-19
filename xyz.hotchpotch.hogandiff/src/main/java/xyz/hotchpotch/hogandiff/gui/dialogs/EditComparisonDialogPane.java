@@ -146,6 +146,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
             }
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "EditComparisonDialogPane#drawGrid-1");
+            throw e;
         }
     }
     
