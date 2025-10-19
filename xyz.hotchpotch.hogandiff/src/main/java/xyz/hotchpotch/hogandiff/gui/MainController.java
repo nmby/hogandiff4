@@ -371,7 +371,7 @@ public class MainController extends VBox {
                 new Alert(
                         AlertType.WARNING,
                         "%s%n%s%n%s".formatted(
-                                Msg.APP_1200.get(),
+                                Msg.APP_0150.get(),
                                 e.getClass().getName(),
                                 e.getMessage()),
                         ButtonType.OK)
@@ -413,7 +413,7 @@ public class MainController extends VBox {
                                 .showAndWait();
                 
                 DirectoryChooser dirChooser = new DirectoryChooser();
-                dirChooser.setTitle(Msg.APP_1230.get());
+                dirChooser.setTitle(Msg.APP_1060.get());
                 File newDir = dirChooser.showDialog(AppMain.stage);
                 
                 if (newDir != null) {

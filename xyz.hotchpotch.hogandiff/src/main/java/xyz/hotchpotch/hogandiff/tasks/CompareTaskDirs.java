@@ -119,7 +119,7 @@ public final class CompareTaskDirs extends CompareTask {
                     dirInfoPair.b().dirPath()));
             
             if (bookInfoPairs.size() == 0) {
-                str.append("    - ").append(Msg.APP_0270.get()).append(BR);
+                str.append("    - ").append(Msg.APP_0130.get()).append(BR);
             }
             for (int i = 0; i < bookInfoPairs.size(); i++) {
                 Pair<BookInfo> bookInfoPair = bookInfoPairs.get(i);

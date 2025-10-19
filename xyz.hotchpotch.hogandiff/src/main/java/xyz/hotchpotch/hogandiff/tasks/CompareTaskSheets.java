@@ -139,7 +139,7 @@ public final class CompareTaskSheets extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(Msg.APP_0300.get()).append(BR);
+            str.append(Msg.APP_0180.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
@@ -171,7 +171,7 @@ public final class CompareTaskSheets extends CompareTask {
                     Map.of(sheetNamePair, Optional.of(result)));
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.APP_0310.get());
+            throw getApplicationException(e, Msg.APP_0190.get());
         }
     }
 }
