@@ -6,6 +6,7 @@ import java.util.Objects;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
@@ -35,40 +36,46 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
      *             パラメータが {@code null} の場合
      */
     public EditComparisonDialog(T comparison) throws IOException {
-        Objects.requireNonNull(comparison);
-        
-        @SuppressWarnings("unchecked")
-        EditComparisonDialogPane<T> editComparisonDialogPane = (EditComparisonDialogPane<T>) switch (comparison) {
-        case PairingInfoBooks bookComparison -> {
-            EditBookComparisonDialogPane pane = new EditBookComparisonDialogPane(bookComparison);
-            pane.init();
-            yield pane;
+        try {
+            Objects.requireNonNull(comparison);
+            
+            @SuppressWarnings("unchecked")
+            EditComparisonDialogPane<T> editComparisonDialogPane = (EditComparisonDialogPane<T>) switch (comparison) {
+            case PairingInfoBooks bookComparison -> {
+                EditBookComparisonDialogPane pane = new EditBookComparisonDialogPane(bookComparison);
+                pane.init();
+                yield pane;
+            }
+            case PairingInfoDirs dirComparison -> {
+                EditDirComparisonDialogPane pane = new EditDirComparisonDialogPane(dirComparison);
+                pane.init();
+                yield pane;
+            }
+            };
+            
+            editComparisonDialogPane.getStylesheets().add(
+                    getClass().getResource("editComparisonDialog.css").toExternalForm());
+            
+            widthProperty().addListener((_, _, newValue) -> {
+                editComparisonDialogPane.setMaxWidth(newValue.doubleValue() - 20);
+                editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
+            });
+            
+            setTitle(Msg.APP_0860.get());
+            setResizable(true);
+            setResultConverter(buttonType -> buttonType == ButtonType.OK
+                    ? editComparisonDialogPane.getResult()
+                    : null);
+            
+            DialogPane dialogPane = getDialogPane();
+            dialogPane.setContent(editComparisonDialogPane);
+            dialogPane.getButtonTypes().setAll(
+                    ButtonType.OK,
+                    ButtonType.CANCEL);
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonDialog#<init>-1");
+            throw e;
         }
-        case PairingInfoDirs dirComparison -> {
-            EditDirComparisonDialogPane pane = new EditDirComparisonDialogPane(dirComparison);
-            pane.init();
-            yield pane;
-        }
-        };
-        
-        editComparisonDialogPane.getStylesheets().add(
-                getClass().getResource("editComparisonDialog.css").toExternalForm());
-        
-        widthProperty().addListener((_, _, newValue) -> {
-            editComparisonDialogPane.setMaxWidth(newValue.doubleValue() - 20);
-            editComparisonDialogPane.setMinWidth(newValue.doubleValue() - 20);
-        });
-        
-        setTitle(Msg.APP_0860.get());
-        setResizable(true);
-        setResultConverter(buttonType -> buttonType == ButtonType.OK
-                ? editComparisonDialogPane.getResult()
-                : null);
-        
-        DialogPane dialogPane = getDialogPane();
-        dialogPane.setContent(editComparisonDialogPane);
-        dialogPane.getButtonTypes().setAll(
-                ButtonType.OK,
-                ButtonType.CANCEL);
     }
 }

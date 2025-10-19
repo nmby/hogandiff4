@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 
@@ -45,17 +46,21 @@ public class ExecutePane extends AnchorPane implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        executeButton.disableProperty().bind(parent.isReady().not());
-        
-        // 2.項目ごとの各種設定
-        executeButton.setOnAction(_ -> parent.execute());
-        
-        // 3.初期値の設定
-        // nop
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+        try {
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            executeButton.disableProperty().bind(parent.isReady().not());
+            
+            // 2.項目ごとの各種設定
+            executeButton.setOnAction(_ -> parent.execute());
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "ExecutePane#init-1");
+            throw e;
+        }
     }
 }

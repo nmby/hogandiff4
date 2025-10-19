@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -37,7 +38,8 @@ public class TargetsPane extends VBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public TargetsPane() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), ar.get());
@@ -50,20 +52,24 @@ public class TargetsPane extends VBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
-        
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        
-        // 2.項目ごとの各種設定
-        targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
-        targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
-        
-        // 3.初期値の設定
-        // nop
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+        try {
+            ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
+            
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            
+            // 2.項目ごとの各種設定
+            targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
+            targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "TargetsPane#init-1");
+            throw e;
+        }
     }
     
     @Override

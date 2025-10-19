@@ -14,6 +14,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 
@@ -62,29 +63,32 @@ public class ReportingPane extends VBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        this.parent = parent;
-        
-        // 1.disableプロパティのバインディング
-        // nop
-        
-        // 2.項目ごとの各種設定
-        reportingSeparator.setOnMousePressed(event -> {
-            startY = event.getScreenY();
-            startHeight = AppMain.stage.getHeight();
-            minHeight = parent.showSettings().get()
-                    ? AppMain.STAGE_HEIGHT_OPEN
-                    : AppMain.STAGE_HEIGHT_CLOSE;
-        });
-        reportingSeparator.setOnMouseDragged(event -> {
-            double d = event.getScreenY() - startY;
-            AppMain.stage.setHeight(Math.max(startHeight + d, minHeight));
-        });
-        
-        // 3.初期値の設定
-        // nop
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+        try {
+            this.parent = parent;
+            
+            // 1.disableプロパティのバインディング
+            
+            // 2.項目ごとの各種設定
+            reportingSeparator.setOnMousePressed(event -> {
+                startY = event.getScreenY();
+                startHeight = AppMain.stage.getHeight();
+                minHeight = parent.showSettings().get()
+                        ? AppMain.STAGE_HEIGHT_OPEN
+                        : AppMain.STAGE_HEIGHT_CLOSE;
+            });
+            reportingSeparator.setOnMouseDragged(event -> {
+                double d = event.getScreenY() - startY;
+                AppMain.stage.setHeight(Math.max(startHeight + d, minHeight));
+            });
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "ReportingPane#init-1");
+            throw e;
+        }
     }
     
     /**
@@ -98,26 +102,32 @@ public class ReportingPane extends VBox implements ChildController {
     public void bind(Task<Void> task) {
         Objects.requireNonNull(task);
         
-        reportingProgressBar.progressProperty().bind(task.progressProperty());
-        reportingTextArea.textProperty().bind(task.messageProperty());
-        
-        if (scrollBar == null) {
-            reportingTextArea.lookupAll(".scroll-bar").stream()
-                    .filter(n -> n instanceof ScrollBar s && s.getOrientation() == Orientation.VERTICAL)
-                    .map(n -> (ScrollBar) n)
-                    .findAny()
-                    .ifPresent(bar -> {
-                        scrollBar = bar;
-                        reportingTextArea.textProperty().addListener((_, _, _) -> bar.setValue(bar.getMax()));
-                        bar.valueProperty().addListener((_, oldValue, newValue) -> {
-                            if (newValue.doubleValue() == 0d
-                                    && oldValue.doubleValue() == bar.getMax()
-                                    && !bar.pressedProperty().get()
-                                    && parent.isRunning().get()) {
-                                bar.setValue(bar.getMax());
-                            }
+        try {
+            reportingProgressBar.progressProperty().bind(task.progressProperty());
+            reportingTextArea.textProperty().bind(task.messageProperty());
+            
+            if (scrollBar == null) {
+                reportingTextArea.lookupAll(".scroll-bar").stream()
+                        .filter(n -> n instanceof ScrollBar s && s.getOrientation() == Orientation.VERTICAL)
+                        .map(n -> (ScrollBar) n)
+                        .findAny()
+                        .ifPresent(bar -> {
+                            scrollBar = bar;
+                            reportingTextArea.textProperty().addListener((_, _, _) -> bar.setValue(bar.getMax()));
+                            bar.valueProperty().addListener((_, oldValue, newValue) -> {
+                                if (newValue.doubleValue() == 0d
+                                        && oldValue.doubleValue() == bar.getMax()
+                                        && !bar.pressedProperty().get()
+                                        && parent.isRunning().get()) {
+                                    bar.setValue(bar.getMax());
+                                }
+                            });
                         });
-                    });
+            }
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "ReporingPane#bind-1");
+            throw e;
         }
     }
     
@@ -125,8 +135,14 @@ public class ReportingPane extends VBox implements ChildController {
      * このコンポーネントとタスクをアンバインドします。<br>
      */
     public void unbind() {
-        reportingProgressBar.progressProperty().unbind();
-        reportingProgressBar.setProgress(0D);
-        reportingTextArea.textProperty().unbind();
+        try {
+            reportingProgressBar.progressProperty().unbind();
+            reportingProgressBar.setProgress(0D);
+            reportingTextArea.textProperty().unbind();
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "ReporingPane#unbind-1");
+            throw e;
+        }
     }
 }

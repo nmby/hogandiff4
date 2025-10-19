@@ -50,16 +50,13 @@ public class Row1Pane extends HBox implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         menuPane.init(parent);
         linkPane.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
 }

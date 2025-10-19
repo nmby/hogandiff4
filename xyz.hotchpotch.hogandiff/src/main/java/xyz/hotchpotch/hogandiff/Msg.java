@@ -416,7 +416,10 @@ public enum Msg {
     APP_1280,
     
     /** お使いのアプリケーションは最新バージョンです。\n - 現在のバージョン : %s */
-    APP_1290;
+    APP_1290,
+    
+    /** ★パスワード不明のためスキップ */
+    APP_1300;
     
     private static final ResourceBundle rb = AppMain.appResource.get();
     

@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleMetadata;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileInfo.GoogleRevision;
 
@@ -59,16 +60,20 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
      *            Googleドライブファイルのリビジョン一覧
      */
     /* package */ void init(GoogleMetadata metadata, List<GoogleRevision> revisions) {
-        // 1.プロパティのバインディング
-        // nop
-        
-        // 2.イベントハンドラの設定
-        // nop
-        
-        // 3.初期値の設定
-        fileUrlLabel.setText(metadata.url());
-        fileNameLabel.setText(metadata.name());
-        revisionChoiceBox.getItems().setAll(revisions);
-        revisionChoiceBox.getSelectionModel().selectFirst();
+        try {
+            // 1.プロパティのバインディング
+            
+            // 2.イベントハンドラの設定
+            
+            // 3.初期値の設定
+            fileUrlLabel.setText(metadata.url());
+            fileNameLabel.setText(metadata.name());
+            revisionChoiceBox.getItems().setAll(revisions);
+            revisionChoiceBox.getSelectionModel().selectFirst();
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "GoogleRevisionSelectorDialogPane#init-1");
+            throw e;
+        }
     }
 }

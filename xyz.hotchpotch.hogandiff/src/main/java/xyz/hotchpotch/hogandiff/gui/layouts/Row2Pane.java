@@ -55,7 +55,6 @@ public class Row2Pane extends HBox implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         targetsPane.init(parent);
@@ -63,10 +62,8 @@ public class Row2Pane extends HBox implements ChildController {
         executePane.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     @Override

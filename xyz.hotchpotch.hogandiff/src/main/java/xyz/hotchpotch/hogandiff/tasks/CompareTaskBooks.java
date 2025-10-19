@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
@@ -178,6 +179,7 @@ public final class CompareTaskBooks extends CompareTask {
                     }
                 } catch (Exception e) {
                     str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
+                    ErrorReporter.reportIfEnabled(e, "CompareTaskBooks::compareSheets-1");
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));

@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -57,22 +58,27 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
-        this.parent = parent;
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
-                parent.menuProp, parent.isReady()));
-        
-        // 2.項目ごとの各種設定
-        editComparisonButton.setOnAction(_ -> editComparison());
-        
-        // 3.初期値の設定
-        // nop
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+        try {
+            this.parent = parent;
+            
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
+                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
+                    parent.menuProp, parent.isReady()));
+            
+            // 2.項目ごとの各種設定
+            editComparisonButton.setOnAction(_ -> editComparison());
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane#init-1");
+            throw e;
+        }
     }
     
     private void editComparison() {
@@ -120,8 +126,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
-            // nop
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane::editComparison-1");
         }
     }
 }

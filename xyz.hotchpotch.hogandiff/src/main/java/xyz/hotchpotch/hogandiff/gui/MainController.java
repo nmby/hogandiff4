@@ -31,6 +31,7 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.layouts.Row1Pane;
@@ -104,7 +105,6 @@ public class MainController extends VBox {
     public void initialize() {
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         row1Pane.init(this);
@@ -141,7 +141,6 @@ public class MainController extends VBox {
         row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
         
         // 5.その他
         UpdateChecker.execute(false);
@@ -151,12 +150,17 @@ public class MainController extends VBox {
      * 現在選択されている比較メニューに応じて、対応する比較情報を更新します。<br>
      */
     public void updateActiveComparison() {
-        switch (menuProp.getValue()) {
-        case COMPARE_SHEETS -> updateSheetComparison();
-        case COMPARE_BOOKS -> updateBookComparison();
-        case COMPARE_DIRS -> updateDirComparison();
-        case COMPARE_TREES -> updateTreeComparison();
-        default -> throw new AssertionError();
+        try {
+            switch (menuProp.getValue()) {
+            case COMPARE_SHEETS -> updateSheetComparison();
+            case COMPARE_BOOKS -> updateBookComparison();
+            case COMPARE_DIRS -> updateDirComparison();
+            case COMPARE_TREES -> updateTreeComparison();
+            default -> throw new AssertionError();
+            }
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#updateActiveComparison-1");
+            throw e;
         }
     }
     
@@ -244,45 +248,55 @@ public class MainController extends VBox {
     }
     
     private boolean isPasswordUsed() {
-        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
-        
-        Stream<Path> bookPathStream = switch (menu) {
-        case COMPARE_SHEETS -> {
-            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-            yield bookPathPair.isIdentical()
-                    ? Stream.of(bookPathPair.a())
-                    : Stream.of(bookPathPair.a(), bookPathPair.b());
+        try {
+            AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+            
+            Stream<Path> bookPathStream = switch (menu) {
+            case COMPARE_SHEETS -> {
+                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield bookPathPair.isIdentical()
+                        ? Stream.of(bookPathPair.a())
+                        : Stream.of(bookPathPair.a(), bookPathPair.b());
+            }
+            case COMPARE_BOOKS -> {
+                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
+            }
+            case COMPARE_DIRS -> {
+                PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                yield bookPathStream(dirComparison);
+            }
+            case COMPARE_TREES -> {
+                PairingInfoDirsFlatten flattenDirComparison = ar.settings()
+                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                        .flatten();
+                yield flattenDirComparison.dirComparisons().values().stream()
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .flatMap(this::bookPathStream);
+            }
+            };
+            
+            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
+            return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#isPasswordUsed-1");
+            throw e;
         }
-        case COMPARE_BOOKS -> {
-            PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-            Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-            yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-        }
-        case COMPARE_DIRS -> {
-            PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-            yield bookPathStream(dirComparison);
-        }
-        case COMPARE_TREES -> {
-            PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                    .get(SettingKeys.CURR_TREE_COMPARE_INFO)
-                    .flatten();
-            yield flattenDirComparison.dirComparisons().values().stream()
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .flatMap(this::bookPathStream);
-        }
-        };
-        
-        Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-        return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
     }
     
     private Stream<Path> bookPathStream(PairingInfoDirs dirComparison) {
-        return dirComparison.childBookInfoPairs().stream()
-                .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
-                .filter(bookInfo -> bookInfo != null)
-                .map(BookInfo::bookPath);
+        try {
+            return dirComparison.childBookInfoPairs().stream()
+                    .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
+                    .filter(bookInfo -> bookInfo != null)
+                    .map(BookInfo::bookPath);
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "MainController#bookPathStream-1");
+            throw e;
+        }
     }
     
     /**
@@ -292,10 +306,6 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        if (!isReady.getValue()) {
-            throw new IllegalStateException();
-        }
-        
         AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(ar.settings())) {
@@ -309,7 +319,6 @@ public class MainController extends VBox {
         
         isRunning.set(true);
         
-        // FIXME: [No.X 内部実装改善] createWorkDirもTaskの中に入れるべき
         Path workDir = createWorkDir(ar.settings());
         if (workDir == null) {
             new Alert(
@@ -328,6 +337,7 @@ public class MainController extends VBox {
         currentTask.setOnSucceeded(_ -> {
             row3Pane.unbind();
             
+            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             alertPasswordUnlocked();
             
             if (ar.settings().get(SettingKeys.EXIT_WHEN_FINISHED)) {
@@ -342,6 +352,10 @@ public class MainController extends VBox {
             e.printStackTrace();
             row3Pane.unbind();
             
+            // エラー送信ONの場合はエラー情報を送信する
+            ErrorReporter.reportIfEnabled(e, "MainContoroller#execute");
+            
+            // パスワード付きファイルの場合は解除され保存されていることの注意喚起を行う
             alertPasswordUnlocked();
             
             // エラーが発生したことを通知する

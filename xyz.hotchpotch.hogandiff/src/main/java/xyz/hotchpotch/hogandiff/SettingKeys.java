@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +33,14 @@ public class SettingKeys {
             throw new UnsupportedOperationException(msg);
         };
     }
+    
+    /** クライアント上で生成されたUUID */
+    public static final Key<UUID> CLIENT_UUID = new Key<>(
+            "client.uuid",
+            () -> null,
+            UUID::toString,
+            UUID::fromString,
+            true);
     
     /** このアプリケーションの実行したことのあるバージョン */
     public static final Key<String> APP_VERSION = new Key<>(
@@ -331,6 +340,14 @@ public class SettingKeys {
             String::valueOf,
             Integer::valueOf,
             false);
+    
+    /** 処理失敗時にエラー情報を送信するか */
+    public static final Key<Boolean> SEND_ERROR_INFO = new Key<>(
+            "application.sendErrorInfo",
+            () -> false,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
     
     /** 全ての定義済み設定項目を含むセット */
     // Collectors#toSet は現在の実装では immutable set を返すが

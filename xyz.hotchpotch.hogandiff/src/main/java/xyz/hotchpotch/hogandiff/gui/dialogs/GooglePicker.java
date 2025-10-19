@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
@@ -232,15 +233,20 @@ public class GooglePicker {
                                     alert.showAndWait();
                                     
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    // nop
+                                    ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-1");
                                 }
                             });
                         }
                         return fileInfo;
+                    })
+                    .exceptionally(e -> {
+                        ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-2");
+                        return null;
                     });
             
         } catch (Exception e) {
+            // FIXME: 例外レポートポリシー、例外カスケードポリシーが訳分からなくなってるので整理する
+            ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-3");
             throw new GoogleHandlingException(e);
         }
     }
@@ -304,6 +310,10 @@ public class GooglePicker {
                         GoogleFileType type = calcType(jsonObject.get("mimeType").toString(), name);
                         return new GoogleMetadata(id, url, name, type);
                     }
+                })
+                .exceptionally(e -> {
+                    ErrorReporter.reportIfEnabled(e, "GooglePicker#openPicker-1");
+                    return null;
                 });
     }
     

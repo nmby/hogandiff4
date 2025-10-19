@@ -52,17 +52,14 @@ public class Row3Pane extends StackPane implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         reportingPane.init(parent);
         togglePane.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     /**

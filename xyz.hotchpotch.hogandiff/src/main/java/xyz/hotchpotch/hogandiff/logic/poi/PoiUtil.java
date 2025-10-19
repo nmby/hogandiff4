@@ -55,6 +55,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheetConditionalFormatting;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder.BorderSide;
 
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.logic.SheetType;
 
 /**
@@ -275,7 +276,7 @@ public class PoiUtil {
                 ExtendedFormatRecord efRecord = (ExtendedFormatRecord) field.get(style);
                 efRecord.setAdtlDiag(IndexedColors.AUTOMATIC.getIndex());
             } catch (Exception e) {
-                // nop
+                ErrorReporter.reportIfEnabled(e, "PoiUtil::clearAllColors-1");
             }
             
             // パターンは残したまま、背景色＝白、前景色＝黒にする
@@ -784,7 +785,7 @@ public class PoiUtil {
             cell.setHyperlink(link);
             
         } catch (Exception e) {
-            // nop
+            ErrorReporter.reportIfEnabled(e, "PoiUtil::setHyperlink-1");
         }
         return cell;
     }
@@ -815,7 +816,7 @@ public class PoiUtil {
             cell.setHyperlink(link);
             
         } catch (Exception e) {
-            // nop
+            ErrorReporter.reportIfEnabled(e, "PoiUtil::setHyperlink-2");
         }
         return cell;
     }

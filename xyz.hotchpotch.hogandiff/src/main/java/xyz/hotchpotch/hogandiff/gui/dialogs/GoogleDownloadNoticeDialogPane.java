@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 
 /**
@@ -53,25 +54,29 @@ public class GoogleDownloadNoticeDialogPane extends VBox {
      * このダイアログボックス要素を初期化します。<br>
      */
     public void init() {
-        // 1.プロパティのバインディング
-        // nop
-        
-        // 2.イベントハンドラの設定
-        Path localDir = ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive");
-        localDirHyperlink.setOnAction(_ -> {
-            try {
-                Desktop.getDesktop().open(localDir.toFile());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-                // nop
-            }
-        });
-        
-        dontShowNoMoreCheckBox.setOnAction(_ -> ar.changeSetting(
-                SettingKeys.SHOW_GOOGLE_DL_NOTICE,
-                !dontShowNoMoreCheckBox.isSelected()));
-        
-        // 3.初期値の設定
-        localDirHyperlink.setText(localDir.toString());
+        try {
+            // 1.プロパティのバインディング
+            
+            // 2.イベントハンドラの設定
+            Path localDir = ar.settings().get(SettingKeys.WORK_DIR_BASE).resolve("googleDrive");
+            localDirHyperlink.setOnAction(_ -> {
+                try {
+                    Desktop.getDesktop().open(localDir.toFile());
+                } catch (IOException e1) {
+                    ErrorReporter.reportIfEnabled(e1, "GoogleDownloadNoticeDialogPane::init-1");
+                }
+            });
+            
+            dontShowNoMoreCheckBox.setOnAction(_ -> ar.changeSetting(
+                    SettingKeys.SHOW_GOOGLE_DL_NOTICE,
+                    !dontShowNoMoreCheckBox.isSelected()));
+            
+            // 3.初期値の設定
+            localDirHyperlink.setText(localDir.toString());
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "GoogleDownloadNoticeDialogPane::init-1");
+            throw e;
+        }
     }
 }
