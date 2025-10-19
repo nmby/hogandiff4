@@ -76,37 +76,43 @@ public class SettingsPane2 extends VBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        
-        // 2.項目ごとの各種設定
-        googlePane.init(parent);
-        
-        openWorkDirButton.setOnAction(openDir);
-        changeWorkDirButton.setOnAction(changeDir);
-        deleteWorkDirButton.setOnAction(deleteDir);
-        
-        detailsButton.setOnAction(_ -> {
-            try {
-                SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
-                detailsContent.init();
-                Dialog<Void> detailsDialog = new Dialog<>();
-                detailsDialog.setTitle(Msg.APP_1100.get());
-                detailsDialog.getDialogPane().setContent(detailsContent);
-                detailsDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-                detailsDialog.showAndWait();
-                
-            } catch (IOException e) {
-                ErrorReporter.reportIfEnabled(e, "SettingsPane2::init-1");
-            }
-        });
-        
-        // 3.初期値の設定
-        
-        // 4.値変更時のイベントハンドラの設定
-        
-        // 5.その他
-        VersionMaster.for_v0_27_0 = detailsButton;
+        try {
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            
+            // 2.項目ごとの各種設定
+            googlePane.init(parent);
+            
+            openWorkDirButton.setOnAction(openDir);
+            changeWorkDirButton.setOnAction(changeDir);
+            deleteWorkDirButton.setOnAction(deleteDir);
+            
+            detailsButton.setOnAction(_ -> {
+                try {
+                    SettingDetailsDialogPane detailsContent = new SettingDetailsDialogPane();
+                    detailsContent.init();
+                    Dialog<Void> detailsDialog = new Dialog<>();
+                    detailsDialog.setTitle(Msg.APP_1100.get());
+                    detailsDialog.getDialogPane().setContent(detailsContent);
+                    detailsDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+                    detailsDialog.showAndWait();
+                    
+                } catch (IOException e) {
+                    ErrorReporter.reportIfEnabled(e, "SettingsPane2::init-1");
+                }
+            });
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+            // 5.その他
+            VersionMaster.for_v0_27_0 = detailsButton;
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "SettingsPane2#init-1");
+            throw e;
+        }
     }
     
     private final EventHandler<ActionEvent> openDir = _ -> {
@@ -119,7 +125,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             Desktop.getDesktop().open(workDirBase.toFile());
             
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "SettingsPane2#openDir-1");
             new Alert(
                     AlertType.WARNING,
                     "%s%n%s".formatted(Msg.APP_1050.get(), workDirBase),
@@ -129,76 +135,88 @@ public class SettingsPane2 extends VBox implements ChildController {
     };
     
     private final EventHandler<ActionEvent> changeDir = _ -> {
-        Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
-        
-        File newDir = null;
         try {
-            DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(Msg.APP_1060.get());
-            dirChooser.setInitialDirectory(workDirBase.toFile());
-            newDir = dirChooser.showDialog(getScene().getWindow());
+            Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
             
-        } catch (IllegalArgumentException e) {
-            DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(Msg.APP_1060.get());
-            newDir = dirChooser.showDialog(getScene().getWindow());
-        }
-        
-        if (newDir != null) {
-            Path newPath = newDir.toPath();
-            if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
-                newPath = newPath.resolve(AppMain.APP_DOMAIN);
-            }
-            if (newPath.equals(workDirBase)) {
-                return;
+            File newDir = null;
+            try {
+                DirectoryChooser dirChooser = new DirectoryChooser();
+                dirChooser.setTitle(Msg.APP_1060.get());
+                dirChooser.setInitialDirectory(workDirBase.toFile());
+                newDir = dirChooser.showDialog(getScene().getWindow());
+                
+            } catch (IllegalArgumentException e) {
+                DirectoryChooser dirChooser = new DirectoryChooser();
+                dirChooser.setTitle(Msg.APP_1060.get());
+                newDir = dirChooser.showDialog(getScene().getWindow());
             }
             
-            if (!Files.isDirectory(newPath)) {
-                try {
-                    Files.createDirectory(newPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    new Alert(
-                            AlertType.WARNING,
-                            "%s%n%s".formatted(Msg.APP_1070.get(), newPath),
-                            ButtonType.OK)
-                                    .showAndWait();
+            if (newDir != null) {
+                Path newPath = newDir.toPath();
+                if (!newPath.endsWith(AppMain.APP_DOMAIN)) {
+                    newPath = newPath.resolve(AppMain.APP_DOMAIN);
+                }
+                if (newPath.equals(workDirBase)) {
                     return;
                 }
+                
+                if (!Files.isDirectory(newPath)) {
+                    try {
+                        Files.createDirectory(newPath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        new Alert(
+                                AlertType.WARNING,
+                                "%s%n%s".formatted(Msg.APP_1070.get(), newPath),
+                                ButtonType.OK)
+                                        .showAndWait();
+                        return;
+                    }
+                }
+                ar.changeSetting(SettingKeys.WORK_DIR_BASE, newPath);
             }
-            ar.changeSetting(SettingKeys.WORK_DIR_BASE, newPath);
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "SettingsPane2#changeDir-1");
+            throw e;
         }
     };
     
     private final EventHandler<ActionEvent> deleteDir = _ -> {
-        Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
-        
-        Optional<ButtonType> result = new Alert(
-                AlertType.CONFIRMATION,
-                "%s%n%s".formatted(Msg.APP_1080.get(), workDirBase))
-                        .showAndWait();
-        
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            Desktop desktop = Desktop.getDesktop();
-            UnsafeConsumer<Path, Exception> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
-                    ? path -> desktop.moveToTrash(path.toFile())
-                    : Files::deleteIfExists;
+        try {
+            Path workDirBase = ar.settings().get(SettingKeys.WORK_DIR_BASE);
             
-            Thread.startVirtualThread(() -> {
-                try (Stream<Path> children = Files.list(workDirBase)) {
-                    children.forEach(path -> {
-                        try {
-                            deleteAction.accept(path);
-                        } catch (Exception e) {
-                            // 使用中などの理由で削除できないファイルがある場合は
-                            // それを飛ばして削除処理を継続する
-                            ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-1");
-                        }
-                    });
-                } catch (Exception e) {
-                    ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-2");
-                }
-            });
+            Optional<ButtonType> result = new Alert(
+                    AlertType.CONFIRMATION,
+                    "%s%n%s".formatted(Msg.APP_1080.get(), workDirBase))
+                            .showAndWait();
+            
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                Desktop desktop = Desktop.getDesktop();
+                UnsafeConsumer<Path, Exception> deleteAction = desktop.isSupported(Desktop.Action.MOVE_TO_TRASH)
+                        ? path -> desktop.moveToTrash(path.toFile())
+                        : Files::deleteIfExists;
+                
+                Thread.startVirtualThread(() -> {
+                    try (Stream<Path> children = Files.list(workDirBase)) {
+                        children.forEach(path -> {
+                            try {
+                                deleteAction.accept(path);
+                            } catch (Exception e) {
+                                // 使用中などの理由で削除できないファイルがある場合は
+                                // それを飛ばして削除処理を継続する
+                                ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-1");
+                            }
+                        });
+                    } catch (Exception e) {
+                        ErrorReporter.reportIfEnabled(e, "SettingsPane2::deleteDir-2");
+                    }
+                });
+            }
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "SettingsPane2#deleteDir-1");
+            throw e;
         }
     };
 }

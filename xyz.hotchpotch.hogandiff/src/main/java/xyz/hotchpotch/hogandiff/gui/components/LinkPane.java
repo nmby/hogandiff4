@@ -9,6 +9,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.UIUtil;
@@ -46,13 +47,19 @@ public class LinkPane extends HBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disableプロパティのバインディング
-        
-        // 2.項目ごとの各種設定
-        UIUtil.setupHyperlink(toWebSiteHyperlink, AppMain.WEB_URL);
-        
-        // 3.初期値の設定
-        
-        // 4.値変更時のイベントハンドラの設定
+        try {
+            // 1.disableプロパティのバインディング
+            
+            // 2.項目ごとの各種設定
+            UIUtil.setupHyperlink(toWebSiteHyperlink, AppMain.WEB_URL);
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "LinkPane#init-1");
+            throw e;
+        }
     }
 }

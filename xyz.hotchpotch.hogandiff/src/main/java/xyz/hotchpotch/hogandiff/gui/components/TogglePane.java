@@ -11,6 +11,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -48,19 +49,25 @@ public class TogglePane extends AnchorPane implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disableプロパティのバインディング
-        
-        // 2.項目ごとの各種設定
-        toggleButton.textProperty().bind(Bindings.createStringBinding(
-                () -> toggleButton.isSelected() ? "《" : "》",
-                toggleButton.selectedProperty()));
-        
-        // 3.初期値の設定
-        toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
-        
-        // 4.値変更時のイベントハンドラの設定
-        toggleButton.setOnAction(_ -> ar
-                .changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
+        try {
+            // 1.disableプロパティのバインディング
+            
+            // 2.項目ごとの各種設定
+            toggleButton.textProperty().bind(Bindings.createStringBinding(
+                    () -> toggleButton.isSelected() ? "《" : "》",
+                    toggleButton.selectedProperty()));
+            
+            // 3.初期値の設定
+            toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
+            
+            // 4.値変更時のイベントハンドラの設定
+            toggleButton.setOnAction(_ -> ar
+                    .changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "TogglePane#init-1");
+            throw e;
+        }
     }
     
     /**

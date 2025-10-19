@@ -13,6 +13,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -84,41 +85,48 @@ public class SettingsPane1 extends VBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        
-        // 2.項目ごとの各種設定
-        
-        // 3.初期値の設定
-        BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter.accept(ar.settings().get(key));
-        
-        applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
-        applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
-        applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
-        applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
-        applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
-        applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
-        applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
-        
-        // 4.値変更時のイベントハンドラの設定
-        BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
-                .setOnAction(_ -> ar.changeSetting(key, target.isSelected()));
-        
-        addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
-        addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
-        addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
-        addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
-        addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
-        
-        compareValuesOrFormulas.selectedToggleProperty().addListener((_, _, _) -> ar
-                .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
-        prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((_, _, _) -> ar
-                .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
-        
-        enableFuzzyMatchingCheckBox.setOnAction(_ -> {
-            ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
-            parent.updateActiveComparison();
-        });
+        try {
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            
+            // 2.項目ごとの各種設定
+            
+            // 3.初期値の設定
+            BiConsumer<Key<Boolean>, Consumer<Boolean>> applicator = (key, setter) -> setter
+                    .accept(ar.settings().get(key));
+            
+            applicator.accept(SettingKeys.CONSIDER_ROW_GAPS, considerRowGapsCheckBox::setSelected);
+            applicator.accept(SettingKeys.CONSIDER_COLUMN_GAPS, considerColumnGapsCheckBox::setSelected);
+            applicator.accept(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton::setSelected);
+            applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
+            applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
+            applicator.accept(SettingKeys.SHOW_RESULT_REPORT, showResultTextCheckBox::setSelected);
+            applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
+            applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
+            
+            // 4.値変更時のイベントハンドラの設定
+            BiConsumer<CheckBox, Key<Boolean>> addListener = (target, key) -> target
+                    .setOnAction(_ -> ar.changeSetting(key, target.isSelected()));
+            
+            addListener.accept(considerRowGapsCheckBox, SettingKeys.CONSIDER_ROW_GAPS);
+            addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
+            addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
+            addListener.accept(showResultTextCheckBox, SettingKeys.SHOW_RESULT_REPORT);
+            addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
+            
+            compareValuesOrFormulas.selectedToggleProperty().addListener((_, _, _) -> ar
+                    .changeSetting(SettingKeys.COMPARE_ON_FORMULA_STRING, compareFormulasRadioButton.isSelected()));
+            prioritizeSpeedOrAccuracy.selectedToggleProperty().addListener((_, _, _) -> ar
+                    .changeSetting(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton.isSelected()));
+            
+            enableFuzzyMatchingCheckBox.setOnAction(_ -> {
+                ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
+                parent.updateActiveComparison();
+            });
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "SettingsPane1#init-1");
+            throw e;
+        }
     }
 }

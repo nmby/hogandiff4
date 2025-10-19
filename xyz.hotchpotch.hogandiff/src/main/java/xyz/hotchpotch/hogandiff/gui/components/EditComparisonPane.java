@@ -58,20 +58,27 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
-        this.parent = parent;
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
-                parent.menuProp, parent.isReady()));
-        
-        // 2.項目ごとの各種設定
-        editComparisonButton.setOnAction(_ -> editComparison());
-        
-        // 3.初期値の設定
-        
-        // 4.値変更時のイベントハンドラの設定
+        try {
+            this.parent = parent;
+            
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
+                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
+                    parent.menuProp, parent.isReady()));
+            
+            // 2.項目ごとの各種設定
+            editComparisonButton.setOnAction(_ -> editComparison());
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane#init-1");
+            throw e;
+        }
     }
     
     private void editComparison() {
