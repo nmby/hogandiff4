@@ -51,10 +51,10 @@ public record ResultOfTrees(
         return "    - %s%n    - %s%n".formatted(
                 dirInfoPair.hasA()
                         ? "【A%s】 %s".formatted(id, dirInfoPair.a().dirPath())
-                        : Msg.APP_0810.get(),
+                        : Msg.APP_0400.get(),
                 dirInfoPair.hasB()
                         ? "【B%s】 %s".formatted(id, dirInfoPair.b().dirPath())
-                        : Msg.APP_0810.get());
+                        : Msg.APP_0400.get());
     }
     
     // [instance members] ******************************************************
@@ -90,13 +90,13 @@ public record ResultOfTrees(
     private String getDiffSummary() {
         return getDiffText(dirResult -> "        - %s%n%n".formatted(dirResult.isPresent()
                 ? dirResult.get().getDiffSimpleSummary()
-                : Msg.APP_0850.get()));
+                : Msg.APP_0120.get()));
     }
     
     private String getDiffDetail() {
         return getDiffText(dirResult -> dirResult.isPresent()
                 ? dirResult.get().getDiffDetail().indent(4).replace("\n", BR)
-                : "        " + Msg.APP_0850.get() + BR + BR);
+                : "        " + Msg.APP_0120.get() + BR + BR);
     }
     
     private String getDiffText(Function<Optional<ResultOfDirs>, String> diffDescriptor) {
@@ -131,9 +131,9 @@ public record ResultOfTrees(
                 .append(BR);
         
         str.append(BR);
-        str.append(Msg.APP_0830.get()).append(BR);
+        str.append(Msg.APP_0450.get()).append(BR);
         str.append(getDiffSummary());
-        str.append(Msg.APP_0840.get()).append(BR);
+        str.append(Msg.APP_0460.get()).append(BR);
         str.append(getDiffDetail());
         
         return str.toString();

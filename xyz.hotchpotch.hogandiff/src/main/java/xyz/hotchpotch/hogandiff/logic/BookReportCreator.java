@@ -177,7 +177,7 @@ public class BookReportCreator {
         }
         
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_DIFF, COL_LEFT.a(), Msg.APP_0600.get());
-        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(), Msg.APP_0650.get());
+        PoiUtil.setCellValue(sheet, ROW_TEMPLATE_NO_OPPONENT, COL_LEFT.a(), Msg.APP_0400.get());
         PoiUtil.setCellValue(sheet, ROW_TEMPLATE_FAILED, COL_LEFT.a(), Msg.APP_0610.get());
     }
     
@@ -191,9 +191,9 @@ public class BookReportCreator {
         PoiUtil.copyRow(sheet, ROW_TEMPLATE_SHEET_TITLE, rowIdx);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() - 1, sheetIdx + 1);
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a() + 1,
-                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.APP_0650.get());
+                sheetNamePair.hasA() ? sheetNamePair.a() : Msg.APP_0400.get());
         PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b() + 1,
-                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.APP_0650.get());
+                sheetNamePair.hasB() ? sheetNamePair.b() : Msg.APP_0400.get());
         rowIdx++;
         
         // 比較対象なしの場合は「比較対象なし」の旨を出力する。

@@ -217,7 +217,7 @@ public class TreeReportCreator {
             ResultOfTrees treeResult) {
         
         PoiUtil.setCellValue(sheet, 0, 4, Msg.APP_0570.get());
-        PoiUtil.setCellValue(sheet, 1, 4, Msg.APP_0670.get());
+        PoiUtil.setCellValue(sheet, 1, 4, Msg.APP_0580.get());
         PoiUtil.setCellValue(sheet, 2, 4, Msg.APP_0930.get().formatted(Side.A));
         PoiUtil.setCellValue(sheet, 3, 4, Msg.APP_0660.get().formatted(Side.B));
         

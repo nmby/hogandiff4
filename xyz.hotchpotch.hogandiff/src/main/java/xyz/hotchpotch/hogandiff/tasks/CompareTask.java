@@ -412,7 +412,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0350.get(), resultBookPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0200.get(), resultBookPath));
             updateMessage(str.toString());
             
             TreeReportCreator creator = new TreeReportCreator();
@@ -423,19 +423,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.APP_0360.get());
+            throw getApplicationException(e, Msg.APP_0210.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
-                str.append(Msg.APP_0370.get()).append(BR).append(BR);
+                str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, Msg.APP_0380.get());
+            throw getApplicationException(e, Msg.APP_0230.get());
         }
     }
     

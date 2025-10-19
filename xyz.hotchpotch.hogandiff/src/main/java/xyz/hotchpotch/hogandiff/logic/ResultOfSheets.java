@@ -248,7 +248,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffSummary() {
         if (!hasDiff()) {
-            return Msg.APP_0720.get();
+            return Msg.APP_0410.get();
         }
         
         int rows = redundantRows.a().size() + redundantRows.b().size();
@@ -282,7 +282,7 @@ public final class ResultOfSheets implements Result {
      */
     public String getDiffDetail() {
         if (!hasDiff()) {
-            return Msg.APP_0720.get();
+            return Msg.APP_0410.get();
         }
         
         StringBuilder str = new StringBuilder();
