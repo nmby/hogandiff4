@@ -625,7 +625,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 if (bookInfoPair.a().status() == Status.NEEDS_PASSWORD
                         || bookInfoPair.b().status() == Status.NEEDS_PASSWORD) {
                     
-                    str.append(" - ").append(Msg.APP_1300).append(BR);
+                    str.append(" - ").append(Msg.APP_1300.get()).append(BR);
                     updateMessage(str.toString());
                     
                     bookResults.put(bookInfoPair, Optional.empty());
