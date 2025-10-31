@@ -107,7 +107,7 @@ public class SettingsPane2 extends VBox implements ChildController {
             // 4.値変更時のイベントハンドラの設定
             
             // 5.その他
-            VersionMaster.for_v0_27_0 = detailsButton;
+            VersionMaster.for_v0_27_1 = detailsButton;
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "SettingsPane2#init-1");
