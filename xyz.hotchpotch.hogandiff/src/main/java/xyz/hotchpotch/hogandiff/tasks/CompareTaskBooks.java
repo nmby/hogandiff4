@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.CellData;
@@ -39,7 +41,8 @@ public final class CompareTaskBooks extends CompareTask {
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     public CompareTaskBooks(Settings settings) {
         super(settings);
@@ -96,7 +99,7 @@ public final class CompareTaskBooks extends CompareTask {
             return bResult;
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::call2");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareBooksTask::call2");
         }
     }
     
@@ -115,7 +118,7 @@ public final class CompareTaskBooks extends CompareTask {
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             
             str.append("%s%n[A] %s%n[B] %s%n"
-                    .formatted(rb.getString("CompareBooksTask.010"), dispPathPair.a(), dispPathPair.b()));
+                    .formatted(Msg.APP_0170.get(), dispPathPair.a(), dispPathPair.b()));
             
             for (int i = 0; i < pairingInfoBooks.childSheetNamePairs().size(); i++) {
                 Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(i);
@@ -127,7 +130,7 @@ public final class CompareTaskBooks extends CompareTask {
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at CompareBooksTask::announceStart");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at CompareBooksTask::announceStart");
         }
     }
     
@@ -139,7 +142,7 @@ public final class CompareTaskBooks extends CompareTask {
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("CompareBooksTask.040")).append(BR);
+            str.append(Msg.APP_0180.get()).append(BR);
             updateMessage(str.toString());
             
             PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO);
@@ -175,7 +178,8 @@ public final class CompareTaskBooks extends CompareTask {
                         updateMessage(str.toString());
                     }
                 } catch (Exception e) {
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
+                    ErrorReporter.reportIfEnabled(e, "CompareTaskBooks::compareSheets-1");
                 }
                 
                 results.put(sheetNamePair, Optional.ofNullable(result));
@@ -189,7 +193,7 @@ public final class CompareTaskBooks extends CompareTask {
             return new ResultOfBooks(pairingInfoBooks, results);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.050", "");
+            throw getApplicationException(e, Msg.APP_0190.get());
         }
     }
 }

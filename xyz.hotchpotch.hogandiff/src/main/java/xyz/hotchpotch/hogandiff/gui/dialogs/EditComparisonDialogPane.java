@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.dialogs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import xyz.hotchpotch.hogandiff.AppMain;
+import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
 import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
@@ -68,7 +69,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     
     // [instance members] ******************************************************
     
-    protected ResourceBundle rb = AppMain.appResource.get();
+    protected AppResource ar = AppMain.appResource;
     
     @FXML
     protected GridPane parentGridPane;
@@ -91,7 +92,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
      *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonDialogPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonDialogPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -126,21 +127,26 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     }
     
     protected void drawGrid() {
-        childGridPane.getChildren().clear();
-        
-        for (int i = 0; i < currentChildPairs.size(); i++) {
-            Pair<?> pair = currentChildPairs.get(i);
-            GridRow gridRow = new GridRow(this, i, pair);
+        try {
+            childGridPane.getChildren().clear();
             
-            childGridPane.add(gridRow, 0, i, 3, 1);
-            childGridPane.add(gridRow.itemPair().a(), 0, i);
-            childGridPane.add(gridRow.itemPair().b(), 2, i);
-            if (pair.isPaired()) {
-                childGridPane.add(gridRow.unpairButton(), 1, i);
+            for (int i = 0; i < currentChildPairs.size(); i++) {
+                Pair<?> pair = currentChildPairs.get(i);
+                GridRow gridRow = new GridRow(this, i, pair);
+                
+                childGridPane.add(gridRow, 0, i, 3, 1);
+                childGridPane.add(gridRow.itemPair().a(), 0, i);
+                childGridPane.add(gridRow.itemPair().b(), 2, i);
+                if (pair.isPaired()) {
+                    childGridPane.add(gridRow.unpairButton(), 1, i);
+                }
+                
+                GridPane.setMargin(gridRow.itemPair().a(), new Insets(2, 3, 2, 3));
+                GridPane.setMargin(gridRow.itemPair().b(), new Insets(2, 3, 2, 3));
             }
-            
-            GridPane.setMargin(gridRow.itemPair().a(), new Insets(2, 3, 2, 3));
-            GridPane.setMargin(gridRow.itemPair().b(), new Insets(2, 3, 2, 3));
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonDialogPane#drawGrid-1");
+            throw e;
         }
     }
     

@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -16,6 +15,8 @@ import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
@@ -35,7 +36,6 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private Button editComparisonButton;
@@ -49,7 +49,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public EditComparisonPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -58,22 +58,27 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     @Override
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
-        this.parent = parent;
         
-        // 1.disableプロパティのバインディング
-        disableProperty().bind(parent.isRunning());
-        editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
-                parent.menuProp, parent.isReady()));
-        
-        // 2.項目ごとの各種設定
-        editComparisonButton.setOnAction(_ -> editComparison());
-        
-        // 3.初期値の設定
-        // nop
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+        try {
+            this.parent = parent;
+            
+            // 1.disableプロパティのバインディング
+            disableProperty().bind(parent.isRunning());
+            editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
+                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
+                    parent.menuProp, parent.isReady()));
+            
+            // 2.項目ごとの各種設定
+            editComparisonButton.setOnAction(_ -> editComparison());
+            
+            // 3.初期値の設定
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane#init-1");
+            throw e;
+        }
     }
     
     private void editComparison() {
@@ -82,7 +87,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
-                        rb.getString("gui.MainController.010"),
+                        Msg.APP_1180.get(),
                         ButtonType.OK)
                                 .showAndWait();
                 return;
@@ -121,8 +126,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             }
             
         } catch (IOException e) {
-            e.printStackTrace();
-            // nop
+            ErrorReporter.reportIfEnabled(e, "EditComparisonPane::editComparison-1");
         }
     }
 }

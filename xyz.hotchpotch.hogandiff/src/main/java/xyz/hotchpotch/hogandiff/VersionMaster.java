@@ -20,15 +20,16 @@ public class VersionMaster {
     private static final AppResource ar = AppMain.appResource;
     
     /** このアプリケーションのバージョン */
-    public static final String APP_VERSION = "v0.27.0";
+    public static final String APP_VERSION = "v0.27.1";
     
     /** v0.27.0新機能アナウンス機能用変数 */
-    public static Button for_v0_27_0;
+    public static Button for_v0_27_1;
     
     /**
      * このアプリの現在のバージョンと指定されたバージョンを比較します。<br>
      * 
-     * @param comparisonTarget 比較対象のバージョン
+     * @param comparisonTarget
+     *            比較対象のバージョン
      * @return 現在のバージョンの方が新しい場合は {@code 1}、同じ場合は {@code 0}、古い場合は {@code -1}
      */
     public static int compareVersion(String comparisonTarget) {
@@ -64,8 +65,8 @@ public class VersionMaster {
         String prevVersion = ar.settings().get(SettingKeys.APP_VERSION);
         if (prevVersion == null || compareVersion(prevVersion) > 0) {
             
-            assert APP_VERSION.equals("v0.27.0");
-            // v0.27.0 では次を行う。
+            assert APP_VERSION.equals("v0.27.1");
+            // v0.27.1 では次を行う。
             //  ●設定エリアの強制展開
             //  ・詳細設定ダイアログの強制表示
             //  ・新機能紹介ページの表示
@@ -81,21 +82,20 @@ public class VersionMaster {
         String prevVersion = ar.settings().get(SettingKeys.APP_VERSION);
         if (prevVersion == null || compareVersion(prevVersion) > 0) {
             
-            assert APP_VERSION.equals("v0.27.0");
+            assert APP_VERSION.equals("v0.27.1");
             // v0.27.0 では次を行う。
             //  ・設定エリアの強制展開
             //  ●詳細設定ダイアログの強制表示
             //  ●新機能紹介ページの表示
             
             try {
-                if (for_v0_27_0 != null) {
-                    Platform.runLater(() -> for_v0_27_0.fire());
+                if (for_v0_27_1 != null) {
+                    Platform.runLater(() -> for_v0_27_1.fire());
                 }
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-0/"));
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-1/"));
                 
             } catch (IOException e) {
-                e.printStackTrace();
-                // nop
+                ErrorReporter.reportIfEnabled(e, "VersionMaster::announceNewFeature2-1");
             }
             ar.changeSetting(SettingKeys.APP_VERSION, APP_VERSION);
         }

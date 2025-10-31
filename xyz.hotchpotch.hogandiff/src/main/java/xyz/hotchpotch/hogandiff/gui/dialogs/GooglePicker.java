@@ -7,7 +7,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -20,6 +19,8 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleFileFetcher;
@@ -40,7 +41,6 @@ public class GooglePicker {
     // [static members] ********************************************************
     
     private static final AppResource ar = AppMain.appResource;
-    private static final ResourceBundle rb = ar.get();
     
     private static final String API_KEY = EnvConfig.get("GOOGLE_PICKER_API_KEY");
     private static final String APP_ID = EnvConfig.get("GOOGLE_CLOUD_PROJECT_ID");
@@ -164,12 +164,12 @@ public class GooglePicker {
                 </body>
                 </html>
                 """.formatted(
-                rb.getString("fx.GoogleFilePickerDialogPane.070"),
-                rb.getString("fx.GoogleFilePickerDialogPane.080"),
-                rb.getString("fx.GoogleFilePickerDialogPane.090"),
+                Msg.APP_0890.get(),
+                Msg.APP_0900.get(),
+                Msg.APP_0910.get(),
                 accessToken,
                 API_KEY, APP_ID,
-                rb.getString("fx.GoogleFilePickerDialog.020"));
+                Msg.APP_0880.get());
     }
     
     // [instance members] ******************************************************
@@ -227,21 +227,26 @@ public class GooglePicker {
                                     GoogleDownloadNoticeDialogPane content = new GoogleDownloadNoticeDialogPane();
                                     content.init();
                                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle(rb.getString("AppMain.010"));
-                                    alert.setHeaderText(rb.getString("gui.component.GooglePane.090"));
+                                    alert.setTitle(Msg.APP_0010.get());
+                                    alert.setHeaderText(Msg.APP_1030.get());
                                     alert.getDialogPane().setContent(content);
                                     alert.showAndWait();
                                     
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    // nop
+                                    ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-1");
                                 }
                             });
                         }
                         return fileInfo;
+                    })
+                    .exceptionally(e -> {
+                        ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-2");
+                        return null;
                     });
             
         } catch (Exception e) {
+            // FIXME: 例外レポートポリシー、例外カスケードポリシーが訳分からなくなってるので整理する
+            ErrorReporter.reportIfEnabled(e, "GooglePicker::downloadAndGetFileInfo-3");
             throw new GoogleHandlingException(e);
         }
     }
@@ -305,6 +310,10 @@ public class GooglePicker {
                         GoogleFileType type = calcType(jsonObject.get("mimeType").toString(), name);
                         return new GoogleMetadata(id, url, name, type);
                     }
+                })
+                .exceptionally(e -> {
+                    ErrorReporter.reportIfEnabled(e, "GooglePicker#openPicker-1");
+                    return null;
                 });
     }
     

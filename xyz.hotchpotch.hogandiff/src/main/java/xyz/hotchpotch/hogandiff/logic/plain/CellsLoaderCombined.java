@@ -87,7 +87,7 @@ public class CellsLoaderCombined implements CellsLoader {
         CommonUtil.ifNotSupportedBookTypeThenThrow(getClass(), BookType.of(bookInfo.bookPath()));
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s - %s".formatted(bookInfo.bookPath(), sheetName));
+                "processing failed : %s - %s".formatted(bookInfo.bookPath(), sheetName));
         
         Iterator<UnsafeSupplier<CellsLoader, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {

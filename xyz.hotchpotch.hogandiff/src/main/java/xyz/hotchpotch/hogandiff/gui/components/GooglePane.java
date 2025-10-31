@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.components;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -25,6 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.UIUtil;
@@ -43,7 +44,6 @@ public class GooglePane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ImageView profileImageView;
@@ -64,7 +64,7 @@ public class GooglePane extends HBox implements ChildController {
      *             FXMLファイルの読み込みに失敗した場合
      */
     public GooglePane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GooglePane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -74,102 +74,108 @@ public class GooglePane extends HBox implements ChildController {
     public void init(MainController parent, Object... param) {
         Objects.requireNonNull(parent);
         
-        // 1.disabled/visibleプロパティのバインディング
-        BooleanBinding isCredentialNull = Bindings.createBooleanBinding(
-                () -> parent.googleCredential.getValue() == null,
-                parent.googleCredential);
-        
-        googleImageView.visibleProperty().bind(isCredentialNull);
-        googleImageView.managedProperty().bind(isCredentialNull);
-        connectGoogleButton.visibleProperty().bind(isCredentialNull);
-        connectGoogleButton.managedProperty().bind(isCredentialNull);
-        
-        profileImageView.visibleProperty().bind(isCredentialNull.not());
-        profileImageView.managedProperty().bind(isCredentialNull.not());
-        disconnectGoogleButton.visibleProperty().bind(isCredentialNull.not());
-        disconnectGoogleButton.managedProperty().bind(isCredentialNull.not());
-        
-        // 2.項目ごとの各種設定
-        double size = profileImageView.getFitWidth();
-        Circle circle = new Circle(size / 2);
-        circle.setCenterX(size / 2);
-        circle.setCenterY(size / 2);
-        profileImageView.setClip(circle);
-        
-        profileImageView.imageProperty().bind(Bindings.createObjectBinding(
-                () -> {
-                    GoogleCredential credential = parent.googleCredential.getValue();
-                    if (credential != null) {
-                        String picUrl = credential.driveUser().getPhotoLink();
-                        if (picUrl != null) {
-                            return new Image(picUrl);
+        try {
+            // 1.disabled/visibleプロパティのバインディング
+            BooleanBinding isCredentialNull = Bindings.createBooleanBinding(
+                    () -> parent.googleCredential.getValue() == null,
+                    parent.googleCredential);
+            
+            googleImageView.visibleProperty().bind(isCredentialNull);
+            googleImageView.managedProperty().bind(isCredentialNull);
+            connectGoogleButton.visibleProperty().bind(isCredentialNull);
+            connectGoogleButton.managedProperty().bind(isCredentialNull);
+            
+            profileImageView.visibleProperty().bind(isCredentialNull.not());
+            profileImageView.managedProperty().bind(isCredentialNull.not());
+            disconnectGoogleButton.visibleProperty().bind(isCredentialNull.not());
+            disconnectGoogleButton.managedProperty().bind(isCredentialNull.not());
+            
+            // 2.項目ごとの各種設定
+            double size = profileImageView.getFitWidth();
+            Circle circle = new Circle(size / 2);
+            circle.setCenterX(size / 2);
+            circle.setCenterY(size / 2);
+            profileImageView.setClip(circle);
+            
+            profileImageView.imageProperty().bind(Bindings.createObjectBinding(
+                    () -> {
+                        GoogleCredential credential = parent.googleCredential.getValue();
+                        if (credential != null) {
+                            String picUrl = credential.driveUser().getPhotoLink();
+                            if (picUrl != null) {
+                                return new Image(picUrl);
+                            }
                         }
-                    }
-                    return null;
-                },
-                parent.googleCredential));
-        
-        connectGoogleButton.setOnAction(_ -> {
-            Task<GoogleCredential> connectTask = new ConnectGoogleTask(parent.googleCredential);
-            Thread connectThread = new Thread(connectTask);
-            connectThread.setDaemon(true);
-            connectThread.start();
-        });
-        
-        disconnectGoogleButton.setOnAction(_ -> {
-            Optional<ButtonType> result = new Alert(
-                    AlertType.CONFIRMATION,
-                    rb.getString("gui.component.GooglePane.010"))
-                            .showAndWait();
+                        return null;
+                    },
+                    parent.googleCredential));
             
-            if (result.isEmpty() || result.get() != ButtonType.OK) {
-                return;
-            }
-            
-            try {
-                parent.googleCredential.getValue().deleteCredential();
-                parent.googleCredential.setValue(null);
-                
-                Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
-                VBox content = new VBox(10);
-                content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.030")),
-                        link);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(rb.getString("AppMain.010"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.020"));
-                alert.getDialogPane().setContent(content);
-                alert.showAndWait();
-                
-            } catch (GoogleHandlingException e) {
-                parent.googleCredential.setValue(null);
-                e.printStackTrace();
-                
-                Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
-                VBox content = new VBox(10);
-                content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.050")),
-                        link);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(rb.getString("AppMain.010"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.040"));
-                alert.getDialogPane().setContent(content);
-                alert.showAndWait();
-            }
-        });
-        
-        // 3.初期値の設定
-        Thread asyncInitGoogleTask = new Thread(() -> {
-            GoogleCredential credential = GoogleCredential.get(false);
-            Platform.runLater(() -> {
-                parent.googleCredential.setValue(credential);
+            connectGoogleButton.setOnAction(_ -> {
+                Task<GoogleCredential> connectTask = new ConnectGoogleTask(parent.googleCredential);
+                Thread connectThread = new Thread(connectTask);
+                connectThread.setDaemon(true);
+                connectThread.start();
             });
-        });
-        asyncInitGoogleTask.setDaemon(true);
-        asyncInitGoogleTask.start();
-        
-        // 4.値変更時のイベントハンドラの設定
-        // nop
+            
+            disconnectGoogleButton.setOnAction(_ -> {
+                Optional<ButtonType> result = new Alert(
+                        AlertType.CONFIRMATION,
+                        Msg.APP_0950.get())
+                                .showAndWait();
+                
+                if (result.isEmpty() || result.get() != ButtonType.OK) {
+                    return;
+                }
+                
+                try {
+                    parent.googleCredential.getValue().deleteCredential();
+                    parent.googleCredential.setValue(null);
+                    
+                    Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
+                    VBox content = new VBox(10);
+                    content.getChildren().addAll(new Label(Msg.APP_0970.get()), link);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle(Msg.APP_0010.get());
+                    alert.setHeaderText(Msg.APP_0960.get());
+                    alert.getDialogPane().setContent(content);
+                    alert.showAndWait();
+                    
+                } catch (GoogleHandlingException e) {
+                    ErrorReporter.reportIfEnabled(e, "GooglePane#init-2");
+                    parent.googleCredential.setValue(null);
+                    
+                    Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
+                    VBox content = new VBox(10);
+                    content.getChildren().addAll(new Label(Msg.APP_0990.get()), link);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Msg.APP_0010.get());
+                    alert.setHeaderText(Msg.APP_0980.get());
+                    alert.getDialogPane().setContent(content);
+                    alert.showAndWait();
+                }
+            });
+            
+            // 3.初期値の設定
+            Thread asyncInitGoogleTask = new Thread(() -> {
+                GoogleCredential credential = GoogleCredential.get(false);
+                Platform.runLater(() -> {
+                    try {
+                        parent.googleCredential.setValue(credential);
+                    } catch (Exception e) {
+                        ErrorReporter.reportIfEnabled(e, "GooglePane#init-3");
+                        throw e;
+                    }
+                });
+            });
+            asyncInitGoogleTask.setDaemon(true);
+            asyncInitGoogleTask.start();
+            
+            // 4.値変更時のイベントハンドラの設定
+            
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "GooglePane#init-1");
+            throw e;
+        }
     }
     
     private class ConnectGoogleTask extends Task<GoogleCredential> {
@@ -192,19 +198,25 @@ public class GooglePane extends HBox implements ChildController {
         @Override
         protected void failed() {
             Throwable exception = getException();
-            exception.printStackTrace();
+            ErrorReporter.reportIfEnabled(exception, "GooglePane#failed-1");
             
             Platform.runLater(() -> {
-                Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
-                VBox content = new VBox(10);
-                content.getChildren().addAll(
-                        new Label(rb.getString("gui.component.GooglePane.080").formatted(exception.getMessage())),
-                        link);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(rb.getString("gui.component.GooglePane.060"));
-                alert.setHeaderText(rb.getString("gui.component.GooglePane.070"));
-                alert.getDialogPane().setContent(content);
-                alert.showAndWait();
+                try {
+                    Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
+                    VBox content = new VBox(10);
+                    content.getChildren().addAll(
+                            new Label(Msg.APP_1020.get().formatted(exception.getMessage())),
+                            link);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(Msg.APP_1000.get());
+                    alert.setHeaderText(Msg.APP_1010.get());
+                    alert.getDialogPane().setContent(content);
+                    alert.showAndWait();
+                    
+                } catch (Exception e) {
+                    ErrorReporter.reportIfEnabled(e, "GooglePane#failed-2");
+                    throw e;
+                }
             });
         }
     }

@@ -107,7 +107,7 @@ public class PainterCombined implements Painter {
         }
         
         ExcelHandlingException failed = new ExcelHandlingException(
-                "processiong failed : %s -> %s".formatted(srcBookPath, dstBookPath));
+                "processing failed : %s -> %s".formatted(srcBookPath, dstBookPath));
         
         Iterator<UnsafeSupplier<Painter, ExcelHandlingException>> itr = suppliers.iterator();
         while (itr.hasNext()) {

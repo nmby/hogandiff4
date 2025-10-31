@@ -34,22 +34,27 @@ public class AppResource {
     /** ユーザーディレクトリ */
     public static final Path USER_HOME;
     static {
-        String osName = System.getProperty("os.name").toLowerCase();
-        String userHome = System.getProperty("user.home");
-        
-        Path dir = osName.startsWith("mac")
-                ? Path.of(userHome, AppMain.APP_DOMAIN)
-                : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
-        
-        if (Files.notExists(dir)) {
-            try {
-                Files.createDirectory(dir);
-            } catch (Exception e) {
-                e.printStackTrace();
-                dir = null;
+        try {
+            String osName = System.getProperty("os.name").toLowerCase();
+            String userHome = System.getProperty("user.home");
+            
+            Path dir = osName.startsWith("mac")
+                    ? Path.of(userHome, AppMain.APP_DOMAIN)
+                    : Path.of(userHome, "AppData", "Roaming", AppMain.APP_DOMAIN);
+            
+            if (Files.notExists(dir)) {
+                try {
+                    Files.createDirectory(dir);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    dir = null;
+                }
             }
+            USER_HOME = dir;
+        } catch (Exception e) {
+            ErrorReporter.reportIfEnabled(e, "AppResource#<clinit>-1");
+            throw e;
         }
-        USER_HOME = dir;
     }
     
     /** プロパティファイルの相対パス */
@@ -70,7 +75,7 @@ public class AppResource {
                 properties.load(r);
                 return properties;
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorReporter.reportIfEnabled(e, "AppResource#loadProperties-1");
             }
         }
         return new Properties();
@@ -89,6 +94,7 @@ public class AppResource {
             settings = Settings.builder(properties, SettingKeys.storableKeys).build();
         } catch (RuntimeException e) {
             settings = Settings.builder().build();
+            ErrorReporter.reportIfEnabled(e, "AppResource#fromProperties-1");
         }
         
         return new AppResource(properties, settings);
@@ -141,10 +147,10 @@ public class AppResource {
             return true;
             
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "AppResource#storeProperties-1");
             new Alert(
                     AlertType.ERROR,
-                    "%s%n%s".formatted(rb.getString("AppResource.010"), APP_PROP_PATH),
+                    "%s%n%s".formatted(Msg.APP_0020.get(), APP_PROP_PATH),
                     ButtonType.OK)
                             .showAndWait();
             return false;
@@ -154,11 +160,15 @@ public class AppResource {
     /**
      * 設定値を変更しプロパティファイルに記録します。<br>
      * 
-     * @param <T>   設定値の型
-     * @param key   設定キー
-     * @param value 設定値（{@code null} 許容）
+     * @param <T>
+     *            設定値の型
+     * @param key
+     *            設定キー
+     * @param value
+     *            設定値（{@code null} 許容）
      * @return 保存に成功した場合は {@code true}
-     * @throws NullPointerException {@code key} が {@code null} の場合
+     * @throws NullPointerException
+     *             {@code key} が {@code null} の場合
      */
     public <T> boolean changeSetting(Key<T> key, T value) {
         Objects.requireNonNull(key);
@@ -176,8 +186,10 @@ public class AppResource {
     /**
      * このリソースセットにアプリケーション実行時引数から得られる内容を上書きで反映します。<br>
      * 
-     * @param args アプリケーション実行時引数
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param args
+     *            アプリケーション実行時引数
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void reflectArgs(String[] args) {
         Objects.requireNonNull(args);

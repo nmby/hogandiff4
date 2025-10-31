@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
@@ -28,7 +27,6 @@ public class Row3Pane extends StackPane implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private ReportingPane reportingPane;
@@ -39,10 +37,11 @@ public class Row3Pane extends StackPane implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public Row3Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row3Pane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row3Pane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -53,24 +52,23 @@ public class Row3Pane extends StackPane implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         reportingPane.init(parent);
         togglePane.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     /**
      * このコンポーネントとタスクをバインドします。<br>
      * 
-     * @param task タスク
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param task
+     *            タスク
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void bind(Task<Void> task) {
         Objects.requireNonNull(task);

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.function.BiFunction;
 
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -22,6 +21,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.poi.PoiUtil;
 import xyz.hotchpotch.hogandiff.util.IntPair;
@@ -54,16 +54,20 @@ public class TreeReportCreator {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     /**
      * フォルダツリー同士の比較結果をExcelファイルの形式で出力して指定されたパスに保存します。<br>
      * 
-     * @param dstBookPath 保存先Excelブックのパス
-     * @param treeResult  フォルダツリー同士の比較結果
-     * @param recursively 「子フォルダも含める」の場合は {@code true}
-     * @throws ExcelHandlingException 処理に失敗した場合
-     * @throws NullPointerException   パラメータが {@code null} の場合
+     * @param dstBookPath
+     *            保存先Excelブックのパス
+     * @param treeResult
+     *            フォルダツリー同士の比較結果
+     * @param recursively
+     *            「子フォルダも含める」の場合は {@code true}
+     * @throws ExcelHandlingException
+     *             処理に失敗した場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void createResultBook(
             Path dstBookPath,
@@ -212,14 +216,10 @@ public class TreeReportCreator {
             Path workDir,
             ResultOfTrees treeResult) {
         
-        PoiUtil.setCellValue(sheet, 0, 4,
-                rb.getString("excel.poi.usermodel.BookResultBookCreator.010"));
-        PoiUtil.setCellValue(sheet, 1, 4,
-                rb.getString("excel.poi.usermodel.TreeResultBookCreator.020"));
-        PoiUtil.setCellValue(sheet, 2, 4,
-                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.A));
-        PoiUtil.setCellValue(sheet, 3, 4,
-                rb.getString("excel.poi.usermodel.TreeResultBookCreator.010").formatted(Side.B));
+        PoiUtil.setCellValue(sheet, 0, 4, Msg.APP_0160.get());
+        PoiUtil.setCellValue(sheet, 1, 4, Msg.APP_0580.get());
+        PoiUtil.setCellValue(sheet, 2, 4, Msg.APP_0930.get().formatted(Side.A));
+        PoiUtil.setCellValue(sheet, 3, 4, Msg.APP_0660.get().formatted(Side.B));
         
         String timestamp = ar.settings().get(SettingKeys.CURR_TIMESTAMP);
         LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);

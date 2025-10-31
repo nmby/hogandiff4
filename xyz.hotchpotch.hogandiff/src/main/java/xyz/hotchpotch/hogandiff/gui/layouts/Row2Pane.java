@@ -2,7 +2,6 @@ package xyz.hotchpotch.hogandiff.gui.layouts;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
@@ -28,7 +27,6 @@ public class Row2Pane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final ResourceBundle rb = ar.get();
     
     @FXML
     private TargetsPane targetsPane;
@@ -42,10 +40,11 @@ public class Row2Pane extends HBox implements ChildController {
     /**
      * コンストラクタ<br>
      * 
-     * @throws IOException FXMLファイルの読み込みに失敗した場合
+     * @throws IOException
+     *             FXMLファイルの読み込みに失敗した場合
      */
     public Row2Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row2Pane.fxml"), rb);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Row2Pane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -56,7 +55,6 @@ public class Row2Pane extends HBox implements ChildController {
         Objects.requireNonNull(parent);
         
         // 1.disableプロパティのバインディング
-        // nop
         
         // 2.項目ごとの各種設定
         targetsPane.init(parent);
@@ -64,10 +62,8 @@ public class Row2Pane extends HBox implements ChildController {
         executePane.init(parent);
         
         // 3.初期値の設定
-        // nop
         
         // 4.値変更時のイベントハンドラの設定
-        // nop
     }
     
     @Override

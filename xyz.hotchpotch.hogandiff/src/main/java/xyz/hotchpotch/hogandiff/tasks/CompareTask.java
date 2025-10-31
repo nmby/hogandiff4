@@ -10,16 +10,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.ErrorReporter;
+import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.logic.BookInfo;
+import xyz.hotchpotch.hogandiff.logic.BookInfo.Status;
 import xyz.hotchpotch.hogandiff.logic.BookReportCreator;
 import xyz.hotchpotch.hogandiff.logic.CellData;
 import xyz.hotchpotch.hogandiff.logic.CellsLoader;
@@ -69,13 +70,11 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /** ユーザー向け表示文字列を保持する {@link StringBuilder} */
     protected final StringBuilder str = new StringBuilder();
     
-    /** このアプリケーションのリソースバンドル */
-    protected final ResourceBundle rb = AppMain.appResource.get();
-    
     /**
      * コンストラクタ
      * 
-     * @param settings 設定セット
+     * @param settings
+     *            設定セット
      */
     protected CompareTask(Settings settings) {
         assert settings != null;
@@ -85,14 +84,14 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 .resolve(settings.get(SettingKeys.CURR_TIMESTAMP));
     }
     
-    protected ApplicationException getApplicationException(Throwable e, String msgId, String appendMsg) {
+    protected ApplicationException getApplicationException(Throwable e, String msg) {
         if (e instanceof ApplicationException ee) {
             return ee;
             
         } else {
-            str.append(BR).append(rb.getString(msgId) + appendMsg).append(BR).append(BR);
+            str.append(BR).append(msg).append(BR).append(BR);
             updateMessage(str.toString());
-            return new ApplicationException(rb.getString(msgId) + appendMsg, e);
+            return new ApplicationException(msg, e);
         }
     }
     
@@ -103,10 +102,10 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             return null;
             
         } catch (OutOfMemoryError e) {
-            throw getApplicationException(e, "AppTaskBase.170", "");
+            throw getApplicationException(e, Msg.APP_0140.get());
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::call");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at AppTaskBase::call");
         }
     }
     
@@ -114,7 +113,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * タスク本体。タスクを実行し結果を返します。<br>
      * 
      * @return タスクの結果
-     * @throws ApplicationException 処理が失敗した場合
+     * @throws ApplicationException
+     *             処理が失敗した場合
      */
     protected abstract Result call2() throws ApplicationException;
     
@@ -123,11 +123,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * 比較結果文字列をテキストファイルに保存します。<br>
      * 
-     * @param workDir        作業用フォルダ
-     * @param resultText     比較結果文字列
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter  進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param resultText
+     *            比較結果文字列
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
     protected void saveResultText(
@@ -147,13 +152,13 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             Path textPath = workDir.resolve("result.txt");
             
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("AppTaskBase.030"), textPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0030.get(), textPath));
             updateMessage(str.toString());
             
             String timestamp = settings.get(SettingKeys.CURR_TIMESTAMP);
             LocalDateTime execDatetime = LocalDateTime.parse(timestamp, formatter);
             String execDatetimeStr = "%s%s%n".formatted(
-                    rb.getString("AppTaskBase.200"),
+                    Msg.APP_0160.get(),
                     execDatetime.format(formatter2));
             
             try (BufferedWriter writer = Files.newBufferedWriter(textPath)) {
@@ -163,24 +168,25 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.050", "");
+            throw getApplicationException(e, Msg.APP_0040.get());
         }
     }
     
     /**
      * 処理修了をアナウンスする。<br>
      * 
-     * @throws ApplicationException 処理に失敗した場合
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
     protected void announceEnd() throws ApplicationException {
         try {
-            str.append(rb.getString("AppTaskBase.120"));
+            str.append(Msg.APP_0110.get());
             updateMessage(str.toString());
             updateProgress(PROGRESS_MAX, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "AppTaskBase.180", " at AppTaskBase::announceEnd");
+            throw getApplicationException(e, Msg.APP_0150.get() + " at AppTaskBase::announceEnd");
         }
     }
     
@@ -188,12 +194,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * Excelブックの各シートに比較結果の色を付けて保存し、
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 
-     * @param workDir         作業用フォルダ
-     * @param srcBookPathPair Excelブックのパス
-     * @param bResult         Excelブック比較結果
-     * @param progressBefore  進捗率（開始時）
-     * @param progressAfter   進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param srcBookPathPair
+     *            Excelブックのパス
+     * @param bResult
+     *            Excelブック比較結果
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask
     protected void paintSaveAndShowBook(
@@ -216,11 +228,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 比較対象シートが同一ブックに属する場合のためのメソッドです。<br>
      * 
-     * @param workDir        作業用フォルダ
-     * @param bResult        Excelブック比較結果
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter  進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param bResult
+     *            Excelブック比較結果
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     private void paintSaveAndShowBook1(
             Path workDir,
@@ -236,7 +253,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            str.append(rb.getString("AppTaskBase.060")).append(BR);
+            str.append(Msg.APP_0050.get()).append(BR);
             updateMessage(str.toString());
             
             dstBookPath = workDir.resolve(srcBookInfo.bookNameWithExtension());
@@ -253,12 +270,12 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            thrown = getApplicationException(e, "AppTaskBase.070", "");
+            thrown = getApplicationException(e, Msg.APP_0060.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
+                str.append(Msg.APP_0070.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPath.toFile());
             }
@@ -266,7 +283,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, Msg.APP_0080.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -284,11 +301,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * 設定に応じてExcelを立ち上げて表示します。<br>
      * 比較対象シートが別々のブックに属する場合のためのメソッドです。<br>
      * 
-     * @param workDir        作業用フォルダ
-     * @param bResult        Excelブック比較結果
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter  進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param bResult
+     *            Excelブック比較結果
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     private void paintSaveAndShowBook2(
             Path workDir,
@@ -302,7 +324,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
-            str.append(rb.getString("AppTaskBase.060")).append(BR);
+            str.append(Msg.APP_0050.get()).append(BR);
             updateMessage(str.toString());
             
             Pair<Path> dstBookPathPair = Side.map(side -> workDir.resolve(
@@ -328,8 +350,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                             PROGRESS_MAX);
                     
                 } catch (Exception e) {
-                    ApplicationException ee = getApplicationException(e,
-                            side == Side.A ? "AppTaskBase.100" : "AppTaskBase.110", "");
+                    ApplicationException ee = getApplicationException(e, Msg.APP_0090.get().formatted(side));
                     if (thrown == null) {
                         thrown = ee;
                     } else {
@@ -339,7 +360,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             }
             
             if (settings.get(SettingKeys.SHOW_PAINTED_SHEETS)) {
-                str.append(BR).append(rb.getString("AppTaskBase.080")).append(BR).append(BR);
+                str.append(BR).append(Msg.APP_0070.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(dstBookPathPair.a().toFile());
                 Desktop.getDesktop().open(dstBookPathPair.b().toFile());
@@ -350,7 +371,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            ApplicationException ee = getApplicationException(e, "AppTaskBase.090", "");
+            ApplicationException ee = getApplicationException(e, Msg.APP_0080.get());
             if (thrown == null) {
                 thrown = ee;
             } else {
@@ -366,11 +387,16 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * フォルダツリー同士の比較結果Excelブックを作成し、保存し、表示します。<br>
      * 
-     * @param workDir        作業用フォルダ
-     * @param tResult        フォルダツリー比較結果
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter  進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param tResult
+     *            フォルダツリー比較結果
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     // CompareDirsTask, CompareTreesTask
     protected void createSaveAndShowResultBook(
@@ -385,7 +411,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareTreesTask.070"), resultBookPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0200.get(), resultBookPath));
             updateMessage(str.toString());
             
             TreeReportCreator creator = new TreeReportCreator();
@@ -396,30 +422,35 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareTreesTask.080", "");
+            throw getApplicationException(e, Msg.APP_0210.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
-                str.append(rb.getString("CompareTreesTask.090")).append(BR).append(BR);
+                str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareTreesTask.100", "");
+            throw getApplicationException(e, Msg.APP_0230.get());
         }
     }
     
     /**
      * Excelブック同士の比較結果Excelブックを作成し、保存し、表示します。<br>
      * 
-     * @param workDir        作業用フォルダ
-     * @param bResult        Excelブック比較結果
-     * @param progressBefore 進捗率（開始時）
-     * @param progressAfter  進捗率（終了時）
-     * @throws ApplicationException 処理に失敗した場合
+     * @param workDir
+     *            作業用フォルダ
+     * @param bResult
+     *            Excelブック比較結果
+     * @param progressBefore
+     *            進捗率（開始時）
+     * @param progressAfter
+     *            進捗率（終了時）
+     * @throws ApplicationException
+     *             処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask
     protected void createSaveAndShowReportBook(
@@ -434,7 +465,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore, PROGRESS_MAX);
             
             resultBookPath = workDir.resolve("result.xlsx");
-            str.append("%s%n    - %s%n%n".formatted(rb.getString("CompareBooksTask.060"), resultBookPath));
+            str.append("%s%n    - %s%n%n".formatted(Msg.APP_0200.get(), resultBookPath));
             updateMessage(str.toString());
             
             BookReportCreator creator = new BookReportCreator();
@@ -442,19 +473,19 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.070", "");
+            throw getApplicationException(e, Msg.APP_0210.get());
         }
         
         try {
             if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
-                str.append(rb.getString("CompareBooksTask.080")).append(BR).append(BR);
+                str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
             }
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            throw getApplicationException(e, "CompareBooksTask.090", "");
+            throw getApplicationException(e, Msg.APP_0230.get());
         }
     }
     
@@ -463,12 +494,17 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * Excelブック同士の比較を行います。<br>
      * 
-     * @param bookPathPair   比較対象ブックのパス
-     * @param readPasswords  比較対象ブックの読み取りパスワード
-     * @param progressBefore 処理開始時の進捗度
-     * @param progressAfter  処理終了時の進捗度
+     * @param bookPathPair
+     *            比較対象ブックのパス
+     * @param readPasswords
+     *            比較対象ブックの読み取りパスワード
+     * @param progressBefore
+     *            処理開始時の進捗度
+     * @param progressAfter
+     *            処理終了時の進捗度
      * @return 比較結果
-     * @throws ExcelHandlingException Excel関連処理に失敗した場合
+     * @throws ExcelHandlingException
+     *             Excel関連処理に失敗した場合
      */
     // CompareTask#compareDirs
     private ResultOfBooks compareBooks(
@@ -516,7 +552,8 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      * このタスクの比較対象Excelブックが同一ブックかを返します。<br>
      * 
      * @return 同一ブックの場合は {@code true}
-     * @throws IllegalStateException 今回の実行メニューがブック同士の比較でもシート同士の比較でもない場合
+     * @throws IllegalStateException
+     *             今回の実行メニューがブック同士の比較でもシート同士の比較でもない場合
      */
     // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
     protected boolean isSameBook() {
@@ -535,12 +572,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     /**
      * フォルダ同士の比較を行います。<br>
      * 
-     * @param dirId          フォルダ識別子
-     * @param indent         インデント
-     * @param dirComparison  比較対象フォルダの情報
-     * @param outputDirPair  出力先フォルダ
-     * @param progressBefore 処理開始時の進捗度
-     * @param progressAfter  処理終了時の進捗度
+     * @param dirId
+     *            フォルダ識別子
+     * @param indent
+     *            インデント
+     * @param dirComparison
+     *            比較対象フォルダの情報
+     * @param outputDirPair
+     *            出力先フォルダ
+     * @param progressBefore
+     *            処理開始時の進捗度
+     * @param progressAfter
+     *            処理終了時の進捗度
      * @return 比較結果
      */
     // CompareDirsTask, CompareTreesTask
@@ -557,7 +600,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 + (progressAfter - progressBefore) * n / dirComparison.childBookInfoPairs().size();
         
         if (dirComparison.childBookInfoPairs().size() == 0) {
-            str.append(indent + "    - ").append(rb.getString("AppTaskBase.160")).append(BR);
+            str.append(indent + "    - ").append(Msg.APP_0130.get()).append(BR);
             updateMessage(str.toString());
         }
         
@@ -570,6 +613,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     + ResultOfDirs.formatBookNamesPair(dirId, Integer.toString(i + 1), bookInfoPair));
             updateMessage(str.toString());
             
+            // FIXME: この辺も訳分からなくなってるのでリファクタリングする
             if (bookInfoPair.isPaired()
                     && dirComparison.childBookComparisons().get(bookInfoPair).isPresent()) {
                 
@@ -577,25 +621,35 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                 Pair<Path> dstPathPair = Side.map(side -> outputDirPair.get(side).resolve(
                         "【%s%s-%d】%s".formatted(side, dirId, ii + 1, bookInfoPair.get(side).bookName())));
                 
-                ResultOfBooks bookResult = compareBooks(
-                        dirComparison.childBookComparisons().get(bookInfoPair).get(),
-                        srcPathPair,
-                        dstPathPair,
-                        getProgress.applyAsInt(i),
-                        getProgress.applyAsInt(i + 1));
-                bookResults.put(bookInfoPair, Optional.ofNullable(bookResult));
-                
-                if (bookResult != null) {
-                    paintBook(
+                if (bookInfoPair.a().status() == Status.NEEDS_PASSWORD
+                        || bookInfoPair.b().status() == Status.NEEDS_PASSWORD) {
+                    
+                    str.append("  -  ").append(Msg.APP_1300.get()).append(BR);
+                    updateMessage(str.toString());
+                    
+                    bookResults.put(bookInfoPair, Optional.empty());
+                    
+                } else {
+                    ResultOfBooks bookResult = compareBooks(
+                            dirComparison.childBookComparisons().get(bookInfoPair).get(),
                             srcPathPair,
                             dstPathPair,
-                            bookResult,
+                            getProgress.applyAsInt(i),
                             getProgress.applyAsInt(i + 1));
+                    bookResults.put(bookInfoPair, Optional.ofNullable(bookResult));
+                    
+                    if (bookResult != null) {
+                        paintBook(
+                                srcPathPair,
+                                dstPathPair,
+                                bookResult,
+                                getProgress.applyAsInt(i + 1));
+                    }
                 }
                 
             } else {
                 if (bookInfoPair.isPaired()) {
-                    str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+                    str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
                     updateMessage(str.toString());
                 } else {
                     str.append(BR);
@@ -636,15 +690,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
                     progressAfter);
             
         } catch (Exception e) {
-            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "CompareTask::compareBooks-1");
             
             Side.forEach(side -> {
                 try {
                     Files.copy(srcPathPair.get(side), dstPathPair.get(side));
                 } catch (IOException e1) {
-                    // nop
+                    ErrorReporter.reportIfEnabled(e1, "CompareTask::compareBooks-2");
                 }
             });
             return null;
@@ -677,9 +731,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             updateProgress(progressAfter, PROGRESS_MAX);
             
         } catch (Exception e) {
-            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "CompareTask::paintBook-1");
         }
     }
     
@@ -690,9 +744,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             dstBookPath.toFile().setWritable(true, false);
             
         } catch (Exception e) {
-            str.append("  -  ").append(rb.getString("AppTaskBase.150")).append(BR);
+            str.append("  -  ").append(Msg.APP_0120.get()).append(BR);
             updateMessage(str.toString());
-            e.printStackTrace();
+            ErrorReporter.reportIfEnabled(e, "CompareTask::skipUnpairedBook-1");
         }
     }
 }
