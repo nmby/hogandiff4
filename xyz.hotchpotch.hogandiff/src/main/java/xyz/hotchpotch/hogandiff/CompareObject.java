@@ -14,7 +14,7 @@ import xyz.hotchpotch.hogandiff.tasks.CompareTaskTrees;
 import xyz.hotchpotch.hogandiff.util.Settings;
 
 /**
- * このアプリケーションの比較メニューです。<br>
+ * 比較対象を表します。<br>
  *
  * @author nmby
  */
