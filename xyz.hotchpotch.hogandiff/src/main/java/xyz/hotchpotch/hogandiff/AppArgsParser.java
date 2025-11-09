@@ -92,7 +92,7 @@ public class AppArgsParser {
         
         Settings.Builder builder = Settings.builder().set(
                 SettingKeys.CURR_MENU,
-                Files.isDirectory(pathA) ? AppMenu.COMPARE_DIRS : AppMenu.COMPARE_BOOKS);
+                Files.isDirectory(pathA) ? CompareObject.COMPARE_DIRS : CompareObject.COMPARE_BOOKS);
         
         builder.set(SettingKeys.CURR_ARG_PATH1, pathA);
         builder.set(SettingKeys.CURR_ARG_PATH2, pathB);

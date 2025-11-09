@@ -12,7 +12,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -74,11 +74,11 @@ public class MenuPane extends HBox implements ChildController {
             
             // 2.項目ごとの各種設定
             parent.menuProp.bind(Bindings.createObjectBinding(
-                    () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? AppMenu.COMPARE_BOOKS
-                            : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? AppMenu.COMPARE_SHEETS
+                    () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? CompareObject.COMPARE_BOOKS
+                            : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? CompareObject.COMPARE_SHEETS
                                     : recursivelyCheckBox.isSelected()
-                                            ? AppMenu.COMPARE_TREES
-                                            : AppMenu.COMPARE_DIRS,
+                                            ? CompareObject.COMPARE_TREES
+                                            : CompareObject.COMPARE_DIRS,
                     compareTarget.selectedToggleProperty(),
                     recursivelyCheckBox.selectedProperty()));
             

@@ -28,7 +28,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
@@ -77,7 +77,7 @@ public class MainController extends VBox {
     private final AppResource ar = AppMain.appResource;
     
     /** 現在選択されている比較メニュー */
-    public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
+    public final Property<CompareObject> menuProp = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -249,7 +249,7 @@ public class MainController extends VBox {
     
     private boolean isPasswordUsed() {
         try {
-            AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+            CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU);
             
             Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
@@ -306,7 +306,7 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU);
         
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(

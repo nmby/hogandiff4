@@ -13,7 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
@@ -65,7 +65,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             // 1.disableプロパティのバインディング
             disableProperty().bind(parent.isRunning());
             editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == AppMenu.COMPARE_SHEETS,
+                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == CompareObject.COMPARE_SHEETS,
                     parent.menuProp, parent.isReady()));
             
             // 2.項目ごとの各種設定
@@ -83,7 +83,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     
     private void editComparison() {
         try {
-            AppMenu menu = parent.menuProp.getValue();
+            CompareObject menu = parent.menuProp.getValue();
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,

@@ -32,7 +32,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
@@ -62,8 +62,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private static Path prevSelectedBookPath;
     
-    private static boolean isDirOperation(AppMenu menu) {
-        return menu == AppMenu.COMPARE_DIRS || menu == AppMenu.COMPARE_TREES;
+    private static boolean isDirOperation(CompareObject menu) {
+        return menu == CompareObject.COMPARE_DIRS || menu == CompareObject.COMPARE_TREES;
     }
     
     // [instance members] ******************************************************
@@ -134,10 +134,10 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             // 1.disable, visible, managedプロパティのバインディング
             disableProperty().bind(parent.isRunning().or(isBusy));
             sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.menuProp.getValue() != AppMenu.COMPARE_SHEETS,
+                    () -> parent.menuProp.getValue() != CompareObject.COMPARE_SHEETS,
                     parent.menuProp));
             sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.menuProp.getValue() != AppMenu.COMPARE_SHEETS,
+                    () -> parent.menuProp.getValue() != CompareObject.COMPARE_SHEETS,
                     parent.menuProp));
             
             BooleanBinding isDirOperation = Bindings.createBooleanBinding(
@@ -227,9 +227,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             parent.menuProp.addListener((_, oldValue, newValue) -> {
                 DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
                 if (dirInfo != null
-                        && (newValue == AppMenu.COMPARE_DIRS || newValue == AppMenu.COMPARE_TREES)
-                        && (oldValue == AppMenu.COMPARE_DIRS || oldValue == AppMenu.COMPARE_TREES)) {
-                    setDirPath(dirInfo.dirPath(), newValue == AppMenu.COMPARE_TREES);
+                        && (newValue == CompareObject.COMPARE_DIRS || newValue == CompareObject.COMPARE_TREES)
+                        && (oldValue == CompareObject.COMPARE_DIRS || oldValue == CompareObject.COMPARE_TREES)) {
+                    setDirPath(dirInfo.dirPath(), newValue == CompareObject.COMPARE_TREES);
                 }
             });
             parent.bookInfoPropPair.get(side).addListener((_, _, newValue) -> {
@@ -288,7 +288,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             event.consume();
             
-            AppMenu menu = parent.menuProp.getValue();
+            CompareObject menu = parent.menuProp.getValue();
             Predicate<File> isAcceptableType = isDirOperation(menu)
                     ? File::isDirectory
                     : File::isFile;

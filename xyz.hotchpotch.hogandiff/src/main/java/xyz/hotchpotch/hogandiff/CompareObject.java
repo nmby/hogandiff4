@@ -18,7 +18,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  *
  * @author nmby
  */
-public enum AppMenu {
+public enum CompareObject {
     
     // [static members] ********************************************************
     
@@ -82,7 +82,7 @@ public enum AppMenu {
     private final Function<Settings, Task<Void>> taskFactory;
     private final Predicate<Settings> targetValidator;
     
-    private AppMenu(
+    private CompareObject(
             Function<Settings, Task<Void>> taskFactory,
             Predicate<Settings> targetValidator) {
         
