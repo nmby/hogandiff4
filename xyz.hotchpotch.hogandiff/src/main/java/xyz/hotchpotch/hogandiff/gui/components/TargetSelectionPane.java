@@ -134,15 +134,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             // 1.disable, visible, managedプロパティのバインディング
             disableProperty().bind(parent.isRunning().or(isBusy));
             sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.menuProp.getValue() != CompareObject.COMPARE_SHEETS,
-                    parent.menuProp));
+                    () -> parent.propCompareObject.getValue() != CompareObject.COMPARE_SHEETS,
+                    parent.propCompareObject));
             sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.menuProp.getValue() != CompareObject.COMPARE_SHEETS,
-                    parent.menuProp));
+                    () -> parent.propCompareObject.getValue() != CompareObject.COMPARE_SHEETS,
+                    parent.propCompareObject));
             
             BooleanBinding isDirOperation = Bindings.createBooleanBinding(
-                    () -> isDirOperation(parent.menuProp.getValue()),
-                    parent.menuProp);
+                    () -> isDirOperation(parent.propCompareObject.getValue()),
+                    parent.propCompareObject);
             
             dirPathLabel.visibleProperty().bind(isDirOperation);
             dirPathTextField.visibleProperty().bind(isDirOperation);
@@ -155,14 +155,14 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             bookPathButton.managedProperty().bind(isDirOperation.not());
             
             googleDriveButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.googleCredential.getValue() != null,
-                    parent.googleCredential));
+                    () -> parent.propGoogleCredential.getValue() != null,
+                    parent.propGoogleCredential));
             googleDriveButton.managedProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.googleCredential.getValue() != null,
-                    parent.googleCredential));
+                    () -> parent.propGoogleCredential.getValue() != null,
+                    parent.propGoogleCredential));
             googleDriveButton.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> isDirOperation(parent.menuProp.getValue()),
-                    parent.menuProp));
+                    () -> isDirOperation(parent.propCompareObject.getValue()),
+                    parent.propCompareObject));
             
             // 2.項目ごとの各種設定
             setOnDragOver(this::onDragOver);
@@ -209,7 +209,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             parent.sheetNamePropPair.get(side).bind(sheetNameChoiceBox.valueProperty());
             
             isReady.bind(Bindings.createBooleanBinding(
-                    () -> switch (parent.menuProp.getValue()) {
+                    () -> switch (parent.propCompareObject.getValue()) {
                     case COMPARE_BOOKS -> parent.bookInfoPropPair.get(side).getValue() != null;
                     case COMPARE_SHEETS -> parent.bookInfoPropPair.get(side).getValue() != null
                             && parent.sheetNamePropPair.get(side).getValue() != null;
@@ -217,14 +217,14 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     case COMPARE_TREES -> parent.dirInfoPropPair.get(side).getValue() != null;
                     default -> throw new AssertionError();
                     },
-                    parent.menuProp,
+                    parent.propCompareObject,
                     parent.dirInfoPropPair.get(side),
                     parent.bookInfoPropPair.get(side),
                     parent.sheetNamePropPair.get(side)));
             
             // 4.値変更時のイベントハンドラの設定
             // ※このコントローラだけ特殊なので3と4を入れ替える
-            parent.menuProp.addListener((_, oldValue, newValue) -> {
+            parent.propCompareObject.addListener((_, oldValue, newValue) -> {
                 DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
                 if (dirInfo != null
                         && (newValue == CompareObject.COMPARE_DIRS || newValue == CompareObject.COMPARE_TREES)
@@ -242,7 +242,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             // 3.初期値の設定
             if (ar.settings().containsKey(SettingKeys.CURR_ARG_PATHS.get(side))) {
                 Path path = ar.settings().get(SettingKeys.CURR_ARG_PATHS.get(side));
-                if (isDirOperation(parent.menuProp.getValue())) {
+                if (isDirOperation(parent.propCompareObject.getValue())) {
                     setDirPath(path, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 } else {
                     validateAndSetTarget(path, null, null);
@@ -263,7 +263,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private void onDragOver(DragEvent event) {
         try {
             event.consume();
-            Predicate<File> isAcceptableType = isDirOperation(parent.menuProp.getValue())
+            Predicate<File> isAcceptableType = isDirOperation(parent.propCompareObject.getValue())
                     ? File::isDirectory
                     : File::isFile;
             
@@ -288,8 +288,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             event.consume();
             
-            CompareObject menu = parent.menuProp.getValue();
-            Predicate<File> isAcceptableType = isDirOperation(menu)
+            CompareObject compareObject = parent.propCompareObject.getValue();
+            Predicate<File> isAcceptableType = isDirOperation(compareObject)
                     ? File::isDirectory
                     : File::isFile;
             
@@ -303,7 +303,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 return;
             }
             
-            if (isDirOperation(menu)) {
+            if (isDirOperation(compareObject)) {
                 setDirPath(files.get(0).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 event.setDropCompleted(true);
                 

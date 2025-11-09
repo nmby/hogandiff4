@@ -557,15 +557,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
     protected boolean isSameBook() {
-        CompareObject menu = settings.get(SettingKeys.CURR_MENU_OBJECT);
+        CompareObject compareObject = settings.get(SettingKeys.CURR_MENU_OBJECT);
         
-        return switch (menu) {
+        return switch (compareObject) {
         case COMPARE_SHEETS -> settings
                 .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentBookInfoPair().isIdentical();
         case COMPARE_BOOKS -> settings
                 .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentBookInfoPair().isIdentical();
     
-        default -> throw new IllegalStateException("not suitable for " + menu);
+        default -> throw new IllegalStateException("not suitable for " + compareObject);
         };
     }
     

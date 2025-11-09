@@ -13,8 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -65,8 +65,9 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             // 1.disableプロパティのバインディング
             disableProperty().bind(parent.isRunning());
             editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> !parent.isReady().getValue() || parent.menuProp.getValue() == CompareObject.COMPARE_SHEETS,
-                    parent.menuProp, parent.isReady()));
+                    () -> !parent.isReady().getValue()
+                            || parent.propCompareObject.getValue() == CompareObject.COMPARE_SHEETS,
+                    parent.propCompareObject, parent.isReady()));
             
             // 2.項目ごとの各種設定
             editComparisonButton.setOnAction(_ -> editComparison());
@@ -83,8 +84,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     
     private void editComparison() {
         try {
-            CompareObject menu = parent.menuProp.getValue();
-            if (!menu.isValidTargets(ar.settings())) {
+            CompareObject compareObject = parent.propCompareObject.getValue();
+            if (!compareObject.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
                         Msg.APP_1180.get(),
@@ -93,7 +94,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                 return;
             }
             
-            switch (menu) {
+            switch (compareObject) {
             case COMPARE_BOOKS: {
                 PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
                 EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);

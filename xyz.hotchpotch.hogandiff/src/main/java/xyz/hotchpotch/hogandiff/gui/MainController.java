@@ -28,9 +28,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.CompareObject;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -77,7 +77,7 @@ public class MainController extends VBox {
     private final AppResource ar = AppMain.appResource;
     
     /** 現在選択されている比較メニュー */
-    public final Property<CompareObject> menuProp = new SimpleObjectProperty<>();
+    public final Property<CompareObject> propCompareObject = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -95,7 +95,7 @@ public class MainController extends VBox {
             new SimpleObjectProperty<>());
     
     /** Googleアカウント資格情報 */
-    public final Property<GoogleCredential> googleCredential = new SimpleObjectProperty<>();
+    public final Property<GoogleCredential> propGoogleCredential = new SimpleObjectProperty<>();
     
     private Task<Void> currentTask = null;
     
@@ -129,7 +129,7 @@ public class MainController extends VBox {
             }
         });
         
-        menuProp.addListener((_, _, _) -> updateActiveComparison());
+        propCompareObject.addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.a().addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.b().addListener((_, _, _) -> updateActiveComparison());
         bookInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
@@ -151,7 +151,7 @@ public class MainController extends VBox {
      */
     public void updateActiveComparison() {
         try {
-            switch (menuProp.getValue()) {
+            switch (propCompareObject.getValue()) {
             case COMPARE_SHEETS -> updateSheetComparison();
             case COMPARE_BOOKS -> updateBookComparison();
             case COMPARE_DIRS -> updateDirComparison();
@@ -249,9 +249,9 @@ public class MainController extends VBox {
     
     private boolean isPasswordUsed() {
         try {
-            CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
+            CompareObject compareObject = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
             
-            Stream<Path> bookPathStream = switch (menu) {
+            Stream<Path> bookPathStream = switch (compareObject) {
             case COMPARE_SHEETS -> {
                 PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
                 Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
@@ -306,9 +306,9 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
+        CompareObject compareObject = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
         
-        if (!menu.isValidTargets(ar.settings())) {
+        if (!compareObject.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
                     Msg.APP_1180.get(),
@@ -331,7 +331,7 @@ public class MainController extends VBox {
             return;
         }
         
-        currentTask = menu.getTask(ar.settings());
+        currentTask = compareObject.getTask(ar.settings());
         row3Pane.bind(currentTask);
         
         currentTask.setOnSucceeded(_ -> {
