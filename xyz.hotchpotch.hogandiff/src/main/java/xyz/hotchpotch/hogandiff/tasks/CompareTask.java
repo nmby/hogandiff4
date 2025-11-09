@@ -418,7 +418,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             creator.createResultBook(
                     resultBookPath,
                     tResult,
-                    settings.get(SettingKeys.CURR_MENU) == CompareObject.COMPARE_TREES);
+                    settings.get(SettingKeys.CURR_MENU_OBJECT) == CompareObject.COMPARE_TREES);
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
@@ -557,7 +557,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
     protected boolean isSameBook() {
-        CompareObject menu = settings.get(SettingKeys.CURR_MENU);
+        CompareObject menu = settings.get(SettingKeys.CURR_MENU_OBJECT);
         
         return switch (menu) {
         case COMPARE_SHEETS -> settings

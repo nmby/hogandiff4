@@ -84,7 +84,7 @@ public class MenuPane extends HBox implements ChildController {
             
             // 3.初期値の設定
             compareTarget.selectToggle(
-                    switch (ar.settings().get(SettingKeys.CURR_MENU)) {
+                    switch (ar.settings().get(SettingKeys.CURR_MENU_OBJECT)) {
                     case COMPARE_BOOKS -> compareBooksRadioButton;
                     case COMPARE_SHEETS -> compareSheetsRadioButton;
                     case COMPARE_DIRS -> compareDirsRadioButton;
@@ -96,7 +96,7 @@ public class MenuPane extends HBox implements ChildController {
                     ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             
             // 4.値変更時のイベントハンドラの設定
-            parent.menuProp.addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+            parent.menuProp.addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU_OBJECT, newValue));
             
             recursivelyCheckBox.selectedProperty()
                     .addListener((_, _, newValue) -> ar.changeSetting(

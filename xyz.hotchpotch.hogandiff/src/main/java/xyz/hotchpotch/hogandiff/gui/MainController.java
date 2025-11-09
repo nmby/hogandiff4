@@ -249,7 +249,7 @@ public class MainController extends VBox {
     
     private boolean isPasswordUsed() {
         try {
-            CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU);
+            CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
             
             Stream<Path> bookPathStream = switch (menu) {
             case COMPARE_SHEETS -> {
@@ -306,7 +306,7 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU);
+        CompareObject menu = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
         
         if (!menu.isValidTargets(ar.settings())) {
             new Alert(

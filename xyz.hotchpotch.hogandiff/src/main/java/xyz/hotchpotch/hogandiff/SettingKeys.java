@@ -107,8 +107,8 @@ public class SettingKeys {
             false);
     
     /** 今回の実行における比較メニュー */
-    public static final Key<CompareObject> CURR_MENU = new Key<>(
-            "current.menu",
+    public static final Key<CompareObject> CURR_MENU_OBJECT = new Key<>(
+            "current.menu.object",
             () -> CompareObject.COMPARE_BOOKS,
             CompareObject::toString,
             CompareObject::valueOf,
