@@ -14,7 +14,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
-import xyz.hotchpotch.hogandiff.CompareObject;
+import xyz.hotchpotch.hogandiff.CompareMenu;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -66,8 +67,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
             disableProperty().bind(parent.isRunning());
             editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
                     () -> !parent.isReady().getValue()
-                            || parent.propCompareObject.getValue() == CompareObject.COMPARE_SHEETS,
-                    parent.propCompareObject, parent.isReady()));
+                            || parent.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS,
+                    parent.propCompareMenu, parent.isReady()));
             
             // 2.項目ごとの各種設定
             editComparisonButton.setOnAction(_ -> editComparison());
@@ -84,8 +85,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     
     private void editComparison() {
         try {
-            CompareObject compareObject = parent.propCompareObject.getValue();
-            if (!compareObject.isValidTargets(ar.settings())) {
+            CompareMenu menu = parent.propCompareMenu.getValue();
+            if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,
                         Msg.APP_1180.get(),
@@ -94,36 +95,48 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
                 return;
             }
             
-            switch (compareObject) {
-            case COMPARE_BOOKS: {
-                PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);
-                Optional<PairingInfoBooks> modified = dialog.showAndWait();
-                if (modified.isPresent()) {
-                    ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, modified.get());
+            switch (menu.compareWay()) {
+            case TWO_WAY:
+                switch (menu.compareObject()) {
+                case COMPARE_BOOKS: {
+                    PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<PairingInfoBooks> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, modified.get());
+                    }
+                    return;
                 }
-                return;
-            }
-            case COMPARE_DIRS: {
-                PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
-                Optional<PairingInfoDirs> modified = dialog.showAndWait();
-                if (modified.isPresent()) {
-                    ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, modified.get());
+                case COMPARE_DIRS: {
+                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<PairingInfoDirs> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, modified.get());
+                    }
+                    return;
                 }
-                return;
-            }
-            case COMPARE_TREES: {
-                PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
-                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
-                Optional<PairingInfoDirs> modified = dialog.showAndWait();
-                if (modified.isPresent()) {
-                    ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, modified.get());
+                case COMPARE_TREES: {
+                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
+                    Optional<PairingInfoDirs> modified = dialog.showAndWait();
+                    if (modified.isPresent()) {
+                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, modified.get());
+                    }
+                    return;
                 }
-                return;
-            }
-            case COMPARE_SHEETS:
-                throw new AssertionError();
+                case COMPARE_SHEETS:
+                    throw new AssertionError();
+                default:
+                    throw new AssertionError("Unreachable code: " + menu.compareObject());
+                }
+                
+            case THREE_WAY:
+                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            
+            default:
+                throw new AssertionError("Unreachable code: " + menu.compareWay());
+            
             }
             
         } catch (IOException e) {

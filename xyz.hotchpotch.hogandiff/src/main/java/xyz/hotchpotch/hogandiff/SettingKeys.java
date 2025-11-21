@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareWay;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
@@ -106,20 +108,12 @@ public class SettingKeys {
             Function.identity(),
             false);
     
-    /** 今回の実行における比較対象 */
-    public static final Key<CompareObject> CURR_MENU_OBJECT = new Key<>(
-            "current.menu.object",
-            () -> CompareObject.COMPARE_BOOKS,
-            CompareObject::toString,
-            CompareObject::valueOf,
-            false);
-    
-    /** 今回の実行における比較方法 */
-    public static final Key<CompareWay> CURR_MENU_WAY = new Key<>(
-            "current.menu.way",
-            () -> CompareWay.TWO_WAY,
-            CompareWay::toString,
-            CompareWay::valueOf,
+    /** 今回の実行における比較メニュー選択 */
+    public static final Key<CompareMenu> CURR_MENU = new Key<>(
+            "current.menu",
+            () -> new CompareMenu(CompareObject.COMPARE_BOOKS, CompareWay.TWO_WAY),
+            CompareMenu::toString,
+            decodeNotSupported("cannot decode."),
             false);
     
     /** 比較対象Excelブックたちの読み取りパスワード */

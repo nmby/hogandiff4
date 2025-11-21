@@ -30,7 +30,7 @@ import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
-import xyz.hotchpotch.hogandiff.CompareObject;
+import xyz.hotchpotch.hogandiff.CompareMenu;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -77,7 +77,7 @@ public class MainController extends VBox {
     private final AppResource ar = AppMain.appResource;
     
     /** 現在選択されている比較メニュー */
-    public final Property<CompareObject> propCompareObject = new SimpleObjectProperty<>();
+    public final Property<CompareMenu> propCompareMenu = new SimpleObjectProperty<>();
     
     /** シート名のペア */
     public final Pair<StringProperty> sheetNamePropPair = Pair.of(
@@ -129,7 +129,7 @@ public class MainController extends VBox {
             }
         });
         
-        propCompareObject.addListener((_, _, _) -> updateActiveComparison());
+        propCompareMenu.addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.a().addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.b().addListener((_, _, _) -> updateActiveComparison());
         bookInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
@@ -151,13 +151,26 @@ public class MainController extends VBox {
      */
     public void updateActiveComparison() {
         try {
-            switch (propCompareObject.getValue()) {
-            case COMPARE_SHEETS -> updateSheetComparison();
-            case COMPARE_BOOKS -> updateBookComparison();
-            case COMPARE_DIRS -> updateDirComparison();
-            case COMPARE_TREES -> updateTreeComparison();
-            default -> throw new AssertionError();
+            CompareMenu menu = propCompareMenu.getValue();
+            
+            switch (menu.compareWay()) {
+            case TWO_WAY:
+                switch (menu.compareObject()) {
+                case COMPARE_SHEETS -> updateSheetComparison();
+                case COMPARE_BOOKS -> updateBookComparison();
+                case COMPARE_DIRS -> updateDirComparison();
+                case COMPARE_TREES -> updateTreeComparison();
+                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
+                }
+                break;
+            
+            case THREE_WAY:
+                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            
+            default:
+                throw new AssertionError("Unreachable code: " + menu.compareWay());
             }
+            
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "MainController#updateActiveComparison-1");
             throw e;
@@ -249,38 +262,50 @@ public class MainController extends VBox {
     
     private boolean isPasswordUsed() {
         try {
-            CompareObject compareObject = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
+            CompareMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
             
-            Stream<Path> bookPathStream = switch (compareObject) {
-            case COMPARE_SHEETS -> {
-                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield bookPathPair.isIdentical()
-                        ? Stream.of(bookPathPair.a())
-                        : Stream.of(bookPathPair.a(), bookPathPair.b());
-            }
-            case COMPARE_BOOKS -> {
-                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-            }
-            case COMPARE_DIRS -> {
-                PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                yield bookPathStream(dirComparison);
-            }
-            case COMPARE_TREES -> {
-                PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
-                        .flatten();
-                yield flattenDirComparison.dirComparisons().values().stream()
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .flatMap(this::bookPathStream);
-            }
-            };
+            switch (menu.compareWay()) {
+            case TWO_WAY:
+                Stream<Path> bookPathStream = switch (menu.compareObject()) {
+                case COMPARE_SHEETS -> {
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                    yield bookPathPair.isIdentical()
+                            ? Stream.of(bookPathPair.a())
+                            : Stream.of(bookPathPair.a(), bookPathPair.b());
+                }
+                case COMPARE_BOOKS -> {
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                    yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
+                }
+                case COMPARE_DIRS -> {
+                    PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    yield bookPathStream(dirComparison);
+                }
+                case COMPARE_TREES -> {
+                    PairingInfoDirsFlatten flattenDirComparison = ar.settings()
+                            .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                            .flatten();
+                    yield flattenDirComparison.dirComparisons().values().stream()
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .flatMap(this::bookPathStream);
+                }
+                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
+                };
+                
+                Map<Path, String> readPasswords = ar.settings().get(
+                        SettingKeys.CURR_READ_PASSWORDS);
+                return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
             
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-            return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+            case THREE_WAY:
+                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            
+            default:
+                throw new AssertionError("Unreachable code: " + menu.compareWay());
+            }
+            
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "MainController#isPasswordUsed-1");
             throw e;
@@ -306,9 +331,9 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        CompareObject compareObject = ar.settings().get(SettingKeys.CURR_MENU_OBJECT);
+        CompareMenu compareMenu = ar.settings().get(SettingKeys.CURR_MENU);
         
-        if (!compareObject.isValidTargets(ar.settings())) {
+        if (!compareMenu.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
                     Msg.APP_1180.get(),
@@ -331,7 +356,7 @@ public class MainController extends VBox {
             return;
         }
         
-        currentTask = compareObject.getTask(ar.settings());
+        currentTask = compareMenu.getTask(ar.settings());
         row3Pane.bind(currentTask);
         
         currentTask.setOnSucceeded(_ -> {
