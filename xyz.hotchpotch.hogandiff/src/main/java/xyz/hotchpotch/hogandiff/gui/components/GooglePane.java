@@ -70,8 +70,15 @@ public class GooglePane extends HBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param parent
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             {@code parent} が {@code null} の場合
+     */
+    public void init(MainController parent) {
         Objects.requireNonNull(parent);
         
         try {

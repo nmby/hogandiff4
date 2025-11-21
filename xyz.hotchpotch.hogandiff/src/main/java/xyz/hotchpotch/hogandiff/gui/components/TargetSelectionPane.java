@@ -122,14 +122,27 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... params) {
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param parent
+     *            このアプリケーションのコントローラ
+     * @param side
+     *            このコンポーネントの側
+     * @param opposite
+     *            自身と反対側のコンポーネント
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController parent, Side side, TargetSelectionPane opposite) {
         Objects.requireNonNull(parent);
+        Objects.requireNonNull(side);
+        Objects.requireNonNull(opposite);
         
         try {
             this.parent = parent;
-            this.side = (Side) params[0];
-            opposite = (TargetSelectionPane) params[1];
+            this.side = side;
+            this.opposite = opposite;
             readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             
             // 1.disable, visible, managedプロパティのバインディング
