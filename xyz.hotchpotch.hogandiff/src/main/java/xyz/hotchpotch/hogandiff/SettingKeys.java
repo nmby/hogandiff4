@@ -18,8 +18,8 @@ import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
 import xyz.hotchpotch.hogandiff.CompareMenu.CompareWay;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
+import xyz.hotchpotch.hogandiff.util.Triple;
 
 /**
  * このアプリケーションの設定項目を集めたクラスです。<br>
@@ -125,25 +125,26 @@ public class SettingKeys {
             false);
     
     /** 今回の実行におけるコマンドラインパラメータのパス1 */
-    public static final Key<Path> CURR_ARG_PATH1 = new Key<>(
-            "current.argPath1",
+    public static final Key<Path> CURR_ARG_PATH_A = new Key<>(
+            "current.argPathA",
             () -> null,
             Path::toString,
             Path::of,
             false);
     
     /** 今回の実行におけるコマンドラインパラメータのパス2 */
-    public static final Key<Path> CURR_ARG_PATH2 = new Key<>(
-            "current.argPath2",
+    public static final Key<Path> CURR_ARG_PATH_B = new Key<>(
+            "current.argPathB",
             () -> null,
             Path::toString,
             Path::of,
             false);
     
-    /** {@link #CURR_ARG_PATH1}, {@link #CURR_ARG_PATH2} のペア */
-    public static final Pair<Key<Path>> CURR_ARG_PATHS = Pair.of(
-            CURR_ARG_PATH1,
-            CURR_ARG_PATH2);
+    /** {@link #CURR_ARG_PATH_A}, {@link #CURR_ARG_PATH_B} のペア */
+    public static final Triple<Key<Path>> CURR_ARG_PATHS = new Triple<>(
+            null,
+            CURR_ARG_PATH_A,
+            CURR_ARG_PATH_B);
     
     /** 今回の実行におけるシート比較情報 */
     public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO = new Key<>(

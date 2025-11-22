@@ -167,7 +167,7 @@ public class MainController extends VBox {
                 case COMPARE_SHEETS -> updateSheetComparison2();
                 case COMPARE_BOOKS -> updateBookComparison2();
                 case COMPARE_DIRS -> updateDirComparison2();
-                case COMPARE_TREES -> updateTreeComparison();
+                case COMPARE_TREES -> updateTreeComparison2();
                 default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
                 }
                 break;
@@ -191,7 +191,7 @@ public class MainController extends VBox {
         
         ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
                 bookInfoTriple.hasAB() && sheetNameTriple.hasAB()
-                        ? new PairingInfoBooks(bookInfoTriple.toPair(), List.of(sheetNameTriple.toPair()))
+                        ? new PairingInfoBooks(bookInfoTriple.toPairAB(), List.of(sheetNameTriple.toPairAB()))
                         : null);
     }
     
@@ -201,7 +201,7 @@ public class MainController extends VBox {
         ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
                 bookInfoTriple.hasAB()
                         ? PairingInfoBooks.calculate(
-                                bookInfoTriple.toPair(),
+                                bookInfoTriple.toPairAB(),
                                 Factory.sheetNamesMatcher(ar.settings()))
                         : null);
     }
@@ -211,7 +211,7 @@ public class MainController extends VBox {
         ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
-                                dirInfoTriple.toPair(),
+                                dirInfoTriple.toPairAB(),
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),
@@ -219,12 +219,12 @@ public class MainController extends VBox {
                         : null);
     }
     
-    private void updateTreeComparison() {
+    private void updateTreeComparison2() {
         Triple<DirInfo> dirInfoTriple = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
-                                dirInfoTriple.toPair(),
+                                dirInfoTriple.toPairAB(),
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),

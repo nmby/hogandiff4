@@ -3,8 +3,6 @@ package xyz.hotchpotch.hogandiff.util;
 import java.util.Objects;
 import java.util.function.Function;
 
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
-
 /**
  * 同型の3つの要素を保持する不変コンテナです。<br>
  *
@@ -40,27 +38,7 @@ public record Triple<T>(T o, T a, T b) {
         /** B-side */
         B;
         
-        // 順次実装用アダプタ
-        // TODO: 実装完了時に削除する
-        public static Side3 from2(Side side) {
-            Objects.requireNonNull(side);
-            return switch (side) {
-            case A -> A;
-            case B -> B;
-            };
-        }
-        
         // [instance members] --------------------------------------------------
-        
-        // 順次実装用アダプタ
-        // TODO: 実装完了時に削除する
-        public Side to2() {
-            return switch (this) {
-            case O -> throw new UnsupportedOperationException();
-            case A -> Side.A;
-            case B -> Side.B;
-            };
-        }
         
         /**
          * 自身の反対側の子側を返します。<br>
@@ -79,12 +57,6 @@ public record Triple<T>(T o, T a, T b) {
     }
     
     // [instance members] ******************************************************
-    
-    // 順次実装用アダプタ
-    // TODO: 実装完了時に削除する
-    public Pair<T> toPair() {
-        return new Pair<>(a, b);
-    }
     
     /**
      * 指定された側の要素を返します。<br>
@@ -105,6 +77,24 @@ public record Triple<T>(T o, T a, T b) {
     }
     
     /**
+     * 要素 {@code a}, {@code b} の両方が {@code null} でない場合に {@code true} を返します。<br>
+     * 
+     * @return 要素 {@code a} と要素 {@code b} の両方が {@code null} でない場合に {@code true}
+     */
+    public boolean hasAB() {
+        return a != null && b != null;
+    }
+    
+    /**
+     * 要素 {@code a}, {@code b} からなるペアを返します。<br>
+     * 
+     * @return 要素 {@code a}, {@code b} からなるペア
+     */
+    public Pair<T> toPairAB() {
+        return new Pair<>(a, b);
+    }
+    
+    /**
      * このトリプルの要素それぞれに変換処理を施して得られるトリプルを返します。<br>
      * 
      * @param <U>
@@ -121,14 +111,5 @@ public record Triple<T>(T o, T a, T b) {
                 o == null ? null : mapper.apply(o),
                 a == null ? null : mapper.apply(a),
                 b == null ? null : mapper.apply(b));
-    }
-    
-    /**
-     * 要素 {@code a}, {@code b} の両方が {@code null} でない場合に {@code true} を返します。<br>
-     * 
-     * @return 要素 {@code a} と要素 {@code b} の両方が {@code null} でない場合に {@code true}
-     */
-    public boolean hasAB() {
-        return a != null && b != null;
     }
 }

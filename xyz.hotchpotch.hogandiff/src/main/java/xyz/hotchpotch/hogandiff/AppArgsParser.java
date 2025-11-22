@@ -99,8 +99,8 @@ public class AppArgsParser {
                         Files.isDirectory(pathA) ? CompareObject.COMPARE_DIRS : CompareObject.COMPARE_BOOKS,
                         CompareMenu.CompareWay.TWO_WAY));
         
-        builder.set(SettingKeys.CURR_ARG_PATH1, pathA);
-        builder.set(SettingKeys.CURR_ARG_PATH2, pathB);
+        builder.set(SettingKeys.CURR_ARG_PATH_A, pathA);
+        builder.set(SettingKeys.CURR_ARG_PATH_B, pathB);
         
         // 次に、第三以降の引数を解析する。
         try {
