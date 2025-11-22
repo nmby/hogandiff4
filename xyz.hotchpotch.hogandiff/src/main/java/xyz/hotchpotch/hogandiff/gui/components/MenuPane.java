@@ -121,13 +121,11 @@ public class MenuPane extends HBox implements ChildController {
                     ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             
             // 4.値変更時のイベントハンドラの設定
-            controller.propCompareMenu
-                    .addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+            controller.propCompareMenu.addListener(
+                    (_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
             
-            recursivelyCheckBox.selectedProperty()
-                    .addListener((_, _, newValue) -> ar.changeSetting(
-                            SettingKeys.COMPARE_DIRS_RECURSIVELY,
-                            newValue));
+            recursivelyCheckBox.selectedProperty().addListener(
+                    (_, _, newValue) -> ar.changeSetting(SettingKeys.COMPARE_DIRS_RECURSIVELY, newValue));
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "MenuPane#init-1");

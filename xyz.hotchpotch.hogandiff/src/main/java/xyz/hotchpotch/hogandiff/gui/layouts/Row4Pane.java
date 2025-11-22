@@ -58,6 +58,7 @@ public class Row4Pane extends HBox implements ChildController {
         Objects.requireNonNull(controller);
         
         // 1.disableプロパティのバインディング
+        setVisible2(controller.propShowSettings.getValue());
         
         // 2.項目ごとの各種設定
         settingsPane1.init(controller);

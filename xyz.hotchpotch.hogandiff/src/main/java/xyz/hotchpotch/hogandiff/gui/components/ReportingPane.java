@@ -79,7 +79,7 @@ public class ReportingPane extends VBox implements ChildController {
             reportingSeparator.setOnMousePressed(event -> {
                 startY = event.getScreenY();
                 startHeight = AppMain.stage.getHeight();
-                minHeight = controller.showSettings().get()
+                minHeight = controller.propShowSettings.get()
                         ? AppMain.STAGE_HEIGHT_OPEN
                         : AppMain.STAGE_HEIGHT_CLOSE;
             });

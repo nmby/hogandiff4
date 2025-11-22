@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ToggleButton;
@@ -64,25 +63,18 @@ public class TogglePane extends AnchorPane implements ChildController {
                     () -> toggleButton.isSelected() ? "《" : "》",
                     toggleButton.selectedProperty()));
             
+            controller.propShowSettings.bind(toggleButton.selectedProperty());
+            
             // 3.初期値の設定
             toggleButton.setSelected(ar.settings().get(SettingKeys.SHOW_SETTINGS));
             
             // 4.値変更時のイベントハンドラの設定
-            toggleButton.setOnAction(_ -> ar
-                    .changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
+            toggleButton.setOnAction(
+                    _ -> ar.changeSetting(SettingKeys.SHOW_SETTINGS, toggleButton.isSelected()));
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "TogglePane#init-1");
             throw e;
         }
-    }
-    
-    /**
-     * 設定エリアを表示するかを返します。<br>
-     * 
-     * @return 設定エリアを表示する場合は {@code true}
-     */
-    public BooleanExpression showSettings() {
-        return toggleButton.selectedProperty();
     }
 }

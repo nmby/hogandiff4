@@ -81,26 +81,28 @@ public class MainController extends VBox {
     public final Property<CompareMenu> propCompareMenu = new SimpleObjectProperty<>();
     
     /** シート名のトリプル */
-    // TODO: エラー解消したら Pair -> Triple に変更する
-    public final Triple<StringProperty> sheetNamePropPair = new Triple<>(
+    public final Triple<StringProperty> sheetNamePropTriple = new Triple<>(
             new SimpleStringProperty(),
             new SimpleStringProperty(),
             new SimpleStringProperty());
     
     /** Excelブック情報のトリプル */
-    public final Triple<Property<BookInfo>> bookInfoPropPair = new Triple<>(
+    public final Triple<Property<BookInfo>> bookInfoPropTriple = new Triple<>(
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
     /** フォルダ情報のトリプル */
-    public final Triple<Property<DirInfo>> dirInfoPropPair = new Triple<>(
+    public final Triple<Property<DirInfo>> dirInfoPropTriple = new Triple<>(
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
     /** Googleアカウント資格情報 */
     public final Property<GoogleCredential> propGoogleCredential = new SimpleObjectProperty<>();
+    
+    /** 設定エリアを表示するか */
+    public final BooleanProperty propShowSettings = new SimpleBooleanProperty();
     
     private Task<Void> currentTask = null;
     
@@ -122,7 +124,7 @@ public class MainController extends VBox {
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
         
-        row3Pane.showSettings().addListener((_, _, newValue) -> {
+        propShowSettings.addListener((_, _, newValue) -> {
             if (newValue) {
                 row4Pane.setVisible2(true);
                 AppMain.stage.setHeight(AppMain.stage.getHeight() + row4Pane.originalHeight());
@@ -135,18 +137,17 @@ public class MainController extends VBox {
         });
         
         propCompareMenu.addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropPair.o().addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropPair.a().addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropPair.b().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropPair.o().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropPair.o().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropTriple.o().addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropTriple.a().addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropTriple.b().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropTriple.o().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropTriple.a().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropTriple.b().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropTriple.o().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropTriple.a().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropTriple.b().addListener((_, _, _) -> updateActiveComparison());
         
         // 3.初期値の設定
-        row4Pane.setVisible2(row3Pane.showSettings().getValue());
         
         // 4.値変更時のイベントハンドラの設定
         
@@ -186,8 +187,8 @@ public class MainController extends VBox {
     }
     
     private void updateSheetComparison2() {
-        Triple<BookInfo> bookInfoTriple = bookInfoPropPair.map(Property::getValue);
-        Triple<String> sheetNameTriple = sheetNamePropPair.map(Property::getValue);
+        Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
+        Triple<String> sheetNameTriple = sheetNamePropTriple.map(Property::getValue);
         
         ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
                 bookInfoTriple.hasAB() && sheetNameTriple.hasAB()
@@ -196,7 +197,7 @@ public class MainController extends VBox {
     }
     
     private void updateBookComparison2() {
-        Triple<BookInfo> bookInfoTriple = bookInfoPropPair.map(Property::getValue);
+        Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
         
         ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
                 bookInfoTriple.hasAB()
@@ -207,7 +208,7 @@ public class MainController extends VBox {
     }
     
     private void updateDirComparison2() {
-        Triple<DirInfo> dirInfoTriple = dirInfoPropPair.map(Property::getValue);
+        Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
@@ -220,7 +221,7 @@ public class MainController extends VBox {
     }
     
     private void updateTreeComparison2() {
-        Triple<DirInfo> dirInfoTriple = dirInfoPropPair.map(Property::getValue);
+        Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
@@ -230,15 +231,6 @@ public class MainController extends VBox {
                                 Factory.sheetNamesMatcher(ar.settings()),
                                 ar.settings().get(SettingKeys.CURR_READ_PASSWORDS))
                         : null);
-    }
-    
-    /**
-     * 設定エリアを表示するか否かを返します。<br>
-     * 
-     * @return 設定エリアを表示する場合は {@code true}
-     */
-    public BooleanExpression showSettings() {
-        return row3Pane.showSettings();
     }
     
     /**

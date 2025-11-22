@@ -3,7 +3,6 @@ package xyz.hotchpotch.hogandiff.gui.layouts;
 import java.io.IOException;
 import java.util.Objects;
 
-import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -88,14 +87,5 @@ public class Row3Pane extends StackPane implements ChildController {
      */
     public void unbind() {
         reportingPane.unbind();
-    }
-    
-    /**
-     * 設定エリアを表示するかを返します。<br>
-     * 
-     * @return 設定エリアを表示する場合は {@code true}
-     */
-    public BooleanExpression showSettings() {
-        return togglePane.showSettings();
     }
 }
