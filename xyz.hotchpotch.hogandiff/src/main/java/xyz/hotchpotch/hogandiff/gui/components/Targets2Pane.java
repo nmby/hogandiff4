@@ -21,7 +21,7 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
  * 
  * @author nmby
  */
-public class TargetsPane extends VBox implements ChildController {
+public class Targets2Pane extends VBox implements ChildController {
     
     // [static members] ********************************************************
     
@@ -41,8 +41,8 @@ public class TargetsPane extends VBox implements ChildController {
      * @throws IOException
      *             FXMLファイルの読み込みに失敗した場合
      */
-    public TargetsPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), ar.get());
+    public Targets2Pane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Targets2Pane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
