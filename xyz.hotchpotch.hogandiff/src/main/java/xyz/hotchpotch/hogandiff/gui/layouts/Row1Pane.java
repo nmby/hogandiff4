@@ -48,19 +48,19 @@ public class Row1Pane extends HBox implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         // 1.disableプロパティのバインディング
         
         // 2.項目ごとの各種設定
-        menuPane.init(parent);
-        linkPane.init(parent);
+        menuPane.init(controller);
+        linkPane.init(controller);
         
         // 3.初期値の設定
         

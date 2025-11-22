@@ -73,19 +73,19 @@ public class GooglePane extends HBox implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disabled/visibleプロパティのバインディング
             BooleanBinding isCredentialNull = Bindings.createBooleanBinding(
-                    () -> parent.propGoogleCredential.getValue() == null,
-                    parent.propGoogleCredential);
+                    () -> controller.propGoogleCredential.getValue() == null,
+                    controller.propGoogleCredential);
             
             googleImageView.visibleProperty().bind(isCredentialNull);
             googleImageView.managedProperty().bind(isCredentialNull);
@@ -106,7 +106,7 @@ public class GooglePane extends HBox implements ChildController {
             
             profileImageView.imageProperty().bind(Bindings.createObjectBinding(
                     () -> {
-                        GoogleCredential credential = parent.propGoogleCredential.getValue();
+                        GoogleCredential credential = controller.propGoogleCredential.getValue();
                         if (credential != null) {
                             String picUrl = credential.driveUser().getPhotoLink();
                             if (picUrl != null) {
@@ -115,10 +115,10 @@ public class GooglePane extends HBox implements ChildController {
                         }
                         return null;
                     },
-                    parent.propGoogleCredential));
+                    controller.propGoogleCredential));
             
             connectGoogleButton.setOnAction(_ -> {
-                Task<GoogleCredential> connectTask = new ConnectGoogleTask(parent.propGoogleCredential);
+                Task<GoogleCredential> connectTask = new ConnectGoogleTask(controller.propGoogleCredential);
                 Thread connectThread = new Thread(connectTask);
                 connectThread.setDaemon(true);
                 connectThread.start();
@@ -135,8 +135,8 @@ public class GooglePane extends HBox implements ChildController {
                 }
                 
                 try {
-                    parent.propGoogleCredential.getValue().deleteCredential();
-                    parent.propGoogleCredential.setValue(null);
+                    controller.propGoogleCredential.getValue().deleteCredential();
+                    controller.propGoogleCredential.setValue(null);
                     
                     Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
                     VBox content = new VBox(10);
@@ -149,7 +149,7 @@ public class GooglePane extends HBox implements ChildController {
                     
                 } catch (GoogleHandlingException e) {
                     ErrorReporter.reportIfEnabled(e, "GooglePane#init-2");
-                    parent.propGoogleCredential.setValue(null);
+                    controller.propGoogleCredential.setValue(null);
                     
                     Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                     VBox content = new VBox(10);
@@ -167,7 +167,7 @@ public class GooglePane extends HBox implements ChildController {
                 GoogleCredential credential = GoogleCredential.get(false);
                 Platform.runLater(() -> {
                     try {
-                        parent.propGoogleCredential.setValue(credential);
+                        controller.propGoogleCredential.setValue(credential);
                     } catch (Exception e) {
                         ErrorReporter.reportIfEnabled(e, "GooglePane#init-3");
                         throw e;

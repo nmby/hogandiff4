@@ -68,21 +68,21 @@ public class MenuPane extends HBox implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             recursivelyCheckBox.disableProperty().bind(compareDirsRadioButton.selectedProperty().not());
             
             // 2.項目ごとの各種設定
-            parent.propCompareMenu.bind(Bindings.createObjectBinding(
+            controller.propCompareMenu.bind(Bindings.createObjectBinding(
                     () -> {
                         CompareObject compareObject = compareTarget.getSelectedToggle() == compareBooksRadioButton
                                 ? CompareObject.COMPARE_BOOKS
@@ -111,7 +111,7 @@ public class MenuPane extends HBox implements ChildController {
                     ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             
             // 4.値変更時のイベントハンドラの設定
-            parent.propCompareMenu
+            controller.propCompareMenu
                     .addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
             
             recursivelyCheckBox.selectedProperty()

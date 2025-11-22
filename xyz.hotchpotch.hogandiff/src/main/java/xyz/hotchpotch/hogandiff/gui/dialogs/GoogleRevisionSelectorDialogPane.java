@@ -52,8 +52,6 @@ public class GoogleRevisionSelectorDialogPane extends GridPane {
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parent
-     *            親要素
      * @param metadata
      *            Googleドライブファイルのメタデータ
      * @param revisions

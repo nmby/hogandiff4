@@ -48,13 +48,13 @@ public class TogglePane extends AnchorPane implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング

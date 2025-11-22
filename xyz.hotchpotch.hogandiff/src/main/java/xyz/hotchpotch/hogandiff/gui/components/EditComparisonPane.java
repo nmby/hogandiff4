@@ -41,7 +41,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     @FXML
     private Button editComparisonButton;
     
-    private MainController parent;
+    private MainController controller;
     
     /**
      * コンストラクタ<br>
@@ -59,23 +59,23 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
-            this.parent = parent;
+            this.controller = controller;
             
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> !parent.isReady().getValue()
-                            || parent.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS,
-                    parent.propCompareMenu, parent.isReady()));
+                    () -> !controller.isReady().getValue()
+                            || controller.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS,
+                    controller.propCompareMenu, controller.isReady()));
             
             // 2.項目ごとの各種設定
             editComparisonButton.setOnAction(_ -> editComparison());
@@ -92,7 +92,7 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
     
     private void editComparison() {
         try {
-            CompareMenu menu = parent.propCompareMenu.getValue();
+            CompareMenu menu = controller.propCompareMenu.getValue();
             if (!menu.isValidTargets(ar.settings())) {
                 new Alert(
                         AlertType.WARNING,

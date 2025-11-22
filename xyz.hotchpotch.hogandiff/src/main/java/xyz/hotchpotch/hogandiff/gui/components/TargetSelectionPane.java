@@ -105,7 +105,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private final BooleanProperty isBusy = new SimpleBooleanProperty();
     
     private TargetSelectionPane opposite;
-    private MainController parent;
+    private MainController controller;
     private Side3 side3;
     private Map<Path, String> readPasswords;
     
@@ -125,7 +125,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @param side3
      *            このコンポーネントの側
@@ -134,29 +134,29 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent, Side3 side3, TargetSelectionPane opposite) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller, Side3 side3, TargetSelectionPane opposite) {
+        Objects.requireNonNull(controller);
         Objects.requireNonNull(side3);
         Objects.requireNonNull(opposite);
         
         try {
-            this.parent = parent;
+            this.controller = controller;
             this.side3 = side3;
             this.opposite = opposite;
             readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             
             // 1.disable, visible, managedプロパティのバインディング
-            disableProperty().bind(parent.isRunning().or(isBusy));
+            disableProperty().bind(controller.isRunning().or(isBusy));
             sheetNameLabel.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.propCompareMenu.getValue().compareObject() != CompareObject.COMPARE_SHEETS,
-                    parent.propCompareMenu));
+                    () -> controller.propCompareMenu.getValue().compareObject() != CompareObject.COMPARE_SHEETS,
+                    controller.propCompareMenu));
             sheetNameChoiceBox.disableProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.propCompareMenu.getValue().compareObject() != CompareObject.COMPARE_SHEETS,
-                    parent.propCompareMenu));
+                    () -> controller.propCompareMenu.getValue().compareObject() != CompareObject.COMPARE_SHEETS,
+                    controller.propCompareMenu));
             
             BooleanBinding isDirOperation = Bindings.createBooleanBinding(
-                    () -> isDirOperation(parent.propCompareMenu.getValue().compareObject()),
-                    parent.propCompareMenu);
+                    () -> isDirOperation(controller.propCompareMenu.getValue().compareObject()),
+                    controller.propCompareMenu);
             
             dirPathLabel.visibleProperty().bind(isDirOperation);
             dirPathTextField.visibleProperty().bind(isDirOperation);
@@ -169,11 +169,11 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             bookPathButton.managedProperty().bind(isDirOperation.not());
             
             googleDriveButton.visibleProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.propGoogleCredential.getValue() != null,
-                    parent.propGoogleCredential));
+                    () -> controller.propGoogleCredential.getValue() != null,
+                    controller.propGoogleCredential));
             googleDriveButton.managedProperty().bind(Bindings.createBooleanBinding(
-                    () -> parent.propGoogleCredential.getValue() != null,
-                    parent.propGoogleCredential));
+                    () -> controller.propGoogleCredential.getValue() != null,
+                    controller.propGoogleCredential));
             googleDriveButton.disableProperty().bind(isDirOperation);
             
             // 2.項目ごとの各種設定
@@ -183,17 +183,17 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             titleLabel.setText(side3.name());
             
             dirPathTextField.textProperty().bind(Bindings.createStringBinding(
-                    () -> parent.dirInfoPropPair.get(side3.to2()).getValue() != null
-                            ? parent.dirInfoPropPair.get(side3.to2()).getValue().dirPath().toString()
+                    () -> controller.dirInfoPropPair.get(side3.to2()).getValue() != null
+                            ? controller.dirInfoPropPair.get(side3.to2()).getValue().dirPath().toString()
                             : null,
-                    parent.dirInfoPropPair.get(side3.to2())));
+                    controller.dirInfoPropPair.get(side3.to2())));
             dirPathButton.setOnAction(this::chooseDir);
             
             bookPathTextField.textProperty().bind(Bindings.createStringBinding(
-                    () -> parent.bookInfoPropPair.get(side3.to2()).getValue() != null
-                            ? parent.bookInfoPropPair.get(side3.to2()).getValue().dispPathInfo()
+                    () -> controller.bookInfoPropPair.get(side3.to2()).getValue() != null
+                            ? controller.bookInfoPropPair.get(side3.to2()).getValue().dispPathInfo()
                             : null,
-                    parent.bookInfoPropPair.get(side3.to2())));
+                    controller.bookInfoPropPair.get(side3.to2())));
             bookPathButton.setOnAction(this::chooseBook);
             
             googleDriveButton.setOnAction(_ -> {
@@ -218,33 +218,33 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 }
             });
             
-            parent.sheetNamePropPair.get(side3.to2()).bind(sheetNameChoiceBox.valueProperty());
+            controller.sheetNamePropPair.get(side3.to2()).bind(sheetNameChoiceBox.valueProperty());
             
             isReady.bind(Bindings.createBooleanBinding(
-                    () -> switch (parent.propCompareMenu.getValue().compareObject()) {
-                    case COMPARE_BOOKS -> parent.bookInfoPropPair.get(side3.to2()).getValue() != null;
-                    case COMPARE_SHEETS -> parent.bookInfoPropPair.get(side3.to2()).getValue() != null
-                            && parent.sheetNamePropPair.get(side3.to2()).getValue() != null;
-                    case COMPARE_DIRS -> parent.dirInfoPropPair.get(side3.to2()).getValue() != null;
-                    case COMPARE_TREES -> parent.dirInfoPropPair.get(side3.to2()).getValue() != null;
+                    () -> switch (controller.propCompareMenu.getValue().compareObject()) {
+                    case COMPARE_BOOKS -> controller.bookInfoPropPair.get(side3.to2()).getValue() != null;
+                    case COMPARE_SHEETS -> controller.bookInfoPropPair.get(side3.to2()).getValue() != null
+                            && controller.sheetNamePropPair.get(side3.to2()).getValue() != null;
+                    case COMPARE_DIRS -> controller.dirInfoPropPair.get(side3.to2()).getValue() != null;
+                    case COMPARE_TREES -> controller.dirInfoPropPair.get(side3.to2()).getValue() != null;
                     default -> throw new AssertionError();
                     },
-                    parent.propCompareMenu,
-                    parent.dirInfoPropPair.get(side3.to2()),
-                    parent.bookInfoPropPair.get(side3.to2()),
-                    parent.sheetNamePropPair.get(side3.to2())));
+                    controller.propCompareMenu,
+                    controller.dirInfoPropPair.get(side3.to2()),
+                    controller.bookInfoPropPair.get(side3.to2()),
+                    controller.sheetNamePropPair.get(side3.to2())));
             
             // 4.値変更時のイベントハンドラの設定
             // ※このコントローラだけ特殊なので3と4を入れ替える
-            parent.propCompareMenu.addListener((_, oldValue, newValue) -> {
-                DirInfo dirInfo = parent.dirInfoPropPair.get(side3.to2()).getValue();
+            controller.propCompareMenu.addListener((_, oldValue, newValue) -> {
+                DirInfo dirInfo = controller.dirInfoPropPair.get(side3.to2()).getValue();
                 if (dirInfo != null
                         && newValue != null && isDirOperation(newValue.compareObject())
                         && oldValue != null && isDirOperation(oldValue.compareObject())) {
                     setDirPath(dirInfo.dirPath(), newValue.compareObject() == CompareObject.COMPARE_TREES);
                 }
             });
-            parent.bookInfoPropPair.get(side3.to2()).addListener((_, _, newValue) -> {
+            controller.bookInfoPropPair.get(side3.to2()).addListener((_, _, newValue) -> {
                 sheetNameChoiceBox.setItems(FXCollections.emptyObservableList());
                 if (newValue != null && !newValue.sheetNames().isEmpty()) {
                     sheetNameChoiceBox.setItems(FXCollections.observableList(newValue.sheetNames()));
@@ -254,7 +254,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             // 3.初期値の設定
             if (ar.settings().containsKey(SettingKeys.CURR_ARG_PATHS.get(side3.to2()))) {
                 Path path = ar.settings().get(SettingKeys.CURR_ARG_PATHS.get(side3.to2()));
-                CompareMenu menu = parent.propCompareMenu.getValue();
+                CompareMenu menu = controller.propCompareMenu.getValue();
                 if (menu != null && isDirOperation(menu.compareObject())) {
                     setDirPath(path, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
                 } else {
@@ -276,7 +276,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private void onDragOver(DragEvent event) {
         try {
             event.consume();
-            Predicate<File> isAcceptableType = isDirOperation(parent.propCompareMenu.getValue().compareObject())
+            Predicate<File> isAcceptableType = isDirOperation(controller.propCompareMenu.getValue().compareObject())
                     ? File::isDirectory
                     : File::isFile;
             
@@ -301,7 +301,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             isBusy.set(true);
             event.consume();
             
-            CompareObject compareObject = parent.propCompareMenu.getValue().compareObject();
+            CompareObject compareObject = controller.propCompareMenu.getValue().compareObject();
             Predicate<File> isAcceptableType = isDirOperation(compareObject)
                     ? File::isDirectory
                     : File::isFile;
@@ -348,7 +348,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(Msg.APP_1110.get());
             
-            DirInfo dirInfo = parent.dirInfoPropPair.get(side3.to2()).getValue();
+            DirInfo dirInfo = controller.dirInfoPropPair.get(side3.to2()).getValue();
             if (dirInfo != null) {
                 chooser.setInitialDirectory(dirInfo.dirPath().toFile());
                 
@@ -377,7 +377,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             FileChooser chooser = new FileChooser();
             chooser.setTitle(Msg.APP_1120.get());
             
-            BookInfo bookInfo = parent.bookInfoPropPair.get(side3.to2()).getValue();
+            BookInfo bookInfo = controller.bookInfoPropPair.get(side3.to2()).getValue();
             if (bookInfo != null) {
                 File book = bookInfo.bookPath().toFile();
                 chooser.setInitialDirectory(book.getParentFile());
@@ -406,7 +406,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private void setDirPath(Path newDirPath, boolean recursively) {
         if (newDirPath == null) {
-            parent.dirInfoPropPair.get(side3.to2()).setValue(null);
+            controller.dirInfoPropPair.get(side3.to2()).setValue(null);
             return;
         }
         
@@ -414,13 +414,13 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             DirInfoLoader dirLoader = Factory.dirInfoLoader(
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
-            parent.dirInfoPropPair.get(side3.to2()).setValue(newDirInfo);
+            controller.dirInfoPropPair.get(side3.to2()).setValue(newDirInfo);
             prevSelectedBookPath = newDirPath;
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::setDirPath-1");
             
-            parent.dirInfoPropPair.get(side3.to2()).setValue(null);
+            controller.dirInfoPropPair.get(side3.to2()).setValue(null);
             new Alert(
                     AlertType.ERROR,
                     "%s%n%s".formatted(Msg.APP_1160.get(), newDirPath),
@@ -433,18 +433,18 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private boolean validateAndSetTarget(Path newBookPath, String sheetName, GoogleFileInfo googleFileInfo) {
         if (newBookPath == null) {
-            parent.bookInfoPropPair.get(side3.to2()).setValue(null);
+            controller.bookInfoPropPair.get(side3.to2()).setValue(null);
             return true;
         }
         
         BookInfo newBookInfo = readBookInfo(newBookPath, googleFileInfo);
         
         if (newBookInfo.status() == Status.LOAD_COMPLETED) {
-            parent.bookInfoPropPair.get(side3.to2()).setValue(newBookInfo);
+            controller.bookInfoPropPair.get(side3.to2()).setValue(newBookInfo);
             prevSelectedBookPath = newBookPath;
             
         } else {
-            parent.bookInfoPropPair.get(side3.to2()).setValue(null);
+            controller.bookInfoPropPair.get(side3.to2()).setValue(null);
             readPasswords.remove(newBookPath);
             new Alert(
                     AlertType.ERROR,

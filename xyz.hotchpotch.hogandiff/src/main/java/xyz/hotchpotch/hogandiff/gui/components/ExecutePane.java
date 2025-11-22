@@ -45,21 +45,21 @@ public class ExecutePane extends AnchorPane implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
-            executeButton.disableProperty().bind(parent.isReady().not());
+            disableProperty().bind(controller.isRunning());
+            executeButton.disableProperty().bind(controller.isReady().not());
             
             // 2.項目ごとの各種設定
-            executeButton.setOnAction(_ -> parent.execute());
+            executeButton.setOnAction(_ -> controller.execute());
             
             // 3.初期値の設定
             

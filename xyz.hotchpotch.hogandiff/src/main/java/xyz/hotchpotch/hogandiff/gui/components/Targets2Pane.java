@@ -51,23 +51,23 @@ public class Targets2Pane extends VBox implements ChildController {
     /**
      * この画面部品の内容を初期化します。<br>
      * 
-     * @param parent
+     * @param controller
      *            このアプリケーションのコントローラ
      * @throws NullPointerException
-     *             {@code parent} が {@code null} の場合
+     *             パラメータが {@code null} の場合
      */
-    public void init(MainController parent) {
-        Objects.requireNonNull(parent);
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
             
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             
             // 2.項目ごとの各種設定
-            targetSelectionPane1.init(parent, Side3.A, targetSelectionPane2);
-            targetSelectionPane2.init(parent, Side3.B, targetSelectionPane1);
+            targetSelectionPane1.init(controller, Side3.A, targetSelectionPane2);
+            targetSelectionPane2.init(controller, Side3.B, targetSelectionPane1);
             
             // 3.初期値の設定
             
