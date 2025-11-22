@@ -1,7 +1,10 @@
 package xyz.hotchpotch.hogandiff.gui.components;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import javafx.beans.binding.BooleanExpression;
@@ -37,6 +40,9 @@ public class Targets2Pane extends VBox implements ChildController {
     
     private MainController controller;
     
+    /** 前回選択されたパス */
+    public Path prevSelectedBookPath;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -70,8 +76,8 @@ public class Targets2Pane extends VBox implements ChildController {
             disableProperty().bind(controller.isRunning());
             
             // 2.項目ごとの各種設定
-            targetSelectionPaneA.init(controller, this, Side3.A, targetSelectionPaneB);
-            targetSelectionPaneB.init(controller, this, Side3.B, targetSelectionPaneA);
+            targetSelectionPaneA.init(controller, this, Side3.A);
+            targetSelectionPaneB.init(controller, this, Side3.B);
             
             // 3.初期値の設定
             
@@ -86,5 +92,64 @@ public class Targets2Pane extends VBox implements ChildController {
     @Override
     public BooleanExpression isReady() {
         return targetSelectionPaneA.isReady().and(targetSelectionPaneB.isReady());
+    }
+    
+    /**
+     * ドラッグ＆ドロップされたディレクトリパスを各コンポーネントに設定します。<br>
+     * 
+     * @param side3
+     *            ドロップされたコンポーネントの側
+     * @param files
+     *            ドロップされたファイル一覧
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void setDirPathForAll(Side3 side3, List<File> files) {
+        Objects.requireNonNull(side3);
+        Objects.requireNonNull(files);
+        
+        List<TargetSelectionPane> targets = switch (side3) {
+        case O -> throw new AssertionError();
+        case A -> List.of(targetSelectionPaneA, targetSelectionPaneB);
+        case B -> List.of(targetSelectionPaneB, targetSelectionPaneA);
+        default -> throw new AssertionError();
+        };
+        
+        for (int i = 0; i < targets.size() && i < files.size() && files.get(i).isDirectory(); i++) {
+            TargetSelectionPane target = targets.get(i);
+            Path newDirPath = files.get(i).toPath();
+            target.setDirPath(newDirPath, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
+            prevSelectedBookPath = newDirPath;
+        }
+    }
+    
+    /**
+     * ドラッグ＆ドロップされたファイルパスを各コンポーネントに設定します。<br>
+     * 
+     * @param side3
+     *            ドロップされたコンポーネントの側
+     * @param files
+     *            ドロップされたファイル一覧
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void validateAndSetTargetForAll(Side3 side3, List<File> files) {
+        Objects.requireNonNull(side3);
+        Objects.requireNonNull(files);
+        
+        List<TargetSelectionPane> targets = switch (side3) {
+        // TODO: Oにも対応する
+        case O -> throw new UnsupportedOperationException();
+        case A -> List.of(targetSelectionPaneA, targetSelectionPaneB);
+        case B -> List.of(targetSelectionPaneB, targetSelectionPaneA);
+        default -> throw new AssertionError();
+        };
+        
+        for (int i = 0; i < targets.size() && i < files.size() && files.get(i).isFile(); i++) {
+            TargetSelectionPane target = targets.get(i);
+            Path newBookPath = files.get(i).toPath();
+            target.validateAndSetTarget(newBookPath, null, null);
+            prevSelectedBookPath = newBookPath;
+        }
     }
 }

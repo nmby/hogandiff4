@@ -61,8 +61,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     // [static members] ********************************************************
     
-    private static Path prevSelectedBookPath;
-    
     private static boolean isDirOperation(CompareObject compareObject) {
         return compareObject == CompareObject.COMPARE_DIRS || compareObject == CompareObject.COMPARE_TREES;
     }
@@ -104,7 +102,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private final BooleanProperty isReady = new SimpleBooleanProperty();
     private final BooleanProperty isBusy = new SimpleBooleanProperty();
     
-    private TargetSelectionPane opposite;
     private MainController controller;
     private Targets2Pane parent;
     private Side3 side3;
@@ -132,22 +129,18 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      *            親コンポーネント
      * @param side3
      *            このコンポーネントの側
-     * @param opposite
-     *            自身と反対側のコンポーネント
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public void init(MainController controller, Targets2Pane parent, Side3 side3, TargetSelectionPane opposite) {
+    public void init(MainController controller, Targets2Pane parent, Side3 side3) {
         Objects.requireNonNull(controller);
         Objects.requireNonNull(parent);
         Objects.requireNonNull(side3);
-        Objects.requireNonNull(opposite);
         
         try {
             this.controller = controller;
             this.parent = parent;
             this.side3 = side3;
-            this.opposite = opposite;
             readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
             
             // 1.disable, visible, managedプロパティのバインディング
@@ -322,20 +315,12 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             }
             
             if (isDirOperation(compareObject)) {
-                setDirPath(files.get(0).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
+                parent.setDirPathForAll(side3, files);
                 event.setDropCompleted(true);
                 
-                if (1 < files.size() && isAcceptableType.test(files.get(1))) {
-                    opposite.setDirPath(files.get(1).toPath(), ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
-                }
-                
             } else {
-                boolean dropCompleted = validateAndSetTarget(files.get(0).toPath(), null, null);
-                event.setDropCompleted(dropCompleted);
-                
-                if (dropCompleted && 1 < files.size() && isAcceptableType.test(files.get(1))) {
-                    opposite.validateAndSetTarget(files.get(1).toPath(), null, null);
-                }
+                parent.validateAndSetTargetForAll(side3, files);
+                event.setDropCompleted(true);
             }
         } catch (RuntimeException e) {
             event.setDropCompleted(false);
@@ -357,8 +342,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             if (dirInfo != null) {
                 chooser.setInitialDirectory(dirInfo.dirPath().toFile());
                 
-            } else if (prevSelectedBookPath != null) {
-                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+            } else if (parent.prevSelectedBookPath != null) {
+                chooser.setInitialDirectory(parent.prevSelectedBookPath.toFile().getParentFile());
             }
             
             File selected = chooser.showDialog(getScene().getWindow());
@@ -388,8 +373,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 chooser.setInitialDirectory(book.getParentFile());
                 chooser.setInitialFileName(book.getName());
                 
-            } else if (prevSelectedBookPath != null) {
-                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+            } else if (parent.prevSelectedBookPath != null) {
+                chooser.setInitialDirectory(parent.prevSelectedBookPath.toFile().getParentFile());
             }
             
             chooser.getExtensionFilters().add(
@@ -409,7 +394,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         }
     }
     
-    private void setDirPath(Path newDirPath, boolean recursively) {
+    /**
+     * ディレクトリパスを設定します。<br>
+     * 
+     * @param newDirPath
+     *            新しいディレクトリパス（null許容）
+     * @param recursively
+     *            再帰的に読み込む場合は {@code true}
+     */
+    public void setDirPath(Path newDirPath, boolean recursively) {
         if (newDirPath == null) {
             controller.dirInfoPropPair.get(side3).setValue(null);
             return;
@@ -420,7 +413,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             controller.dirInfoPropPair.get(side3).setValue(newDirInfo);
-            prevSelectedBookPath = newDirPath;
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::setDirPath-1");
@@ -433,10 +425,20 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                             .showAndWait();
             return;
         }
-        
     }
     
-    private boolean validateAndSetTarget(Path newBookPath, String sheetName, GoogleFileInfo googleFileInfo) {
+    /**
+     * ブックパス等を検証して設定します。<br>
+     * 
+     * @param newBookPath
+     *            新しいブックパス（null許容）
+     * @param sheetName
+     *            新しいシート名（null許容）
+     * @param googleFileInfo
+     *            Googleファイル情報（null許容）
+     * @return 成功した場合は {@code true}
+     */
+    public boolean validateAndSetTarget(Path newBookPath, String sheetName, GoogleFileInfo googleFileInfo) {
         if (newBookPath == null) {
             controller.bookInfoPropPair.get(side3).setValue(null);
             return true;
@@ -446,7 +448,6 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         if (newBookInfo.status() == Status.LOAD_COMPLETED) {
             controller.bookInfoPropPair.get(side3).setValue(newBookInfo);
-            prevSelectedBookPath = newBookPath;
             
         } else {
             controller.bookInfoPropPair.get(side3).setValue(null);

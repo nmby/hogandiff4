@@ -8,11 +8,11 @@
 	xmlns:fx="http://javafx.com/fxml/1">
 	<children>
 		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
-			fx:id="targetSelectionPane1" maxHeight="-Infinity"
+			fx:id="targetSelectionPaneA" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="NEVER" />
 		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
-			fx:id="targetSelectionPane2" maxHeight="-Infinity"
+			fx:id="targetSelectionPaneB" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" VBox.vgrow="NEVER" />
 	</children>
