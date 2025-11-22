@@ -14,7 +14,7 @@ import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.util.Pair.Side;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * 比較対象指定部分の画面部品です。<br>
@@ -66,8 +66,8 @@ public class Targets2Pane extends VBox implements ChildController {
             disableProperty().bind(parent.isRunning());
             
             // 2.項目ごとの各種設定
-            targetSelectionPane1.init(parent, Side.A, targetSelectionPane2);
-            targetSelectionPane2.init(parent, Side.B, targetSelectionPane1);
+            targetSelectionPane1.init(parent, Side3.A, targetSelectionPane2);
+            targetSelectionPane2.init(parent, Side3.B, targetSelectionPane1);
             
             // 3.初期値の設定
             
