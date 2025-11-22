@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.util;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
 
@@ -78,4 +79,56 @@ public record Triple<T>(T o, T a, T b) {
     }
     
     // [instance members] ******************************************************
+    
+    // 順次実装用アダプタ
+    // TODO: 実装完了時に削除する
+    public Pair<T> toPair() {
+        return new Pair<>(a, b);
+    }
+    
+    /**
+     * 指定された側の要素を返します。<br>
+     * 
+     * @param side
+     *            値を取得する側
+     * @return 指定された側の要素
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public T get(Side3 side) {
+        Objects.requireNonNull(side);
+        return switch (side) {
+        case O -> o;
+        case A -> a;
+        case B -> b;
+        };
+    }
+    
+    /**
+     * このトリプルの要素それぞれに変換処理を施して得られるトリプルを返します。<br>
+     * 
+     * @param <U>
+     *            変換後の要素の型
+     * @param mapper
+     *            変換処理
+     * @return 新たなトリプル
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public <U> Triple<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper);
+        return new Triple<>(
+                o == null ? null : mapper.apply(o),
+                a == null ? null : mapper.apply(a),
+                b == null ? null : mapper.apply(b));
+    }
+    
+    /**
+     * 要素 {@code a}, {@code b} の両方が {@code null} でない場合に {@code true} を返します。<br>
+     * 
+     * @return 要素 {@code a} と要素 {@code b} の両方が {@code null} でない場合に {@code true}
+     */
+    public boolean hasAB() {
+        return a != null && b != null;
+    }
 }
