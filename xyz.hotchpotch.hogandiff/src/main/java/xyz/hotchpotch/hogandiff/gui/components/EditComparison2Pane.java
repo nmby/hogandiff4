@@ -30,7 +30,7 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
  * 
  * @author nmby
  */
-public class EditComparisonPane extends AnchorPane implements ChildController {
+public class EditComparison2Pane extends AnchorPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -49,8 +49,8 @@ public class EditComparisonPane extends AnchorPane implements ChildController {
      * @throws IOException
      *             FXMLファイルの読み込みに失敗した場合
      */
-    public EditComparisonPane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), ar.get());
+    public EditComparison2Pane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparison2Pane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

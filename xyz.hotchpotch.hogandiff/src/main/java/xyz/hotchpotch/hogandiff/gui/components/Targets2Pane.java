@@ -10,7 +10,7 @@ import java.util.Objects;
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
@@ -24,7 +24,7 @@ import xyz.hotchpotch.hogandiff.util.Triple.Side3;
  * 
  * @author nmby
  */
-public class Targets2Pane extends VBox implements ChildController {
+public class Targets2Pane extends GridPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -37,6 +37,9 @@ public class Targets2Pane extends VBox implements ChildController {
     
     @FXML
     private TargetSelectionPane targetSelectionPaneB;
+    
+    @FXML
+    private EditComparison2Pane editComparisonPane;
     
     private MainController controller;
     
@@ -78,6 +81,7 @@ public class Targets2Pane extends VBox implements ChildController {
             // 2.項目ごとの各種設定
             targetSelectionPaneA.init(controller, this, Side3.A);
             targetSelectionPaneB.init(controller, this, Side3.B);
+            editComparisonPane.init(controller);
             
             // 3.初期値の設定
             

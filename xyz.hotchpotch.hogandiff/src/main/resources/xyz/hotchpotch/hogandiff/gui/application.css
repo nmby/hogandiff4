@@ -14,10 +14,6 @@
     -fx-padding: 0.0px 0.0px 3.0px 0.0px;
 }
 
-.targetsPane {
-    -fx-spacing: 3.0px;
-}
-
 .targetSelectionPane {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
     -fx-padding: 0.0px;
