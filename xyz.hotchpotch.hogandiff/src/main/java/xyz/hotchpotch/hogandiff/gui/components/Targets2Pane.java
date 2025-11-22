@@ -30,10 +30,12 @@ public class Targets2Pane extends VBox implements ChildController {
     private final AppResource ar = AppMain.appResource;
     
     @FXML
-    private TargetSelectionPane targetSelectionPane1;
+    private TargetSelectionPane targetSelectionPaneA;
     
     @FXML
-    private TargetSelectionPane targetSelectionPane2;
+    private TargetSelectionPane targetSelectionPaneB;
+    
+    private MainController controller;
     
     /**
      * コンストラクタ<br>
@@ -59,6 +61,8 @@ public class Targets2Pane extends VBox implements ChildController {
     public void init(MainController controller) {
         Objects.requireNonNull(controller);
         
+        this.controller = controller;
+        
         try {
             ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
             
@@ -66,8 +70,8 @@ public class Targets2Pane extends VBox implements ChildController {
             disableProperty().bind(controller.isRunning());
             
             // 2.項目ごとの各種設定
-            targetSelectionPane1.init(controller, Side3.A, targetSelectionPane2);
-            targetSelectionPane2.init(controller, Side3.B, targetSelectionPane1);
+            targetSelectionPaneA.init(controller, this, Side3.A, targetSelectionPaneB);
+            targetSelectionPaneB.init(controller, this, Side3.B, targetSelectionPaneA);
             
             // 3.初期値の設定
             
@@ -81,6 +85,6 @@ public class Targets2Pane extends VBox implements ChildController {
     
     @Override
     public BooleanExpression isReady() {
-        return targetSelectionPane1.isReady().and(targetSelectionPane2.isReady());
+        return targetSelectionPaneA.isReady().and(targetSelectionPaneB.isReady());
     }
 }

@@ -106,6 +106,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     
     private TargetSelectionPane opposite;
     private MainController controller;
+    private Targets2Pane parent;
     private Side3 side3;
     private Map<Path, String> readPasswords;
     
@@ -127,6 +128,8 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      * 
      * @param controller
      *            このアプリケーションのコントローラ
+     * @param parent
+     *            親コンポーネント
      * @param side3
      *            このコンポーネントの側
      * @param opposite
@@ -134,13 +137,15 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public void init(MainController controller, Side3 side3, TargetSelectionPane opposite) {
+    public void init(MainController controller, Targets2Pane parent, Side3 side3, TargetSelectionPane opposite) {
         Objects.requireNonNull(controller);
+        Objects.requireNonNull(parent);
         Objects.requireNonNull(side3);
         Objects.requireNonNull(opposite);
         
         try {
             this.controller = controller;
+            this.parent = parent;
             this.side3 = side3;
             this.opposite = opposite;
             readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
