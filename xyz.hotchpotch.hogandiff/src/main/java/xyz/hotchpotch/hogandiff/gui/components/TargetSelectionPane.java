@@ -413,6 +413,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                     ar.settings().getAltered(SettingKeys.COMPARE_DIRS_RECURSIVELY, recursively));
             DirInfo newDirInfo = dirLoader.loadDirInfo(newDirPath);
             controller.dirInfoPropPair.get(side3).setValue(newDirInfo);
+            parent.prevSelectedBookPath = newDirPath;
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "TargetSelectionPane::setDirPath-1");
@@ -448,6 +449,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
         
         if (newBookInfo.status() == Status.LOAD_COMPLETED) {
             controller.bookInfoPropPair.get(side3).setValue(newBookInfo);
+            parent.prevSelectedBookPath = newBookPath;
             
         } else {
             controller.bookInfoPropPair.get(side3).setValue(null);

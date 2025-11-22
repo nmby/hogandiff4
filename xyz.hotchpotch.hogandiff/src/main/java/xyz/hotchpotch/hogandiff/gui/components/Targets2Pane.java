@@ -123,7 +123,6 @@ public class Targets2Pane extends GridPane implements ChildController {
             TargetSelectionPane target = targets.get(i);
             Path newDirPath = files.get(i).toPath();
             target.setDirPath(newDirPath, ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
-            prevSelectedBookPath = newDirPath;
         }
     }
     
@@ -153,7 +152,6 @@ public class Targets2Pane extends GridPane implements ChildController {
             TargetSelectionPane target = targets.get(i);
             Path newBookPath = files.get(i).toPath();
             target.validateAndSetTarget(newBookPath, null, null);
-            prevSelectedBookPath = newBookPath;
         }
     }
 }
