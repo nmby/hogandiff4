@@ -103,7 +103,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
     private final BooleanProperty isBusy = new SimpleBooleanProperty();
     
     private MainController controller;
-    private Targets2Pane parent;
+    private TargetsPane parent;
     private Side3 side3;
     private Map<Path, String> readPasswords;
     
@@ -132,7 +132,7 @@ public class TargetSelectionPane extends GridPane implements ChildController {
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public void init(MainController controller, Targets2Pane parent, Side3 side3) {
+    public void init(MainController controller, TargetsPane parent, Side3 side3) {
         Objects.requireNonNull(controller);
         Objects.requireNonNull(parent);
         Objects.requireNonNull(side3);

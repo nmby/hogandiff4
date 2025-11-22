@@ -7,8 +7,8 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
@@ -35,10 +35,7 @@ public class MenuPane extends HBox implements ChildController {
     private final AppResource ar = AppMain.appResource;
     
     @FXML
-    private Label compareLabel;
-    
-    @FXML
-    private ToggleGroup compareTarget;
+    private ToggleGroup compareObjectToggleGroup;
     
     @FXML
     private RadioButton compareBooksRadioButton;
@@ -51,6 +48,15 @@ public class MenuPane extends HBox implements ChildController {
     
     @FXML
     private CheckBox recursivelyCheckBox;
+    
+    @FXML
+    private ToggleGroup compareWayToggleGroup;
+    
+    @FXML
+    private ToggleButton compare2WayToggleButton;
+    
+    @FXML
+    private ToggleButton compare3WayToggleButton;
     
     /**
      * コンストラクタ<br>
@@ -84,21 +90,25 @@ public class MenuPane extends HBox implements ChildController {
             // 2.項目ごとの各種設定
             controller.propCompareMenu.bind(Bindings.createObjectBinding(
                     () -> {
-                        CompareObject compareObject = compareTarget.getSelectedToggle() == compareBooksRadioButton
-                                ? CompareObject.COMPARE_BOOKS
-                                : compareTarget.getSelectedToggle() == compareSheetsRadioButton
-                                        ? CompareObject.COMPARE_SHEETS
-                                        : recursivelyCheckBox.isSelected()
-                                                ? CompareObject.COMPARE_TREES
-                                                : CompareObject.COMPARE_DIRS;
-                        CompareWay compareWay = CompareWay.TWO_WAY;
+                        CompareObject compareObject = compareObjectToggleGroup
+                                .getSelectedToggle() == compareBooksRadioButton
+                                        ? CompareObject.COMPARE_BOOKS
+                                        : compareObjectToggleGroup.getSelectedToggle() == compareSheetsRadioButton
+                                                ? CompareObject.COMPARE_SHEETS
+                                                : recursivelyCheckBox.isSelected()
+                                                        ? CompareObject.COMPARE_TREES
+                                                        : CompareObject.COMPARE_DIRS;
+                        CompareWay compareWay = compareWayToggleGroup.getSelectedToggle() == compare2WayToggleButton
+                                ? CompareWay.TWO_WAY
+                                : CompareWay.THREE_WAY;
                         return new CompareMenu(compareObject, compareWay);
                     },
-                    compareTarget.selectedToggleProperty(),
+                    compareObjectToggleGroup.selectedToggleProperty(),
+                    compareWayToggleGroup.selectedToggleProperty(),
                     recursivelyCheckBox.selectedProperty()));
             
             // 3.初期値の設定
-            compareTarget.selectToggle(
+            compareObjectToggleGroup.selectToggle(
                     switch (ar.settings().get(SettingKeys.CURR_MENU).compareObject()) {
                     case COMPARE_BOOKS -> compareBooksRadioButton;
                     case COMPARE_SHEETS -> compareSheetsRadioButton;

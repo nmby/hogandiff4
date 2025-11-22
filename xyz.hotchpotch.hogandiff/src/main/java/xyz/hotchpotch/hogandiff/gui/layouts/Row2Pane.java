@@ -12,7 +12,7 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.components.ExecutePane;
-import xyz.hotchpotch.hogandiff.gui.components.Targets2Pane;
+import xyz.hotchpotch.hogandiff.gui.components.TargetsPane;
 
 /**
  * メインビュー二段目の画面部品です。<br>
@@ -28,7 +28,7 @@ public class Row2Pane extends HBox implements ChildController {
     private final AppResource ar = AppMain.appResource;
     
     @FXML
-    private Targets2Pane targetsPane;
+    private TargetsPane targetsPane;
     
     @FXML
     private ExecutePane executePane;

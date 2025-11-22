@@ -21,16 +21,26 @@
 			minHeight="-Infinity" vgrow="NEVER" />
 		<RowConstraints maxHeight="-Infinity"
 			minHeight="-Infinity" vgrow="NEVER" />
+		<RowConstraints maxHeight="-Infinity"
+			minHeight="-Infinity" vgrow="NEVER" />
 	</rowConstraints>
 	<children>
 		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
+			fx:id="targetSelectionPaneO" maxHeight="-Infinity"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity">
+			<GridPane.margin>
+				<Insets bottom="3.0" />
+			</GridPane.margin>
+		</xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane>
+		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
 			fx:id="targetSelectionPaneA" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			minWidth="-Infinity" />
+			minWidth="-Infinity" GridPane.rowIndex="1" />
 		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
 			fx:id="targetSelectionPaneB" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
-			minWidth="-Infinity" GridPane.rowIndex="1">
+			minWidth="-Infinity" GridPane.rowIndex="2">
 			<GridPane.margin>
 				<Insets top="3.0" />
 			</GridPane.margin>
@@ -38,6 +48,6 @@
 		<xyz.hotchpotch.hogandiff.gui.components.EditComparison2Pane
 			fx:id="editComparisonPane" maxHeight="1.7976931348623157E308"
 			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-			GridPane.columnIndex="1" GridPane.rowSpan="2" />
+			GridPane.columnIndex="1" GridPane.rowSpan="3" />
 	</children>
 </fx:root>

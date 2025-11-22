@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareWay;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -24,13 +27,16 @@ import xyz.hotchpotch.hogandiff.util.Triple.Side3;
  * 
  * @author nmby
  */
-public class Targets2Pane extends GridPane implements ChildController {
+public class TargetsPane extends GridPane implements ChildController {
     
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
+    
+    @FXML
+    private TargetSelectionPane targetSelectionPaneO;
     
     @FXML
     private TargetSelectionPane targetSelectionPaneA;
@@ -52,8 +58,8 @@ public class Targets2Pane extends GridPane implements ChildController {
      * @throws IOException
      *             FXMLファイルの読み込みに失敗した場合
      */
-    public Targets2Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Targets2Pane.fxml"), ar.get());
+    public TargetsPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("TargetsPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
@@ -78,7 +84,15 @@ public class Targets2Pane extends GridPane implements ChildController {
             // 1.disableプロパティのバインディング
             disableProperty().bind(controller.isRunning());
             
+            BooleanBinding is3Way = Bindings.createBooleanBinding(
+                    () -> controller.propCompareMenu.getValue().compareWay() == CompareWay.THREE_WAY,
+                    controller.propCompareMenu);
+            
+            targetSelectionPaneO.visibleProperty().bind(is3Way);
+            targetSelectionPaneO.managedProperty().bind(is3Way);
+            
             // 2.項目ごとの各種設定
+            targetSelectionPaneO.init(controller, this, Side3.O);
             targetSelectionPaneA.init(controller, this, Side3.A);
             targetSelectionPaneB.init(controller, this, Side3.B);
             editComparisonPane.init(controller);

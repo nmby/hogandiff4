@@ -124,7 +124,15 @@ public class SettingKeys {
             decodeNotSupported("cannot decode."),
             false);
     
-    /** 今回の実行におけるコマンドラインパラメータのパス1 */
+    /** 今回の実行におけるコマンドラインパラメータのパスO */
+    public static final Key<Path> CURR_ARG_PATH_O = new Key<>(
+            "current.argPathO",
+            () -> null,
+            Path::toString,
+            Path::of,
+            false);
+    
+    /** 今回の実行におけるコマンドラインパラメータのパスA */
     public static final Key<Path> CURR_ARG_PATH_A = new Key<>(
             "current.argPathA",
             () -> null,
@@ -132,7 +140,7 @@ public class SettingKeys {
             Path::of,
             false);
     
-    /** 今回の実行におけるコマンドラインパラメータのパス2 */
+    /** 今回の実行におけるコマンドラインパラメータのパスB */
     public static final Key<Path> CURR_ARG_PATH_B = new Key<>(
             "current.argPathB",
             () -> null,
@@ -142,7 +150,7 @@ public class SettingKeys {
     
     /** {@link #CURR_ARG_PATH_A}, {@link #CURR_ARG_PATH_B} のペア */
     public static final Triple<Key<Path>> CURR_ARG_PATHS = new Triple<>(
-            null,
+            CURR_ARG_PATH_O,
             CURR_ARG_PATH_A,
             CURR_ARG_PATH_B);
     
