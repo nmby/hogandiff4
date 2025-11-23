@@ -25,7 +25,6 @@ public class Row4Pane extends HBox implements ChildController {
     // [instance members] ******************************************************
     
     private final AppResource ar = AppMain.appResource;
-    private final double originalHeight = AppMain.STAGE_HEIGHT_OPEN - AppMain.STAGE_HEIGHT_CLOSE;
     
     @FXML
     private SettingsPane1 settingsPane1;
@@ -58,7 +57,8 @@ public class Row4Pane extends HBox implements ChildController {
         Objects.requireNonNull(controller);
         
         // 1.disableプロパティのバインディング
-        setVisible2(controller.propShowSettings.getValue());
+        visibleProperty().bind(controller.propShowSettings);
+        managedProperty().bind(controller.propShowSettings);
         
         // 2.項目ごとの各種設定
         settingsPane1.init(controller);
@@ -67,26 +67,5 @@ public class Row4Pane extends HBox implements ChildController {
         // 3.初期値の設定
         
         // 4.値変更時のイベントハンドラの設定
-    }
-    
-    /**
-     * このコンポーネントの本来の高さを返します。<br>
-     * 
-     * @return このコンポーネントの本来の高さ
-     */
-    public double originalHeight() {
-        return originalHeight;
-    }
-    
-    /**
-     * このコンポーネントの表示／非表示を指定します。<br>
-     * 
-     * @param visible
-     *            このコンポーネントを表示する場合は {@code true}
-     */
-    public void setVisible2(boolean visible) {
-        setVisible(visible);
-        setMaxHeight(visible ? USE_COMPUTED_SIZE : 0);
-        setMinHeight(visible ? USE_COMPUTED_SIZE : 0);
     }
 }
