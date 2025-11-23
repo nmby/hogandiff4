@@ -13,10 +13,12 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanExpression;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -104,6 +106,9 @@ public class MainController extends VBox {
     /** 設定エリアを表示するか */
     public final BooleanProperty propShowSettings = new SimpleBooleanProperty();
     
+    /** メインウィンドウの最小高さ */
+    public final SimpleDoubleProperty propMinHeight = new SimpleDoubleProperty();
+    
     private Task<Void> currentTask = null;
     
     /**
@@ -124,16 +129,6 @@ public class MainController extends VBox {
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
         
-        propShowSettings.addListener((_, _, newValue) -> {
-            if (newValue) {
-                AppMain.stage.setHeight(AppMain.stage.getHeight() + AppMain.STAGE_HEIGHT_OPEN - AppMain.STAGE_HEIGHT_CLOSE);
-                AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_OPEN);
-            } else {
-                AppMain.stage.setHeight(AppMain.stage.getHeight() - AppMain.STAGE_HEIGHT_OPEN + AppMain.STAGE_HEIGHT_CLOSE);
-                AppMain.stage.setMinHeight(AppMain.STAGE_HEIGHT_CLOSE);
-            }
-        });
-        
         propCompareMenu.addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropTriple.o().addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropTriple.a().addListener((_, _, _) -> updateActiveComparison());
@@ -144,6 +139,17 @@ public class MainController extends VBox {
         dirInfoPropTriple.o().addListener((_, _, _) -> updateActiveComparison());
         dirInfoPropTriple.a().addListener((_, _, _) -> updateActiveComparison());
         dirInfoPropTriple.b().addListener((_, _, _) -> updateActiveComparison());
+        
+        propMinHeight.bind(Bindings.createDoubleBinding(
+                () -> 241d
+                        + (propCompareMenu.getValue().compareWay() == CompareMenu.CompareWay.THREE_WAY ? 65d : 0d)
+                        + (propShowSettings.get() ? 186d : 0d),
+                propCompareMenu, propShowSettings));
+        
+        propMinHeight.addListener((_, oldValue, newValue) -> {
+            AppMain.stage.setHeight(AppMain.stage.getHeight() + newValue.doubleValue() - oldValue.doubleValue());
+            AppMain.stage.setMinHeight(newValue.doubleValue());
+        });
         
         // 3.初期値の設定
         

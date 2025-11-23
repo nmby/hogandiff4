@@ -95,6 +95,8 @@ public class AppMain extends Application {
                     getClass().getResource("gui/MainView.fxml"),
                     appResource.get());
             Parent root = loader.load();
+            MainController controller = loader.getController();
+            
             Scene scene = new Scene(root);
             String cssPath = getClass().getResource("gui/application.css").toExternalForm().replace(" ", "%20");
             root.getStylesheets().add(cssPath);
@@ -108,12 +110,7 @@ public class AppMain extends Application {
                             + "  -  "
                             + VersionMaster.APP_VERSION);
             
-            primaryStage.setMinHeight(
-                    settings.get(SettingKeys.SHOW_SETTINGS)
-                            ? STAGE_HEIGHT_OPEN
-                            : STAGE_HEIGHT_CLOSE);
             primaryStage.setMinWidth(STAGE_WIDTH);
-            
             if (settings.containsKey(SettingKeys.STAGE_HEIGHT)) {
                 primaryStage.setHeight(settings.get(SettingKeys.STAGE_HEIGHT));
             }
@@ -140,7 +137,6 @@ public class AppMain extends Application {
             primaryStage.show();
             VersionMaster.announceNewFeature2();
             
-            MainController controller = loader.getController();
             if (controller.isReady().getValue()) {
                 controller.updateActiveComparison();
                 controller.execute();
