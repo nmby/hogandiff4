@@ -107,6 +107,12 @@ public class MenuPane extends HBox implements ChildController {
                     compareWayToggleGroup.selectedToggleProperty(),
                     recursivelyCheckBox.selectedProperty()));
             
+            compareWayToggleGroup.selectedToggleProperty().addListener((_, oldValue, newValue) -> {
+                if (newValue == null) {
+                    oldValue.setSelected(true);
+                }
+            });
+            
             // 3.初期値の設定
             compareObjectToggleGroup.selectToggle(
                     switch (ar.settings().get(SettingKeys.CURR_MENU).compareObject()) {

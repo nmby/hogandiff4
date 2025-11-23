@@ -14,12 +14,25 @@
     -fx-padding: 0.0px 0.0px 3.0px 0.0px;
 }
 
-.targetSelectionPane {
+.targetSelectionPaneO {
+    -fx-background-color: rgb(255.0, 248.0, 219.0);
+    -fx-padding: 0.0px;
+}
+
+.targetSelectionPaneAB {
     -fx-background-color: rgb(219.0, 244.0, 231.0);
     -fx-padding: 0.0px;
 }
 
-.targetTitleLabel {
+.targetTitleLabelO {
+    -fx-font-size: 18.0px;
+    -fx-text-fill: white;
+    -fx-pref-width: 28.0px;
+    -fx-alignment: center;
+    -fx-background-color: rgb(16.5, 57.5, 35.0);
+}
+
+.targetTitleLabelAB {
     -fx-font-size: 18.0px;
     -fx-text-fill: white;
     -fx-pref-width: 28.0px;

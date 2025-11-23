@@ -260,6 +260,9 @@ public class TargetSelectionPane extends GridPane implements ChildController {
                 }
             }
             
+            getStyleClass().add(side3 == Side3.O ? "targetSelectionPaneO" : "targetSelectionPaneAB");
+            titleLabel.getStyleClass().add(side3 == Side3.O ? "targetTitleLabelO" : "targetTitleLabelAB");
+            
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "TargetSelectionPane#init-1");
             throw e;
