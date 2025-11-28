@@ -121,7 +121,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
     // ■ タスクステップ ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     
     /**
-     * 比較結果文字列をテキストファイルに保存します。<br>
+     * 比較結果文字列をテキストファイルに保存して表示します。<br>
      * 
      * @param workDir
      *            作業用フォルダ
@@ -135,7 +135,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      *             処理に失敗した場合
      */
     // CompareSheetsTask, CompareBooksTask, CompareDirsTask, CompareTreesTask
-    protected void saveResultText(
+    protected void saveAndShowResultText(
             Path workDir,
             String resultText,
             int progressBefore,
@@ -148,8 +148,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         assert progressBefore <= progressAfter;
         assert progressAfter <= PROGRESS_MAX;
         
+        Path textPath = null;
         try {
-            Path textPath = workDir.resolve("result.txt");
+            textPath = workDir.resolve("result.txt");
             
             updateProgress(progressBefore, PROGRESS_MAX);
             str.append("%s%n    - %s%n%n".formatted(Msg.APP_0030.get(), textPath));
@@ -169,6 +170,18 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             
         } catch (Exception e) {
             throw getApplicationException(e, Msg.APP_0040.get());
+        }
+        
+        try {
+            if (settings.get(SettingKeys.SHOW_TEXT_REPORT)) {
+                str.append(Msg.APP_0041.get()).append(BR).append(BR);
+                updateMessage(str.toString());
+                Desktop.getDesktop().open(textPath.toFile());
+            }
+            updateProgress(progressAfter, PROGRESS_MAX);
+            
+        } catch (Exception e) {
+            throw getApplicationException(e, Msg.APP_0042.get());
         }
     }
     
@@ -426,7 +439,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
+            if (settings.get(SettingKeys.SHOW_EXCEL_REPORT)) {
                 str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
@@ -477,7 +490,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
+            if (settings.get(SettingKeys.SHOW_EXCEL_REPORT)) {
                 str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
