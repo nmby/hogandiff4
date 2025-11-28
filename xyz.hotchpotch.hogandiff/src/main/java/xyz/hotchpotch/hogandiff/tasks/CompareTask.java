@@ -426,7 +426,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
+            if (settings.get(SettingKeys.SHOW_EXCEL_REPORT)) {
                 str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
@@ -477,7 +477,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         }
         
         try {
-            if (settings.get(SettingKeys.SHOW_RESULT_REPORT)) {
+            if (settings.get(SettingKeys.SHOW_EXCEL_REPORT)) {
                 str.append(Msg.APP_0220.get()).append(BR).append(BR);
                 updateMessage(str.toString());
                 Desktop.getDesktop().open(resultBookPath.toFile());
