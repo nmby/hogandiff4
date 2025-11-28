@@ -120,7 +120,7 @@
 						<Insets bottom="1.0" left="7.0" right="7.0" top="3.0" />
 					</GridPane.margin>
 				</CheckBox>
-				<CheckBox fx:id="showResultTextCheckBox"
+				<CheckBox fx:id="showExcelReportCheckBox"
 					maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
 					minWidth="-Infinity" mnemonicParsing="false" selected="true"
 					text="%FXML_0180" GridPane.columnIndex="1" GridPane.rowIndex="1">
