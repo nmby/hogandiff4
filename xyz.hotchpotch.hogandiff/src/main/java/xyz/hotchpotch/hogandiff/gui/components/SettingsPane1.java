@@ -57,6 +57,9 @@ public class SettingsPane1 extends VBox implements ChildController {
     private CheckBox showExcelReportCheckBox;
     
     @FXML
+    private CheckBox showTextReportCheckBox;
+    
+    @FXML
     private CheckBox exitWhenFinishedCheckBox;
     
     @FXML
@@ -108,6 +111,7 @@ public class SettingsPane1 extends VBox implements ChildController {
             applicator.accept(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox::setSelected);
             applicator.accept(SettingKeys.SHOW_PAINTED_SHEETS, showPaintedSheetsCheckBox::setSelected);
             applicator.accept(SettingKeys.SHOW_EXCEL_REPORT, showExcelReportCheckBox::setSelected);
+            applicator.accept(SettingKeys.SHOW_TEXT_REPORT, showTextReportCheckBox::setSelected);
             applicator.accept(SettingKeys.EXIT_WHEN_FINISHED, exitWhenFinishedCheckBox::setSelected);
             applicator.accept(SettingKeys.PRIORITIZE_SPEED, prioritizeSpeedRadioButton::setSelected);
             
@@ -119,6 +123,7 @@ public class SettingsPane1 extends VBox implements ChildController {
             addListener.accept(considerColumnGapsCheckBox, SettingKeys.CONSIDER_COLUMN_GAPS);
             addListener.accept(showPaintedSheetsCheckBox, SettingKeys.SHOW_PAINTED_SHEETS);
             addListener.accept(showExcelReportCheckBox, SettingKeys.SHOW_EXCEL_REPORT);
+            addListener.accept(showTextReportCheckBox, SettingKeys.SHOW_TEXT_REPORT);
             addListener.accept(exitWhenFinishedCheckBox, SettingKeys.EXIT_WHEN_FINISHED);
             
             compareValuesOrFormulas.selectedToggleProperty().addListener((_, _, _) -> ar

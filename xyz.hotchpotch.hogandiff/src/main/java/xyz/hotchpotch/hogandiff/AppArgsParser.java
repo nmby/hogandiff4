@@ -42,6 +42,8 @@ public class AppArgsParser {
             + SettingKeys.SHOW_PAINTED_SHEETS.ifNotSetSupplier().get() + BR
             + "    --show-excel-report=[true|false]     : default value is "
             + SettingKeys.SHOW_EXCEL_REPORT.ifNotSetSupplier().get() + BR
+            + "    --show-text-report=[true|false]     : default value is "
+            + SettingKeys.SHOW_TEXT_REPORT.ifNotSetSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
             + SettingKeys.EXIT_WHEN_FINISHED.ifNotSetSupplier().get() + BR
             + "    --prioritize-speed=[true|false]      : default value is "
@@ -55,6 +57,7 @@ public class AppArgsParser {
             "--enable-fuzzy-matching", SettingKeys.ENABLE_FUZZY_MATCHING,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
             "--show-excel-report", SettingKeys.SHOW_EXCEL_REPORT,
+            "--show-text-report", SettingKeys.SHOW_TEXT_REPORT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
             "--prioritize-speed", SettingKeys.PRIORITIZE_SPEED);
     

@@ -290,8 +290,16 @@ public class SettingKeys {
     
     /** レポートオプション：比較結果レポート（Excelブック）を表示するか */
     public static final Key<Boolean> SHOW_EXCEL_REPORT = new Key<>(
-            "report.showExcelReport", // 互換性のためキー文字列は変更しない
+            "report.showExcelReport",
             () -> true,
+            String::valueOf,
+            Boolean::valueOf,
+            true);
+    
+    /** レポートオプション：比較結果レポート（テキストファイル）を表示するか */
+    public static final Key<Boolean> SHOW_TEXT_REPORT = new Key<>(
+            "report.showTextReport",
+            () -> false,
             String::valueOf,
             Boolean::valueOf,
             true);
