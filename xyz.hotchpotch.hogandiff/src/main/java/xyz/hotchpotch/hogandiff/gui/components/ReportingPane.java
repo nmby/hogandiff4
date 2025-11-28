@@ -41,7 +41,7 @@ public class ReportingPane extends VBox implements ChildController {
     private Separator reportingSeparator;
     
     private ScrollBar scrollBar;
-    private MainController parent;
+    private MainController controller;
     private double startY;
     private double startHeight;
     private double minHeight;
@@ -59,12 +59,19 @@ public class ReportingPane extends VBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
-            this.parent = parent;
+            this.controller = controller;
             
             // 1.disableプロパティのバインディング
             
@@ -72,7 +79,7 @@ public class ReportingPane extends VBox implements ChildController {
             reportingSeparator.setOnMousePressed(event -> {
                 startY = event.getScreenY();
                 startHeight = AppMain.stage.getHeight();
-                minHeight = parent.showSettings().get()
+                minHeight = controller.showSettings().get()
                         ? AppMain.STAGE_HEIGHT_OPEN
                         : AppMain.STAGE_HEIGHT_CLOSE;
             });
@@ -118,7 +125,7 @@ public class ReportingPane extends VBox implements ChildController {
                                 if (newValue.doubleValue() == 0d
                                         && oldValue.doubleValue() == bar.getMax()
                                         && !bar.pressedProperty().get()
-                                        && parent.isRunning().get()) {
+                                        && controller.isRunning().get()) {
                                     bar.setValue(bar.getMax());
                                 }
                             });

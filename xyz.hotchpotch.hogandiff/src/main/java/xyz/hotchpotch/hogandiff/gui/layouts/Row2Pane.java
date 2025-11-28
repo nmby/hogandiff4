@@ -11,9 +11,8 @@ import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
-import xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane;
 import xyz.hotchpotch.hogandiff.gui.components.ExecutePane;
-import xyz.hotchpotch.hogandiff.gui.components.TargetsPane;
+import xyz.hotchpotch.hogandiff.gui.components.Targets2Pane;
 
 /**
  * メインビュー二段目の画面部品です。<br>
@@ -29,10 +28,7 @@ public class Row2Pane extends HBox implements ChildController {
     private final AppResource ar = AppMain.appResource;
     
     @FXML
-    private TargetsPane targetsPane;
-    
-    @FXML
-    private EditComparisonPane editComparisonPane;
+    private Targets2Pane targetsPane;
     
     @FXML
     private ExecutePane executePane;
@@ -50,16 +46,22 @@ public class Row2Pane extends HBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         // 1.disableプロパティのバインディング
         
         // 2.項目ごとの各種設定
-        targetsPane.init(parent);
-        editComparisonPane.init(parent);
-        executePane.init(parent);
+        targetsPane.init(controller);
+        executePane.init(controller);
         
         // 3.初期値の設定
         

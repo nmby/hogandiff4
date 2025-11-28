@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
 
@@ -62,9 +63,11 @@ public class AppArgsParser {
      * アプリケーション実行時引数の一部でも解析できない部分がある場合は、
      * 空の {@link Optional} を返します。<br>
      * 
-     * @param args アプリケーション実行時引数
+     * @param args
+     *            アプリケーション実行時引数
      * @return アプリケーション設定。解析できない場合は空の {@link Optional}
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static Optional<Settings> parseArgs(String[] args) {
         Objects.requireNonNull(args);
@@ -92,10 +95,12 @@ public class AppArgsParser {
         
         Settings.Builder builder = Settings.builder().set(
                 SettingKeys.CURR_MENU,
-                Files.isDirectory(pathA) ? AppMenu.COMPARE_DIRS : AppMenu.COMPARE_BOOKS);
+                new CompareMenu(
+                        Files.isDirectory(pathA) ? CompareObject.COMPARE_DIRS : CompareObject.COMPARE_BOOKS,
+                        CompareMenu.CompareWay.TWO_WAY));
         
-        builder.set(SettingKeys.CURR_ARG_PATH1, pathA);
-        builder.set(SettingKeys.CURR_ARG_PATH2, pathB);
+        builder.set(SettingKeys.CURR_ARG_PATH_A, pathA);
+        builder.set(SettingKeys.CURR_ARG_PATH_B, pathB);
         
         // 次に、第三以降の引数を解析する。
         try {

@@ -70,15 +70,22 @@ public class GooglePane extends HBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disabled/visibleプロパティのバインディング
             BooleanBinding isCredentialNull = Bindings.createBooleanBinding(
-                    () -> parent.googleCredential.getValue() == null,
-                    parent.googleCredential);
+                    () -> controller.propGoogleCredential.getValue() == null,
+                    controller.propGoogleCredential);
             
             googleImageView.visibleProperty().bind(isCredentialNull);
             googleImageView.managedProperty().bind(isCredentialNull);
@@ -99,7 +106,7 @@ public class GooglePane extends HBox implements ChildController {
             
             profileImageView.imageProperty().bind(Bindings.createObjectBinding(
                     () -> {
-                        GoogleCredential credential = parent.googleCredential.getValue();
+                        GoogleCredential credential = controller.propGoogleCredential.getValue();
                         if (credential != null) {
                             String picUrl = credential.driveUser().getPhotoLink();
                             if (picUrl != null) {
@@ -108,10 +115,10 @@ public class GooglePane extends HBox implements ChildController {
                         }
                         return null;
                     },
-                    parent.googleCredential));
+                    controller.propGoogleCredential));
             
             connectGoogleButton.setOnAction(_ -> {
-                Task<GoogleCredential> connectTask = new ConnectGoogleTask(parent.googleCredential);
+                Task<GoogleCredential> connectTask = new ConnectGoogleTask(controller.propGoogleCredential);
                 Thread connectThread = new Thread(connectTask);
                 connectThread.setDaemon(true);
                 connectThread.start();
@@ -128,8 +135,8 @@ public class GooglePane extends HBox implements ChildController {
                 }
                 
                 try {
-                    parent.googleCredential.getValue().deleteCredential();
-                    parent.googleCredential.setValue(null);
+                    controller.propGoogleCredential.getValue().deleteCredential();
+                    controller.propGoogleCredential.setValue(null);
                     
                     Hyperlink link = UIUtil.createHyperlink("https://myaccount.google.com/connections");
                     VBox content = new VBox(10);
@@ -142,7 +149,7 @@ public class GooglePane extends HBox implements ChildController {
                     
                 } catch (GoogleHandlingException e) {
                     ErrorReporter.reportIfEnabled(e, "GooglePane#init-2");
-                    parent.googleCredential.setValue(null);
+                    controller.propGoogleCredential.setValue(null);
                     
                     Hyperlink link = UIUtil.createHyperlink("https://hogandiff.hotchpotch.xyz/inquiry");
                     VBox content = new VBox(10);
@@ -160,7 +167,7 @@ public class GooglePane extends HBox implements ChildController {
                 GoogleCredential credential = GoogleCredential.get(false);
                 Platform.runLater(() -> {
                     try {
-                        parent.googleCredential.setValue(credential);
+                        controller.propGoogleCredential.setValue(credential);
                     } catch (Exception e) {
                         ErrorReporter.reportIfEnabled(e, "GooglePane#init-3");
                         throw e;

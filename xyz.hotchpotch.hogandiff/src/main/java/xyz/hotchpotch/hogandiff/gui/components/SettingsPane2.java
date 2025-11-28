@@ -72,16 +72,23 @@ public class SettingsPane2 extends VBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             
             // 2.項目ごとの各種設定
-            googlePane.init(parent);
+            googlePane.init(controller);
             
             openWorkDirButton.setOnAction(openDir);
             changeWorkDirButton.setOnAction(changeDir);

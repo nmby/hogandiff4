@@ -12,8 +12,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
+import xyz.hotchpotch.hogandiff.CompareMenu;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareWay;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
@@ -63,28 +65,41 @@ public class MenuPane extends HBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             recursivelyCheckBox.disableProperty().bind(compareDirsRadioButton.selectedProperty().not());
             
             // 2.項目ごとの各種設定
-            parent.menuProp.bind(Bindings.createObjectBinding(
-                    () -> compareTarget.getSelectedToggle() == compareBooksRadioButton ? AppMenu.COMPARE_BOOKS
-                            : compareTarget.getSelectedToggle() == compareSheetsRadioButton ? AppMenu.COMPARE_SHEETS
-                                    : recursivelyCheckBox.isSelected()
-                                            ? AppMenu.COMPARE_TREES
-                                            : AppMenu.COMPARE_DIRS,
+            controller.propCompareMenu.bind(Bindings.createObjectBinding(
+                    () -> {
+                        CompareObject compareObject = compareTarget.getSelectedToggle() == compareBooksRadioButton
+                                ? CompareObject.COMPARE_BOOKS
+                                : compareTarget.getSelectedToggle() == compareSheetsRadioButton
+                                        ? CompareObject.COMPARE_SHEETS
+                                        : recursivelyCheckBox.isSelected()
+                                                ? CompareObject.COMPARE_TREES
+                                                : CompareObject.COMPARE_DIRS;
+                        CompareWay compareWay = CompareWay.TWO_WAY;
+                        return new CompareMenu(compareObject, compareWay);
+                    },
                     compareTarget.selectedToggleProperty(),
                     recursivelyCheckBox.selectedProperty()));
             
             // 3.初期値の設定
             compareTarget.selectToggle(
-                    switch (ar.settings().get(SettingKeys.CURR_MENU)) {
+                    switch (ar.settings().get(SettingKeys.CURR_MENU).compareObject()) {
                     case COMPARE_BOOKS -> compareBooksRadioButton;
                     case COMPARE_SHEETS -> compareSheetsRadioButton;
                     case COMPARE_DIRS -> compareDirsRadioButton;
@@ -96,7 +111,8 @@ public class MenuPane extends HBox implements ChildController {
                     ar.settings().get(SettingKeys.COMPARE_DIRS_RECURSIVELY));
             
             // 4.値変更時のイベントハンドラの設定
-            parent.menuProp.addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
+            controller.propCompareMenu
+                    .addListener((_, _, newValue) -> ar.changeSetting(SettingKeys.CURR_MENU, newValue));
             
             recursivelyCheckBox.selectedProperty()
                     .addListener((_, _, newValue) -> ar.changeSetting(

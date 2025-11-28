@@ -81,13 +81,20 @@ public class SettingsPane1 extends VBox implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         try {
             // 1.disableプロパティのバインディング
-            disableProperty().bind(parent.isRunning());
+            disableProperty().bind(controller.isRunning());
             
             // 2.項目ごとの各種設定
             
@@ -121,7 +128,7 @@ public class SettingsPane1 extends VBox implements ChildController {
             
             enableFuzzyMatchingCheckBox.setOnAction(_ -> {
                 ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
-                parent.updateActiveComparison();
+                controller.updateActiveComparison();
             });
             
         } catch (Exception e) {

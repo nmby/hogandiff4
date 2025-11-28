@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.function.IntUnaryOperator;
 
 import javafx.concurrent.Task;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.CompareMenu.CompareObject;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -418,7 +418,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
             creator.createResultBook(
                     resultBookPath,
                     tResult,
-                    settings.get(SettingKeys.CURR_MENU) == AppMenu.COMPARE_TREES);
+                    settings.get(SettingKeys.CURR_MENU).compareObject() == CompareObject.COMPARE_TREES);
             updateProgress(progressBefore + (progressAfter - progressBefore) * 4 / 5, PROGRESS_MAX);
             
         } catch (Exception e) {
@@ -557,15 +557,15 @@ import xyz.hotchpotch.hogandiff.util.Settings;
      */
     // AppTaskBase#paintSaveAndShowBooks, CompareSheetsTask
     protected boolean isSameBook() {
-        AppMenu menu = settings.get(SettingKeys.CURR_MENU);
+        CompareObject compareObject = settings.get(SettingKeys.CURR_MENU).compareObject();
         
-        return switch (menu) {
+        return switch (compareObject) {
         case COMPARE_SHEETS -> settings
                 .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentBookInfoPair().isIdentical();
         case COMPARE_BOOKS -> settings
                 .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentBookInfoPair().isIdentical();
     
-        default -> throw new IllegalStateException("not suitable for " + menu);
+        default -> throw new IllegalStateException("not suitable for " + compareObject);
         };
     }
     

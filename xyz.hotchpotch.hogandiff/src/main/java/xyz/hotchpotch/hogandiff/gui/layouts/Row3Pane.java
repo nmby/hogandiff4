@@ -47,15 +47,22 @@ public class Row3Pane extends StackPane implements ChildController {
         loader.load();
     }
     
-    @Override
-    public void init(MainController parent, Object... param) {
-        Objects.requireNonNull(parent);
+    /**
+     * この画面部品の内容を初期化します。<br>
+     * 
+     * @param controller
+     *            このアプリケーションのコントローラ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void init(MainController controller) {
+        Objects.requireNonNull(controller);
         
         // 1.disableプロパティのバインディング
         
         // 2.項目ごとの各種設定
-        reportingPane.init(parent);
-        togglePane.init(parent);
+        reportingPane.init(controller);
+        togglePane.init(controller);
         
         // 3.初期値の設定
         

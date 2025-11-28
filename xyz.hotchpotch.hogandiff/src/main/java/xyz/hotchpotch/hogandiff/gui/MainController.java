@@ -28,9 +28,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import xyz.hotchpotch.hogandiff.AppMain;
-import xyz.hotchpotch.hogandiff.AppMenu;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ApplicationException;
+import xyz.hotchpotch.hogandiff.CompareMenu;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
@@ -47,6 +47,7 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Triple;
 
 /**
  * このアプリケーションのコントローラです。<br>
@@ -58,6 +59,8 @@ public class MainController extends VBox {
     // [static members] ********************************************************
     
     // [instance members] ******************************************************
+    
+    private final AppResource ar = AppMain.appResource;
     
     @FXML
     private Row1Pane row1Pane;
@@ -74,28 +77,30 @@ public class MainController extends VBox {
     private final BooleanProperty isReady = new SimpleBooleanProperty(false);
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
     
-    private final AppResource ar = AppMain.appResource;
-    
     /** 現在選択されている比較メニュー */
-    public final Property<AppMenu> menuProp = new SimpleObjectProperty<>();
+    public final Property<CompareMenu> propCompareMenu = new SimpleObjectProperty<>();
     
-    /** シート名のペア */
-    public final Pair<StringProperty> sheetNamePropPair = Pair.of(
+    /** シート名のトリプル */
+    // TODO: エラー解消したら Pair -> Triple に変更する
+    public final Triple<StringProperty> sheetNamePropPair = new Triple<>(
+            new SimpleStringProperty(),
             new SimpleStringProperty(),
             new SimpleStringProperty());
     
-    /** Excelブック情報のペア */
-    public final Pair<Property<BookInfo>> bookInfoPropPair = Pair.of(
+    /** Excelブック情報のトリプル */
+    public final Triple<Property<BookInfo>> bookInfoPropPair = new Triple<>(
+            new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
-    /** フォルダ情報のペア */
-    public final Pair<Property<DirInfo>> dirInfoPropPair = Pair.of(
+    /** フォルダ情報のトリプル */
+    public final Triple<Property<DirInfo>> dirInfoPropPair = new Triple<>(
+            new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>(),
             new SimpleObjectProperty<>());
     
     /** Googleアカウント資格情報 */
-    public final Property<GoogleCredential> googleCredential = new SimpleObjectProperty<>();
+    public final Property<GoogleCredential> propGoogleCredential = new SimpleObjectProperty<>();
     
     private Task<Void> currentTask = null;
     
@@ -129,11 +134,14 @@ public class MainController extends VBox {
             }
         });
         
-        menuProp.addListener((_, _, _) -> updateActiveComparison());
+        propCompareMenu.addListener((_, _, _) -> updateActiveComparison());
+        sheetNamePropPair.o().addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.a().addListener((_, _, _) -> updateActiveComparison());
         sheetNamePropPair.b().addListener((_, _, _) -> updateActiveComparison());
+        bookInfoPropPair.o().addListener((_, _, _) -> updateActiveComparison());
         bookInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
         bookInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
+        dirInfoPropPair.o().addListener((_, _, _) -> updateActiveComparison());
         dirInfoPropPair.a().addListener((_, _, _) -> updateActiveComparison());
         dirInfoPropPair.b().addListener((_, _, _) -> updateActiveComparison());
         
@@ -151,44 +159,59 @@ public class MainController extends VBox {
      */
     public void updateActiveComparison() {
         try {
-            switch (menuProp.getValue()) {
-            case COMPARE_SHEETS -> updateSheetComparison();
-            case COMPARE_BOOKS -> updateBookComparison();
-            case COMPARE_DIRS -> updateDirComparison();
-            case COMPARE_TREES -> updateTreeComparison();
-            default -> throw new AssertionError();
+            CompareMenu menu = propCompareMenu.getValue();
+            
+            switch (menu.compareWay()) {
+            case TWO_WAY:
+                switch (menu.compareObject()) {
+                case COMPARE_SHEETS -> updateSheetComparison2();
+                case COMPARE_BOOKS -> updateBookComparison2();
+                case COMPARE_DIRS -> updateDirComparison2();
+                case COMPARE_TREES -> updateTreeComparison2();
+                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
+                }
+                break;
+            
+            case THREE_WAY:
+                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            
+            default:
+                throw new AssertionError("Unreachable code: " + menu.compareWay());
             }
+            
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "MainController#updateActiveComparison-1");
             throw e;
         }
     }
     
-    private void updateSheetComparison() {
-        Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
-        Pair<String> sheetNamePair = sheetNamePropPair.map(Property::getValue);
+    private void updateSheetComparison2() {
+        Triple<BookInfo> bookInfoTriple = bookInfoPropPair.map(Property::getValue);
+        Triple<String> sheetNameTriple = sheetNamePropPair.map(Property::getValue);
+        
         ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
-                bookInfoPair.isPaired() && sheetNamePair.isPaired()
-                        ? new PairingInfoBooks(bookInfoPair, List.of(sheetNamePair))
+                bookInfoTriple.hasAB() && sheetNameTriple.hasAB()
+                        ? new PairingInfoBooks(bookInfoTriple.toPairAB(), List.of(sheetNameTriple.toPairAB()))
                         : null);
     }
     
-    private void updateBookComparison() {
-        Pair<BookInfo> bookInfoPair = bookInfoPropPair.map(Property::getValue);
+    private void updateBookComparison2() {
+        Triple<BookInfo> bookInfoTriple = bookInfoPropPair.map(Property::getValue);
+        
         ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
-                bookInfoPair.isPaired()
+                bookInfoTriple.hasAB()
                         ? PairingInfoBooks.calculate(
-                                bookInfoPair,
+                                bookInfoTriple.toPairAB(),
                                 Factory.sheetNamesMatcher(ar.settings()))
                         : null);
     }
     
-    private void updateDirComparison() {
-        Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+    private void updateDirComparison2() {
+        Triple<DirInfo> dirInfoTriple = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
-                dirInfoPair.isPaired()
+                dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
-                                dirInfoPair,
+                                dirInfoTriple.toPairAB(),
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),
@@ -196,12 +219,12 @@ public class MainController extends VBox {
                         : null);
     }
     
-    private void updateTreeComparison() {
-        Pair<DirInfo> dirInfoPair = dirInfoPropPair.map(Property::getValue);
+    private void updateTreeComparison2() {
+        Triple<DirInfo> dirInfoTriple = dirInfoPropPair.map(Property::getValue);
         ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
-                dirInfoPair.isPaired()
+                dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
-                                dirInfoPair,
+                                dirInfoTriple.toPairAB(),
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),
@@ -249,38 +272,50 @@ public class MainController extends VBox {
     
     private boolean isPasswordUsed() {
         try {
-            AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+            CompareMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
             
-            Stream<Path> bookPathStream = switch (menu) {
-            case COMPARE_SHEETS -> {
-                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield bookPathPair.isIdentical()
-                        ? Stream.of(bookPathPair.a())
-                        : Stream.of(bookPathPair.a(), bookPathPair.b());
-            }
-            case COMPARE_BOOKS -> {
-                PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
-                Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-            }
-            case COMPARE_DIRS -> {
-                PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
-                yield bookPathStream(dirComparison);
-            }
-            case COMPARE_TREES -> {
-                PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                        .get(SettingKeys.CURR_TREE_COMPARE_INFO)
-                        .flatten();
-                yield flattenDirComparison.dirComparisons().values().stream()
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .flatMap(this::bookPathStream);
-            }
-            };
+            switch (menu.compareWay()) {
+            case TWO_WAY:
+                Stream<Path> bookPathStream = switch (menu.compareObject()) {
+                case COMPARE_SHEETS -> {
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                    yield bookPathPair.isIdentical()
+                            ? Stream.of(bookPathPair.a())
+                            : Stream.of(bookPathPair.a(), bookPathPair.b());
+                }
+                case COMPARE_BOOKS -> {
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
+                    yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
+                }
+                case COMPARE_DIRS -> {
+                    PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    yield bookPathStream(dirComparison);
+                }
+                case COMPARE_TREES -> {
+                    PairingInfoDirsFlatten flattenDirComparison = ar.settings()
+                            .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                            .flatten();
+                    yield flattenDirComparison.dirComparisons().values().stream()
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .flatMap(this::bookPathStream);
+                }
+                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
+                };
+                
+                Map<Path, String> readPasswords = ar.settings().get(
+                        SettingKeys.CURR_READ_PASSWORDS);
+                return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
             
-            Map<Path, String> readPasswords = ar.settings().get(SettingKeys.CURR_READ_PASSWORDS);
-            return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+            case THREE_WAY:
+                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            
+            default:
+                throw new AssertionError("Unreachable code: " + menu.compareWay());
+            }
+            
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "MainController#isPasswordUsed-1");
             throw e;
@@ -306,9 +341,9 @@ public class MainController extends VBox {
      *             必要な設定がなされておらず実行できない場合
      */
     public void execute() {
-        AppMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+        CompareMenu compareMenu = ar.settings().get(SettingKeys.CURR_MENU);
         
-        if (!menu.isValidTargets(ar.settings())) {
+        if (!compareMenu.isValidTargets(ar.settings())) {
             new Alert(
                     AlertType.WARNING,
                     Msg.APP_1180.get(),
@@ -331,7 +366,7 @@ public class MainController extends VBox {
             return;
         }
         
-        currentTask = menu.getTask(ar.settings());
+        currentTask = compareMenu.getTask(ar.settings());
         row3Pane.bind(currentTask);
         
         currentTask.setOnSucceeded(_ -> {
