@@ -78,7 +78,7 @@ public final class CompareTaskSheets extends CompareTask {
             
             // 4. 比較結果レポート（テキスト）の保存
             try {
-                saveResultText(workDir, bResult.toString(), 98, 99);
+                saveAndShowResultText(workDir, bResult.toString(), 98, 99);
             } catch (Exception e) {
                 if (failed == null) {
                     failed = e;

@@ -66,7 +66,7 @@ public final class CompareTaskTrees extends CompareTask {
             
             // 3. 比較結果レポート（テキスト）の保存
             try {
-                saveResultText(workDir, tResult.toString(), 97, 99);
+                saveAndShowResultText(workDir, tResult.toString(), 97, 99);
             } catch (Exception e) {
                 if (failed == null) {
                     failed = e;

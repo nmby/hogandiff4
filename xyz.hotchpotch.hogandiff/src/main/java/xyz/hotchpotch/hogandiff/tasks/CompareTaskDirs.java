@@ -75,7 +75,7 @@ public final class CompareTaskDirs extends CompareTask {
             
             // 4. 比較結果レポート（テキスト）の保存
             try {
-                saveResultText(workDir, dResult.toString(), 97, 99);
+                saveAndShowResultText(workDir, dResult.toString(), 97, 99);
             } catch (Exception e) {
                 if (failed == null) {
                     failed = e;
