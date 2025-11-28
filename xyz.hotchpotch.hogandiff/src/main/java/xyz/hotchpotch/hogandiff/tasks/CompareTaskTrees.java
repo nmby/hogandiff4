@@ -100,7 +100,7 @@ public final class CompareTaskTrees extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
+            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO_AB)
                     .flatten();
             
             str.append("%s%n[A] %s%n[B] %s%n".formatted(
@@ -134,7 +134,7 @@ public final class CompareTaskTrees extends CompareTask {
             str.append(Msg.APP_0330.get()).append(BR);
             updateMessage(str.toString());
             
-            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO)
+            PairingInfoDirsFlatten pairingInfoDirsFlatten = settings.get(SettingKeys.CURR_TREE_COMPARE_INFO_AB)
                     .flatten();
             
             Map<Pair<DirInfo>, Optional<ResultOfDirs>> dirResults = new HashMap<>();

@@ -194,7 +194,7 @@ public class MainController extends VBox {
         Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
         Triple<String> sheetNameTriple = sheetNamePropTriple.map(Property::getValue);
         
-        ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO,
+        ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO_AB,
                 bookInfoTriple.hasAB() && sheetNameTriple.hasAB()
                         ? new PairingInfoBooks(bookInfoTriple.toPairAB(), List.of(sheetNameTriple.toPairAB()))
                         : null);
@@ -203,7 +203,7 @@ public class MainController extends VBox {
     private void updateBookComparison2() {
         Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
         
-        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO,
+        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO_AB,
                 bookInfoTriple.hasAB()
                         ? PairingInfoBooks.calculate(
                                 bookInfoTriple.toPairAB(),
@@ -213,7 +213,7 @@ public class MainController extends VBox {
     
     private void updateDirComparison2() {
         Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
-        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO,
+        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO_AB,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
                                 dirInfoTriple.toPairAB(),
@@ -226,7 +226,7 @@ public class MainController extends VBox {
     
     private void updateTreeComparison2() {
         Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
-        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO,
+        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO_AB,
                 dirInfoTriple.hasAB()
                         ? PairingInfoDirs.calculate(
                                 dirInfoTriple.toPairAB(),
@@ -274,24 +274,24 @@ public class MainController extends VBox {
             case TWO_WAY:
                 Stream<Path> bookPathStream = switch (menu.compareObject()) {
                 case COMPARE_SHEETS -> {
-                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
                     Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
                     yield bookPathPair.isIdentical()
                             ? Stream.of(bookPathPair.a())
                             : Stream.of(bookPathPair.a(), bookPathPair.b());
                 }
                 case COMPARE_BOOKS -> {
-                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB);
                     Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
                     yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
                 }
                 case COMPARE_DIRS -> {
-                    PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
                     yield bookPathStream(dirComparison);
                 }
                 case COMPARE_TREES -> {
                     PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                            .get(SettingKeys.CURR_TREE_COMPARE_INFO)
+                            .get(SettingKeys.CURR_TREE_COMPARE_INFO_AB)
                             .flatten();
                     yield flattenDirComparison.dirComparisons().values().stream()
                             .filter(Optional::isPresent)

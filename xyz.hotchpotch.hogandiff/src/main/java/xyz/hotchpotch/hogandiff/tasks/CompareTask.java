@@ -574,9 +574,9 @@ import xyz.hotchpotch.hogandiff.util.Settings;
         
         return switch (compareObject) {
         case COMPARE_SHEETS -> settings
-                .get(SettingKeys.CURR_SHEET_COMPARE_INFO).parentBookInfoPair().isIdentical();
+                .get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB).parentBookInfoPair().isIdentical();
         case COMPARE_BOOKS -> settings
-                .get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentBookInfoPair().isIdentical();
+                .get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB).parentBookInfoPair().isIdentical();
     
         default -> throw new IllegalStateException("not suitable for " + compareObject);
         };

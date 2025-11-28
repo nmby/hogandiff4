@@ -59,7 +59,7 @@ public final class CompareTaskSheets extends CompareTask {
             
             // 2. 差分箇所への着色と表示
             try {
-                PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
                 paintSaveAndShowBook(workDir, pairingInfoBooks.parentBookInfoPair(), bResult, 75, 95);
             } catch (Exception e) {
                 failed = e;
@@ -112,7 +112,7 @@ public final class CompareTaskSheets extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
             Pair<String> dispPathPair = pairingInfoBooks.parentBookInfoPair().map(BookInfo::dispPathInfo);
             Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
             
@@ -142,7 +142,7 @@ public final class CompareTaskSheets extends CompareTask {
             str.append(Msg.APP_0180.get()).append(BR);
             updateMessage(str.toString());
             
-            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+            PairingInfoBooks pairingInfoBooks = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
             Pair<BookInfo> bookInfoPair = pairingInfoBooks.parentBookInfoPair();
             Pair<String> sheetNamePair = pairingInfoBooks.childSheetNamePairs().get(0);
             

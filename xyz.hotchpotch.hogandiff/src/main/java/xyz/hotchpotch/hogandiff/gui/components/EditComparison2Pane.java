@@ -106,29 +106,29 @@ public class EditComparison2Pane extends AnchorPane implements ChildController {
             case TWO_WAY:
                 switch (menu.compareObject()) {
                 case COMPARE_BOOKS: {
-                    PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO);
+                    PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB);
                     EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);
                     Optional<PairingInfoBooks> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO, modified.get());
+                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO_AB, modified.get());
                     }
                     return;
                 }
                 case COMPARE_DIRS: {
-                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO);
+                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
                     EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
                     Optional<PairingInfoDirs> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO, modified.get());
+                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO_AB, modified.get());
                     }
                     return;
                 }
                 case COMPARE_TREES: {
-                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO);
+                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFO_AB);
                     EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
                     Optional<PairingInfoDirs> modified = dialog.showAndWait();
                     if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO, modified.get());
+                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO_AB, modified.get());
                     }
                     return;
                 }

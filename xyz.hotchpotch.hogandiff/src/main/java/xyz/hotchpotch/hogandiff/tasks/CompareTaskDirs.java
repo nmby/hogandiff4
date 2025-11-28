@@ -58,7 +58,7 @@ public final class CompareTaskDirs extends CompareTask {
             // 2. フォルダ同士の比較
             ResultOfDirs dResult = compareDirs(outputDirPair, 5, 93);
             
-            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
             Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
             ResultOfTrees tResult = new ResultOfTrees(
                     pairingInfoDirs.flatten(),
@@ -109,7 +109,7 @@ public final class CompareTaskDirs extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
             Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
             List<Pair<BookInfo>> bookInfoPairs = pairingInfoDirs.childBookInfoPairs();
             
@@ -138,7 +138,7 @@ public final class CompareTaskDirs extends CompareTask {
     private Pair<Path> createOutputDirs(Path workDir)
             throws ApplicationException {
         
-        PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+        PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
         Pair<DirInfo> dirInfoPair = pairingInfoDirs.parentDirInfoPair();
         Pair<Path> outputDirPair = null;
         
@@ -163,7 +163,7 @@ public final class CompareTaskDirs extends CompareTask {
         try {
             updateProgress(progressBefore, PROGRESS_MAX);
             
-            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO);
+            PairingInfoDirs pairingInfoDirs = settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
             
             if (0 < pairingInfoDirs.childBookInfoPairs().size()) {
                 str.append(BR).append(Msg.APP_0260.get()).append(BR);

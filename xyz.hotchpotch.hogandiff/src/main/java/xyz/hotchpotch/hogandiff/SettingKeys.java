@@ -155,32 +155,32 @@ public class SettingKeys {
             CURR_ARG_PATH_B);
     
     /** 今回の実行におけるシート比較情報 */
-    public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO = new Key<>(
-            "current.sheetComparison",
+    public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO_AB = new Key<>(
+            "current.sheetCompareInfoAB",
             () -> null,
             PairingInfoBooks::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるExcelブック比較情報 */
-    public static final Key<PairingInfoBooks> CURR_BOOK_COMPARE_INFO = new Key<>(
-            "current.bookComparison",
+    public static final Key<PairingInfoBooks> CURR_BOOK_COMPARE_INFO_AB = new Key<>(
+            "current.bookCompareInfoAB",
             () -> null,
             PairingInfoBooks::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダ比較情報 */
-    public static final Key<PairingInfoDirs> CURR_DIR_COMPARE_INFO = new Key<>(
-            "current.dirComparison",
+    public static final Key<PairingInfoDirs> CURR_DIR_COMPARE_INFO_AB = new Key<>(
+            "current.dirCompareInfoAB",
             () -> null,
             PairingInfoDirs::toString,
             decodeNotSupported("cannnot decode."),
             false);
     
     /** 今回の実行におけるフォルダツリー比較情報 */
-    public static final Key<PairingInfoDirs> CURR_TREE_COMPARE_INFO = new Key<>(
-            "current.treeComparison",
+    public static final Key<PairingInfoDirs> CURR_TREE_COMPARE_INFO_AB = new Key<>(
+            "current.treeCompareInfoAB",
             () -> null,
             PairingInfoDirs::toString,
             decodeNotSupported("cannnot decode."),

@@ -110,13 +110,13 @@ public record CompareMenu(
         case TWO_WAY:
             return switch (compareObject) {
             case COMPARE_SHEETS -> {
-                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO);
+                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
                 yield !bookComparison.parentBookInfoPair().isIdentical()
                         || !bookComparison.childSheetNamePairs().get(0).isIdentical();
             }
-            case COMPARE_BOOKS -> !settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO).parentBookInfoPair().isIdentical();
-            case COMPARE_DIRS -> !settings.get(SettingKeys.CURR_DIR_COMPARE_INFO).parentDirInfoPair().isIdentical();
-            case COMPARE_TREES -> !settings.get(SettingKeys.CURR_TREE_COMPARE_INFO).parentDirInfoPair().isIdentical();
+            case COMPARE_BOOKS -> !settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB).parentBookInfoPair().isIdentical();
+            case COMPARE_DIRS -> !settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB).parentDirInfoPair().isIdentical();
+            case COMPARE_TREES -> !settings.get(SettingKeys.CURR_TREE_COMPARE_INFO_AB).parentDirInfoPair().isIdentical();
             default -> throw new AssertionError("Unreachable code: " + compareObject);
             };
         
