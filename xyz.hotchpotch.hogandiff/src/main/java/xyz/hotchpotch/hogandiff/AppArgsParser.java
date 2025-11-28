@@ -40,7 +40,7 @@ public class AppArgsParser {
             + SettingKeys.ENABLE_FUZZY_MATCHING.ifNotSetSupplier().get() + BR
             + "    --show-painted-sheets=[true|false]   : default value is "
             + SettingKeys.SHOW_PAINTED_SHEETS.ifNotSetSupplier().get() + BR
-            + "    --show-result-text=[true|false]      : default value is "
+            + "    --show-excel-report=[true|false]     : default value is "
             + SettingKeys.SHOW_EXCEL_REPORT.ifNotSetSupplier().get() + BR
             + "    --exit-when-finished=[true|false]    : default value is "
             + SettingKeys.EXIT_WHEN_FINISHED.ifNotSetSupplier().get() + BR
@@ -54,7 +54,7 @@ public class AppArgsParser {
             "--compare-on-formulas", SettingKeys.COMPARE_ON_FORMULA_STRING,
             "--enable-fuzzy-matching", SettingKeys.ENABLE_FUZZY_MATCHING,
             "--show-painted-sheets", SettingKeys.SHOW_PAINTED_SHEETS,
-            "--show-result-text", SettingKeys.SHOW_EXCEL_REPORT,
+            "--show-excel-report", SettingKeys.SHOW_EXCEL_REPORT,
             "--exit-when-finished", SettingKeys.EXIT_WHEN_FINISHED,
             "--prioritize-speed", SettingKeys.PRIORITIZE_SPEED);
     
