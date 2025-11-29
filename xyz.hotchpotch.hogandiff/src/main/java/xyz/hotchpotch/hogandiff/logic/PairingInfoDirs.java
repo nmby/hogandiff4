@@ -15,11 +15,16 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * フォルダ比較情報を表す不変クラスです。<br>
  * 
- * @param parentDirInfoPair    親フォルダ情報
- * @param childDirInfoPairs    子フォルダ情報の組み合わせ
- * @param childDirComparisons  子フォルダ比較情報
- * @param childBookInfoPairs   子Excelブックパスの組み合わせ
- * @param childBookComparisons 子Excelブック比較情報
+ * @param parentDirInfoPair
+ *            親フォルダ情報
+ * @param childDirInfoPairs
+ *            子フォルダ情報の組み合わせ
+ * @param childDirComparisons
+ *            子フォルダ比較情報
+ * @param childBookInfoPairs
+ *            子Excelブックパスの組み合わせ
+ * @param childBookComparisons
+ *            子Excelブック比較情報
  * @author nmby
  */
 public final record PairingInfoDirs(
@@ -35,9 +40,12 @@ public final record PairingInfoDirs(
     /**
      * 階層状の {@link PairingInfoDirs} の内容を一層に平坦化した情報を保持するレコードです。<br>
      * 
-     * @param parentDirInfoPair 比較対象フォルダ情報
-     * @param dirInfoPairs      子フォルダ情報
-     * @param dirComparisons    子フォルダ比較情報
+     * @param parentDirInfoPair
+     *            比較対象フォルダ情報
+     * @param dirInfoPairs
+     *            子フォルダ情報
+     * @param dirComparisons
+     *            子フォルダ比較情報
      */
     public static record PairingInfoDirsFlatten(
             Pair<DirInfo> parentDirInfoPair,
@@ -53,13 +61,19 @@ public final record PairingInfoDirs(
     /**
      * 与えられたマッチャーを使用して新たな {@link PairingInfoDirs} インスタンスを生成します。<br>
      * 
-     * @param parentDirInfoPair 比較対象フォルダ情報
-     * @param dirInfosMatcher   フォルダ情報の組み合わせを決めるマッチャー
-     * @param bookPathsMatcher  Excelブックパスの組み合わせを決めるマッチャー
-     * @param sheetNamesMatcher シート名の組み合わせを決めるマッチャー
-     * @param readPasswords     読み取りパスワード
+     * @param parentDirInfoPair
+     *            比較対象フォルダ情報
+     * @param dirInfosMatcher
+     *            フォルダ情報の組み合わせを決めるマッチャー
+     * @param bookPathsMatcher
+     *            Excelブックパスの組み合わせを決めるマッチャー
+     * @param sheetNamesMatcher
+     *            シート名の組み合わせを決めるマッチャー
+     * @param readPasswords
+     *            読み取りパスワード
      * @return 新たなインスタンス
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static PairingInfoDirs calculate(
             Pair<DirInfo> parentDirInfoPair,
@@ -136,12 +150,18 @@ public final record PairingInfoDirs(
     /**
      * コンストラクタ
      * 
-     * @param parentDirInfoPair    親フォルダ情報
-     * @param childDirInfoPairs    子フォルダ情報の組み合わせ
-     * @param childDirComparisons  子フォルダ比較情報
-     * @param childBookInfoPairs   子Excelブックパスの組み合わせ
-     * @param childBookComparisons 子Excelブック比較情報
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param parentDirInfoPair
+     *            親フォルダ情報
+     * @param childDirInfoPairs
+     *            子フォルダ情報の組み合わせ
+     * @param childDirComparisons
+     *            子フォルダ比較情報
+     * @param childBookInfoPairs
+     *            子Excelブックパスの組み合わせ
+     * @param childBookComparisons
+     *            子Excelブック比較情報
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public PairingInfoDirs {
         Objects.requireNonNull(parentDirInfoPair);
@@ -188,5 +208,10 @@ public final record PairingInfoDirs(
             accDirComparisons.put(childDirInfoPair, childDirComparison);
             childDirComparison.ifPresent(info -> gather(info, accDirInfoPairs, accDirComparisons));
         }
+    }
+    
+    @Override
+    public boolean isPaired() {
+        return parentDirInfoPair.isPaired();
     }
 }

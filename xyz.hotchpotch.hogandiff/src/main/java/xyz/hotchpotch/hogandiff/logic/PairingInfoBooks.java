@@ -10,8 +10,10 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
 /**
  * Excelブック比較情報を表す不変クラスです。<br>
  * 
- * @param parentBookInfoPair  親Excelブック情報
- * @param childSheetNamePairs 子シート名の組み合わせ
+ * @param parentBookInfoPair
+ *            親Excelブック情報
+ * @param childSheetNamePairs
+ *            子シート名の組み合わせ
  * @author nmby
  */
 public final record PairingInfoBooks(
@@ -24,11 +26,15 @@ public final record PairingInfoBooks(
     /**
      * 与えられたマッチャーを使用して新たな {@link PairingInfoBooks} インスタンスを生成します。<br>
      * 
-     * @param parentBookInfoPair 比較対象Excelブックの情報
-     * @param sheetNamesMatcher  シート名の組み合わせを決めるマッチャー
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param parentBookInfoPair
+     *            比較対象Excelブックの情報
+     * @param sheetNamesMatcher
+     *            シート名の組み合わせを決めるマッチャー
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      * @return 新たなインスタンス
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public static PairingInfoBooks calculate(
             Pair<BookInfo> parentBookInfoPair,
@@ -65,14 +71,22 @@ public final record PairingInfoBooks(
     /**
      * コンストラクタ
      * 
-     * @param parentBookInfoPair  Excelブック情報
-     * @param childSheetNamePairs シート名の組み合わせ
-     * @throws NullPointerException パラメータが {@code null} の場合
+     * @param parentBookInfoPair
+     *            Excelブック情報
+     * @param childSheetNamePairs
+     *            シート名の組み合わせ
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public PairingInfoBooks {
         Objects.requireNonNull(parentBookInfoPair);
         Objects.requireNonNull(childSheetNamePairs);
         
         childSheetNamePairs = List.copyOf(childSheetNamePairs);
+    }
+    
+    @Override
+    public boolean isPaired() {
+        return parentBookInfoPair.isPaired();
     }
 }
