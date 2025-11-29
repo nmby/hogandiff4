@@ -148,13 +148,16 @@ public class SettingKeys {
             Path::of,
             false);
     
-    /** {@link #CURR_ARG_PATH_A}, {@link #CURR_ARG_PATH_B} のペア */
+    /**
+     * {@link #CURR_ARG_PATH_O}, {@link #CURR_ARG_PATH_A},
+     * {@link #CURR_ARG_PATH_B} のトリプル
+     */
     public static final Triple<Key<Path>> CURR_ARG_PATHS = new Triple<>(
             CURR_ARG_PATH_O,
             CURR_ARG_PATH_A,
             CURR_ARG_PATH_B);
     
-    /** 今回の実行におけるシート比較情報 */
+    /** 今回の実行におけるシート比較情報AB */
     public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO_AB = new Key<>(
             "current.sheetCompareInfoAB",
             () -> null,
@@ -162,7 +165,32 @@ public class SettingKeys {
             decodeNotSupported("cannnot decode."),
             false);
     
-    /** 今回の実行におけるExcelブック比較情報 */
+    /** 今回の実行におけるシート比較情報OA */
+    public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO_OA = new Key<>(
+            "current.sheetCompareInfoOA",
+            () -> null,
+            PairingInfoBooks::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /** 今回の実行におけるシート比較情報OB */
+    public static final Key<PairingInfoBooks> CURR_SHEET_COMPARE_INFO_OB = new Key<>(
+            "current.sheetCompareInfoOB",
+            () -> null,
+            PairingInfoBooks::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /**
+     * {@link #CURR_SHEET_COMPARE_INFO_AB}, {@link #CURR_SHEET_COMPARE_INFO_OA},
+     * {@link #CURR_SHEET_COMPARE_INFO_OB} のトリプル
+     */
+    public static final Triple<Key<PairingInfoBooks>> CURR_SHEET_COMPARE_INFOS = new Triple<>(
+            CURR_SHEET_COMPARE_INFO_AB,
+            CURR_SHEET_COMPARE_INFO_OA,
+            CURR_SHEET_COMPARE_INFO_OB);
+    
+    /** 今回の実行におけるExcelブック比較情報AB */
     public static final Key<PairingInfoBooks> CURR_BOOK_COMPARE_INFO_AB = new Key<>(
             "current.bookCompareInfoAB",
             () -> null,
@@ -170,7 +198,32 @@ public class SettingKeys {
             decodeNotSupported("cannnot decode."),
             false);
     
-    /** 今回の実行におけるフォルダ比較情報 */
+    /** 今回の実行におけるExcelブック比較情報OA */
+    public static final Key<PairingInfoBooks> CURR_BOOK_COMPARE_INFO_OA = new Key<>(
+            "current.bookCompareInfoOA",
+            () -> null,
+            PairingInfoBooks::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /** 今回の実行におけるExcelブック比較情報OB */
+    public static final Key<PairingInfoBooks> CURR_BOOK_COMPARE_INFO_OB = new Key<>(
+            "current.bookCompareInfoOB",
+            () -> null,
+            PairingInfoBooks::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /**
+     * {@link #CURR_BOOK_COMPARE_INFO_AB}, {@link #CURR_BOOK_COMPARE_INFO_OA},
+     * {@link #CURR_BOOK_COMPARE_INFO_OB} のトリプル
+     */
+    public static final Triple<Key<PairingInfoBooks>> CURR_BOOK_COMPARE_INFOS = new Triple<>(
+            CURR_BOOK_COMPARE_INFO_AB,
+            CURR_BOOK_COMPARE_INFO_OA,
+            CURR_BOOK_COMPARE_INFO_OB);
+    
+    /** 今回の実行におけるフォルダ比較情報AB */
     public static final Key<PairingInfoDirs> CURR_DIR_COMPARE_INFO_AB = new Key<>(
             "current.dirCompareInfoAB",
             () -> null,
@@ -178,13 +231,63 @@ public class SettingKeys {
             decodeNotSupported("cannnot decode."),
             false);
     
-    /** 今回の実行におけるフォルダツリー比較情報 */
+    /** 今回の実行におけるフォルダ比較情報OA */
+    public static final Key<PairingInfoDirs> CURR_DIR_COMPARE_INFO_OA = new Key<>(
+            "current.dirCompareInfoOA",
+            () -> null,
+            PairingInfoDirs::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /** 今回の実行におけるフォルダ比較情報OB */
+    public static final Key<PairingInfoDirs> CURR_DIR_COMPARE_INFO_OB = new Key<>(
+            "current.dirCompareInfoOB",
+            () -> null,
+            PairingInfoDirs::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /**
+     * {@link #CURR_DIR_COMPARE_INFO_AB}, {@link #CURR_DIR_COMPARE_INFO_OA},
+     * {@link #CURR_DIR_COMPARE_INFO_OB} のトリプル
+     */
+    public static final Triple<Key<PairingInfoDirs>> CURR_DIR_COMPARE_INFOS = new Triple<>(
+            CURR_DIR_COMPARE_INFO_AB,
+            CURR_DIR_COMPARE_INFO_OA,
+            CURR_DIR_COMPARE_INFO_OB);
+    
+    /** 今回の実行におけるフォルダツリー比較情報AB */
     public static final Key<PairingInfoDirs> CURR_TREE_COMPARE_INFO_AB = new Key<>(
             "current.treeCompareInfoAB",
             () -> null,
             PairingInfoDirs::toString,
             decodeNotSupported("cannnot decode."),
             false);
+    
+    /** 今回の実行におけるフォルダツリー比較情報OA */
+    public static final Key<PairingInfoDirs> CURR_TREE_COMPARE_INFO_OA = new Key<>(
+            "current.treeCompareInfoOA",
+            () -> null,
+            PairingInfoDirs::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /** 今回の実行におけるフォルダツリー比較情報OB */
+    public static final Key<PairingInfoDirs> CURR_TREE_COMPARE_INFO_OB = new Key<>(
+            "current.treeCompareInfoOB",
+            () -> null,
+            PairingInfoDirs::toString,
+            decodeNotSupported("cannnot decode."),
+            false);
+    
+    /**
+     * {@link #CURR_TREE_COMPARE_INFO_AB}, {@link #CURR_TREE_COMPARE_INFO_OA},
+     * {@link #CURR_TREE_COMPARE_INFO_OB} のトリプル
+     */
+    public static final Triple<Key<PairingInfoDirs>> CURR_TREE_COMPARE_INFOS = new Triple<>(
+            CURR_TREE_COMPARE_INFO_AB,
+            CURR_TREE_COMPARE_INFO_OA,
+            CURR_TREE_COMPARE_INFO_OB);
     
     /** 行の挿入／削除を考慮するか */
     public static final Key<Boolean> CONSIDER_ROW_GAPS = new Key<>(
