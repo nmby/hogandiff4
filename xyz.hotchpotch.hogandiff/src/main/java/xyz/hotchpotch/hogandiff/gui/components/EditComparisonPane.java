@@ -11,7 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.CompareMenu;
@@ -30,7 +30,7 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
  * 
  * @author nmby
  */
-public class EditComparison2Pane extends AnchorPane implements ChildController {
+public class EditComparisonPane extends StackPane implements ChildController {
     
     // [static members] ********************************************************
     
@@ -49,8 +49,8 @@ public class EditComparison2Pane extends AnchorPane implements ChildController {
      * @throws IOException
      *             FXMLファイルの読み込みに失敗した場合
      */
-    public EditComparison2Pane() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparison2Pane.fxml"), ar.get());
+    public EditComparisonPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("EditComparisonPane.fxml"), ar.get());
         loader.setRoot(this);
         loader.setController(this);
         loader.load();

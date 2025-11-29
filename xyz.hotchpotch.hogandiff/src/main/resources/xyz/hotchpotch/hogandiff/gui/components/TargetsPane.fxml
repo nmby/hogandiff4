@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <fx:root maxHeight="-Infinity" maxWidth="1.7976931348623157E308"
@@ -29,9 +28,7 @@
 			fx:id="targetSelectionPaneO" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity">
-			<GridPane.margin>
-				<Insets bottom="3.0" />
-			</GridPane.margin>
+			<!-- <GridPane.margin> <Insets bottom="3.0" /> </GridPane.margin> -->
 		</xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane>
 		<xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane
 			fx:id="targetSelectionPaneA" maxHeight="-Infinity"
@@ -41,13 +38,24 @@
 			fx:id="targetSelectionPaneB" maxHeight="-Infinity"
 			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
 			minWidth="-Infinity" GridPane.rowIndex="2">
-			<GridPane.margin>
-				<Insets top="3.0" />
-			</GridPane.margin>
+			<!-- <GridPane.margin> <Insets top="3.0" /> </GridPane.margin> -->
 		</xyz.hotchpotch.hogandiff.gui.components.TargetSelectionPane>
-		<xyz.hotchpotch.hogandiff.gui.components.EditComparison2Pane
-			fx:id="editComparisonPane" maxHeight="1.7976931348623157E308"
+		<xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane
+			fx:id="editComparisonPaneAB" maxHeight="1.7976931348623157E308"
 			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
 			GridPane.columnIndex="1" GridPane.rowSpan="3" />
+		<xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane
+			fx:id="editComparisonPaneOA" maxHeight="1.7976931348623157E308"
+			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+			GridPane.columnIndex="1" GridPane.rowIndex="1" />
+		<xyz.hotchpotch.hogandiff.gui.components.EditComparisonPane
+			fx:id="editComparisonPaneOB" maxHeight="1.7976931348623157E308"
+			maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+			GridPane.columnIndex="1" GridPane.rowIndex="2"
+			GridPane.valignment="CENTER" />
+		<Pane maxHeight="1.7976931348623157E308"
+			maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+			minWidth="-Infinity" styleClass="targetSelectionPaneO"
+			GridPane.columnIndex="1" />
 	</children>
 </fx:root>

@@ -12,6 +12,7 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.BooleanExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import xyz.hotchpotch.hogandiff.AppMain;
 import xyz.hotchpotch.hogandiff.AppResource;
@@ -45,7 +46,13 @@ public class TargetsPane extends GridPane implements ChildController {
     private TargetSelectionPane targetSelectionPaneB;
     
     @FXML
-    private EditComparison2Pane editComparisonPane;
+    private EditComparisonPane editComparisonPaneAB;
+    
+    @FXML
+    private EditComparisonPane editComparisonPaneOA;
+    
+    @FXML
+    private EditComparisonPane editComparisonPaneOB;
     
     private MainController controller;
     
@@ -91,11 +98,23 @@ public class TargetsPane extends GridPane implements ChildController {
             targetSelectionPaneO.visibleProperty().bind(is3Way);
             targetSelectionPaneO.managedProperty().bind(is3Way);
             
+            editComparisonPaneAB.visibleProperty().bind(is3Way.not());
+            editComparisonPaneAB.managedProperty().bind(is3Way.not());
+            editComparisonPaneOA.visibleProperty().bind(is3Way);
+            editComparisonPaneOA.managedProperty().bind(is3Way);
+            editComparisonPaneOB.visibleProperty().bind(is3Way);
+            editComparisonPaneOB.managedProperty().bind(is3Way);
+            
             // 2.項目ごとの各種設定
+            GridPane.setMargin(targetSelectionPaneO, new Insets(0, 0, 3, 0));
+            GridPane.setMargin(targetSelectionPaneB, new Insets(3, 0, 0, 0));
+            
             targetSelectionPaneO.init(controller, this, Side3.O);
             targetSelectionPaneA.init(controller, this, Side3.A);
             targetSelectionPaneB.init(controller, this, Side3.B);
-            editComparisonPane.init(controller);
+            editComparisonPaneAB.init(controller);
+            editComparisonPaneOA.init(controller);
+            editComparisonPaneOB.init(controller);
             
             // 3.初期値の設定
             
