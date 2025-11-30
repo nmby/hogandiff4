@@ -107,7 +107,8 @@ public class TargetsPane extends GridPane implements ChildController {
             
             // 2.項目ごとの各種設定
             GridPane.setMargin(targetSelectionPaneO, new Insets(0, 0, 3, 0));
-            GridPane.setMargin(targetSelectionPaneB, new Insets(3, 0, 0, 0));
+            GridPane.setMargin(targetSelectionPaneA, new Insets(0, 0, 2, 0));
+            GridPane.setMargin(targetSelectionPaneB, new Insets(1, 0, 0, 0));
             
             targetSelectionPaneO.init(controller, this, Side3.O);
             targetSelectionPaneA.init(controller, this, Side3.A);
