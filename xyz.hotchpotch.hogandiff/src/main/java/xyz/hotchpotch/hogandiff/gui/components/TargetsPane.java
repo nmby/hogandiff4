@@ -113,9 +113,9 @@ public class TargetsPane extends GridPane implements ChildController {
             targetSelectionPaneO.init(controller, this, Side3.O);
             targetSelectionPaneA.init(controller, this, Side3.A);
             targetSelectionPaneB.init(controller, this, Side3.B);
-            editComparisonPaneAB.init(controller);
-            editComparisonPaneOA.init(controller);
-            editComparisonPaneOB.init(controller);
+            editComparisonPaneAB.init(controller, Side3.O);
+            editComparisonPaneOA.init(controller, Side3.A);
+            editComparisonPaneOB.init(controller, Side3.B);
             
             // 3.初期値の設定
             
