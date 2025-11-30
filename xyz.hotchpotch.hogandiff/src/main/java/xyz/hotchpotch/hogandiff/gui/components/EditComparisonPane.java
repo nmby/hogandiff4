@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +27,7 @@ import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.EditComparisonDialog;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.util.Triple;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
@@ -46,6 +48,7 @@ public class EditComparisonPane extends StackPane implements ChildController {
     
     private MainController controller;
     private Side3 side3;
+    private final Property<Pair<? extends ObservableValue<?>>> propTargetPair = new SimpleObjectProperty<>();
     
     /**
      * コンストラクタ<br>
@@ -79,28 +82,18 @@ public class EditComparisonPane extends StackPane implements ChildController {
             this.side3 = side3;
             
             // 1.disableプロパティのバインディング
-            editComparisonButton.disableProperty().bind(Bindings.createBooleanBinding(
+            propTargetPair.bind(Bindings.createObjectBinding(
                     () -> {
                         CompareObject compareObject = controller.propCompareMenu.getValue().compareObject();
                         
-                        Triple<? extends ObservableValue<?>> targetTriple = switch (compareObject) {
+                        return (switch (compareObject) {
                         case COMPARE_SHEETS -> controller.sheetNamePropTriple;
                         case COMPARE_BOOKS -> controller.bookInfoPropTriple;
                         case COMPARE_DIRS -> controller.dirInfoPropTriple;
                         default -> throw new AssertionError();
-                        };
-                        
-                        boolean isPaired = switch (side3) {
-                        case O -> targetTriple.a().getValue() != null && targetTriple.b().getValue() != null;
-                        case A -> targetTriple.o().getValue() != null && targetTriple.a().getValue() != null;
-                        case B -> targetTriple.o().getValue() != null && targetTriple.b().getValue() != null;
-                        };
-                        return controller.isRunning().getValue()
-                                || controller.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS
-                                || !isPaired;
+                        }).toPair(side3);
                     },
-                    // FIXME: 不細工なのでなんとかしたい...
-                    controller.isRunning(),
+                    // FIXME: 不細工なので修正したい
                     controller.propCompareMenu,
                     controller.sheetNamePropTriple.o(),
                     controller.sheetNamePropTriple.a(),
@@ -111,6 +104,16 @@ public class EditComparisonPane extends StackPane implements ChildController {
                     controller.dirInfoPropTriple.o(),
                     controller.dirInfoPropTriple.a(),
                     controller.dirInfoPropTriple.b()));
+            
+            propTargetPair.addListener((obs, oldVal, newVal) -> {
+                System.out.println("EditComparisonPane#propTargetPair changed: " + newVal);
+            });
+            editComparisonButton.disableProperty()
+                    .bind(controller.isRunning().or(Bindings.createBooleanBinding(
+                            () -> controller.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS
+                                    || !propTargetPair.getValue().map(ObservableValue::getValue).isPaired(),
+                            controller.propCompareMenu,
+                            propTargetPair)));
             
             // 2.項目ごとの各種設定
             editComparisonButton.setOnAction(_ -> editComparison());
@@ -128,7 +131,7 @@ public class EditComparisonPane extends StackPane implements ChildController {
     private void editComparison() {
         try {
             CompareMenu menu = controller.propCompareMenu.getValue();
-            if (!menu.isValidTargets(ar.settings())) {
+            if (propTargetPair.getValue().map(ObservableValue::getValue).isIdentical()) {
                 new Alert(
                         AlertType.WARNING,
                         Msg.APP_1180.get(),

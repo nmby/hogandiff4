@@ -95,6 +95,24 @@ public record Triple<T>(T o, T a, T b) {
     }
     
     /**
+     * 2つの要素からなるペアを返します。<br>
+     * 
+     * @param side3
+     *            除外する側
+     * @return 指定された側の要素を除く2つの要素からなるペア
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public Pair<T> toPair(Side3 side3) {
+        Objects.requireNonNull(side3);
+        return switch (side3) {
+        case O -> new Pair<>(a, b);
+        case A -> new Pair<>(o, a);
+        case B -> new Pair<>(o, b);
+        };
+    }
+    
+    /**
      * このトリプルの要素それぞれに変換処理を施して得られるトリプルを返します。<br>
      * 
      * @param <U>
