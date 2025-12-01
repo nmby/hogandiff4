@@ -11,6 +11,7 @@ import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * 比較対象の組み合わせを編集するためのダイアログボックスです。<br>
@@ -30,25 +31,28 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
      * 
      * @param comparison
      *            比較情報
+     * @param side3
+     *            比較対象の位置情報
      * @throws IOException
      *             ダイアログの構成に失敗した場合
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public EditComparisonDialog(T comparison) throws IOException {
+    public EditComparisonDialog(T comparison, Side3 side3) throws IOException {
         try {
             Objects.requireNonNull(comparison);
+            Objects.requireNonNull(side3);
             
             @SuppressWarnings("unchecked")
             EditComparisonDialogPane<T> editComparisonDialogPane = (EditComparisonDialogPane<T>) switch (comparison) {
             case PairingInfoBooks bookComparison -> {
                 EditBookComparisonDialogPane pane = new EditBookComparisonDialogPane(bookComparison);
-                pane.init();
+                pane.init(side3);
                 yield pane;
             }
             case PairingInfoDirs dirComparison -> {
                 EditDirComparisonDialogPane pane = new EditDirComparisonDialogPane(dirComparison);
-                pane.init();
+                pane.init(side3);
                 yield pane;
             }
             };

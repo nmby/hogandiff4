@@ -6,6 +6,7 @@ import java.util.List;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.util.Pair;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * Excelブック比較情報編集ダイアログボックスの要素です。<br>
@@ -33,9 +34,9 @@ public class EditBookComparisonDialogPane extends EditComparisonDialogPane<Pairi
         this.bookComparison = bookComparison;
     }
     
-    /* package */ void init() throws IOException {
+    /* package */ void init(Side3 side3) throws IOException {
         try {
-            super.init(bookComparison.parentBookInfoPair());
+            super.init(bookComparison.parentBookInfoPair(), side3);
             currentChildPairs.addAll(bookComparison.childSheetNamePairs());
             drawGrid();
             

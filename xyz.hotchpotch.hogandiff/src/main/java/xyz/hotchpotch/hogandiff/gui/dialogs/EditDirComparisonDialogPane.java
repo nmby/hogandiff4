@@ -22,6 +22,7 @@ import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * フォルダ比較情報編集ダイアログボックスの要素です。<br>
@@ -42,6 +43,8 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
     private final Map<Pair<DirInfo>, Optional<PairingInfoDirs>> currChildDirComparisons;
     private final Map<Pair<BookInfo>, Optional<PairingInfoBooks>> currChildBookComparisons;
     
+    private Side3 side3;
+    
     /**
      * コンストラクタ<br>
      * 
@@ -59,9 +62,10 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
         this.currChildBookComparisons = new HashMap<>(dirComparison.childBookComparisons());
     }
     
-    /* package */ void init() throws IOException {
+    /* package */ void init(Side3 side3) throws IOException {
+        this.side3 = side3;
         try {
-            super.init(dirComparison.parentDirInfoPair());
+            super.init(dirComparison.parentDirInfoPair(), side3);
             updateChildren();
             
         } catch (Exception e) {
@@ -261,7 +265,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
                 assert paired.isPaired();
                 
                 PairingInfoDirs comparison = currChildDirComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison);
+                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison, side3);
                 Optional<PairingInfoDirs> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildDirComparisons.put(paired, modified);
@@ -274,7 +278,7 @@ public class EditDirComparisonDialogPane extends EditComparisonDialogPane<Pairin
                 assert paired.isPaired();
                 
                 PairingInfoBooks comparison = currChildBookComparisons.get(paired).orElseThrow();
-                EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison);
+                EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison, side3);
                 Optional<PairingInfoBooks> modified = dialog.showAndWait();
                 if (modified.isPresent()) {
                     currChildBookComparisons.put(paired, modified);

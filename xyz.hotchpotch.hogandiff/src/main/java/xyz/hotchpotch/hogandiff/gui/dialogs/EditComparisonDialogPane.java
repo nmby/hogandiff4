@@ -20,6 +20,7 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Pair.Side;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /* package */ abstract class EditComparisonDialogPane<T extends PairingInfo> extends VBox {
     
@@ -101,14 +102,14 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
     /**
      * このダイアログボックス要素を初期化します。<br>
      * 
-     * @param parentType
-     *            比較対象親要素の型
      * @param parentPair
      *            比較対象親要素
-     * @param childPairs
-     *            比較対象子要素
+     * @param left
+     *            左側の側
+     * @param right
+     *            右側の側
      */
-    /* package */ void init(Pair<?> parentPair) throws IOException {
+    /* package */ void init(Pair<?> parentPair, Side3 side3) throws IOException {
         
         // コンテンツの長さが異なると均等にサイジングされないため、わざわざBindingとして実装することにする
         childGridPane.widthProperty().addListener((_, _, newValue) -> {
@@ -122,8 +123,14 @@ import xyz.hotchpotch.hogandiff.util.Pair.Side;
         ItemType itemType = ItemType.of(parentPair.a());
         parentLabelA.setGraphic(itemType.createImageView(24));
         parentLabelB.setGraphic(itemType.createImageView(24));
-        parentLabelA.setText("【A】 " + parentPair.a().toString());
-        parentLabelB.setText("【B】 " + parentPair.b().toString());
+        
+        Pair<Side3> sides = switch (side3) {
+        case O -> new Pair<>(Side3.A, Side3.B);
+        case A -> new Pair<>(Side3.O, Side3.A);
+        case B -> new Pair<>(Side3.O, Side3.B);
+        };
+        parentLabelA.setText("【%s】 %s".formatted(sides.a(), parentPair.a().toString()));
+        parentLabelB.setText("【%s】 %s".formatted(sides.b(), parentPair.b().toString()));
     }
     
     protected void drawGrid() {
