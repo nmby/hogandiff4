@@ -138,48 +138,38 @@ public class EditComparisonPane extends StackPane implements ChildController {
                 return;
             }
             
-            switch (menu.compareWay()) {
-            case TWO_WAY:
-                switch (menu.compareObject()) {
-                case COMPARE_BOOKS: {
-                    PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3));
-                    EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison, side3);
-                    Optional<PairingInfoBooks> modified = dialog.showAndWait();
-                    if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3), modified.get());
-                    }
-                    return;
+            switch (menu.compareObject()) {
+            case COMPARE_BOOKS: {
+                PairingInfoBooks comparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3));
+                EditComparisonDialog<PairingInfoBooks> dialog = new EditComparisonDialog<>(comparison, side3);
+                Optional<PairingInfoBooks> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3), modified.get());
                 }
-                case COMPARE_DIRS: {
-                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3));
-                    EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison, side3);
-                    Optional<PairingInfoDirs> modified = dialog.showAndWait();
-                    if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3), modified.get());
-                    }
-                    return;
+                return;
+            }
+            case COMPARE_DIRS: {
+                PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3));
+                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison, side3);
+                Optional<PairingInfoDirs> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3), modified.get());
                 }
-                case COMPARE_TREES: {
-                    PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3));
-                    EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison, side3);
-                    Optional<PairingInfoDirs> modified = dialog.showAndWait();
-                    if (modified.isPresent()) {
-                        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3), modified.get());
-                    }
-                    return;
+                return;
+            }
+            case COMPARE_TREES: {
+                PairingInfoDirs comparison = ar.settings().get(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3));
+                EditComparisonDialog<PairingInfoDirs> dialog = new EditComparisonDialog<>(comparison, side3);
+                Optional<PairingInfoDirs> modified = dialog.showAndWait();
+                if (modified.isPresent()) {
+                    ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3), modified.get());
                 }
-                case COMPARE_SHEETS:
-                    throw new AssertionError();
-                default:
-                    throw new AssertionError("Unreachable code: " + menu.compareObject());
-                }
-                
-            case THREE_WAY:
-                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
-            
+                return;
+            }
+            case COMPARE_SHEETS:
+                throw new AssertionError();
             default:
-                throw new AssertionError("Unreachable code: " + menu.compareWay());
-            
+                throw new AssertionError("Unreachable code: " + menu.compareObject());
             }
             
         } catch (IOException e) {

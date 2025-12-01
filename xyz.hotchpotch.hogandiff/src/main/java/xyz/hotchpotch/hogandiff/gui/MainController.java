@@ -7,11 +7,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -46,7 +45,6 @@ import xyz.hotchpotch.hogandiff.logic.DirInfo;
 import xyz.hotchpotch.hogandiff.logic.Factory;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
-import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs.PairingInfoDirsFlatten;
 import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
@@ -157,8 +155,15 @@ public class MainController extends VBox {
     
     /**
      * 現在選択されている比較メニューに応じて、対応する比較情報を更新します。<br>
+     * 
+     * @param side3
+     *            更新された側
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
      */
     public void updateActiveComparison(Side3 side3) {
+        Objects.requireNonNull(side3);
+        
         try {
             CompareMenu menu = propCompareMenu.getValue();
             
@@ -280,47 +285,26 @@ public class MainController extends VBox {
     private boolean isPasswordUsed() {
         try {
             CompareMenu menu = ar.settings().get(SettingKeys.CURR_MENU);
+            Map<Path, String> readPasswords = ar.settings().get(
+                    SettingKeys.CURR_READ_PASSWORDS);
             
-            switch (menu.compareWay()) {
-            case TWO_WAY:
-                Stream<Path> bookPathStream = switch (menu.compareObject()) {
-                case COMPARE_SHEETS -> {
-                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
-                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                    yield bookPathPair.isIdentical()
-                            ? Stream.of(bookPathPair.a())
-                            : Stream.of(bookPathPair.a(), bookPathPair.b());
-                }
-                case COMPARE_BOOKS -> {
-                    PairingInfoBooks bookComparison = ar.settings().get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB);
-                    Pair<Path> bookPathPair = bookComparison.parentBookInfoPair().map(BookInfo::bookPath);
-                    yield Stream.of(bookPathPair.a(), bookPathPair.b()).filter(bookPath -> bookPath != null);
-                }
-                case COMPARE_DIRS -> {
-                    PairingInfoDirs dirComparison = ar.settings().get(SettingKeys.CURR_DIR_COMPARE_INFO_AB);
-                    yield bookPathStream(dirComparison);
-                }
-                case COMPARE_TREES -> {
-                    PairingInfoDirsFlatten flattenDirComparison = ar.settings()
-                            .get(SettingKeys.CURR_TREE_COMPARE_INFO_AB)
-                            .flatten();
-                    yield flattenDirComparison.dirComparisons().values().stream()
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .flatMap(this::bookPathStream);
-                }
-                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
-                };
-                
-                Map<Path, String> readPasswords = ar.settings().get(
-                        SettingKeys.CURR_READ_PASSWORDS);
-                return bookPathStream.map(readPasswords::get).anyMatch(pw -> pw != null);
+            switch (menu.compareObject()) {
+            case COMPARE_SHEETS, COMPARE_BOOKS:
+                Triple<Path> bookPathTriple = bookInfoPropTriple.map(Property::getValue).map(BookInfo::bookPath);
+                return readPasswords.containsKey(bookPathTriple.a())
+                        || readPasswords.containsKey(bookPathTriple.b())
+                        || (menu.compareWay() == CompareMenu.CompareWay.THREE_WAY
+                                && readPasswords.containsKey(bookPathTriple.o()));
             
-            case THREE_WAY:
-                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            case COMPARE_DIRS, COMPARE_TREES:
+                Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
+                return isPasswordUsed(dirInfoTriple.a())
+                        || isPasswordUsed(dirInfoTriple.b())
+                        || (menu.compareWay() == CompareMenu.CompareWay.THREE_WAY
+                                && isPasswordUsed(dirInfoTriple.o()));
             
             default:
-                throw new AssertionError("Unreachable code: " + menu.compareWay());
+                throw new AssertionError("Unreachable code: " + menu.compareObject());
             }
             
         } catch (Exception e) {
@@ -329,16 +313,20 @@ public class MainController extends VBox {
         }
     }
     
-    private Stream<Path> bookPathStream(PairingInfoDirs dirComparison) {
-        try {
-            return dirComparison.childBookInfoPairs().stream()
-                    .flatMap(bookInfoPair -> Stream.of(bookInfoPair.a(), bookInfoPair.b()))
-                    .filter(bookInfo -> bookInfo != null)
-                    .map(BookInfo::bookPath);
-        } catch (Exception e) {
-            ErrorReporter.reportIfEnabled(e, "MainController#bookPathStream-1");
-            throw e;
+    private boolean isPasswordUsed(DirInfo dirInfo) {
+        Map<Path, String> readPasswords = ar.settings().get(
+                SettingKeys.CURR_READ_PASSWORDS);
+        
+        boolean isUsed = dirInfo.childBookInfos().stream()
+                .map(BookInfo::bookPath)
+                .anyMatch(readPasswords::containsKey);
+        
+        if (isUsed) {
+            return true;
         }
+        
+        return dirInfo.childDirInfos().stream()
+                .anyMatch(this::isPasswordUsed);
     }
     
     /**

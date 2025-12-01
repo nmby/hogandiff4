@@ -147,8 +147,7 @@ public class TargetsPane extends GridPane implements ChildController {
         Objects.requireNonNull(files);
         
         List<TargetSelectionPane> targets = switch (side3) {
-        // TODO: Oにも対応する
-        case O -> throw new UnsupportedOperationException();
+        case O -> List.of(targetSelectionPaneO, targetSelectionPaneA, targetSelectionPaneB);
         case A -> List.of(targetSelectionPaneA, targetSelectionPaneB);
         case B -> List.of(targetSelectionPaneB, targetSelectionPaneA);
         default -> throw new AssertionError();
@@ -176,8 +175,7 @@ public class TargetsPane extends GridPane implements ChildController {
         Objects.requireNonNull(files);
         
         List<TargetSelectionPane> targets = switch (side3) {
-        // TODO: Oにも対応する
-        case O -> throw new UnsupportedOperationException();
+        case O -> List.of(targetSelectionPaneO, targetSelectionPaneA, targetSelectionPaneB);
         case A -> List.of(targetSelectionPaneA, targetSelectionPaneB);
         case B -> List.of(targetSelectionPaneB, targetSelectionPaneA);
         default -> throw new AssertionError();
