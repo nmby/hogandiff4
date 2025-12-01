@@ -112,7 +112,7 @@ public record CompareMenu(
             return isIdentical(settings, Side3.O);
         
         case THREE_WAY:
-            return isIdentical(settings, Side3.A) && isIdentical(settings, Side3.A);
+            return isIdentical(settings, Side3.O) && isIdentical(settings, Side3.A) && isIdentical(settings, Side3.B);
         
         default:
             throw new AssertionError("Unreachable code: " + compareWay);
