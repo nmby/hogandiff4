@@ -54,8 +54,6 @@ public class TargetsPane extends GridPane implements ChildController {
     @FXML
     private EditComparisonPane editComparisonPaneOB;
     
-    private MainController controller;
-    
     /** 前回選択されたパス */
     public Path prevSelectedBookPath;
     
@@ -82,8 +80,6 @@ public class TargetsPane extends GridPane implements ChildController {
      */
     public void init(MainController controller) {
         Objects.requireNonNull(controller);
-        
-        this.controller = controller;
         
         try {
             ar.changeSetting(SettingKeys.CURR_READ_PASSWORDS, new HashMap<>());
