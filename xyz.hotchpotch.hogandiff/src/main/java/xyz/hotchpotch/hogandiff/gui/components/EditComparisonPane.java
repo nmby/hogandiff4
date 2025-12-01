@@ -90,6 +90,7 @@ public class EditComparisonPane extends StackPane implements ChildController {
                         case COMPARE_SHEETS -> controller.sheetNamePropTriple;
                         case COMPARE_BOOKS -> controller.bookInfoPropTriple;
                         case COMPARE_DIRS -> controller.dirInfoPropTriple;
+                        case COMPARE_TREES -> controller.dirInfoPropTriple;
                         default -> throw new AssertionError();
                         }).toPair(side3);
                     },
@@ -105,9 +106,6 @@ public class EditComparisonPane extends StackPane implements ChildController {
                     controller.dirInfoPropTriple.a(),
                     controller.dirInfoPropTriple.b()));
             
-            propTargetPair.addListener((obs, oldVal, newVal) -> {
-                System.out.println("EditComparisonPane#propTargetPair changed: " + newVal);
-            });
             editComparisonButton.disableProperty()
                     .bind(controller.isRunning().or(Bindings.createBooleanBinding(
                             () -> controller.propCompareMenu.getValue().compareObject() == CompareObject.COMPARE_SHEETS

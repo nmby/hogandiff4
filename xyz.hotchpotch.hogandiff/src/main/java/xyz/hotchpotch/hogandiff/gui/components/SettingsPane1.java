@@ -18,6 +18,7 @@ import xyz.hotchpotch.hogandiff.SettingKeys;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * 比較メニュー部分の画面部品です。<br>
@@ -133,7 +134,7 @@ public class SettingsPane1 extends VBox implements ChildController {
             
             enableFuzzyMatchingCheckBox.setOnAction(_ -> {
                 ar.changeSetting(SettingKeys.ENABLE_FUZZY_MATCHING, enableFuzzyMatchingCheckBox.isSelected());
-                controller.updateActiveComparison();
+                controller.updateActiveComparison(Side3.O);
             });
             
         } catch (Exception e) {

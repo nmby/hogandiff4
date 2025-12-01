@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javafx.application.Platform;
@@ -50,6 +51,7 @@ import xyz.hotchpotch.hogandiff.logic.google.GoogleCredential;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings;
 import xyz.hotchpotch.hogandiff.util.Triple;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * このアプリケーションのコントローラです。<br>
@@ -129,16 +131,10 @@ public class MainController extends VBox {
                 .and(row3Pane.isReady())
                 .and(row4Pane.isReady()));
         
-        propCompareMenu.addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropTriple.o().addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropTriple.a().addListener((_, _, _) -> updateActiveComparison());
-        sheetNamePropTriple.b().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropTriple.o().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropTriple.a().addListener((_, _, _) -> updateActiveComparison());
-        bookInfoPropTriple.b().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropTriple.o().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropTriple.a().addListener((_, _, _) -> updateActiveComparison());
-        dirInfoPropTriple.b().addListener((_, _, _) -> updateActiveComparison());
+        propCompareMenu.addListener((_, _, _) -> updateActiveComparison(Side3.O));
+        sheetNamePropTriple.forEach((prop, side3) -> prop.addListener((_, _, _) -> updateActiveComparison(side3)));
+        bookInfoPropTriple.forEach((prop, side3) -> prop.addListener((_, _, _) -> updateActiveComparison(side3)));
+        dirInfoPropTriple.forEach((prop, side3) -> prop.addListener((_, _, _) -> updateActiveComparison(side3)));
         
         propMinHeight.bind(Bindings.createDoubleBinding(
                 () -> 241d
@@ -162,23 +158,36 @@ public class MainController extends VBox {
     /**
      * 現在選択されている比較メニューに応じて、対応する比較情報を更新します。<br>
      */
-    public void updateActiveComparison() {
+    public void updateActiveComparison(Side3 side3) {
         try {
             CompareMenu menu = propCompareMenu.getValue();
             
             switch (menu.compareWay()) {
             case TWO_WAY:
                 switch (menu.compareObject()) {
-                case COMPARE_SHEETS -> updateSheetComparison2();
-                case COMPARE_BOOKS -> updateBookComparison2();
-                case COMPARE_DIRS -> updateDirComparison2();
-                case COMPARE_TREES -> updateTreeComparison2();
+                case COMPARE_SHEETS -> updateSheetComparison2(Side3.O);
+                case COMPARE_BOOKS -> updateBookComparison2(Side3.O);
+                case COMPARE_DIRS -> updateDirComparison2(Side3.O);
+                case COMPARE_TREES -> updateTreeComparison2(Side3.O);
                 default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
                 }
                 break;
             
             case THREE_WAY:
-                throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+                Consumer<Side3> action = switch (menu.compareObject()) {
+                case COMPARE_SHEETS -> this::updateSheetComparison2;
+                case COMPARE_BOOKS -> this::updateBookComparison2;
+                case COMPARE_DIRS -> this::updateDirComparison2;
+                case COMPARE_TREES -> this::updateTreeComparison2;
+                default -> throw new AssertionError("Unreachable code: " + menu.compareObject());
+                };
+                if (side3 == Side3.O) {
+                    action.accept(Side3.A);
+                    action.accept(Side3.B);
+                } else {
+                    action.accept(side3);
+                }
+                break;
             
             default:
                 throw new AssertionError("Unreachable code: " + menu.compareWay());
@@ -190,33 +199,34 @@ public class MainController extends VBox {
         }
     }
     
-    private void updateSheetComparison2() {
-        Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
-        Triple<String> sheetNameTriple = sheetNamePropTriple.map(Property::getValue);
+    private void updateSheetComparison2(Side3 side3) {
+        Pair<BookInfo> bookInfoPair = bookInfoPropTriple.map(Property::getValue).toPair(side3);
+        Pair<String> sheetNamePair = sheetNamePropTriple.map(Property::getValue).toPair(side3);
         
-        ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFO_AB,
-                bookInfoTriple.hasAB() && sheetNameTriple.hasAB()
-                        ? new PairingInfoBooks(bookInfoTriple.toPairAB(), List.of(sheetNameTriple.toPairAB()))
+        ar.changeSetting(SettingKeys.CURR_SHEET_COMPARE_INFOS.get(side3),
+                bookInfoPair.isPaired() && sheetNamePair.isPaired()
+                        ? new PairingInfoBooks(bookInfoPair, List.of(sheetNamePair))
                         : null);
     }
     
-    private void updateBookComparison2() {
-        Triple<BookInfo> bookInfoTriple = bookInfoPropTriple.map(Property::getValue);
+    private void updateBookComparison2(Side3 side3) {
+        Pair<BookInfo> bookInfoPair = bookInfoPropTriple.map(Property::getValue).toPair(side3);
         
-        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFO_AB,
-                bookInfoTriple.hasAB()
+        ar.changeSetting(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3),
+                bookInfoPair.isPaired()
                         ? PairingInfoBooks.calculate(
-                                bookInfoTriple.toPairAB(),
+                                bookInfoPair,
                                 Factory.sheetNamesMatcher(ar.settings()))
                         : null);
     }
     
-    private void updateDirComparison2() {
-        Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
-        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFO_AB,
-                dirInfoTriple.hasAB()
+    private void updateDirComparison2(Side3 side3) {
+        Pair<DirInfo> dirInfoPair = dirInfoPropTriple.map(Property::getValue).toPair(side3);
+        
+        ar.changeSetting(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3),
+                dirInfoPair.isPaired()
                         ? PairingInfoDirs.calculate(
-                                dirInfoTriple.toPairAB(),
+                                dirInfoPair,
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),
@@ -224,12 +234,13 @@ public class MainController extends VBox {
                         : null);
     }
     
-    private void updateTreeComparison2() {
-        Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
-        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFO_AB,
-                dirInfoTriple.hasAB()
+    private void updateTreeComparison2(Side3 side3) {
+        Pair<DirInfo> dirInfoPair = dirInfoPropTriple.map(Property::getValue).toPair(side3);
+        
+        ar.changeSetting(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3),
+                dirInfoPair.isPaired()
                         ? PairingInfoDirs.calculate(
-                                dirInfoTriple.toPairAB(),
+                                dirInfoPair,
                                 Factory.dirInfosMatcher(ar.settings()),
                                 Factory.bookInfosMatcher(ar.settings()),
                                 Factory.sheetNamesMatcher(ar.settings()),

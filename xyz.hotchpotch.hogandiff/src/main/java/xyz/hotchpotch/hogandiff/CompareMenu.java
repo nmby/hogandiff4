@@ -9,6 +9,7 @@ import xyz.hotchpotch.hogandiff.tasks.CompareTaskDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskSheets;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskTrees;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * 比較メニューの選択状況を表す不変クラスです。<br>
@@ -108,24 +109,31 @@ public record CompareMenu(
         
         switch (compareWay) {
         case TWO_WAY:
-            return switch (compareObject) {
-            case COMPARE_SHEETS -> {
-                PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFO_AB);
-                yield !bookComparison.parentBookInfoPair().isIdentical()
-                        || !bookComparison.childSheetNamePairs().get(0).isIdentical();
-            }
-            case COMPARE_BOOKS -> !settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO_AB).parentBookInfoPair().isIdentical();
-            case COMPARE_DIRS -> !settings.get(SettingKeys.CURR_DIR_COMPARE_INFO_AB).parentDirInfoPair().isIdentical();
-            case COMPARE_TREES -> !settings.get(SettingKeys.CURR_TREE_COMPARE_INFO_AB).parentDirInfoPair().isIdentical();
-            default -> throw new AssertionError("Unreachable code: " + compareObject);
-            };
+            return isIdentical(settings, Side3.O);
         
         case THREE_WAY:
-            throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            return isIdentical(settings, Side3.A) && isIdentical(settings, Side3.A);
         
         default:
             throw new AssertionError("Unreachable code: " + compareWay);
         }
+    }
+    
+    private boolean isIdentical(Settings settings, Side3 side3) {
+        return switch (compareObject) {
+        case COMPARE_SHEETS -> {
+            PairingInfoBooks bookComparison = settings.get(SettingKeys.CURR_SHEET_COMPARE_INFOS.get(side3));
+            yield !bookComparison.parentBookInfoPair().isIdentical()
+                    || !bookComparison.childSheetNamePairs().get(0).isIdentical();
+        }
+        case COMPARE_BOOKS -> !settings.get(SettingKeys.CURR_BOOK_COMPARE_INFOS.get(side3))
+                .parentBookInfoPair().isIdentical();
+        case COMPARE_DIRS -> !settings.get(SettingKeys.CURR_DIR_COMPARE_INFOS.get(side3))
+                .parentDirInfoPair().isIdentical();
+        case COMPARE_TREES -> !settings.get(SettingKeys.CURR_TREE_COMPARE_INFOS.get(side3))
+                .parentDirInfoPair().isIdentical();
+        default -> throw new AssertionError("Unreachable code: " + compareObject);
+        };
     }
     
     /**

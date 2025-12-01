@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.util.Settings;
+import xyz.hotchpotch.hogandiff.util.Triple.Side3;
 
 /**
  * このアプリケーションのエントリポイントです。<br>
@@ -138,7 +139,7 @@ public class AppMain extends Application {
             VersionMaster.announceNewFeature2();
             
             if (controller.isReady().getValue()) {
-                controller.updateActiveComparison();
+                controller.updateActiveComparison(Side3.O);
                 controller.execute();
             }
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package xyz.hotchpotch.hogandiff.util;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -39,21 +40,6 @@ public record Triple<T>(T o, T a, T b) {
         B;
         
         // [instance members] --------------------------------------------------
-        
-        /**
-         * 自身の反対側の子側を返します。<br>
-         * 
-         * @return 反対側の子側
-         * @throws UnsupportedOperationException
-         *             自身が {@code O} 側の場合
-         */
-        public Side3 oppositeChild() {
-            return switch (this) {
-            case O -> throw new UnsupportedOperationException();
-            case A -> B;
-            case B -> A;
-            };
-        }
     }
     
     // [instance members] ******************************************************
@@ -130,4 +116,26 @@ public record Triple<T>(T o, T a, T b) {
                 a == null ? null : mapper.apply(a),
                 b == null ? null : mapper.apply(b));
     }
+    
+    /**
+     * このトリプルの要素それぞれに指定された処理を実行します。<br>
+     * 
+     * @param action
+     *            各要素に施す処理
+     * @throws NullPointerException
+     *             パラメータが {@code null} の場合
+     */
+    public void forEach(BiConsumer<? super T, Side3> action) {
+        Objects.requireNonNull(action);
+        if (o != null) {
+            action.accept(o, Side3.O);
+        }
+        if (a != null) {
+            action.accept(a, Side3.A);
+        }
+        if (b != null) {
+            action.accept(b, Side3.B);
+        }
+    }
+    
 }
