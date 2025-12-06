@@ -293,10 +293,10 @@ public class MainController extends VBox {
             switch (menu.compareObject()) {
             case COMPARE_SHEETS, COMPARE_BOOKS:
                 Triple<Path> bookPathTriple = bookInfoPropTriple.map(Property::getValue).map(BookInfo::bookPath);
-                return readPasswords.containsKey(bookPathTriple.a())
-                        || readPasswords.containsKey(bookPathTriple.b())
+                return readPasswords.get(bookPathTriple.a()) != null
+                        || readPasswords.get(bookPathTriple.b()) != null
                         || (menu.compareWay() == CompareMenu.CompareWay.THREE_WAY
-                                && readPasswords.containsKey(bookPathTriple.o()));
+                                && readPasswords.get(bookPathTriple.o()) != null);
             
             case COMPARE_DIRS, COMPARE_TREES:
                 Triple<DirInfo> dirInfoTriple = dirInfoPropTriple.map(Property::getValue);
