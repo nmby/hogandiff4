@@ -82,6 +82,8 @@ public class MainController extends VBox {
     /** 現在選択されている比較メニュー */
     public final Property<CompareMenu> propCompareMenu = new SimpleObjectProperty<>();
     
+    // TODO: そろそろ根本的に作り直したいところ...
+    
     /** シート名のトリプル */
     public final Triple<StringProperty> sheetNamePropTriple = new Triple<>(
             new SimpleStringProperty(),

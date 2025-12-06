@@ -46,7 +46,7 @@ import xyz.hotchpotch.hogandiff.util.Settings;
  * @author nmby
  */
 /* package */ abstract sealed class CompareTask extends Task<Void>
-        permits CompareTaskSheets, CompareTaskBooks, CompareTaskDirs, CompareTaskTrees {
+        permits CompareTaskSheets, CompareTaskBooks, CompareTaskBooks3Way, CompareTaskDirs, CompareTaskTrees {
     
     // [static members] ********************************************************
     

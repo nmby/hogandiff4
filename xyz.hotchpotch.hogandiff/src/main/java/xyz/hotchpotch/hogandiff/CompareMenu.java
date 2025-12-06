@@ -5,6 +5,7 @@ import java.util.Objects;
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooks;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooks3Way;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskSheets;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskTrees;
@@ -112,7 +113,7 @@ public record CompareMenu(
             return isIdentical(settings, Side3.O);
         
         case THREE_WAY:
-            return isIdentical(settings, Side3.O) && isIdentical(settings, Side3.A) && isIdentical(settings, Side3.B);
+            return isIdentical(settings, Side3.A) && isIdentical(settings, Side3.B);
         
         default:
             throw new AssertionError("Unreachable code: " + compareWay);
@@ -158,7 +159,12 @@ public record CompareMenu(
             };
         
         case THREE_WAY:
-            throw new UnsupportedOperationException("Three-way comparison is not supported yet.");
+            return switch (compareObject) {
+            case COMPARE_SHEETS -> throw new UnsupportedOperationException();
+            case COMPARE_BOOKS -> new CompareTaskBooks3Way(settings);
+            case COMPARE_DIRS -> throw new UnsupportedOperationException();
+            case COMPARE_TREES -> throw new UnsupportedOperationException();
+            };
         
         default:
             throw new AssertionError("Unreachable code: " + compareWay);

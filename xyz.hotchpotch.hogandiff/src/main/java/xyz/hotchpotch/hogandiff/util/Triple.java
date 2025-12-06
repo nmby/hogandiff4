@@ -53,9 +53,9 @@ public record Triple<T>(T o, T a, T b) {
      * @throws NullPointerException
      *             パラメータが {@code null} の場合
      */
-    public T get(Side3 side) {
-        Objects.requireNonNull(side);
-        return switch (side) {
+    public T get(Side3 side3) {
+        Objects.requireNonNull(side3);
+        return switch (side3) {
         case O -> o;
         case A -> a;
         case B -> b;
@@ -69,6 +69,20 @@ public record Triple<T>(T o, T a, T b) {
      */
     public boolean hasAB() {
         return a != null && b != null;
+    }
+    
+    public boolean hasAll() {
+        return o != null && a != null && b != null;
+    }
+    
+    public boolean has(Side3 side3) {
+        Objects.requireNonNull(side3);
+        return switch (side3) {
+        case O -> o != null;
+        case A -> a != null;
+        case B -> b != null;
+        default -> throw new AssertionError();
+        };
     }
     
     /**
