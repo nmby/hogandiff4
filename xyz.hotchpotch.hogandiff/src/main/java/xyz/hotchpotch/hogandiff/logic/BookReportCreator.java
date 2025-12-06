@@ -43,10 +43,8 @@ public class BookReportCreator {
     private static final int ROW_TEMPLATE_NO_DIFF = 5;
     private static final int ROW_TEMPLATE_NO_OPPONENT = 6;
     private static final int ROW_TEMPLATE_FAILED = 7;
-    private static final int ROW_TEMPLATE_RROWS_TITLE = 8;
-    private static final int ROW_TEMPLATE_RCOLS_TITLE = 12;
-    private static final int ROW_TEMPLATE_DCELLS_TITLE = 16;
-    private static final int ROW_START = 19;
+    private static final int ROW_TEMPLATE_SUBTITLE = 8;
+    private static final int ROW_START = 14;
     private static final IntPair COL_LEFT = IntPair.of(3, 5);
     
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
@@ -219,7 +217,7 @@ public class BookReportCreator {
         
         // 余剰行ありの場合
         if (!sheetResult.redundantRows().a().isEmpty() || !sheetResult.redundantRows().b().isEmpty()) {
-            PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE, rowIdx);
+            PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
                     Msg.APP_0620.get().formatted(
                             sheetResult.redundantRows().a().size(),
@@ -234,7 +232,7 @@ public class BookReportCreator {
             
             while (!rRowsA.isEmpty() || !rRowsB.isEmpty()) {
                 boolean isLast = rRowsA.length() <= MAX_CHARS && rRowsB.length() <= MAX_CHARS;
-                PoiUtil.copyRow(sheet, ROW_TEMPLATE_RROWS_TITLE + (isLast ? 3 : 2), rowIdx);
+                PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE + (isLast ? 3 : 2), rowIdx);
                 if (rowIdx == rRowsStart) {
                     PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(), "【A】");
                     PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b(), "【B】");
@@ -267,7 +265,7 @@ public class BookReportCreator {
         
         // 余剰列ありの場合
         if (!sheetResult.redundantColumns().a().isEmpty() || !sheetResult.redundantColumns().b().isEmpty()) {
-            PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE, rowIdx);
+            PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
                     Msg.APP_0630.get().formatted(
                             sheetResult.redundantColumns().a().size(),
@@ -282,7 +280,7 @@ public class BookReportCreator {
             
             while (!rColsA.isEmpty() || !rColsB.isEmpty()) {
                 boolean isLast = rColsA.length() <= MAX_CHARS && rColsB.length() <= MAX_CHARS;
-                PoiUtil.copyRow(sheet, ROW_TEMPLATE_RCOLS_TITLE + (isLast ? 3 : 2), rowIdx);
+                PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE + (isLast ? 3 : 2), rowIdx);
                 if (rowIdx == rColsStart) {
                     PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(), "【A】");
                     PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b(), "【B】");
@@ -315,14 +313,14 @@ public class BookReportCreator {
         
         // 差分セルありの場合
         if (!sheetResult.diffCells().isEmpty()) {
-            PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE, rowIdx);
+            PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE, rowIdx);
             PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(),
                     Msg.APP_0640.get().formatted(sheetResult.diffCells().size()));
             rowIdx++;
             int start = rowIdx;
             
             for (Pair<CellData> pair : sheetResult.diffCells()) {
-                PoiUtil.copyRow(sheet, ROW_TEMPLATE_DCELLS_TITLE + 1, rowIdx);
+                PoiUtil.copyRow(sheet, ROW_TEMPLATE_SUBTITLE + 4, rowIdx);
                 
                 PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.a(), pair.a().address());
                 PoiUtil.setCellValue(sheet, rowIdx, COL_LEFT.b(), pair.b().address());
