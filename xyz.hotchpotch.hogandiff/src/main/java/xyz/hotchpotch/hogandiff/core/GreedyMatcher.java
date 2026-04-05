@@ -1,12 +1,12 @@
 package xyz.hotchpotch.hogandiff.core;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -150,25 +150,27 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
                                 IntPair.of(i, j),
                                 diffEvaluator.applyAsInt(listA.get(i), listB.get(j)))));
         
-        // これらを結合し、小さい順にソートする。
-        LinkedList<Cost> costs = Stream.concat(Stream.concat(gapCostsA, gapCostsB), diffCosts)
-                .sorted()
-                .collect(Collectors.toCollection(LinkedList::new));
-        
+        // これらを結合し、優先度付きキューに投入する。
+        PriorityQueue<Cost> pq = Stream.concat(Stream.concat(gapCostsA, gapCostsB), diffCosts)
+                .collect(() -> new PriorityQueue<>(), PriorityQueue::add, PriorityQueue::addAll);
+
+        BitSet usedA = new BitSet(listA.size());
+        BitSet usedB = new BitSet(listB.size());
+
         List<IntPair> pairs = new ArrayList<>();
-        while (0 < costs.size()) {
-            
-            // 小さいものから結果として採用する。
-            Cost cost = costs.removeFirst();
+        while (!pq.isEmpty()) {
+
+            // 小さいものから取り出す。
+            Cost cost = pq.poll();
+
+            // 既に採用済みのインデックスを含む候補はスキップする。
+            if (cost.idxs.hasA() && usedA.get(cost.idxs.a())) continue;
+            if (cost.idxs.hasB() && usedB.get(cost.idxs.b())) continue;
+
+            // 結果として採用し、使用済みインデックスを記録する。
             pairs.add(cost.idxs);
-            
-            // 結果として採用された要素を含む候補を除去する。
-            if (cost.idxs.hasA()) {
-                costs.removeIf(c -> c.idxs.hasA() && c.idxs.a() == cost.idxs.a());
-            }
-            if (cost.idxs.hasB()) {
-                costs.removeIf(c -> c.idxs.hasB() && c.idxs.b() == cost.idxs.b());
-            }
+            if (cost.idxs.hasA()) usedA.set(cost.idxs.a());
+            if (cost.idxs.hasB()) usedB.set(cost.idxs.b());
         }
         return pairs;
     }
