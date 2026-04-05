@@ -224,7 +224,7 @@ public interface Matcher<T> {
             List<? extends T> listB) {
         
         Objects.requireNonNull(listA);
-        Objects.requireNonNull(listA);
+        Objects.requireNonNull(listB);
         
         List<IntPair> pairs = makeIdxPairs(listA, listB);
         
