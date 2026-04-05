@@ -22,7 +22,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
  * @param <T> リストの要素の型
  * @author nmby
  */
-public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
+/*package*/ class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
     
     // [static members] ********************************************************
     
