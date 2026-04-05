@@ -164,13 +164,21 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
             Cost cost = pq.poll();
 
             // 既に採用済みのインデックスを含む候補はスキップする。
-            if (cost.idxs.hasA() && usedA.get(cost.idxs.a())) continue;
-            if (cost.idxs.hasB() && usedB.get(cost.idxs.b())) continue;
+            if (cost.idxs.hasA() && usedA.get(cost.idxs.a())) {
+                continue;
+            }
+            if (cost.idxs.hasB() && usedB.get(cost.idxs.b())) {
+                continue;
+            }
 
             // 結果として採用し、使用済みインデックスを記録する。
             pairs.add(cost.idxs);
-            if (cost.idxs.hasA()) usedA.set(cost.idxs.a());
-            if (cost.idxs.hasB()) usedB.set(cost.idxs.b());
+            if (cost.idxs.hasA()) {
+                usedA.set(cost.idxs.a());
+            }
+            if (cost.idxs.hasB()) {
+                usedB.set(cost.idxs.b());
+            }
         }
         return pairs;
     }
