@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import xyz.hotchpotch.hogandiff.util.IntPair;
 
@@ -27,10 +26,7 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     // [instance members] ******************************************************
     
     private final Function<? super T, ?> idExtractor;
-    
-    private Map<?, Integer> mapA;
-    private Map<?, Integer> mapB;
-    
+
     /**
      * コンストラクタ
      */
@@ -53,40 +49,41 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
     
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws IllegalArgumentException {@code listA}, {@code listB} のいずれかに重複要素が含まれる場合
      */
     @Override
     protected void makeIdxPairsPrecheck(
             List<? extends T> listA,
             List<? extends T> listB) {
-        
-        mapA = IntStream.range(0, listA.size())
-                .collect(
-                        HashMap::new,
-                        (map, i) -> map.put(idExtractor.apply(listA.get(i)), i),
-                        Map::putAll);
-        mapB = IntStream.range(0, listB.size())
-                .collect(
-                        HashMap::new,
-                        (map, j) -> map.put(idExtractor.apply(listB.get(j)), j),
-                        Map::putAll);
-        
-        if (listA.size() != mapA.size() || listB.size() != mapB.size()) {
+
+        // 重複チェックのみ行う（マップは makeIdxPairsMain でローカルに構築する）。
+        long distinctA = listA.stream().map(idExtractor).distinct().count();
+        long distinctB = listB.stream().map(idExtractor).distinct().count();
+        if (listA.size() != distinctA || listB.size() != distinctB) {
             throw new IllegalArgumentException("list has duplicate values.");
         }
-        
     }
-    
+
     @Override
     protected List<IntPair> makeIdxPairsMain(
             List<? extends T> listA,
             List<? extends T> listB) {
-        
+
         // 親クラスでバリデーションチェック済み
-        
+
+        // ローカル変数としてマップを構築する（インスタンスフィールドへの副作用を排除）。
+        HashMap<Object, Integer> mapA = new HashMap<>();
+        for (int i = 0; i < listA.size(); i++) {
+            mapA.put(idExtractor.apply(listA.get(i)), i);
+        }
+        HashMap<Object, Integer> mapB = new HashMap<>();
+        for (int j = 0; j < listB.size(); j++) {
+            mapB.put(idExtractor.apply(listB.get(j)), j);
+        }
+
         List<IntPair> result = new ArrayList<>();
-        
+
         mapA.forEach((elemA, i) -> {
             if (mapB.containsKey(elemA)) {
                 result.add(IntPair.of(i, mapB.get(elemA)));
