@@ -21,11 +21,22 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 public class StringDiffUtil {
     
     // [static members] ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+
+    /** 挿入・削除1文字あたりのコスト。 */
+    private static final int GAP_COST = 1;
+
+    /**
+     * 置換の内部コスト。{@code GAP_COST * 2} より大きくする必要がある。<br>
+     * この制約により {@link MinimumEditDistanceMatcher} は置換を常に delete+insert に分解し、
+     * {@link #levenshteinDistance} の戻り値（非ペア要素数）が
+     * 標準レーベンシュタイン距離（置換＝削除＋挿入の2操作）と一致する。
+     */
+    private static final int SUBSTITUTION_INTERNAL_COST = 3; // > GAP_COST * 2
+
     private static final Matcher<Integer> codeMatcher = new MinimumEditDistanceMatcher<>(
-            _ -> 1,
-            (x, y) -> x.equals(y) ? 0 : 3);
-    
+            _ -> GAP_COST,
+            (x, y) -> x.equals(y) ? 0 : SUBSTITUTION_INTERNAL_COST);
+
     /**
      * 2つの文字列間のレーベンシュタイン距離を返します。<br>
      * 一文字の挿入と削除はそれぞれ距離1と評価します。
