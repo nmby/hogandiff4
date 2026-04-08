@@ -147,7 +147,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
             int key = entry.getKey();
             Set<String> strs = entry.getValue();
             int sumLen = strs.parallelStream().mapToInt(String::length).sum();
-            weights[key] = Math.sqrt(sumLen);
+            weights[key] = Math.max(1.0, Math.sqrt(sumLen));
         });
         
         return weights;
