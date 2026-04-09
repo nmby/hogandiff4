@@ -143,10 +143,10 @@ public class ItemMatcherImpl2 implements ItemMatcher {
         int max = map.keySet().stream().mapToInt(i -> i).max().orElse(0);
         double[] weights = new double[max + 1];
         
-        map.entrySet().forEach(entry -> {
+        map.entrySet().parallelStream().forEach(entry -> {
             int key = entry.getKey();
             Set<String> strs = entry.getValue();
-            int sumLen = strs.stream().mapToInt(String::length).sum();
+            int sumLen = strs.parallelStream().mapToInt(String::length).sum();
             weights[key] = Math.sqrt(sumLen);
         });
         
@@ -162,7 +162,7 @@ public class ItemMatcherImpl2 implements ItemMatcher {
     private ToIntFunction<List<CellData>> gapEvaluator(double[] weights) {
         assert weights != null;
         
-        return (list) -> (int) list.stream()
+        return (list) -> (int) list.parallelStream()
                 .mapToInt(horizontal)
                 .mapToDouble(i -> weights[i])
                 .sum();
