@@ -35,3 +35,5 @@ hs_err_pid*
 
 #gradle.properties
 xyz.hotchpotch.hogandiff/src/main/resources/xyz/hotchpotch/hogandiff/google/credentials.json
+
+.claude
