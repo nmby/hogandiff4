@@ -130,14 +130,16 @@ public class ComparatorOfSheetsRC implements ComparatorOfSheets {
                     Pair<CellData> cellPair = Side
                             .map(side -> maps.get(side).get(addressPair.get(side)));
                     
-                    return (cellPair.a() != null && cellPair.b() != null
-                            && cellPair.a().dataEquals(cellPair.b())
-                            || cellPair.a() == null && cellPair.b() == null)
-                                    ? null
-                                    : Side.map(side -> cellPair.get(side) != null
-                                            ? cellPair.get(side)
-                                            : CellData.empty(rows.get(side),
-                                                    columns.get(side)));
+                    boolean bothAbsent = cellPair.a() == null && cellPair.b() == null;
+                    boolean bothPresentAndEqual = cellPair.a() != null
+                            && cellPair.b() != null
+                            && cellPair.a().dataEquals(cellPair.b());
+                    if (bothAbsent || bothPresentAndEqual) {
+                        return null;
+                    }
+                    return Side.map(side -> cellPair.get(side) != null
+                            ? cellPair.get(side)
+                            : CellData.empty(rows.get(side), columns.get(side)));
                 }).filter(Objects::nonNull)).toList();
     }
 }

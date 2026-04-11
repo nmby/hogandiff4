@@ -18,11 +18,17 @@ import xyz.hotchpotch.hogandiff.util.IntPair;
 /**
  * 2つのリストの要素同士の一致度の総和が最大になるような（換言すると差異度の総和が最小になるような）
  * 対応付けを行う {@link Matcher} の実装です。<br>
- * 
+ * <br>
+ * <strong>注意：</strong>
+ * 本実装は最小費用流アルゴリズムに基づいており、残余グラフ上の経路探索において
+ * コストが非負であることを前提としています。
+ * 余剰コスト評価関数・差分コスト評価関数が負の値を返す場合、
+ * 経路探索が正しく収束せず、誤った結果を返すことがあります。<br>
+ *
  * @param <T> リストの要素の型
  * @author nmby
  */
-public class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
+/*package*/ class MinimumCostFlowMatcher<T> extends MatcherBase<T> {
     
     // [static members] ********************************************************
     
