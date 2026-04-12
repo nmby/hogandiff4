@@ -6,8 +6,10 @@ import java.util.function.Predicate;
 
 import javafx.concurrent.Task;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooksTriple;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooks;
+import xyz.hotchpotch.hogandiff.tasks.CompareTaskBooksTriple;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskDirs;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskSheets;
 import xyz.hotchpotch.hogandiff.tasks.CompareTaskTrees;
@@ -97,27 +99,48 @@ public enum AppMenu {
      * 処理対象のフォルダ／Excelブック／シートの指定が妥当なものかを確認します。<br>
      * 具体的には、2つの比較対象が同じものの場合は {@code false} を、
      * それ以外の場合は {@code true} を返します。<br>
-     * 
+     *
      * @param settings 設定
      * @return 比較対象の指定が妥当な場合は {@code true}
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public boolean isValidTargets(Settings settings) {
         Objects.requireNonNull(settings);
-        
-        return targetValidator.test(settings);
+
+        DiffMode mode = settings.get(SettingKeys.CURR_DIFF_MODE);
+        return switch (mode) {
+            case TWO_WAY -> targetValidator.test(settings);
+            case THREE_WAY -> switch (this) {
+                case COMPARE_BOOKS -> {
+                    PairingInfoBooksTriple info =
+                            settings.get(SettingKeys.CURR_BOOK_COMPARE_INFO_TRIPLE);
+                    Objects.requireNonNull(info);
+                    yield !info.parentBookInfoTriple().isIdentical();
+                }
+                default -> throw new UnsupportedOperationException(
+                        "3-way diff not supported for " + this);
+            };
+        };
     }
-    
+
     /**
      * このメニューを実行するためのタスクを生成して返します。<br>
-     * 
+     *
      * @param settings 設定
      * @return 新しいタスク
      * @throws NullPointerException パラメータが {@code null} の場合
      */
     public Task<Void> getTask(Settings settings) {
         Objects.requireNonNull(settings);
-        
-        return taskFactory.apply(settings);
+
+        DiffMode mode = settings.get(SettingKeys.CURR_DIFF_MODE);
+        return switch (mode) {
+            case TWO_WAY -> taskFactory.apply(settings);
+            case THREE_WAY -> switch (this) {
+                case COMPARE_BOOKS -> new CompareTaskBooksTriple(settings);
+                default -> throw new UnsupportedOperationException(
+                        "3-way diff not supported for " + this);
+            };
+        };
     }
 }

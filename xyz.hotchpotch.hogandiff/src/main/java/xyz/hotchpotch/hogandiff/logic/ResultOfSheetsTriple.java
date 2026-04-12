@@ -1,7 +1,10 @@
 package xyz.hotchpotch.hogandiff.logic;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
@@ -18,6 +21,18 @@ import xyz.hotchpotch.hogandiff.util.Triple;
 public final class ResultOfSheetsTriple implements Result {
 
     // [static members] ********************************************************
+
+    /**
+     * O ファイル着色用に分類した 3 種類の {@link Piece} を保持するレコードです。<br>
+     *
+     * @param aOnly    A のみで変更された差分（O ファイル上で赤系に着色）
+     * @param bOnly    B のみで変更された差分（O ファイル上で青系に着色）
+     * @param conflict A と B の両方で変更された差分（O ファイル上で紫系に着色）
+     */
+    public record OriginPieces(
+            Piece aOnly,
+            Piece bOnly,
+            Piece conflict) {}
 
     private static final String BR = System.lineSeparator();
 
@@ -149,6 +164,105 @@ public final class ResultOfSheetsTriple implements Result {
             str.append(resultOB.getDiffDetail());
         }
         return str.toString();
+    }
+
+    /**
+     * O ファイル着色用に差分を A-only / B-only / conflict に分類して返します。<br>
+     * <p>
+     * 差分の座標はいずれも O 座標系で表されます。<br>
+     *
+     * @return O ファイル着色用に分類した差分情報
+     */
+    public OriginPieces computeOriginPieces() {
+        // O の視点（Pair.Side.A = O 側）で両比較から Piece を取得する
+        Piece oPieceFromA = resultOA.getPiece(Pair.Side.A);
+        Piece oPieceFromB = resultOB.getPiece(Pair.Side.A);
+
+        // (row, column) 位置を表すローカルレコード
+        record Pos(int row, int col) {}
+
+        // --- 余剰行 ---
+        Set<Integer> aRows = new HashSet<>(oPieceFromA.redundantRows());
+        Set<Integer> bRows = new HashSet<>(oPieceFromB.redundantRows());
+        Set<Integer> conflictRows = aRows.stream()
+                .filter(bRows::contains)
+                .collect(Collectors.toSet());
+        List<Integer> aOnlyRows = oPieceFromA.redundantRows().stream()
+                .filter(r -> !conflictRows.contains(r)).toList();
+        List<Integer> bOnlyRows = oPieceFromB.redundantRows().stream()
+                .filter(r -> !conflictRows.contains(r)).toList();
+        List<Integer> conflictRowList = oPieceFromA.redundantRows().stream()
+                .filter(conflictRows::contains).toList();
+
+        // --- 余剰列 ---
+        Set<Integer> aCols = new HashSet<>(oPieceFromA.redundantColumns());
+        Set<Integer> bCols = new HashSet<>(oPieceFromB.redundantColumns());
+        Set<Integer> conflictCols = aCols.stream()
+                .filter(bCols::contains)
+                .collect(Collectors.toSet());
+        List<Integer> aOnlyCols = oPieceFromA.redundantColumns().stream()
+                .filter(c -> !conflictCols.contains(c)).toList();
+        List<Integer> bOnlyCols = oPieceFromB.redundantColumns().stream()
+                .filter(c -> !conflictCols.contains(c)).toList();
+        List<Integer> conflictColList = oPieceFromA.redundantColumns().stream()
+                .filter(conflictCols::contains).toList();
+
+        // --- 差分セル内容 ---
+        Set<Pos> aContentPos = oPieceFromA.diffCellContents().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> bContentPos = oPieceFromB.diffCellContents().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> conflictContentPos = aContentPos.stream()
+                .filter(bContentPos::contains)
+                .collect(Collectors.toSet());
+        List<CellData> aOnlyContents = oPieceFromA.diffCellContents().stream()
+                .filter(c -> !conflictContentPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> bOnlyContents = oPieceFromB.diffCellContents().stream()
+                .filter(c -> !conflictContentPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> conflictContents = oPieceFromA.diffCellContents().stream()
+                .filter(c -> conflictContentPos.contains(new Pos(c.row(), c.column()))).toList();
+
+        // --- 差分セルコメント ---
+        Set<Pos> aCommentPos = oPieceFromA.diffCellComments().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> bCommentPos = oPieceFromB.diffCellComments().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> conflictCommentPos = aCommentPos.stream()
+                .filter(bCommentPos::contains)
+                .collect(Collectors.toSet());
+        List<CellData> aOnlyComments = oPieceFromA.diffCellComments().stream()
+                .filter(c -> !conflictCommentPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> bOnlyComments = oPieceFromB.diffCellComments().stream()
+                .filter(c -> !conflictCommentPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> conflictComments = oPieceFromA.diffCellComments().stream()
+                .filter(c -> conflictCommentPos.contains(new Pos(c.row(), c.column()))).toList();
+
+        // --- 余剰セルコメント ---
+        Set<Pos> aRedundantComPos = oPieceFromA.redundantCellComments().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> bRedundantComPos = oPieceFromB.redundantCellComments().stream()
+                .map(c -> new Pos(c.row(), c.column()))
+                .collect(Collectors.toSet());
+        Set<Pos> conflictRedundantComPos = aRedundantComPos.stream()
+                .filter(bRedundantComPos::contains)
+                .collect(Collectors.toSet());
+        List<CellData> aOnlyRedundantComs = oPieceFromA.redundantCellComments().stream()
+                .filter(c -> !conflictRedundantComPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> bOnlyRedundantComs = oPieceFromB.redundantCellComments().stream()
+                .filter(c -> !conflictRedundantComPos.contains(new Pos(c.row(), c.column()))).toList();
+        List<CellData> conflictRedundantComs = oPieceFromA.redundantCellComments().stream()
+                .filter(c -> conflictRedundantComPos.contains(new Pos(c.row(), c.column()))).toList();
+
+        return new OriginPieces(
+                new Piece(aOnlyRows, aOnlyCols, aOnlyContents, aOnlyComments, aOnlyRedundantComs),
+                new Piece(bOnlyRows, bOnlyCols, bOnlyContents, bOnlyComments, bOnlyRedundantComs),
+                new Piece(conflictRowList, conflictColList, conflictContents, conflictComments,
+                        conflictRedundantComs));
     }
 
     @Override

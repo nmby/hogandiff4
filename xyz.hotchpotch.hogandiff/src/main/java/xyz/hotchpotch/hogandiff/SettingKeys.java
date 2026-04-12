@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooksTriple;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Settings.Key;
@@ -113,6 +114,14 @@ public class SettingKeys {
             AppMenu::toString,
             AppMenu::valueOf,
             false);
+
+    /** 今回の実行における diff モード */
+    public static final Key<DiffMode> CURR_DIFF_MODE = new Key<>(
+            "current.diffMode",
+            () -> DiffMode.TWO_WAY,
+            DiffMode::toString,
+            DiffMode::valueOf,
+            false);
     
     /** 比較対象Excelブックたちの読み取りパスワード */
     public static final Key<Map<Path, String>> CURR_READ_PASSWORDS = new Key<>(
@@ -173,6 +182,14 @@ public class SettingKeys {
             () -> null,
             PairingInfoDirs::toString,
             decodeNotSupported("cannnot decode."),
+            false);
+
+    /** 今回の実行における 3-way ブック比較情報 */
+    public static final Key<PairingInfoBooksTriple> CURR_BOOK_COMPARE_INFO_TRIPLE = new Key<>(
+            "current.bookComparisonTriple",
+            () -> null,
+            PairingInfoBooksTriple::toString,
+            decodeNotSupported("cannot decode."),
             false);
     
     /** 行の挿入／削除を考慮するか */
@@ -276,6 +293,30 @@ public class SettingKeys {
             color -> "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue()),
             Color::decode,
             false);
+
+    /** 3-way 比較結果レポートにおける、O ファイル上の A-only 差分に着ける色（赤系） */
+    public static final Key<Short> THREE_WAY_DIFF_COLOR_A = new Key<>(
+            "report.threeWayDiffColorA",
+            () -> IndexedColors.CORAL.getIndex(),
+            String::valueOf,
+            Short::valueOf,
+            true);
+
+    /** 3-way 比較結果レポートにおける、O ファイル上の B-only 差分に着ける色（青系） */
+    public static final Key<Short> THREE_WAY_DIFF_COLOR_B = new Key<>(
+            "report.threeWayDiffColorB",
+            () -> IndexedColors.LIGHT_TURQUOISE.getIndex(),
+            String::valueOf,
+            Short::valueOf,
+            true);
+
+    /** 3-way 比較結果レポートにおける、O ファイル上の競合差分に着ける色（紫系） */
+    public static final Key<Short> THREE_WAY_DIFF_COLOR_CONFLICT = new Key<>(
+            "report.threeWayDiffColorConflict",
+            () -> IndexedColors.VIOLET.getIndex(),
+            String::valueOf,
+            Short::valueOf,
+            true);
     
     /** レポートオプション：差分個所に色を付けたシートを表示するか */
     public static final Key<Boolean> SHOW_PAINTED_SHEETS = new Key<>(

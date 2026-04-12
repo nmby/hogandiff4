@@ -6,8 +6,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.Piece;
 import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
+import xyz.hotchpotch.hogandiff.logic.ResultOfSheetsTriple.OriginPieces;
+import xyz.hotchpotch.hogandiff.util.Pair;
 import xyz.hotchpotch.hogandiff.util.Triple;
 
 /**
@@ -181,6 +185,78 @@ public record ResultOfBooksTriple(
         str.append(getDiffDetail());
 
         return str.toString();
+    }
+
+    /**
+     * A ファイル着色用の差分情報を返します。<br>
+     * <p>
+     * キーは A 側のシート名、値は A 側の {@link Piece}（{@code Optional.empty()} は未比較）です。<br>
+     *
+     * @return A ファイル着色用差分情報（シート名 → Piece）
+     */
+    public Map<String, Optional<Piece>> getPieceForA() {
+        return sheetResults.entrySet().stream()
+                .filter(e -> e.getKey().hasA())
+                .collect(Collectors.toMap(
+                        e -> e.getKey().a(),
+                        e -> e.getValue().map(s -> s.getPiece(Triple.Side.A))));
+    }
+
+    /**
+     * B ファイル着色用の差分情報を返します。<br>
+     * <p>
+     * キーは B 側のシート名、値は B 側の {@link Piece}（{@code Optional.empty()} は未比較）です。<br>
+     *
+     * @return B ファイル着色用差分情報（シート名 → Piece）
+     */
+    public Map<String, Optional<Piece>> getPieceForB() {
+        return sheetResults.entrySet().stream()
+                .filter(e -> e.getKey().hasB())
+                .collect(Collectors.toMap(
+                        e -> e.getKey().b(),
+                        e -> e.getValue().map(s -> s.getPiece(Triple.Side.B))));
+    }
+
+    /**
+     * O ファイル着色用の A-only 差分情報を返します。<br>
+     * <p>
+     * キーは O 側のシート名、値は A のみで変更された箇所の {@link Piece} です。<br>
+     *
+     * @return O ファイル着色用 A-only 差分情報（シート名 → Piece）
+     */
+    public Map<String, Optional<Piece>> getPieceForOriginAOnly() {
+        return getOriginPieceMap(OriginPieces::aOnly);
+    }
+
+    /**
+     * O ファイル着色用の B-only 差分情報を返します。<br>
+     * <p>
+     * キーは O 側のシート名、値は B のみで変更された箇所の {@link Piece} です。<br>
+     *
+     * @return O ファイル着色用 B-only 差分情報（シート名 → Piece）
+     */
+    public Map<String, Optional<Piece>> getPieceForOriginBOnly() {
+        return getOriginPieceMap(OriginPieces::bOnly);
+    }
+
+    /**
+     * O ファイル着色用の競合差分情報を返します。<br>
+     * <p>
+     * キーは O 側のシート名、値は A・B 両方で変更された箇所の {@link Piece} です。<br>
+     *
+     * @return O ファイル着色用競合差分情報（シート名 → Piece）
+     */
+    public Map<String, Optional<Piece>> getPieceForOriginConflict() {
+        return getOriginPieceMap(OriginPieces::conflict);
+    }
+
+    private Map<String, Optional<Piece>> getOriginPieceMap(
+            Function<OriginPieces, Piece> pieceExtractor) {
+        return sheetResults.entrySet().stream()
+                .filter(e -> e.getKey().hasO())
+                .collect(Collectors.toMap(
+                        e -> e.getKey().o(),
+                        e -> e.getValue().map(s -> pieceExtractor.apply(s.computeOriginPieces()))));
     }
 
     @Override
