@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.function.Function;
 
-import javafx.application.Platform;
-import javafx.scene.control.Button;
-
 /**
  * このアプリケーションのバージョン情報を管理するクラスです。<br>
  * 
@@ -20,10 +17,7 @@ public class VersionMaster {
     private static final AppResource ar = AppMain.appResource;
     
     /** このアプリケーションのバージョン */
-    public static final String APP_VERSION = "v0.27.1";
-    
-    /** v0.27.0新機能アナウンス機能用変数 */
-    public static Button for_v0_27_1;
+    public static final String APP_VERSION = "v0.27.2";
     
     /**
      * このアプリの現在のバージョンと指定されたバージョンを比較します。<br>
@@ -65,12 +59,8 @@ public class VersionMaster {
         String prevVersion = ar.settings().get(SettingKeys.APP_VERSION);
         if (prevVersion == null || compareVersion(prevVersion) > 0) {
             
-            assert APP_VERSION.equals("v0.27.1");
-            // v0.27.1 では次を行う。
-            //  ●設定エリアの強制展開
-            //  ・詳細設定ダイアログの強制表示
-            //  ・新機能紹介ページの表示
-            ar.changeSetting(SettingKeys.SHOW_SETTINGS, true);
+            assert APP_VERSION.equals("v0.27.2");
+            // v0.27.2 では何もしない。
         }
     }
     
@@ -82,17 +72,12 @@ public class VersionMaster {
         String prevVersion = ar.settings().get(SettingKeys.APP_VERSION);
         if (prevVersion == null || compareVersion(prevVersion) > 0) {
             
-            assert APP_VERSION.equals("v0.27.1");
-            // v0.27.0 では次を行う。
-            //  ・設定エリアの強制展開
-            //  ●詳細設定ダイアログの強制表示
-            //  ●新機能紹介ページの表示
+            assert APP_VERSION.equals("v0.27.2");
+            // v0.27.2 では次を行う。
+            //  ・新機能紹介ページの表示
             
             try {
-                if (for_v0_27_1 != null) {
-                    Platform.runLater(() -> for_v0_27_1.fire());
-                }
-                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-1/"));
+                Desktop.getDesktop().browse(URI.create("https://hogandiff.hotchpotch.xyz/releasenotes/v0-27-2/"));
                 
             } catch (IOException e) {
                 ErrorReporter.reportIfEnabled(e, "VersionMaster::announceNewFeature2-1");

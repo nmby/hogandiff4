@@ -143,10 +143,14 @@ public interface Matcher<T> {
     /**
      * 2つのリストの要素同士の組み合わせで得られる差分コストが最小となるような対応付けを行う
      * マッチャーを返します。<br>
-     * 
+     * <br>
+     * <strong>注意：</strong>
+     * {@code gapEvaluator} および {@code diffEvaluator} は必ず非負の値を返す必要があります。
+     * 負のコストを返す評価関数を渡した場合、正しい結果が得られないことがあります。<br>
+     *
      * @param <T> リストの要素の型
-     * @param gapEvaluator 余剰コスト評価関数
-     * @param diffEvaluator 差分コスト評価関数
+     * @param gapEvaluator 余剰コスト評価関数（非負の値を返すこと）
+     * @param diffEvaluator 差分コスト評価関数（非負の値を返すこと）
      * @return 新しいマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
@@ -163,11 +167,16 @@ public interface Matcher<T> {
     /**
      * 2つのリストの要素同士の組み合わせで得られる差分コストが最小となるような対応付けを行う
      * マッチャーを返します。<br>
-     * 
+     * <br>
+     * <strong>注意：</strong>
+     * {@code gapEvaluatorA}、{@code gapEvaluatorB} および {@code diffEvaluator} は
+     * 必ず非負の値を返す必要があります。
+     * 負のコストを返す評価関数を渡した場合、正しい結果が得られないことがあります。<br>
+     *
      * @param <T> リストの要素の型
-     * @param gapEvaluatorA 比較対象Aに適用する余剰コスト評価関数
-     * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数
-     * @param diffEvaluator 差分コスト評価関数
+     * @param gapEvaluatorA 比較対象Aに適用する余剰コスト評価関数（非負の値を返すこと）
+     * @param gapEvaluatorB 比較対象Bに適用する余剰コスト評価関数（非負の値を返すこと）
+     * @param diffEvaluator 差分コスト評価関数（非負の値を返すこと）
      * @return 新しいマッチャー
      * @throws NullPointerException パラメータが {@code null} の場合
      */
@@ -224,7 +233,7 @@ public interface Matcher<T> {
             List<? extends T> listB) {
         
         Objects.requireNonNull(listA);
-        Objects.requireNonNull(listA);
+        Objects.requireNonNull(listB);
         
         List<IntPair> pairs = makeIdxPairs(listA, listB);
         

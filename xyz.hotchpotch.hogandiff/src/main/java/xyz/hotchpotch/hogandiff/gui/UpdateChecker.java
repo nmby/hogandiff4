@@ -89,7 +89,7 @@ public class UpdateChecker {
                                             .showAndWait();
                         });
                     }
-                    ar.changeSetting(SettingKeys.LAST_CHECK_UPDATES, Instant.now());
+                    Platform.runLater(() -> ar.changeSetting(SettingKeys.LAST_CHECK_UPDATES, Instant.now()));
                 })
                 .exceptionally(throwable -> {
                     ErrorReporter.reportIfEnabled(throwable, "UpdateChecker#checkUpdate-1");

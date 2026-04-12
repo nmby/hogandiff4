@@ -25,7 +25,6 @@ import xyz.hotchpotch.hogandiff.AppResource;
 import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.SettingKeys;
-import xyz.hotchpotch.hogandiff.VersionMaster;
 import xyz.hotchpotch.hogandiff.gui.ChildController;
 import xyz.hotchpotch.hogandiff.gui.MainController;
 import xyz.hotchpotch.hogandiff.gui.dialogs.SettingDetailsDialogPane;
@@ -107,7 +106,6 @@ public class SettingsPane2 extends VBox implements ChildController {
             // 4.値変更時のイベントハンドラの設定
             
             // 5.その他
-            VersionMaster.for_v0_27_1 = detailsButton;
             
         } catch (Exception e) {
             ErrorReporter.reportIfEnabled(e, "SettingsPane2#init-1");
@@ -198,6 +196,9 @@ public class SettingsPane2 extends VBox implements ChildController {
                         : Files::deleteIfExists;
                 
                 Thread.startVirtualThread(() -> {
+                    if (!Files.isDirectory(workDirBase)) {
+                        return;
+                    }
                     try (Stream<Path> children = Files.list(workDirBase)) {
                         children.forEach(path -> {
                             try {
