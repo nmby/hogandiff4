@@ -196,6 +196,9 @@ public class SettingsPane2 extends VBox implements ChildController {
                         : Files::deleteIfExists;
                 
                 Thread.startVirtualThread(() -> {
+                    if (!Files.isDirectory(workDirBase)) {
+                        return;
+                    }
                     try (Stream<Path> children = Files.list(workDirBase)) {
                         children.forEach(path -> {
                             try {
