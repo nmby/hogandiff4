@@ -337,10 +337,16 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             
             DirInfo dirInfo = parent.dirInfoPropPair.get(side).getValue();
             if (dirInfo != null) {
-                chooser.setInitialDirectory(dirInfo.dirPath().toFile());
-                
+                File dir = dirInfo.dirPath().toFile();
+                if (dir.isDirectory()) {
+                    chooser.setInitialDirectory(dir);
+                }
+
             } else if (prevSelectedBookPath != null) {
-                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+                File parentDir = prevSelectedBookPath.toFile().getParentFile();
+                if (parentDir != null && parentDir.isDirectory()) {
+                    chooser.setInitialDirectory(parentDir);
+                }
             }
             
             File selected = chooser.showDialog(getScene().getWindow());
@@ -367,11 +373,17 @@ public class TargetSelectionPane extends GridPane implements ChildController {
             BookInfo bookInfo = parent.bookInfoPropPair.get(side).getValue();
             if (bookInfo != null) {
                 File book = bookInfo.bookPath().toFile();
-                chooser.setInitialDirectory(book.getParentFile());
+                File parentDir = book.getParentFile();
+                if (parentDir != null && parentDir.isDirectory()) {
+                    chooser.setInitialDirectory(parentDir);
+                }
                 chooser.setInitialFileName(book.getName());
-                
+
             } else if (prevSelectedBookPath != null) {
-                chooser.setInitialDirectory(prevSelectedBookPath.toFile().getParentFile());
+                File parentDir = prevSelectedBookPath.toFile().getParentFile();
+                if (parentDir != null && parentDir.isDirectory()) {
+                    chooser.setInitialDirectory(parentDir);
+                }
             }
             
             chooser.getExtensionFilters().add(
