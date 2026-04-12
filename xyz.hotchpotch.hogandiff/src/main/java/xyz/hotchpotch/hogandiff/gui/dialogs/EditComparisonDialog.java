@@ -10,6 +10,7 @@ import xyz.hotchpotch.hogandiff.ErrorReporter;
 import xyz.hotchpotch.hogandiff.Msg;
 import xyz.hotchpotch.hogandiff.logic.PairingInfo;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoBooks;
+import xyz.hotchpotch.hogandiff.logic.PairingInfoBooksTriple;
 import xyz.hotchpotch.hogandiff.logic.PairingInfoDirs;
 
 /**
@@ -51,6 +52,8 @@ public class EditComparisonDialog<T extends PairingInfo> extends Dialog<T> {
                 pane.init();
                 yield pane;
             }
+            case PairingInfoBooksTriple ignored ->
+                throw new UnsupportedOperationException("3-way diff dialog is not yet implemented");
             };
             
             editComparisonDialogPane.getStylesheets().add(

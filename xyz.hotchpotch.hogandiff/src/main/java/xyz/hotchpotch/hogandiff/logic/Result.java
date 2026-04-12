@@ -11,7 +11,7 @@ import xyz.hotchpotch.hogandiff.logic.ResultOfSheets.SheetStats;
  */
 // sealed を使ってみる
 public sealed interface Result
-        permits ResultOfSheets, ResultOfBooks, ResultOfDirs, ResultOfTrees {
+        permits ResultOfSheets, ResultOfSheetsTriple, ResultOfBooks, ResultOfBooksTriple, ResultOfDirs, ResultOfTrees {
     
     // [static members] ********************************************************
     
